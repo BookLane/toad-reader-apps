@@ -1,22 +1,40 @@
 {
   "expo": {
-    "name": "toad-reader-apps",
-    "description": "An empty new project",
-    "slug": "toad-reader-apps",
-    "privacy": "public",
+    "name": "BibleMesh eReader",
+    "description": "Toad Reader for BibleMesh",
+    "slug": "biblemesh-ereader",
+    "privacy": "unlisted",
     "sdkVersion": "21.0.0",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "primaryColor": "#cccccc",
-    "icon": "./assets/icons/app-icon.png",
-    "loading": {
-      "icon": "./assets/icons/loading-icon.png"
+    "orientation": "default",
+    "primaryColor": "#4392c1",
+    "icon": "./assets/icons/biblemesh.jpg",
+    "notification": {
+      "icon": "./assets/icons/biblemesh.jpg",
+      "color": "#4392c1"
     },
+    "loading": {
+      "icon": "./assets/icons/loading-icon.png",
+      "hideExponentText": true
+    },
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#4392c1"
+    },
+    "scheme": "biblemesh",
     "packagerOpts": {
       "assetExts": ["ttf", "mp4"]
     },
+    "android": {
+      "package": "com.biblemesh.read"
+    },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.biblemesh.read",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "associatedDomains": [
+        "https://read.biblemesh.com"
+      ]
     }
   }
 }
