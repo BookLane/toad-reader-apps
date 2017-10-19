@@ -1,43 +1,52 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Root } from "native-base";
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import Expo from "expo";
+
+import allReducers from './src/reducers/all.js'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import { Root } from "native-base"
+
+import Counter from './src/components/Counter.js'
+
+const store = createStore(allReducers)
 
 export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      isReady: false
+    };
+  }
+
   async componentWillMount() {
     await Expo.Font.loadAsync({
-      'Roboto': require('native-base/Fonts/Roboto.ttf'),
-      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-    });
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      Ionicons: require("native-base/Fonts/Ionicons.ttf"),
+    })
+    this.setState({ isReady: true });
   }
   
   render() {
+    if (!this.state.isReady) {
+      return <Expo.AppLoading />;
+    }
     return (
       <Root>
-        <View style={styles.container}>
-          <Text>native-base</Text>
-          <Text>react-navigation</Text>
-          <Text>redux + react-redux + redux-persist</Text>
-          <Text>react-intl</Text>
-          <Text>Downloading and saving books</Text>
-          <Text>
-            Shared stuff:
-              Data fetches and saving (redux + redux-persist)
-              Progress bar data
-              Search query
-              Footnote extraction
-          </Text>
-          <Text>development cycle</Text>
-        </View>
+        <Provider store= {store}>
+          <Counter />
+        </Provider>
       </Root>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// })
