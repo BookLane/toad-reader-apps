@@ -28,6 +28,11 @@ class Book extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
+            onPress={() => this.props.navigation.goBack()}>
+            <Text>Back to reading</Text>
+          </Button>
+          <Button full rounded dark
+            style={{ marginTop: 10 }}
             onPress={() => this.props.navigation.navigate("Highlights")}>
             <Text>Highlights</Text>
           </Button>
