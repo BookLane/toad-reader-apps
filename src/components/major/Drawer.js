@@ -2,6 +2,8 @@ import React from "react"
 import { Image } from "react-native"
 import { Container, Content, Text, List, ListItem } from "native-base"
 
+import backToLibrary from '../../utils/native/backToLibrary.js'
+
 class Drawer extends React.Component {
   render() {
     return (
@@ -28,13 +30,18 @@ class Drawer extends React.Component {
           <List>
             <ListItem
               button
-              onPress={() => this.props.navigation.navigate("Library")}>
+              onPress={() => this.props.navigation.dispatch(backToLibrary)}>
               <Text>Library</Text>
             </ListItem>
             <ListItem
               button
               onPress={() => this.props.navigation.navigate("Accounts")}>
               <Text>Accounts</Text>
+            </ListItem>
+            <ListItem
+              button
+              onPress={() => alert('remove!')}>
+              <Text>Remove stuff</Text>
             </ListItem>
           </List>
         </Content>

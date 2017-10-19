@@ -1,17 +1,10 @@
 import React from "react"
-import { Container, Header, Title, Left, Right, Body, Content, Text, Card, CardItem } from "native-base"
+import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
 
 class Chooser extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
-          <Left />
-          <Body>
-            <Title>Chooser</Title>
-          </Body>
-          <Right />
-        </Header>
         <Content padder>
           <Card>
             <CardItem>
@@ -20,6 +13,11 @@ class Chooser extends React.Component {
               </Body>
             </CardItem>
           </Card>
+          <Button full rounded dark
+            style={{ marginTop: 10 }}
+            onPress={() => this.props.navigation.goBack()}>
+            <Text>Back</Text>
+          </Button>
         </Content>
       </Container>
     );

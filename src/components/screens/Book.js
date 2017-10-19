@@ -1,12 +1,18 @@
 import React from "react"
-import { Container, Header, Title, Left, Right, Button, Body, Content,Text, Card, CardItem } from "native-base"
+import { Container, Header, Title, Left, Right, Icon, Button, Body, Content,Text, Card, CardItem } from "native-base"
 
 class Book extends React.Component {
   render() {
     return (
       <Container>
         <Header>
-          <Left />
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.goBack(this.props.navigation.state.params.pageKey)}>
+              <Icon name="home" />
+            </Button>
+          </Left>
           <Body>
             <Title>Book</Title>
           </Body>
@@ -16,7 +22,7 @@ class Book extends React.Component {
           <Card>
             <CardItem>
               <Body>
-                <Text>Book here</Text>
+                <Text>Book contents</Text>
               </Body>
             </CardItem>
           </Card>

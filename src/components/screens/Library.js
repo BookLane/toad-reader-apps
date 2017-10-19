@@ -31,16 +31,6 @@ class Library extends React.Component {
             onPress={() => this.props.navigation.navigate("Page")}>
             <Text>Read book</Text>
           </Button>
-          <Button full rounded dark
-            style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.navigate("Accounts")}>
-            <Text>Accounts</Text>
-          </Button>
-          <Button full rounded primary
-            style={{ marginTop: 10 }}
-            onPress={() => alert('remove!')}>
-            <Text>Remove stuff</Text>
-          </Button>
         </Content>
       </Container>
     );
