@@ -6,7 +6,7 @@ import allReducers from './src/reducers/all.js'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
-import BaseNavigator from './src/navigators/Base.js'
+import HomeNavigator from './src/navigators/Home.js'
 
 const store = createStore(allReducers)
 
@@ -34,7 +34,7 @@ export default class App extends React.Component {
     return (
       <Root>
         <Provider store= {store}>
-          <BaseNavigator />
+          <HomeNavigator />
         </Provider>
       </Root>
     )

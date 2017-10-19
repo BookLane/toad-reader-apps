@@ -28,7 +28,7 @@ class Library extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.navigate("Reader")}>
+            onPress={() => this.props.navigation.navigate("Page")}>
             <Text>Read book</Text>
           </Button>
           <Button full rounded dark
