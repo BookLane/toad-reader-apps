@@ -1,12 +1,18 @@
 import React from "react"
-import { Container, Header, Title, Left, Right, Body, Content, Text, Card, CardItem } from "native-base"
+import { Container, Header, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
 
 class Highlights extends React.Component {
   render() {
     return (
       <Container>
         <Header>
-          <Left />
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.goBack()}>
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
           <Body>
             <Title>Highlights</Title>
           </Body>

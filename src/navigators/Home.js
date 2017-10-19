@@ -1,14 +1,12 @@
 import React from "react"
 import { DrawerNavigator } from "react-navigation"
 
-import ReaderNavigator from "./Reader.js"
-import Accounts from "../components/screens/Accounts.js"
+import Library from "../components/screens/Library.js"
 import Drawer from "../components/major/Drawer.js"
 
 const HomeNavigator = DrawerNavigator(
   {
-    Reader: { screen: ReaderNavigator },
-    Accounts: { screen: Accounts },
+    Library: { screen: Library },
   },
   {
     contentComponent: props => <Drawer {...props} />

@@ -2,8 +2,6 @@ import React from "react"
 import { Image } from "react-native"
 import { Container, Content, Text, List, ListItem } from "native-base"
 
-import backToLibrary from '../../utils/native/backToLibrary.js'
-
 class Drawer extends React.Component {
   render() {
     return (
@@ -30,8 +28,23 @@ class Drawer extends React.Component {
           <List>
             <ListItem
               button
-              onPress={() => this.props.navigation.dispatch(backToLibrary)}>
+              onPress={() => this.props.navigation.navigate("Library")}>
               <Text>Library</Text>
+            </ListItem>
+            <ListItem
+              button
+              onPress={() => this.props.navigation.navigate("Library", { scope: "Tenant 1 only" })}>
+              <Text>Tenant 1 only</Text>
+            </ListItem>
+            <ListItem
+              button
+              onPress={() => this.props.navigation.navigate("Library", { scope: "Tenant 2 only" })}>
+              <Text>Tenant 2 only</Text>
+            </ListItem>
+            <ListItem
+              button
+              onPress={() => this.props.navigation.navigate("Library", { scope: "On device only" })}>
+              <Text>On device only</Text>
             </ListItem>
             <ListItem
               button

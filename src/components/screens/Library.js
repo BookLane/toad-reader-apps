@@ -3,6 +3,10 @@ import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Tex
 
 class Library extends React.Component {
   render() {
+
+    let { scope } = this.props.navigation.state.params || {}
+    scope = scope || "Library"
+
     return (
       <Container>
         <Header>
@@ -14,7 +18,7 @@ class Library extends React.Component {
             </Button>
           </Left>
           <Body>
-            <Title>Library</Title>
+            <Title>{scope}</Title>
           </Body>
           <Right />
         </Header>
