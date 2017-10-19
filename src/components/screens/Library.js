@@ -1,5 +1,6 @@
 import React from "react"
 import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
+import i18n from "../../utils/i18n.js"
 
 class Library extends React.Component {
   render() {
@@ -26,7 +27,7 @@ class Library extends React.Component {
           <Card>
             <CardItem>
               <Body>
-                <Text>Library here</Text>
+                <Text>{i18n("Library {{here}}!", { here: "HERE" })}</Text>
               </Body>
             </CardItem>
           </Card>
