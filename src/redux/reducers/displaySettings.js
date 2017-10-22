@@ -1,12 +1,37 @@
-const initialState = 0
+const initialState = {
+  textSize: 100,
+  textSpacing: 1.3,
+  theme: "night-theme"
+}
+
+const themeOptions = [
+  "author-theme",
+  "default-theme",
+  "night-theme",
+]
 
 export default function(state = initialState, action) {
     
   switch (action.type) {
-    case "INCREMENT":
-      return state + 1
-    case "DECREMENT":
-      return state - 1
+
+    case "SET_TEXT_SIZE":
+      return {
+        ...state,
+        textSize: parseInt(action.textSize) || state.textSize,
+      }
+
+    case "SET_TEXT_SPACING":
+      return {
+        ...state,
+        textSpacing: parseFloat(action.textSpacing) || state.textSpacing,
+      }
+
+    case "SET_THEME":
+      const newState = {
+        ...state,
+        theme: themeOptions.includes(action.theme) ? action.theme : state.theme,
+      }
+
   }
 
   return state

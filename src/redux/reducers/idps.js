@@ -1,12 +1,18 @@
-const initialState = 0
+const initialState = {
+  "1": {
+    idpName: "ToadReader",
+    domain: "demo.toadreader.com",
+    idpExpire: null,
+  },
+}
 
 export default function(state = initialState, action) {
     
   switch (action.type) {
-    case "INCREMENT":
-      return state + 1
-    case "DECREMENT":
-      return state - 1
+
+    case "UPDATE_IDPS":
+      return action.idps
+
   }
 
   return state

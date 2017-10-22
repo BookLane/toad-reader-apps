@@ -29,6 +29,7 @@
     }
   },
   "serverTimeOffset": 60,
+  "fetchingForNewAccount": false,
   "books": {
     "65": {
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
@@ -93,7 +94,7 @@
     ],
     "view": "covers"
   },
-  "currentBook": null,
+  "currentBookId": null,
   "displaySettings": {
     "textSize": 100,
     "textSpacing": 1,
