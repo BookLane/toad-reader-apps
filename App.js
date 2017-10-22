@@ -5,12 +5,12 @@ import { Root } from "native-base"
 import { AsyncStorage } from 'react-native'
 import { createStore, compose } from 'redux'
 import { persistStore, autoRehydrate } from 'redux-persist'
-import allReducers from './src/reducers/all.js'
+import reducers from './src/redux/reducers.js'
 import { Provider } from 'react-redux'
 
 import GlobalNavigator from './src/navigators/Global.js'
 
-const store = compose(autoRehydrate())(createStore)(allReducers)
+const store = compose(autoRehydrate())(createStore)(reducers)
 
 export default class App extends React.Component {
   constructor() {

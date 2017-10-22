@@ -1,0 +1,105 @@
+{
+  "idps": {
+    "1": {
+      "idpName": "ToadReader",
+      "domain": "demo.toadreader.com",
+      "idpExpire": null
+    },
+    "3": {
+      "idpName": "BibleMesh",
+      "domain": "read.biblemesh.com",
+      "idpExpire": null
+    },
+    "4": {
+      "idpName": "Zondervan",
+      "domain": "zondervanacademic.read.biblemesh.com",
+      "idpExpire": null
+    }
+  },
+  "accounts": {
+    "1:-1": {
+      "firstname": "Demo",
+      "lastname": "Account",
+      "email": "demo@email.com"
+    },
+    "2:3": {
+      "firstname": "Bill",
+      "lastname": "Smith",
+      "email": "bill@email.com"
+    }
+  },
+  "serverTimeOffset": 60,
+  "books": {
+    "65": {
+      "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
+      "author": "John Piper",
+      "epubSizeInMB": 3,
+      "totalCharacterCount": 938004,
+      "accountIds": [
+        "1:-1"
+      ],
+      "downloaded": false
+    },
+    "68": {
+      "title": "Bloodlines",
+      "author": "John Piper",
+      "epubSizeInMB": 10,
+      "totalCharacterCount": 383021,
+      "accountIds": [
+        "1:-1",
+        "2:3"
+      ],
+      "downloaded": true
+    }
+  },
+  "userDataByBookId": {
+    "65": {
+      "progress": 0,
+      "updated_at": 1506078483499,
+      "latest_location": "{\"idref\":\"chapter5\",\"elementCfi\":\"/4/2/2/4/2/2,/1:0,/1:1\"}",
+      "recent_locations": [
+        {
+          "location": "{\"idref\":\"chapter5\",\"elementCfi\":\"/4/2/4/2/2,/1:0,/1:1\"}",
+          "time": 1506078484234
+        },
+        {
+          "location": "{\"idref\":\"chapter5\",\"elementCfi\":\"/5/2/2,/1:3,/1:4\"}",
+          "time": 1506078484221
+        }
+      ],
+      "bookmarks": [
+        {
+          "location": "{\"idref\":\"chapter2\",\"elementCfi\":\"/2/4/2/2,/1:0,/1:1\"}",
+          "time": 1506078484212
+        },
+        {
+          "location": "{\"idref\":\"chapter5\",\"elementCfi\":\"/5/1/2,/1:3\"}",
+          "time": 1506078423721
+        }
+      ],
+      "highlights": []
+    },
+    "68": {
+      "progress": 34,
+      "updated_at": 1506078483229
+    }
+  },
+  "library": {
+    "onlyShowAccountId": null,
+    "sort": "recent",
+    "bookList": [
+      68,
+      65
+    ],
+    "view": "covers"
+  },
+  "currentBook": null,
+  "displaySettings": {
+    "textSize": 100,
+    "textSpacing": 1,
+    "theme": "night-theme"
+  },
+  "highlights": {
+    "onlyShowColor": null
+  }
+}
