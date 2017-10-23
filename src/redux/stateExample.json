@@ -29,7 +29,7 @@
     }
   },
   "serverTimeOffset": 60,
-  "fetchingForNewAccount": false,
+  "fetchingBooks": false,
   "books": {
     "65": {
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",

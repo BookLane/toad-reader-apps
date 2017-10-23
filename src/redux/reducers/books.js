@@ -8,13 +8,13 @@ export default function(state = initialState, action) {
       const newState = {...state}
       action.books.forEach(book => {
         newState[book.id] = {
-          "title": book.title,
-          "author": book.author,
-          "epubSizeInMB": book.epubSizeInMB,
-          "totalCharacterCount": book.totalCharacterCount,
-          "downloaded": !!(newState[book.id] && newState[book.id].downloaded),
+          title: book.title,
+          author: book.author,
+          epubSizeInMB: book.epubSizeInMB,
+          totalCharacterCount: book.totalCharacterCount,
+          downloaded: !!(newState[book.id] && newState[book.id].downloaded),
           accountIds: [
-            ...((newState[book.id] && newState[book.id].accountIds) || [])
+            ...((newState[book.id] && newState[book.id].accountIds) || []),
             action.accountId,
           ]
         }
