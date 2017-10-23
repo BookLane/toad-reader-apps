@@ -17,9 +17,10 @@ export default function(state = initialState, action) {
           accountIds: [
             ...((newState[book.id] && newState[book.id].accountIds) || []),
             action.accountId,
-          ]
+          ].filter((el, i, a) => i === a.indexOf(el))  // dedup
         }
       })
+      // TODO: needs to remove books that have been removed from this acct, and delete them from device
       return newState
 
     case "REMOVE_ACCOUNT":

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import reduceReducers from 'reduce-reducers'
 
 import accounts from './reducers/accounts.js'
 import books from './reducers/books.js'
@@ -11,7 +12,7 @@ import library from './reducers/library.js'
 import serverTimeOffset from './reducers/serverTimeOffset.js'
 import userDataByBookId from './reducers/userDataByBookId.js'
 
-const allReducers= combineReducers({
+const slicedReducers = combineReducers({
   accounts,
   books,
   count,
@@ -23,5 +24,11 @@ const allReducers= combineReducers({
   serverTimeOffset,
   userDataByBookId,
 })
+
+const allReducers = reduceReducers(
+  slicedReducers,
+  
+  // the following reducers receive the entire store
+)
 
 export default allReducers

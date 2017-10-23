@@ -21,7 +21,7 @@ export default class App extends React.Component {
   }
 
   async componentWillMount() {
-    const numPrepItems = 0
+    const numPrepItems = 2
 
     let prepCount = 0
     const prepActionComplete = () => {

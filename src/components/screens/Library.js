@@ -4,22 +4,25 @@ import { connect } from 'react-redux'
 import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import { addBooks } from '../../redux/actions.js';
+import { addBooks, setFetchingBooks } from '../../redux/actions.js';
 
 class Library extends React.Component {
 
-
   async fetchAll() {
-    
     for(accountId in this.props.accounts) {
       try {
-        const [ ipdId, userId ] = accountId.split(':')
-        const response = await fetch(`https://${this.props.idps[idpId].domain}/epub_content/epub_library.json`)
+        const [ idpId, userId ] = accountId.split(':')
+        const libraryUrl = `https://${this.props.idps[idpId].domain}/epub_content/epub_library.json`
+        let response = await fetch(libraryUrl)
+        if(response.status == 403) {
+          await fetch(`https://${this.props.idps[idpId].domain}`)  // gets the cookie situated on the demo acct
+          response = await fetch(libraryUrl)
+        }
         const books = await response.json()
-        dispatch(addBooks({
+        this.props.addBooks({
           books,
           accountId,
-        }))
+        })
       } catch(error) {
         console.log('error', error)
         // dispatch(error({
@@ -31,7 +34,12 @@ class Library extends React.Component {
   }
   
   componentDidMount() {
-    fetchAll()
+    this.setState({fetchAllInterval: setInterval(() => { this.fetchAll() }, 24*60*60*1000)})
+    this.fetchAll()
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.fetchAllInterval)
   }
 
   render() {
@@ -65,7 +73,8 @@ class Library extends React.Component {
           <Card>
             <CardItem>
               <Body>
-                <Text>{this.props.books.map(book => book.id).join(',')}</Text>
+                <Text>{JSON.stringify(this.props.accounts)}</Text>
+                <Text>{JSON.stringify(this.props.books)}</Text>
               </Body>
             </CardItem>
           </Card>
@@ -94,7 +103,7 @@ const mapStateToProps = (state) => ({
   fetchingBooks: state.fetchingBooks,
 })
 
-const  matchDispatchToProps = (dispatch) => bindActionCreators({
+const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
   setFetchingBooks,
 }, dispatch)
