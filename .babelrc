@@ -2,12 +2,7 @@
   "presets": ["babel-preset-expo"],
   "env": {
     "development": {
-      "plugins": [
-        "transform-react-jsx-source",
-        ["wildcard", {
-          "noCamelCase": true
-        }]
-      ]
+      "plugins": ["transform-react-jsx-source"]
     }
   }
 }

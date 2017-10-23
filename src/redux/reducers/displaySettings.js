@@ -11,7 +11,7 @@ const themeOptions = [
 ]
 
 export default function(state = initialState, action) {
-    
+  
   switch (action.type) {
 
     case "SET_TEXT_SIZE":
@@ -27,7 +27,7 @@ export default function(state = initialState, action) {
       }
 
     case "SET_THEME":
-      const newState = {
+      return {
         ...state,
         theme: themeOptions.includes(action.theme) ? action.theme : state.theme,
       }

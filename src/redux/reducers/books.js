@@ -1,11 +1,12 @@
 const initialState = {}
 
 export default function(state = initialState, action) {
-    
+  let newState
+
   switch (action.type) {
 
     case "ADD_BOOKS":
-      const newState = {...state}
+      newState = {...state}
       action.books.forEach(book => {
         newState[book.id] = {
           title: book.title,
@@ -22,7 +23,7 @@ export default function(state = initialState, action) {
       return newState
 
     case "REMOVE_ACCOUNT":
-      const newState = {...state}
+      newState = {...state}
       for(bookId in newState) {
         const accountIds = book.accountIds.filter(accountId => accountId != action.accountId)
         if(accountIds.length == 0) {
@@ -37,7 +38,7 @@ export default function(state = initialState, action) {
       return newState
 
     case "SET_DOWNLOADED_VALUE":
-      const newState = {...state}
+      newState = {...state}
       if(newState[action.bookId]) {
         newState[action.bookId] = {
           ...newState[action.bookId],
