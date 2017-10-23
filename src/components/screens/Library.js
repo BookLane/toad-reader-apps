@@ -1,4 +1,5 @@
 import React from "react"
+import { AppState } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
@@ -9,6 +10,7 @@ import { addBooks, resort, setFetchingBooks } from '../../redux/actions.js';
 class Library extends React.Component {
 
   async fetchAll() {
+    this.setState({ lastFetchAll: Date.now() })
     for(accountId in this.props.accounts) {
       try {
         const [ idpId, userId ] = accountId.split(':')
@@ -39,14 +41,20 @@ class Library extends React.Component {
   }
   
   componentDidMount() {
-    this.setState({fetchAllInterval: setInterval(() => { this.fetchAll() }, 24*60*60*1000)})
+    AppState.addEventListener('change', this._handleAppStateChange);
     this.fetchAll()
   }
 
   componentWillUnmount() {
-    clearTimeout(this.state.fetchAllInterval)
+    AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
+  _handleAppStateChange = () => {
+    if(Date.now() - this.state.lastFetchAll > 60*60*1000) {  // an hour or more later
+      this.fetchAll()
+    }
+  }
+  
   render() {
 
     let { scope } = this.props.navigation.state.params || {}

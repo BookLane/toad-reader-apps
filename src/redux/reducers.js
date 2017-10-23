@@ -11,6 +11,7 @@ import idps from './reducers/idps.js'
 import library from './reducers/library.js'
 import serverTimeOffset from './reducers/serverTimeOffset.js'
 import userDataByBookId from './reducers/userDataByBookId.js'
+import setSort from './reducers/setSort.js'
 
 const slicedReducers = combineReducers({
   accounts,
@@ -20,6 +21,7 @@ const slicedReducers = combineReducers({
   displaySettings,
   highlights,
   idps,
+  library,
   serverTimeOffset,
   userDataByBookId,
 })
@@ -28,7 +30,7 @@ const allReducers = reduceReducers(
   slicedReducers,
 
   // the following reducers receive the entire store
-  library,
+  setSort,
 )
 
 export default allReducers
