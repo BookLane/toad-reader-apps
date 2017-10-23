@@ -12,6 +12,15 @@ export const addBooks = ({ books, accountId }) => ({
   accountId,
 })
 
+export const setSort = ({ sort }) => ({
+  type: "SET_SORT",
+  sort,
+})
+
+export const resort = () => ({
+  type: "SET_SORT",
+})
+
 export const setFetchingBooks = ({ value }) => ({
   type: "SET_FETCHING_BOOKS",
   value,

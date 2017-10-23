@@ -20,15 +20,15 @@ const slicedReducers = combineReducers({
   displaySettings,
   highlights,
   idps,
-  library,
   serverTimeOffset,
   userDataByBookId,
 })
 
 const allReducers = reduceReducers(
   slicedReducers,
-  
+
   // the following reducers receive the entire store
+  library,
 )
 
 export default allReducers
