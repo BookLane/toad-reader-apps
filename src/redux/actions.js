@@ -17,7 +17,7 @@ export const setSort = ({ sort }) => ({
   sort,
 })
 
-export const resort = () => ({
+export const reSort = () => ({
   type: "SET_SORT",
 })
 

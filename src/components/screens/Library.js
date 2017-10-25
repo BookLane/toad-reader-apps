@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import { addBooks, resort, setFetchingBooks } from '../../redux/actions.js';
+import { addBooks, reSort, setFetchingBooks } from '../../redux/actions.js';
 
 class Library extends React.Component {
 
@@ -28,7 +28,7 @@ class Library extends React.Component {
           books,
           accountId,
         })
-        this.props.resort()
+        this.props.reSort()
         // TODO: needs to call function to remove books that are no longer in the account
       } catch(error) {
         console.log('error', error)
@@ -120,7 +120,7 @@ const mapStateToProps = (state) => ({
 
 const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
-  resort,
+  reSort,
   setFetchingBooks,
 }, dispatch)
 
