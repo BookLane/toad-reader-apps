@@ -8,13 +8,13 @@
     "version": "1.0.0",
     "orientation": "default",
     "primaryColor": "#4392c1",
-    "icon": "./assets/icons/biblemesh.jpg",
+    "icon": "./assets/icons/biblemesh_logo.png",
     "notification": {
-      "icon": "./assets/icons/biblemesh.jpg",
+      "icon": "./assets/icons/biblemesh_sm_bw.png",
       "color": "#4392c1"
     },
     "loading": {
-      "icon": "./assets/icons/loading-icon.png",
+      "icon": "./assets/icons/biblemesh_logo.png",
       "hideExponentText": true
     },
     "androidStatusBar": {
