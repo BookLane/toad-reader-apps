@@ -10,6 +10,10 @@
   ** TODO: Write a script to build base translation files. Go through all files and find the i18n function
   instances, making each first parameter of this function into a key in the translation file.
 
+  Examples:
+    i18n("Library")
+    i18n("{{num_results}} results!", { num_results: this.props.numResults })
+
 */
 
 // import translations from "./translations/he.js"

@@ -1,12 +1,11 @@
 const initialState = {
-  onlyShowAccountId: null,
   sort: "recent",
   view: "title",  // TODO: should be "recent" once that is supported
   bookList: [],
 }
 
 const viewOptions = [
-  "cover",
+  "covers",
   "list",
 ]
 
@@ -15,12 +14,8 @@ export default function(state = initialState, action) {
     
   switch (action.type) {
 
-    case "SET_ONLY_SHOW_ACCOUNT_ID":
-      newState.onlyShowAccountId = parseInt(action.accountId) || null
-      return newState
-
-    case "SET_VIEW":
-      newState.view = viewOptions.includes(action.view) ? action.view : newState.view
+    case "TOGGLE_VIEW":
+      newState.view = viewOptions[(viewOptions.indexOf(newState.view) + 1) % viewOptions.length]
       return newState
       
   }

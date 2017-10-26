@@ -2,42 +2,48 @@ import React from "react"
 import { AppState } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Container, Header, Title, Left, Icon, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
+import { Container, Spinner, Content, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import { addBooks, reSort, setFetchingBooks } from '../../redux/actions.js';
+import LibraryHeader from "../major/LibraryHeader.js"
+import LibraryCovers from "../major/LibraryCovers.js"
+import LibraryList from "../major/LibraryList.js"
+
+import { addBooks, reSort, setFetchingBooks, setErrorMessage } from '../../redux/actions.js';
 
 class Library extends React.Component {
 
   async fetchAll() {
+    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage } = this.props
+
+    // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
     this.setState({ lastFetchAll: Date.now() })
-    for(accountId in this.props.accounts) {
+    setFetchingBooks({ value: true })
+    for(accountId in accounts) {
       try {
         const [ idpId, userId ] = accountId.split(':')
-        const libraryUrl = `https://${this.props.idps[idpId].domain}/epub_content/epub_library.json`
+        const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
         if(response.status == 403) {
-          await fetch(`https://${this.props.idps[idpId].domain}`)  // gets the cookie situated on the demo acct
+          await fetch(`https://${idps[idpId].domain}`)  // gets the cookie situated on the demo acct
           response = await fetch(libraryUrl)
         }
         if(response.status != 200) {
           throw new Error('Unable to fetch library');
         }
         const books = await response.json()
-        this.props.addBooks({
+        // TODO: needs to call function to remove books that are no longer in the account
+        addBooks({
           books,
           accountId,
         })
-        this.props.reSort()
-        // TODO: needs to call function to remove books that are no longer in the account
+        reSort()
       } catch(error) {
         console.log('error', error)
-        // dispatch(error({
-        //   books,
-        //   accountId,
-        // }))
+        setErrorMessage({ message: error.message || error || "Unknown error." })
       }
     }
+    setFetchingBooks({ value: false })
   }
   
   componentDidMount() {
@@ -57,54 +63,51 @@ class Library extends React.Component {
   
   render() {
 
-    let { scope } = this.props.navigation.state.params || {}
-    scope = scope || "Library"
+    const { library, books, fetchingBooks, navigation } = this.props
 
+    let { scope } = navigation.state.params || {}
+    scope = scope || "all"
+    
+    const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
+    const bookList = scope == 'all'
+      ? library.bookList
+      : library.bookList.filter(bookId => (
+        books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope)
+      ))
+  
     return (
       <Container>
-        <Header>
-          <Left>
-            <Button
-              transparent
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>{scope}</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content padder>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>{i18n("Library {{here}}!", { here: "HERE" })}</Text>
-              </Body>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>{JSON.stringify(this.props.accounts)}</Text>
-                <Text>{JSON.stringify(this.props.books)}</Text>
-                <Text>{JSON.stringify(this.props.library)}</Text>
-              </Body>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>{this.props.fetchingBooks ? 'fetching' : 'not fetching'}</Text>
-              </Body>
-            </CardItem>
-          </Card>
-          <Button full rounded dark
-            style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.navigate("Page")}>
-            <Text>Read book</Text>
-          </Button>
-        </Content>
+        <LibraryHeader
+          scope={scope}
+          navigation={navigation}
+        />
+        {fetchingBooks && bookList.length > 0
+          ? <Spinner color='red' />
+          : (
+            bookList.length == 0
+              ? (
+                <Content padder>
+                  <Text>{i18n("No books found.")}</Text>
+                </Content>
+              )
+              : (
+                <LibraryViewer
+                  bookList={bookList}
+                  navigation={navigation}
+                />
+              )
+          )
+        }
+        {/* TODO: show options */}
+        {/* {showOptions &&
+          <Content>
+            <Text>
+              options!
+            </Text>
+          </Content>
+        } */}
+        
+        {/* TODO: Add modal for error message */}
       </Container>
     );
   }
@@ -116,12 +119,14 @@ const mapStateToProps = (state) => ({
   books: state.books,
   library: state.library,
   fetchingBooks: state.fetchingBooks,
+  errorMessage: state.errorMessage,
 })
 
 const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
   reSort,
   setFetchingBooks,
+  setErrorMessage,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

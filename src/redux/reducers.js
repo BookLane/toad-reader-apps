@@ -6,11 +6,14 @@ import books from './reducers/books.js'
 import count from './reducers/count.js'
 import currentBookId from './reducers/currentBookId.js'
 import displaySettings from './reducers/displaySettings.js'
+import errorMessage from './reducers/errorMessage.js'
+import fetchingBooks from './reducers/fetchingBooks.js'
 import highlights from './reducers/highlights.js'
 import idps from './reducers/idps.js'
 import library from './reducers/library.js'
 import serverTimeOffset from './reducers/serverTimeOffset.js'
 import userDataByBookId from './reducers/userDataByBookId.js'
+
 import setSort from './reducers/setSort.js'
 
 const slicedReducers = combineReducers({
@@ -19,6 +22,8 @@ const slicedReducers = combineReducers({
   count,
   currentBookId,
   displaySettings,
+  errorMessage,
+  fetchingBooks,
   highlights,
   idps,
   library,

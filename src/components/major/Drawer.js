@@ -28,7 +28,7 @@ class Drawer extends React.Component {
           <List>
             <ListItem
               button
-              onPress={() => this.props.navigation.navigate("Library", { scope: "Library" })}>
+              onPress={() => this.props.navigation.navigate("Library", { scope: "all" })}>
               <Text>Library</Text>
             </ListItem>
             <ListItem

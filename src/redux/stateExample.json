@@ -86,7 +86,6 @@
     }
   },
   "library": {
-    "onlyShowAccountId": null,
     "sort": "recent",
     "bookList": [
       68,
