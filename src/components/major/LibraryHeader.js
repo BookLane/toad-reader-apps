@@ -28,7 +28,10 @@ class LibraryHeader extends React.Component {
     }
     
     return (
-      <Header>
+      <Header
+        androidStatusBarColor="#2c5b8e"
+        backgroundColor="#4075af"
+      >
         <Left>
           <Button
             transparent
@@ -38,8 +41,9 @@ class LibraryHeader extends React.Component {
         </Left>
         <Body>
           <Title>{title}</Title>
-          {subtitle && 
-            <Subtitle>{subtitle}</Subtitle>
+          {subtitle
+            ? <Subtitle>{subtitle}</Subtitle>
+            : null
           }
         </Body>
         <Right>
