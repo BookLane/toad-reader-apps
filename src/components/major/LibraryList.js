@@ -1,11 +1,11 @@
 import React from "react"
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { Container, Content, Button, Text } from "native-base"
 
 // import Cover from "../basic/Cover.js"
 
-// import {  } from '../../redux/actions.js';
+// import {  } from "../../redux/actions.js"
 
 class LibraryCovers extends React.Component {
 

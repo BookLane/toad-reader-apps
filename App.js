@@ -1,14 +1,14 @@
-import React from 'react'
+import React from "react"
 import Expo from "expo";
 import { Root } from "native-base"
 
-import { AsyncStorage } from 'react-native'
-import { createStore, compose } from 'redux'
-import { persistStore, autoRehydrate } from 'redux-persist'
-import reducers from './src/redux/reducers.js'
-import { Provider } from 'react-redux'
+import { AsyncStorage } from "react-native"
+import { createStore, compose } from "redux"
+import { persistStore, autoRehydrate } from "redux-persist"
+import reducers from "./src/redux/reducers.js"
+import { Provider } from "react-redux"
 
-import GlobalNavigator from './src/navigators/Global.js'
+import GlobalNavigator from "./src/navigators/Global.js"
 
 const store = compose(autoRehydrate())(createStore)(reducers)
 

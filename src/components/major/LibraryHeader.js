@@ -1,11 +1,11 @@
 import React from "react"
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { Container, Subtitle, Title, Left, Icon, Right, Button, Body, Content, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
-import AppHeader from '../basic/AppHeader.js';
+import AppHeader from "../basic/AppHeader.js"
 
-import { setSort, toggleView, setErrorMessage } from '../../redux/actions.js';
+import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
 
 class LibraryHeader extends React.Component {
 

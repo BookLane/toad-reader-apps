@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { Container, Content, Text, Card, Body, Button, Title, CardItem } from 'native-base';
-import AppHeader from './basic/AppHeader.js';
-import { increment, decrement } from '../redux/actions.js';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { Component } from "react"
+import { Container, Content, Text, Card, Body, Button, Title, CardItem } from "native-base"
+import AppHeader from "./basic/AppHeader.js"
+import { increment, decrement } from "../redux/actions.js"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 class Counter extends Component{
   render(){
     console.log(this.props.count);

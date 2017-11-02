@@ -1,8 +1,8 @@
 import React from "react"
 import { Container, Title, Left, Icon, Right, Button, Body, Content } from "native-base"
-import AppHeader from '../basic/AppHeader.js';
+import AppHeader from "../basic/AppHeader.js"
 
-import Counter from '../Counter.js'
+import Counter from "../Counter.js"
 
 class Accounts extends React.Component {
   render() {

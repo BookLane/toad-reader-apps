@@ -1,6 +1,6 @@
 import React from "react"
 import { Container, Title, Left, Right, Icon, Button, Body, Content,Text, Card, CardItem } from "native-base"
-import AppHeader from '../basic/AppHeader.js';
+import AppHeader from "../basic/AppHeader.js"
 
 class Book extends React.Component {
   render() {

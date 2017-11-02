@@ -1,6 +1,6 @@
 import React from "react"
 import { StackNavigator } from "react-navigation"
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from "react-native"
 
 import HomeNavigator from "./Home.js"
 import Page from "../components/screens/Page.js"
