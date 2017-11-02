@@ -4,7 +4,7 @@ import { Header } from "native-base"
 class AppHeader extends React.Component {
 
   // There is a bug by which the backgroundColor in the header does not get set on load.
-  // Thus, this component is a hack to tricker it to render properly.
+  // Thus, this component is a hack to force it to render properly.
 
   constructor(props) {
     super(props)
