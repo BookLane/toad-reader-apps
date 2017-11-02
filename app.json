@@ -18,11 +18,12 @@
       "hideExponentText": true
     },
     "androidStatusBar": {
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "scheme": "biblemesh",
     "packagerOpts": {
-      "assetExts": ["ttf", "mp4"]
+      "assetExts": ["ttf", "mp4"],
+      "config": "rn-cli.config.js"
     },
     "android": {
       "package": "com.biblemesh.read"

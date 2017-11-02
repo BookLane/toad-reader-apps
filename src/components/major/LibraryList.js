@@ -20,7 +20,7 @@ class LibraryCovers extends React.Component {
             key={bookId}
             style={{ marginTop: 10 }}
             onPress={() => navigation.navigate("Page")}>
-            <Text>{books[bookId].title}</Text>
+            <Text>{books[bookId].title + books[bookId].downloadStatus}</Text>
           </Button>
         ))}
       </Content>

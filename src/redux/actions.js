@@ -12,6 +12,12 @@ export const addBooks = ({ books, accountId }) => ({
   accountId,
 })
 
+export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
+  type: "SET_DOWNLOADED_STATUS",
+  bookId,
+  downloadStatus,
+})
+
 export const setSort = ({ sort }) => ({
   type: "SET_SORT",
   sort,

@@ -28,7 +28,7 @@ export default function(state = initialState, action) {
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
           totalCharacterCount: book.totalCharacterCount,
-          downloaded: !!(newState[book.id] && newState[book.id].downloaded),
+          downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           accountIds: [
             ...((newState[book.id] && newState[book.id].accountIds) || []),
             action.accountId,
@@ -41,11 +41,11 @@ export default function(state = initialState, action) {
       removeAccount()
       return newState
 
-    case "SET_DOWNLOADED_VALUE":
+    case "SET_DOWNLOADED_STATUS":
       if(newState[action.bookId]) {
         newState[action.bookId] = {
           ...newState[action.bookId],
-          downloaded: !!action.value,
+          downloadStatus: action.downloadStatus,
         }
       }
       return newState

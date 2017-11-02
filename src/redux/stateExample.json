@@ -39,7 +39,7 @@
       "accountIds": [
         "1:-1"
       ],
-      "downloaded": false
+      "downloadStatus": 0
     },
     "68": {
       "title": "Bloodlines",
@@ -50,7 +50,7 @@
         "1:-1",
         "2:3"
       ],
-      "downloaded": true
+      "downloadStatus": 1
     }
   },
   "userDataByBookId": {
