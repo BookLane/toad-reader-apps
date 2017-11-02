@@ -102,7 +102,7 @@ class Library extends React.Component {
           scope={scope}
           navigation={navigation}
         />
-        {fetchingBooks && bookList.length > 0
+        {fetchingBooks && bookList.length == 0
           ? <Spinner color='red' />
           : (
             bookList.length == 0
