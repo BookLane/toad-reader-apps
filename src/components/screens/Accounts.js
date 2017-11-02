@@ -1,5 +1,6 @@
 import React from "react"
-import { Container, Header, Title, Left, Icon, Right, Button, Body, Content } from "native-base"
+import { Container, Title, Left, Icon, Right, Button, Body, Content } from "native-base"
+import AppHeader from '../basic/AppHeader.js';
 
 import Counter from '../Counter.js'
 
@@ -7,7 +8,7 @@ class Accounts extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
+        <AppHeader>
           <Left>
             <Button
               transparent
@@ -19,7 +20,7 @@ class Accounts extends React.Component {
             <Title>Accounts</Title>
           </Body>
           <Right />
-        </Header>
+        </AppHeader>
         <Content padder>
           <Counter />
         </Content>

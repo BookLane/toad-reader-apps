@@ -1,8 +1,9 @@
 import React from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Container, Header, Subtitle, Title, Left, Icon, Right, Button, Body, Content, Text } from "native-base"
+import { Container, Subtitle, Title, Left, Icon, Right, Button, Body, Content, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
+import AppHeader from '../basic/AppHeader.js';
 
 import { setSort, toggleView, setErrorMessage } from '../../redux/actions.js';
 
@@ -28,10 +29,7 @@ class LibraryHeader extends React.Component {
     }
     
     return (
-      <Header
-        androidStatusBarColor="#2c5b8e"
-        backgroundColor="#4075af"
-      >
+      <AppHeader>
         <Left>
           <Button
             transparent
@@ -59,7 +57,7 @@ class LibraryHeader extends React.Component {
             <Icon name="more" />
           </Button>
         </Right>
-      </Header>
+      </AppHeader>
     )
   }
 }

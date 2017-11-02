@@ -1,11 +1,12 @@
 import React from "react"
-import { Container, Header, Title, Left, Right, Icon, Button, Body, Content,Text, Card, CardItem } from "native-base"
+import { Container, Title, Left, Right, Icon, Button, Body, Content,Text, Card, CardItem } from "native-base"
+import AppHeader from '../basic/AppHeader.js';
 
 class Book extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
+        <AppHeader>
           <Left>
             <Button
               transparent
@@ -17,7 +18,7 @@ class Book extends React.Component {
             <Title>Book</Title>
           </Body>
           <Right />
-        </Header>
+        </AppHeader>
         <Content padder>
           <Card>
             <CardItem>

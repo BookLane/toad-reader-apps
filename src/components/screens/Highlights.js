@@ -1,11 +1,12 @@
 import React from "react"
-import { Container, Header, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
+import { Container, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
+import AppHeader from '../basic/AppHeader.js';
 
 class Highlights extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
+        <AppHeader>
           <Left>
             <Button
               transparent
@@ -17,7 +18,7 @@ class Highlights extends React.Component {
             <Title>Highlights</Title>
           </Body>
           <Right />
-        </Header>
+        </AppHeader>
         <Content padder>
           <Card>
             <CardItem>
