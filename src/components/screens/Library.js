@@ -1,5 +1,5 @@
 import React from "react"
-import { AppState } from "react-native"
+import { AppState, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Spinner, Content, Text } from "native-base"
@@ -107,9 +107,9 @@ class Library extends React.Component {
           : (
             bookList.length == 0
               ? (
-                <Content padder>
+                <View>
                   <Text>{i18n("No books found.")}</Text>
-                </Content>
+                </View>
               )
               : (
                 <LibraryViewer

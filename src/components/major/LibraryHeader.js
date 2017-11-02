@@ -1,7 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Subtitle, Title, Left, Icon, Right, Button, Body, Content, Text } from "native-base"
+import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
 import AppHeader from "../basic/AppHeader.js"
 
@@ -48,7 +48,7 @@ class LibraryHeader extends React.Component {
           <Button
             transparent
             onPress={() => toggleView()}>
-            <Icon name={library.view == "covers" ? "apps" : "list"} />
+            <Icon name={library.view == "covers" ? "list" : "apps"} />
             {/* square */}
           </Button>
           <Button
