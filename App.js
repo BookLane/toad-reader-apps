@@ -10,6 +10,8 @@ import { Provider } from "react-redux"
 
 import GlobalNavigator from "./src/navigators/Global.js"
 
+import updateReader from "./src/utils/updateReader.js"
+
 const store = compose(autoRehydrate())(createStore)(reducers)
 
 export default class App extends React.Component {
@@ -21,25 +23,19 @@ export default class App extends React.Component {
   }
 
   async componentWillMount() {
-    const numPrepItems = 2
+    await Promise.all([
+      new Promise(resolve => persistStore(store, {storage: AsyncStorage}, resolve)),
+      Expo.Font.loadAsync({
+        Roboto: require('native-base/Fonts/Roboto.ttf'),
+        Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+        Ionicons: require("native-base/Fonts/Ionicons.ttf"),
+      }),
+      updateReader(),
+    ])
 
-    let prepCount = 0
-    const prepActionComplete = () => {
-      if(++prepCount >= numPrepItems) {
-        this.setState({ isReady: true })
-      }
-    }
-
-    persistStore(store, {storage: AsyncStorage}, prepActionComplete)
-        
-    await Expo.Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      Ionicons: require("native-base/Fonts/Ionicons.ttf"),
-    })
-    prepActionComplete()
+    this.setState({ isReady: true })
   }
-  
+
   render() {
 
     if (!this.state.isReady) {

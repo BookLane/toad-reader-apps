@@ -5,6 +5,7 @@ import { connect } from "react-redux"
 import { Container, Spinner, Content, Text } from "native-base"
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
+import downloadAsync from "../../utils/downloadAsync.js"
 
 import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
@@ -44,19 +45,11 @@ class Library extends React.Component {
         
         // get covers
         books.forEach(async book => {
-          const bookCoverLocalDir = `${FileSystem.documentDirectory}covers/${book.id}`
-          const bookCoverLocalUri = `${bookCoverLocalDir}/${book.coverHref.split('/').pop()}`
-          const bookCoverLocalUriInfo = await FileSystem.getInfoAsync(bookCoverLocalUri)
-          if(!bookCoverLocalUriInfo.exists) {
-            const bookCoverLocalDirInfo = await FileSystem.getInfoAsync(bookCoverLocalDir)
-            if(!bookCoverLocalDirInfo.exists) {
-              await FileSystem.makeDirectoryAsync(bookCoverLocalDir, { intermediates: true })
-            }
-            await FileSystem.downloadAsync(
-              `https://${idps[idpId].domain}/${book.coverHref}`,
-              `${bookCoverLocalUri}`
-            )
-          }
+          await downloadAsync(
+            `https://${idps[idpId].domain}/${book.coverHref}`,
+            `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
+            { skipIfExists: true }
+          )
         })
 
       } catch(error) {

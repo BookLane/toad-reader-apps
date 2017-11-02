@@ -63,7 +63,7 @@ const fetchEpub = async ({ domain, bookId, success }) => {
 
   success && success()
 
-  console.log(`Done downloading from ${epubBaseUrl}...`)
+  console.log(`Done downloading from ${epubBaseUrl}.`)
 }
 
 export default fetchEpub
