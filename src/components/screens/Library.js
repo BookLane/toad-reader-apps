@@ -1,15 +1,16 @@
 import React from "react"
-import { AppState } from 'react-native'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { AppState } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { Container, Spinner, Content, Text } from "native-base"
+import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 
 import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 
-import { addBooks, reSort, setFetchingBooks, setErrorMessage } from '../../redux/actions.js';
+import { addBooks, reSort, setFetchingBooks, setErrorMessage } from "../../redux/actions.js"
 
 class Library extends React.Component {
 
@@ -21,6 +22,8 @@ class Library extends React.Component {
     setFetchingBooks({ value: true })
     for(accountId in accounts) {
       try {
+
+        // update books
         const [ idpId, userId ] = accountId.split(':')
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
@@ -38,6 +41,24 @@ class Library extends React.Component {
           accountId,
         })
         reSort()
+        
+        // get covers
+        books.forEach(async book => {
+          const bookCoverLocalDir = `${FileSystem.documentDirectory}covers/${book.id}`
+          const bookCoverLocalUri = `${bookCoverLocalDir}/${book.coverHref.split('/').pop()}`
+          const bookCoverLocalUriInfo = await FileSystem.getInfoAsync(bookCoverLocalUri)
+          if(!bookCoverLocalUriInfo.exists) {
+            const bookCoverLocalDirInfo = await FileSystem.getInfoAsync(bookCoverLocalDir)
+            if(!bookCoverLocalDirInfo.exists) {
+              await FileSystem.makeDirectoryAsync(bookCoverLocalDir, { intermediates: true })
+            }
+            await FileSystem.downloadAsync(
+              `https://${idps[idpId].domain}/${book.coverHref}`,
+              `${bookCoverLocalUri}`
+            )
+          }
+        })
+
       } catch(error) {
         console.log('error', error)
         setErrorMessage({ message: error.message || error || "Unknown error." })

@@ -28,6 +28,7 @@ export default function(state = initialState, action) {
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
           totalCharacterCount: book.totalCharacterCount,
+          coverFilename: book.coverHref.split('/').pop(),
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           accountIds: [
             ...((newState[book.id] && newState[book.id].accountIds) || []),

@@ -1,6 +1,6 @@
-import { FileSystem } from 'expo'
-import JSZipUtils from 'jszip-utils'
-import JSZip from 'jszip'
+import { FileSystem } from "expo"
+import JSZipUtils from "jszip-utils"
+import JSZip from "jszip"
 
 const fetchEpub = async ({ domain, bookId, success }) => {
   
@@ -36,7 +36,7 @@ const fetchEpub = async ({ domain, bookId, success }) => {
       distinctDirs.push(dir)
     }
   })
-  await Promise.all(distinctDirs.map(dir => Expo.FileSystem.makeDirectoryAsync(dir, { intermediates: true })))
+  await Promise.all(distinctDirs.map(dir => FileSystem.makeDirectoryAsync(dir, { intermediates: true })))
 
   // write unzipped files 
   const writePromises = []
