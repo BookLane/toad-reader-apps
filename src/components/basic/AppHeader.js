@@ -1,5 +1,6 @@
 import React from "react"
 import { Header } from "native-base"
+import { Platform } from "react-native"
 
 class AppHeader extends React.Component {
 
@@ -21,7 +22,7 @@ class AppHeader extends React.Component {
   render() {
     return (
       <Header
-        backgroundColor={this.state.backgroundColor}
+        backgroundColor={Platform.OS === 'ios' ? null : this.state.backgroundColor}
         androidStatusBarColor="#2c5b8e"
       >
         {this.props.children}
