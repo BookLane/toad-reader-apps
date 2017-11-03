@@ -26,6 +26,7 @@ class Library extends React.Component {
 
         // update books
         const [ idpId, userId ] = accountId.split(':')
+        // await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
         if(response.status == 403) {
@@ -45,11 +46,13 @@ class Library extends React.Component {
         
         // get covers
         books.forEach(async book => {
-          await downloadAsync(
-            `https://${idps[idpId].domain}/${book.coverHref}`,
-            `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
-            { skipIfExists: true }
-          )
+          if(book.coverHref) {
+            await downloadAsync(
+              `https://${idps[idpId].domain}/${book.coverHref}`,
+              `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
+              { skipIfExists: true }
+            )
+          }
         })
 
       } catch(error) {
