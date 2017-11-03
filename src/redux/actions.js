@@ -1,11 +1,3 @@
-export const increment = () => ({
-  type: "INCREMENT",
-})
-
-export const decrement = () => ({
-  type: "DECREMENT",
-})
-
 export const addBooks = ({ books, accountId }) => ({
   type: "ADD_BOOKS",
   books,
