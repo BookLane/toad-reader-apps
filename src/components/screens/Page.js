@@ -19,12 +19,11 @@ class Page extends React.Component {
 
     let { bookId } = navigation.state.params || {}
 
-console.log('render')
     return (
       <Container>
         <Content contentContainerStyle={{flex: 1}}>
           <WebView
-            // injectedJavaScript={patchPostMessageJsCode}
+            injectedJavaScript={patchPostMessageJsCode}
             ref={view => this.webView = view}
             source={{
               uri: `${FileSystem.documentDirectory}reader/index.html`
@@ -61,13 +60,13 @@ console.log('render')
                     })
                     .catch(fileText => {
                       console.log('postMessage (error) to webview: ' + uri)
-                      this.webView.postMessage(JSON.stringify({
+                      this.webView.postMessage(percentageEscape(JSON.stringify({
                         identifier: 'fileAsText',
                         payload: {
                           uri: uri,
                           error: true,
                         },
-                      }))
+                      })))
                     })
                   break;
                 default:
