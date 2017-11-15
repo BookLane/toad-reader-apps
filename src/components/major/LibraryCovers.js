@@ -1,8 +1,8 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Content, Button, Text } from "native-base"
-import { Image, View } from "react-native"
+import { Content, Button, Text, View } from "native-base"
+import { Image } from "react-native"
 import { FileSystem } from "expo"
 
 import LibraryBook from "../basic/LibraryBook.js"
