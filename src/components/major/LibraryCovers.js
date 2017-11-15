@@ -1,13 +1,11 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Content, Button, Text, View } from "native-base"
-import { Image } from "react-native"
-import { FileSystem } from "expo"
+import { Content } from "native-base"
 
 import LibraryBook from "../basic/LibraryBook.js"
 import fetchEpub from "../../utils/fetchEpub.js"
-// import Cover from "../basic/Cover.js"
+import Cover from "../basic/Cover.js"
 
 class LibraryCovers extends React.Component {
 
@@ -24,10 +22,7 @@ class LibraryCovers extends React.Component {
             navigation={navigation}
             confirmRemove={() => setRemoveBookId(bookId)}
           >
-            <Image
-              source={{ uri: `${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}` }}
-              style={{width: 40, height: 40}}
-            />
+            <Cover bookId={bookId} bookInfo={books[bookId]} />
           </LibraryBook>
         ))}
       </Content>
