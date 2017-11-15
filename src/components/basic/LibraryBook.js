@@ -2,7 +2,6 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
-import { View } from "native-base"
 
 import fetchEpub from "../../utils/fetchEpub.js"
 
@@ -50,9 +49,7 @@ class LibraryBook extends React.Component {
       <TouchableOpacity
         onPress={() => this.onPress()}
         onLongPress={() => this.onLongPress()}
-      >
-        <View>{children}</View>
-      </TouchableOpacity>
+      >{children}</TouchableOpacity>
     )
   }
 }

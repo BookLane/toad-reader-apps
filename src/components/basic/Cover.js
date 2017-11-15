@@ -1,24 +1,65 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { Image } from "react-native"
-import { View, Text } from "native-base"
+import { View, Spinner } from "native-base"
+import { Image, StyleSheet, Dimensions } from "react-native"
 
-class BookInfo extends React.Component {
+import CoverCheck from "./CoverCheck.js"
+// import CoverPercentage from "./CoverPercentage.js"
+// import CoverSize from "./CoverSize.js"
+
+const styles = StyleSheet.create({
+  image: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  spinnerContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,.5)',
+  },
+})
+
+class Cover extends React.Component {
 
   render() {
     const { bookId, bookInfo } = this.props
-    const { title, coverFilename, downloadStatus } = bookInfo
+    const { coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
 
+    const windowWidth = Dimensions.get('window').width
+    const booksPerRow = parseInt(windowWidth / 100)
+    const width = (windowWidth - ((booksPerRow + 1) * 10)) / booksPerRow
+
+    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+    
     return (
-      <View>
+      <View style={{
+        marginBottom: 30,
+        marginRight: 10,
+        width,
+        paddingTop: width/.75,
+      }}>
         <Image
-          source={{ uri: `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}` }}
-          style={{width: 40, height: 40}}
+          source={{ uri }}
+          style={styles.image}
+          resizeMode='cover'
         />
-        {/* <Text>{title + downloadStatus}</Text> */}
+        {downloadStatus == 1 &&
+          <View style={styles.spinnerContainer}>
+            <Spinner />
+          </View>
+        }
+        {downloadStatus == 2 && <CoverCheck />}
+        {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
+        {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
       </View>
     )
   }
 }
 
-export default BookInfo
+export default Cover

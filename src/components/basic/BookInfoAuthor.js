@@ -1,5 +1,12 @@
 import React from "react"
 import { Text } from "native-base"
+import { StyleSheet } from "react-native"
+
+const styles = StyleSheet.create({
+  author: {
+    fontSize: 14,
+  },
+})
 
 class BookInfoAuthor extends React.Component {
 
@@ -7,7 +14,7 @@ class BookInfoAuthor extends React.Component {
     const { children } = this.props
 
     return (
-      <Text>{children}</Text>
+      <Text style={styles.author}>{children}</Text>
     )
   }
 }

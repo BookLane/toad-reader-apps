@@ -1,6 +1,14 @@
 import React from "react"
 import { View, Text, Icon, Spinner } from "native-base"
 import i18n from "../../utils/i18n.js"
+import { StyleSheet } from "react-native"
+
+const styles = StyleSheet.create({
+  details: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+})
 
 class BookInfoDetails extends React.Component {
 
@@ -9,7 +17,7 @@ class BookInfoDetails extends React.Component {
 
     if(downloadStatus == 2) {
       return (
-        <Text>
+        <Text style={styles.details}>
           <Icon name='checkmark' />
           {i18n("On device")}
         </Text>
@@ -18,7 +26,7 @@ class BookInfoDetails extends React.Component {
 
     if(downloadStatus == 1) {
       return (
-        <View>
+        <View style={styles.details}>
           <Spinner />
           <Text>{i18n("Downloading...")}</Text>
         </View>
@@ -26,7 +34,7 @@ class BookInfoDetails extends React.Component {
     }
 
     return (
-      <Text>
+      <Text style={styles.details}>
         <Icon name='cloud-download' />
         {i18n("Tap to download")}
       </Text>
