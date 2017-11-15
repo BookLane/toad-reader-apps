@@ -13,8 +13,8 @@ class LibraryCovers extends React.Component {
 
   render() {
 
-    const { bookList=[], navigation, books, idps } = this.props
-
+    const { bookList=[], navigation, setRemoveBookId, books, idps } = this.props
+    
     return (
       <Content padder>
         {bookList.map(bookId => (
@@ -22,6 +22,7 @@ class LibraryCovers extends React.Component {
             key={bookId}
             bookId={bookId}
             navigation={navigation}
+            confirmRemove={() => setRemoveBookId(bookId)}
           >
             <Image
               source={{ uri: `${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}` }}

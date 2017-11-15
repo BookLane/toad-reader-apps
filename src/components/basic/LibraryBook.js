@@ -1,10 +1,10 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, TouchableOpacity } from "react-native"
+import { TouchableOpacity } from "react-native"
+import { View } from "native-base"
 
 import fetchEpub from "../../utils/fetchEpub.js"
-import removeEpub from "../../utils/removeEpub.js"
 
 import { setDownloadStatus } from "../../redux/actions.js";
 
@@ -34,16 +34,12 @@ class LibraryBook extends React.Component {
   }
   
   onLongPress() {
-    const { bookId, setDownloadStatus } = this.props
+    const { bookId, confirmRemove } = this.props
 
     if(this.getDownloadStatus(bookId) == 0) {
       this.onPress()
-
     } else {
-      setDownloadStatus({ bookId, downloadStatus: 0 })
-      removeEpub({
-        bookId,
-      })
+      confirmRemove()
     }
   }
 

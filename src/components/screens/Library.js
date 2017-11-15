@@ -2,7 +2,7 @@ import React from "react"
 import { AppState, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Spinner, Content, Text } from "native-base"
+import { Container, Spinner, Content, Text, ActionSheet } from "native-base"
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
@@ -11,7 +11,9 @@ import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 
-import { addBooks, reSort, setFetchingBooks, setErrorMessage } from "../../redux/actions.js"
+import removeEpub from "../../utils/removeEpub.js"
+
+import { addBooks, reSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
 class Library extends React.Component {
 
@@ -77,6 +79,13 @@ class Library extends React.Component {
       this.fetchAll()
     }
   }
+
+  removeBook = bookId => {
+    const { books, setDownloadStatus } = this.props
+
+    setDownloadStatus({ bookId, downloadStatus: 0 })
+    removeEpub({ bookId })
+  }
   
   render() {
 
@@ -111,6 +120,25 @@ class Library extends React.Component {
                 <LibraryViewer
                   bookList={bookList}
                   navigation={navigation}
+                  setRemoveBookId={bookId => ActionSheet.show(
+                    {
+                      options: [
+                        { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
+                        { text: i18n("Cancel"), icon: "close" }
+                      ],
+                      destructiveButtonIndex: 0,
+                      cancelButtonIndex: 1,
+                      title: i18n(
+                        'Are you sure you want to remove "{{book_title}}" from this device?',
+                        {
+                          book_title: books[bookId].title,
+                        }
+                      ),
+                    },
+                    buttonIndex => {
+                      if(buttonIndex == 0) this.removeBook(bookId)
+                    }
+                  )}
                 />
               )
           )
@@ -144,6 +172,7 @@ const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   reSort,
   setFetchingBooks,
   setErrorMessage,
+  setDownloadStatus,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)
