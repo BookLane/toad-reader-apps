@@ -1,11 +1,18 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Content } from "native-base"
+import { Content, View } from "native-base"
+import { StyleSheet } from "react-native"
 
 import LibraryBook from "../basic/LibraryBook.js"
 import fetchEpub from "../../utils/fetchEpub.js"
 import BookInfo from "../basic/BookInfo.js"
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 10,
+  },
+})
 
 class LibraryCovers extends React.Component {
   
@@ -15,16 +22,18 @@ class LibraryCovers extends React.Component {
 
     return (
       <Content padder>
-        {bookList.map(bookId => (
-          <LibraryBook
-            key={bookId}
-            bookId={bookId}
-            navigation={navigation}
-            confirmRemove={() => setRemoveBookId(bookId)}
-          >
-            <BookInfo bookId={bookId} bookInfo={books[bookId]} />
-          </LibraryBook>
-        ))}
+        <View style={styles.container}>
+          {bookList.map(bookId => (
+            <LibraryBook
+              key={bookId}
+              bookId={bookId}
+              navigation={navigation}
+              confirmRemove={() => setRemoveBookId(bookId)}
+            >
+              <BookInfo bookId={bookId} bookInfo={books[bookId]} />
+            </LibraryBook>
+          ))}
+        </View>
       </Content>
     )
   }

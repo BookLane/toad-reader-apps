@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     marginRight: -10,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingBottom: 10,
   },
 })
 

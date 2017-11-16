@@ -1,6 +1,6 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { View, Spinner } from "native-base"
+import { View, Text, Spinner } from "native-base"
 import { Image, StyleSheet, Dimensions } from "react-native"
 
 import CoverCheck from "./CoverCheck.js"
@@ -8,13 +8,25 @@ import CoverCheck from "./CoverCheck.js"
 // import CoverSize from "./CoverSize.js"
 
 const styles = StyleSheet.create({
+  titleContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, .1)',
+    overflow: 'hidden',
+    padding: 10,
+  },
+  title: {
+    color: 'rgba(0, 0, 0, .7)',
+  },
   image: {
     position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, .1)'
   },
   spinnerContainer: {
     position: 'absolute',
@@ -33,7 +45,7 @@ class Cover extends React.Component {
 
   render() {
     const { bookId, bookInfo } = this.props
-    const { coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
 
     const windowWidth = Dimensions.get('window').width
     const booksPerRow = parseInt(windowWidth / 100)
@@ -48,6 +60,9 @@ class Cover extends React.Component {
         width,
         paddingTop: width/.75,
       }}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
         <Image
           source={{ uri }}
           style={styles.image}
