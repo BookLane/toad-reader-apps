@@ -42,7 +42,10 @@ class Options extends React.Component {
           {options.map((option, index) => (
             <CardItem button
               key={index}
-              onPress={option.onPress}
+              onPress={() => {
+                requestHide()
+                option.onPress()
+              }}
               style={styles.option}
             >
               {option.selected && <Icon name="checkmark" />}
