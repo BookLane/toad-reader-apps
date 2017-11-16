@@ -115,6 +115,7 @@ class Drawer extends React.Component {
                     Toast.show({
                       text: i18n("All books removed."),
                       buttonText: i18n("Okay"),
+                      duration: 5000,
                     })
                   }
                 }
