@@ -42,7 +42,10 @@ class Page extends React.Component {
                   console.log('consoleLog', data.payload.message)
                   break;
                 case 'showPageListView':
-                  this.props.navigation.navigate("Book", { pageKey: this.props.navigation.state.key })
+                  this.props.navigation.navigate("Book", {
+                    pageKey: this.props.navigation.state.key,
+                    bookId,
+                  })
                   break;
                 case 'getFileAsText':
                   const uri = data.payload.uri

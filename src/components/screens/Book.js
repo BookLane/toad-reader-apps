@@ -1,32 +1,38 @@
 import React from "react"
-import { Container, Title, Left, Right, Icon, Button, Body, Content,Text, Card, CardItem } from "native-base"
-import AppHeader from "../basic/AppHeader.js"
+import { Container, Content, Text, Button } from "native-base"
+
+import BookHeader from "../major/BookHeader.js"
+// import BookPages from "../major/BookPages.js"
+// import BookContents from "../major/BookContents.js"
+// import BookProgress from "../major/BookProgress.js"
 
 class Book extends React.Component {
+
+  constructor() {
+    super()
+    this.state = {
+      bookView: 'pages',
+      subtitle: 'chapter here',
+    }
+  }
+
   render() {
+
+    const { navigation } = this.props
+    const { bookId } = navigation.state.params
+    const { bookView, subtitle } = this.state
+
     return (
       <Container>
-        <AppHeader>
-          <Left>
-            <Button
-              transparent
-              onPress={() => this.props.navigation.goBack(this.props.navigation.state.params.pageKey)}>
-              <Icon name="home" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>Book</Title>
-          </Body>
-          <Right />
-        </AppHeader>
+        <BookHeader
+          bookId={bookId}
+          subtitle={subtitle}
+          navigation={navigation}
+          bookView={bookView}
+          toggleBookView={() => this.setState({ bookView: bookView == 'pages' ? 'contents' : 'pages' })}
+        />
         <Content padder>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>Book contents</Text>
-              </Body>
-            </CardItem>
-          </Card>
+          <Text>Book contents</Text>
           <Button full rounded dark
             style={{ marginTop: 10 }}
             onPress={() => this.props.navigation.goBack()}>
