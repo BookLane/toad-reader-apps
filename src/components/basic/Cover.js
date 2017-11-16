@@ -43,9 +43,17 @@ const styles = StyleSheet.create({
 
 class Cover extends React.Component {
 
+  constructor() {
+    super()
+    this.state = {
+      imageError: false,
+    }
+  }
+
   render() {
     const { bookId, bookInfo } = this.props
     const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { imageError } = this.state
 
     const windowWidth = Dimensions.get('window').width
     const booksPerRow = parseInt(windowWidth / 100)
@@ -60,13 +68,16 @@ class Cover extends React.Component {
         width,
         paddingTop: width/.75,
       }}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
+        {imageError &&
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+        }
         <Image
           source={{ uri }}
           style={styles.image}
           resizeMode='cover'
+          onError={() => this.setState({ imageError: true })}
         />
         {downloadStatus == 1 &&
           <View style={styles.spinnerContainer}>
