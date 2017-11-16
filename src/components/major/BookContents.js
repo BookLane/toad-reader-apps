@@ -13,7 +13,7 @@ class BookContents extends React.Component {
 
   render() {
 
-    // const { navigation } = this.props
+    const { navigation } = this.props
 
     return (
       <View style={styles.container}>

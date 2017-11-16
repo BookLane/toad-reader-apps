@@ -41,7 +41,9 @@ class Book extends React.Component {
           toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
         />
         <Content>
-          <BookViewComponent />
+          <BookViewComponent
+            navigation={navigation}
+          />
           {showOptions && 
             <Options
               requestHide={() => this.setState({ showOptions: false })}
