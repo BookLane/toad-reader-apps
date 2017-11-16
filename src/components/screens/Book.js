@@ -1,10 +1,10 @@
 import React from "react"
-import { Container, Content, Text, Button, View } from "native-base"
+import { Container, Content } from "native-base"
 import i18n from "../../utils/i18n.js"
 
 import BookHeader from "../major/BookHeader.js"
-// import BookPages from "../major/BookPages.js"
-// import BookContents from "../major/BookContents.js"
+import BookPages from "../major/BookPages.js"
+import BookContents from "../major/BookContents.js"
 // import BookProgress from "../major/BookProgress.js"
 import Options from "../major/Options.js"
 
@@ -25,6 +25,8 @@ class Book extends React.Component {
     const { bookId } = navigation.state.params
     const { bookView, subtitle, showOptions } = this.state
 
+    const BookViewComponent = bookView == 'pages' ? BookPages : BookContents
+
     return (
       <Container>
         <BookHeader
@@ -32,19 +34,14 @@ class Book extends React.Component {
           subtitle={subtitle}
           navigation={navigation}
           bookView={bookView}
-          toggleBookView={() => this.setState({ bookView: bookView == 'pages' ? 'contents' : 'pages' })}
+          toggleBookView={() => this.setState({
+            bookView: bookView == 'pages' ? 'contents' : 'pages',
+            showOptions: false,
+          })}
           toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
         />
         <Content>
-          <View style={{ minHeight: 300, zIndex: 1 }}>
-            <Text>Book contents</Text>
-            <Button full rounded dark
-              style={{ marginTop: 10 }}
-              onPress={() => this.props.navigation.goBack()}
-            >
-              <Text>Back to reading</Text>
-            </Button>
-          </View>
+          <BookViewComponent />
           {showOptions && 
             <Options
               requestHide={() => this.setState({ showOptions: false })}
@@ -66,7 +63,7 @@ class Book extends React.Component {
           }
         </Content>
       </Container>
-    );
+    )
   }
 }
 
