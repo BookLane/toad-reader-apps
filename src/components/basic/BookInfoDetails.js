@@ -1,12 +1,22 @@
 import React from "react"
-import { View, Text, Icon, Spinner } from "native-base"
-import i18n from "../../utils/i18n.js"
+import { View, Text, Icon } from "native-base"
 import { StyleSheet } from "react-native"
+import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
-  details: {
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
     paddingTop: 5,
     paddingBottom: 5,
+  },
+  icon: {
+    fontSize: 19,
+    paddingRight: 2,
+  },
+  details: {
+    paddingTop: 2,
+    fontSize: 13,
   },
 })
 
@@ -17,27 +27,26 @@ class BookInfoDetails extends React.Component {
 
     if(downloadStatus == 2) {
       return (
-        <Text style={styles.details}>
-          <Icon name='checkmark' />
-          {i18n("On device")}
-        </Text>
+        <View style={styles.container}>
+          <Icon name='checkmark' style={styles.icon} />
+          <Text style={styles.details}>{i18n("On device")}</Text>
+        </View>
       )
     }
 
     if(downloadStatus == 1) {
       return (
-        <View style={styles.details}>
-          <Spinner />
-          <Text>{i18n("Downloading...")}</Text>
+        <View style={styles.container}>
+          <Text style={styles.details}>{i18n("Downloading...")}</Text>
         </View>
       )
     }
 
     return (
-      <Text style={styles.details}>
-        <Icon name='cloud-download' />
-        {i18n("Tap to download")}
-      </Text>
+      <View style={styles.container}>
+        <Icon name='cloud-download' style={styles.icon} />
+        <Text style={styles.details}>{i18n("Tap to download")}</Text>
+      </View>
     )
   }
 }

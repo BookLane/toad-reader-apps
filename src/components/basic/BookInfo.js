@@ -36,7 +36,7 @@ class BookInfo extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.cover}>
-          <BookInfoCover bookId={bookId} coverFilename={coverFilename} />
+          <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
         </View>
         <View style={styles.info}>
           <BookInfoTitle>{title}</BookInfoTitle>

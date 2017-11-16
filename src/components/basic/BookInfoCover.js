@@ -1,28 +1,57 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { Image } from "react-native"
-import { StyleSheet } from "react-native"
+import { Image, StyleSheet } from "react-native"
+import { Spinner, View } from "native-base"
 
 const styles = StyleSheet.create({
-  image: {
+  container: {
     width: 100,
     height: 130,
+  },
+  image: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  spinnerContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, .8)',
+    display: 'flex',
+  },
+  spacer: {
+    flex: 1,
   },
 })
 
 class BookInfoCover extends React.Component {
 
   render() {
-    const { bookId, coverFilename } = this.props
+    const { bookId, bookInfo } = this.props
+    const { coverFilename, downloadStatus } = bookInfo
 
     const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
 
     return (
-      <Image
-        source={{ uri }}
-        style={styles.image}
-        resizeMode='cover'
-      />
+      <View style={styles.container}>
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          resizeMode='cover'
+        />
+        {downloadStatus == 1 &&
+          <View style={styles.spinnerContainer}>
+            <View style={styles.spacer} />
+            <Spinner />
+            <View style={styles.spacer} />
+          </View>
+        }
+      </View>
     )
   }
 }
