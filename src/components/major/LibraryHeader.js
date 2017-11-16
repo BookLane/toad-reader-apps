@@ -23,6 +23,10 @@ class LibraryHeader extends React.Component {
     let title = i18n("Library")
     let subtitle = ""
 
+    if(scope == 'device') {
+      title = i18n("On device only")
+    }
+  
     if(accounts[scope]) {
       title = idps[scope.split(':')[0]].idpName
       subtitle = accounts[scope].email
