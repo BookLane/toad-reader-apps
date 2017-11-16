@@ -5,7 +5,7 @@ import i18n from "../../utils/i18n.js"
 import BookHeader from "../major/BookHeader.js"
 import BookPages from "../major/BookPages.js"
 import BookContents from "../major/BookContents.js"
-// import BookProgress from "../major/BookProgress.js"
+import BookProgress from "../major/BookProgress.js"
 import Options from "../major/Options.js"
 
 class Book extends React.Component {
@@ -62,6 +62,7 @@ class Book extends React.Component {
             />
           }
         </Content>
+        {bookView == 'pages' && <BookProgress />}
       </Container>
     )
   }
