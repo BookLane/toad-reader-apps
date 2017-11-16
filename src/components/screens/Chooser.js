@@ -15,7 +15,8 @@ class Chooser extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.goBack()}>
+            onPress={() => this.props.navigation.goBack()}
+          >
             <Text>Back</Text>
           </Button>
         </Content>
