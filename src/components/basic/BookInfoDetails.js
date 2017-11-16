@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 19,
-    paddingRight: 2,
+    paddingRight: 4,
   },
   details: {
     paddingTop: 1,
