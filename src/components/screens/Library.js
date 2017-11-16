@@ -6,6 +6,7 @@ import { Container, Spinner, Content, Text, ActionSheet, View } from "native-bas
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
+import { StyleSheet } from "react-native"
 
 import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
@@ -14,6 +15,13 @@ import LibraryList from "../major/LibraryList.js"
 import removeEpub from "../../utils/removeEpub.js"
 
 import { addBooks, reSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
+
+const styles = StyleSheet.create({
+  noBooks: {
+    marginTop: 50,
+    textAlign: 'center',
+  },
+})
 
 class Library extends React.Component {
 
@@ -115,9 +123,7 @@ class Library extends React.Component {
           : (
             bookList.length == 0
               ? (
-                <View>
-                  <Text>{i18n("No books found.")}</Text>
-                </View>
+                <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
               )
               : (
                 <LibraryViewer
