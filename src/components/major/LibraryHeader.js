@@ -9,16 +9,8 @@ import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
 
 class LibraryHeader extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      showOptions: false,
-    }
-  }
-
   render() {
-    const { scope, navigation, idps, accounts, library, toggleView } = this.props
-    const { showOptions } = this.state
+    const { scope, navigation, idps, accounts, library, toggleView, toggleShowOptions } = this.props
 
     let title = i18n("Library")
     let subtitle = ""
@@ -59,7 +51,7 @@ class LibraryHeader extends React.Component {
           </Button>
           <Button
             transparent
-            onPress={() => this.setState({ showOptions: !showOptions })}
+            onPress={toggleShowOptions}
           >
             <Icon name="more" />
           </Button>

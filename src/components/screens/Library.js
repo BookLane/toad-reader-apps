@@ -11,19 +11,30 @@ import { StyleSheet } from "react-native"
 import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
+import Options from "../major/Options.js"
 
 import removeEpub from "../../utils/removeEpub.js"
 
-import { addBooks, reSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
+import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   noBooks: {
     marginTop: 50,
     textAlign: 'center',
   },
+  spinnerContainer: {
+    padding: 40,
+  },
 })
 
 class Library extends React.Component {
+
+  constructor() {
+    super()
+    this.state = {
+      showOptions: false,
+    }
+  }
 
   async fetchAll() {
     const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage } = this.props
@@ -97,7 +108,8 @@ class Library extends React.Component {
   
   render() {
 
-    const { library, books, fetchingBooks, navigation } = this.props
+    const { library, books, fetchingBooks, navigation, setSort } = this.props
+    const { showOptions } = this.state
 
     let { scope } = navigation.state.params || {}
     scope = scope || "all"
@@ -117,50 +129,66 @@ class Library extends React.Component {
         <LibraryHeader
           scope={scope}
           navigation={navigation}
+          toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
         />
-        {fetchingBooks && bookList.length == 0
-          ? <Spinner color='red' />
-          : (
-            bookList.length == 0
-              ? (
-                <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-              )
-              : (
-                <LibraryViewer
-                  bookList={bookList}
-                  navigation={navigation}
-                  setRemoveBookId={bookId => ActionSheet.show(
-                    {
-                      options: [
-                        { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
-                        { text: i18n("Cancel"), icon: "close" }
-                      ],
-                      destructiveButtonIndex: 0,
-                      cancelButtonIndex: 1,
-                      title: i18n(
-                        'Are you sure you want to remove "{{book_title}}" from this device?',
-                        {
-                          book_title: books[bookId].title,
-                        }
-                      ),
-                    },
-                    buttonIndex => {
-                      if(buttonIndex == 0) this.removeBook(bookId)
-                    }
-                  )}
-                />
-              )
-          )
-        }
-        {/* TODO: show options */}
-        {/* {showOptions &&
-          <Content>
-            <Text>
-              options!
-            </Text>
-          </Content>
-        } */}
-        
+        <Content>
+          {fetchingBooks && bookList.length == 0
+            ? (
+              <View style={styles.spinnerContainer}>
+                <Spinner />
+              </View>
+            )
+            : (
+              bookList.length == 0
+                ? (
+                  <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                )
+                : (
+                  <LibraryViewer
+                    bookList={bookList}
+                    navigation={navigation}
+                    setRemoveBookId={bookId => ActionSheet.show(
+                      {
+                        options: [
+                          { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
+                          { text: i18n("Cancel"), icon: "close" }
+                        ],
+                        destructiveButtonIndex: 0,
+                        cancelButtonIndex: 1,
+                        title: i18n(
+                          'Are you sure you want to remove "{{book_title}}" from this device?',
+                          {
+                            book_title: books[bookId].title,
+                          }
+                        ),
+                      },
+                      buttonIndex => {
+                        if(buttonIndex == 0) this.removeBook(bookId)
+                      }
+                    )}
+                  />
+                )
+            )
+          }
+          {showOptions && 
+            <Options
+              requestHide={() => this.setState({ showOptions: false })}
+              headerText={i18n("Sort by...")}
+              options={[
+                {
+                  text: i18n("Title"),
+                  selected: library.sort == 'title',
+                  onPress: () => setSort({ sort: 'title' }),
+                },
+                {
+                  text: i18n("Author"),
+                  selected: library.sort == 'author',
+                  onPress: () => setSort({ sort: 'author' }),
+                },
+              ]}
+            />
+          }
+        </Content>
         {/* TODO: Add modal for error message */}
       </Container>
     );
@@ -179,6 +207,7 @@ const mapStateToProps = (state) => ({
 const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
   reSort,
+  setSort,
   setFetchingBooks,
   setErrorMessage,
   setDownloadStatus,
