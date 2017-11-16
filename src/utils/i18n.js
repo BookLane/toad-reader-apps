@@ -19,6 +19,6 @@
 // import translations from "./translations/he.js"
 const translations = {}  // for English
 
-const i18n = (str, swaps={}) => (translations[str] || str).replace(/{{([^}]+)}}/, (x, swapSpot) => swaps[swapSpot] || "")
+const i18n = (str, swaps={}) => (translations[str] || str).replace(/{{([^}]+)}}/g, (x, swapSpot) => swaps[swapSpot] || "")
 
 export default i18n
