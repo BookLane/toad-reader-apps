@@ -37,7 +37,6 @@ class Page extends React.Component {
             onError={e => console.log('webview error', e)}
             onMessage={event => {
               const data = JSON.parse(event.nativeEvent.data);
-              console.log('onMessage', data.identifier);
               switch(data.identifier) {
                 case 'consoleLog':
                   console.log('consoleLog', data.payload.message)
