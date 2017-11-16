@@ -37,7 +37,8 @@ class LibraryHeader extends React.Component {
         <Left>
           <Button
             transparent
-            onPress={() => navigation.navigate("DrawerOpen")}>
+            onPress={() => navigation.navigate("DrawerOpen")}
+          >
             <Icon name="menu" />
           </Button>
         </Left>
@@ -51,13 +52,15 @@ class LibraryHeader extends React.Component {
         <Right>
           <Button
             transparent
-            onPress={() => toggleView()}>
+            onPress={() => toggleView()}
+          >
             <Icon name={library.view == "covers" ? "list" : "apps"} />
             {/* square */}
           </Button>
           <Button
             transparent
-            onPress={() => this.setState({ showOptions: !showOptions })}>
+            onPress={() => this.setState({ showOptions: !showOptions })}
+          >
             <Icon name="more" />
           </Button>
         </Right>
