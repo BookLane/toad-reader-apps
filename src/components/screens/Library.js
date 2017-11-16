@@ -93,13 +93,16 @@ class Library extends React.Component {
 
     let { scope } = navigation.state.params || {}
     scope = scope || "all"
-    
+
     const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
     const bookList = scope == 'all'
       ? library.bookList
-      : library.bookList.filter(bookId => (
-        books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope)
-      ))
+      : (scope == 'device'
+        ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
+        : library.bookList.filter(bookId => (
+          books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope.split(':')[0])
+        ))
+      )
   
     return (
       <Container>
