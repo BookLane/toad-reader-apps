@@ -1,10 +1,12 @@
 import React from "react"
-import { Container, Content, Text, Button } from "native-base"
+import { Container, Content, Text, Button, View } from "native-base"
+import i18n from "../../utils/i18n.js"
 
 import BookHeader from "../major/BookHeader.js"
 // import BookPages from "../major/BookPages.js"
 // import BookContents from "../major/BookContents.js"
 // import BookProgress from "../major/BookProgress.js"
+import Options from "../major/Options.js"
 
 class Book extends React.Component {
 
@@ -13,6 +15,7 @@ class Book extends React.Component {
     this.state = {
       bookView: 'pages',
       subtitle: 'chapter here',
+      showOptions: false,
     }
   }
 
@@ -20,7 +23,7 @@ class Book extends React.Component {
 
     const { navigation } = this.props
     const { bookId } = navigation.state.params
-    const { bookView, subtitle } = this.state
+    const { bookView, subtitle, showOptions } = this.state
 
     return (
       <Container>
@@ -30,19 +33,37 @@ class Book extends React.Component {
           navigation={navigation}
           bookView={bookView}
           toggleBookView={() => this.setState({ bookView: bookView == 'pages' ? 'contents' : 'pages' })}
+          toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
         />
-        <Content padder>
-          <Text>Book contents</Text>
-          <Button full rounded dark
-            style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.goBack()}>
-            <Text>Back to reading</Text>
-          </Button>
-          <Button full rounded dark
-            style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.navigate("Highlights")}>
-            <Text>Highlights</Text>
-          </Button>
+        <Content>
+          <View style={{ minHeight: 300, zIndex: 1 }}>
+            <Text>Book contents</Text>
+            <Button full rounded dark
+              style={{ marginTop: 10 }}
+              onPress={() => this.props.navigation.goBack()}
+            >
+              <Text>Back to reading</Text>
+            </Button>
+          </View>
+          {showOptions && 
+            <Options
+              requestHide={() => this.setState({ showOptions: false })}
+              options={[
+                {
+                  text: i18n("Display settings"),
+                  onPress: () => alert('Display settings'),
+                },
+                {
+                  text: i18n("Recommend this book"),
+                  onPress: () => alert('Recommend this book'),
+                },
+                {
+                  text: i18n("My highlights and notes"),
+                  onPress: () => this.props.navigation.navigate("Highlights"),
+                },
+              ]}
+            />
+          }
         </Content>
       </Container>
     );

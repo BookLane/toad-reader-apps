@@ -8,18 +8,10 @@ import AppHeader from "../basic/AppHeader.js"
 
 class BookHeader extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      showOptions: false,
-    }
-  }
-
   render() {
-    const { bookId, subtitle, navigation, bookView, toggleBookView, books } = this.props
+    const { bookId, subtitle, navigation, bookView, toggleBookView, toggleShowOptions, books } = this.props
     const { title } = books[bookId]
-    const { showOptions } = this.state
-
+    
     return (
       <AppHeader>
         <Left>
@@ -46,7 +38,8 @@ class BookHeader extends React.Component {
           </Button>
           <Button
             transparent
-            onPress={() => this.setState({ showOptions: !showOptions })}>
+            onPress={toggleShowOptions}
+          >
             <Icon name="more" />
           </Button>
         </Right>
