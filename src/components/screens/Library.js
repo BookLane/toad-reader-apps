@@ -2,7 +2,7 @@ import React from "react"
 import { AppState } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Spinner, Content, Text, ActionSheet, View } from "native-base"
+import { Container, Content, Text, ActionSheet, View } from "native-base"
 import { StyleSheet } from "react-native"
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
@@ -12,6 +12,7 @@ import LibraryHeader from "../major/LibraryHeader.js"
 import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 import Options from "../major/Options.js"
+import Spin from "../basic/Spin.js"
 
 import removeEpub from "../../utils/removeEpub.js"
 
@@ -138,7 +139,7 @@ class Library extends React.Component {
         {fetchingBooks && bookList.length == 0
           ? (
             <View style={styles.spinnerContainer}>
-              <Spinner />
+              <Spin />
             </View>
           )
           : (

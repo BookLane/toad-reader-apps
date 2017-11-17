@@ -1,7 +1,9 @@
 import React from "react"
 import { FileSystem } from "expo"
 import { Image, StyleSheet } from "react-native"
-import { Spinner, View } from "native-base"
+import { View } from "native-base"
+
+import Spin from "./Spin.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -48,7 +50,7 @@ class BookInfoCover extends React.Component {
         {downloadStatus == 1 &&
           <View style={styles.spinnerContainer}>
             <View style={styles.spacer} />
-            <Spinner />
+            <Spin />
             <View style={styles.spacer} />
           </View>
         }

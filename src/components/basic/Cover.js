@@ -1,8 +1,9 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { View, Text, Spinner } from "native-base"
+import { View, Text } from "native-base"
 import { Image, StyleSheet } from "react-native"
 
+import Spin from "./Spin.js"
 import CoverCheck from "./CoverCheck.js"
 // import CoverPercentage from "./CoverPercentage.js"
 // import CoverSize from "./CoverSize.js"
@@ -80,7 +81,7 @@ class Cover extends React.Component {
         {downloadStatus == 1 &&
           <View style={styles.spinnerContainer}>
             <View style={styles.spacer} />
-            <Spinner />
+            <Spin />
             <View style={styles.spacer} />
           </View>
         }
