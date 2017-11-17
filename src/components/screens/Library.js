@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
   spinnerContainer: {
     padding: 40,
   },
+  libraryContainer: {
+    flex: 1,
+  },
 })
 
 class Library extends React.Component {
@@ -130,65 +133,68 @@ class Library extends React.Component {
           scope={scope}
           navigation={navigation}
           toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
+          hideOptions={() => this.setState({ showOptions: false })}
         />
-        <Content>
-          {fetchingBooks && bookList.length == 0
-            ? (
-              <View style={styles.spinnerContainer}>
-                <Spinner />
-              </View>
-            )
-            : (
-              bookList.length == 0
-                ? (
-                  <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-                )
-                : (
-                  <LibraryViewer
-                    bookList={bookList}
-                    navigation={navigation}
-                    setRemoveBookId={bookId => ActionSheet.show(
-                      {
-                        options: [
-                          { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
-                          { text: i18n("Cancel"), icon: "close" }
-                        ],
-                        destructiveButtonIndex: 0,
-                        cancelButtonIndex: 1,
-                        title: i18n(
-                          'Are you sure you want to remove "{{book_title}}" from this device?',
-                          {
-                            book_title: books[bookId].title,
-                          }
-                        ),
-                      },
-                      buttonIndex => {
-                        if(buttonIndex == 0) this.removeBook(bookId)
-                      }
-                    )}
-                  />
-                )
-            )
-          }
-          {showOptions && 
-            <Options
-              requestHide={() => this.setState({ showOptions: false })}
-              headerText={i18n("Sort by...")}
-              options={[
-                {
-                  text: i18n("Title"),
-                  selected: library.sort == 'title',
-                  onPress: () => setSort({ sort: 'title' }),
-                },
-                {
-                  text: i18n("Author"),
-                  selected: library.sort == 'author',
-                  onPress: () => setSort({ sort: 'author' }),
-                },
-              ]}
-            />
-          }
-        </Content>
+        {fetchingBooks && bookList.length == 0
+          ? (
+            <View style={styles.spinnerContainer}>
+              <Spinner />
+            </View>
+          )
+          : (
+            bookList.length == 0
+              ? (
+                <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+              )
+              : (
+                <View style={styles.libraryContainer}>
+                  <Content>
+                    <LibraryViewer
+                      bookList={bookList}
+                      navigation={navigation}
+                      setRemoveBookId={bookId => ActionSheet.show(
+                        {
+                          options: [
+                            { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
+                            { text: i18n("Cancel"), icon: "close" }
+                          ],
+                          destructiveButtonIndex: 0,
+                          cancelButtonIndex: 1,
+                          title: i18n(
+                            'Are you sure you want to remove "{{book_title}}" from this device?',
+                            {
+                              book_title: books[bookId].title,
+                            }
+                          ),
+                        },
+                        buttonIndex => {
+                          if(buttonIndex == 0) this.removeBook(bookId)
+                        }
+                      )}
+                    />
+                  </Content>
+                  {showOptions && 
+                    <Options
+                      requestHide={() => this.setState({ showOptions: false })}
+                      headerText={i18n("Sort by...")}
+                      options={[
+                        {
+                          text: i18n("Title"),
+                          selected: library.sort == 'title',
+                          onPress: () => setSort({ sort: 'title' }),
+                        },
+                        {
+                          text: i18n("Author"),
+                          selected: library.sort == 'author',
+                          onPress: () => setSort({ sort: 'author' }),
+                        },
+                      ]}
+                    />
+                  }
+                </View>
+              )
+          )
+        }
         {/* TODO: Add modal for error message */}
       </Container>
     );

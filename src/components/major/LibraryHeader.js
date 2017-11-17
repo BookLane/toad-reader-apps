@@ -10,7 +10,8 @@ import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
 class LibraryHeader extends React.Component {
 
   render() {
-    const { scope, navigation, idps, accounts, library, toggleView, toggleShowOptions } = this.props
+    const { scope, navigation, idps, accounts, library,
+            toggleView, toggleShowOptions, hideOptions } = this.props
 
     let title = i18n("Library")
     let subtitle = ""
@@ -29,7 +30,10 @@ class LibraryHeader extends React.Component {
         <Left>
           <Button
             transparent
-            onPress={() => navigation.navigate("DrawerOpen")}
+            onPress={() => {
+              hideOptions()
+              navigation.navigate("DrawerOpen")
+            }}
           >
             <Icon name="menu" />
           </Button>
@@ -44,7 +48,10 @@ class LibraryHeader extends React.Component {
         <Right>
           <Button
             transparent
-            onPress={() => toggleView()}
+            onPress={() => {
+              hideOptions()
+              toggleView()
+            }}
           >
             <Icon name={library.view == "covers" ? "list" : "apps"} />
             {/* square */}
