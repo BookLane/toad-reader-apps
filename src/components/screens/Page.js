@@ -6,6 +6,7 @@ import { FileSystem } from "expo"
 import { patchPostMessageJsCode, percentageEscape } from "../../utils/fixes.js"
 
 class Page extends React.Component {
+
   componentDidMount() {
     StatusBar.setHidden(true)
   }
