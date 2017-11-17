@@ -2,11 +2,13 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Dimensions } from "react-native"
 
 import LibraryBook from "../basic/LibraryBook.js"
 import fetchEpub from "../../utils/fetchEpub.js"
 import Cover from "../basic/Cover.js"
+
+const MAXIMUM_BOOK_WIDTH = 100
 
 const styles = StyleSheet.create({
   container: {
@@ -20,12 +22,34 @@ const styles = StyleSheet.create({
 
 class LibraryCovers extends React.Component {
 
+  constructor() {
+    super()
+    this.state = {
+      bookWidth: MAXIMUM_BOOK_WIDTH,
+    }
+  }
+
+  componentDidMount() {
+    this.calcBookWidth()
+  }
+
+  calcBookWidth = () => {
+    const windowWidth = Dimensions.get('window').width
+    const booksPerRow = parseInt(windowWidth / MAXIMUM_BOOK_WIDTH)
+    const bookWidth = (windowWidth - ((booksPerRow + 1) * 10)) / booksPerRow
+    this.setState({ bookWidth })
+  }
+
   render() {
 
     const { bookList=[], navigation, setRemoveBookId, books, idps } = this.props
+    const { bookWidth } = this.state
     
     return (
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        onLayout={this.calcBookWidth}
+      >
         {bookList.map(bookId => (
           <LibraryBook
             key={bookId}
@@ -34,7 +58,11 @@ class LibraryCovers extends React.Component {
             confirmRemove={() => setRemoveBookId(bookId)}
             style={styles.book}
           >
-            <Cover bookId={bookId} bookInfo={books[bookId]} />
+            <Cover
+              bookId={bookId}
+              bookInfo={books[bookId]}
+              bookWidth={bookWidth}
+            />
           </LibraryBook>
         ))}
       </View>

@@ -1,7 +1,7 @@
 import React from "react"
 import { FileSystem } from "expo"
 import { View, Text, Spinner } from "native-base"
-import { Image, StyleSheet, Dimensions } from "react-native"
+import { Image, StyleSheet } from "react-native"
 
 import CoverCheck from "./CoverCheck.js"
 // import CoverPercentage from "./CoverPercentage.js"
@@ -49,25 +49,23 @@ class Cover extends React.Component {
       imageError: false,
     }
   }
-
+  
   render() {
-    const { bookId, bookInfo } = this.props
+    const { bookId, bookInfo, bookWidth } = this.props
     const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
     const { imageError } = this.state
-
-    const windowWidth = Dimensions.get('window').width
-    const booksPerRow = parseInt(windowWidth / 100)
-    const width = (windowWidth - ((booksPerRow + 1) * 10)) / booksPerRow
 
     const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
     
     return (
-      <View style={{
-        marginBottom: 30,
-        marginRight: 10,
-        width,
-        paddingTop: width/.75,
-      }}>
+      <View
+        style={{
+          marginBottom: 30,
+          marginRight: 10,
+          width: bookWidth,
+          paddingTop: bookWidth/.75,
+        }}
+      >
         {imageError &&
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>
