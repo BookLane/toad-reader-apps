@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -14,
     left: 5,
+    overflow: 'hidden',
   },
   text: {
     textAlign: 'center',
