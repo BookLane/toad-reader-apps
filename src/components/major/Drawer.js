@@ -1,13 +1,28 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image } from "react-native"
-import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, ActionSheet, Toast } from "native-base"
+import { Image, StyleSheet } from "react-native"
+import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, ActionSheet, Toast, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
 import removeEpub from "../../utils/removeEpub.js"
 
 import { setDownloadStatus } from "../../redux/actions.js"
+
+const styles = StyleSheet.create({
+  imageContainer: {
+    paddingBottom: '50%',
+    position: 'relative',
+  },
+  image: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#eeeef3',
+  },
+})
 
 class Drawer extends React.Component {
 
@@ -24,24 +39,14 @@ class Drawer extends React.Component {
     return (
       <Container>
         <Content>
-          <Image
-            source={{
-              uri: "https://github.com/GeekyAnts/NativeBase-KitchenSink/raw/react-navigation/img/drawer-cover.png"
-            }}
-            style={{
-              height: 120,
-              alignSelf: "stretch",
-              justifyContent: "center",
-              alignItems: "center"
-            }}>
+          <View style={styles.imageContainer}>
             <Image
-              square
-              style={{ height: 80, width: 70 }}
               source={{
-                uri: "https://github.com/GeekyAnts/NativeBase-KitchenSink/raw/react-navigation/img/logo.png"
+                uri: "https://s3-us-west-2.amazonaws.com/biblemesh-readium/tenant_assets/drawer-2.png"
               }}
+              style={styles.image}
             />
-          </Image>
+          </View>
           <List>
             <ListItem icon
               button
