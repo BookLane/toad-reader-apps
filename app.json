@@ -4,7 +4,7 @@
     "description": "Toad Reader for BibleMesh",
     "slug": "biblemesh-ereader",
     "privacy": "unlisted",
-    "sdkVersion": "21.0.0",
+    "sdkVersion": "23.0.0",
     "version": "1.0.0",
     "orientation": "default",
     "primaryColor": "#dfe7f1",

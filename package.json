@@ -6,20 +6,20 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "@expo/vector-icons": "^5.2.0",
-    "expo": "^21.0.0",
-    "jszip": "^3.1.4",
+    "@expo/vector-icons": "6.2.0",
+    "expo": "23.0.0",
+    "jszip": "3.1.5",
     "jszip-utils": "0.0.2",
-    "native-base": "^2.3.3",
-    "node-libs-browser": "^2.0.0",
-    "react": "16.0.0-alpha.12",
-    "react-intl": "^2.4.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-21.0.2.tar.gz",
-    "react-navigation": "^1.0.0-beta.15",
-    "react-redux": "^5.0.6",
-    "reduce-reducers": "^0.1.2",
-    "redux": "^3.7.2",
-    "redux-persist": "^4.10.1"
+    "native-base": "2.3.3",
+    "node-libs-browser": "2.1.0",
+    "react": "16.0.0",
+    "react-intl": "2.4.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-23.0.0.tar.gz",
+    "react-navigation": "1.0.0-beta.19",
+    "react-redux": "5.0.6",
+    "reduce-reducers": "0.1.2",
+    "redux": "3.7.2",
+    "redux-persist": "4.10.1"
   },
   "devDependencies": {
     "redux-devtools": "^3.4.0"
