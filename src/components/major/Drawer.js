@@ -2,10 +2,10 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet } from "react-native"
-import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, ActionSheet, Toast, View } from "native-base"
+import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import removeEpub from "../../utils/removeEpub.js"
+import { confirmRemoveAllEPubs } from "../../utils/removeEpub.js"
 
 import { setDownloadStatus } from "../../redux/actions.js"
 
@@ -101,30 +101,7 @@ class Drawer extends React.Component {
             </ListItem>
             <ListItem icon
               button
-              onPress={() => ActionSheet.show(
-                {
-                  options: [
-                    { text: i18n("Remove all books"), icon: "remove-circle", iconColor: "#fa213b" },
-                    { text: i18n("Cancel"), icon: "close" }
-                  ],
-                  destructiveButtonIndex: 0,
-                  cancelButtonIndex: 1,
-                  title: i18n("Are you sure you want to remove all books from this device?"),
-                },
-                buttonIndex => {
-                  if(buttonIndex == 0) {
-                    Object.keys(books).forEach(bookId => {
-                      setDownloadStatus({ bookId, downloadStatus: 0 })
-                      removeEpub({ bookId })
-                    })
-                    Toast.show({
-                      text: i18n("All books removed."),
-                      buttonText: i18n("Okay"),
-                      duration: 5000,
-                    })
-                  }
-                }
-              )}
+              onPress={() => confirmRemoveAllEPubs({ books, setDownloadStatus })}
             >
               <Left>
                 <Icon name="remove-circle" />

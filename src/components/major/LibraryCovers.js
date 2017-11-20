@@ -42,7 +42,7 @@ class LibraryCovers extends React.Component {
 
   render() {
 
-    const { bookList=[], navigation, setRemoveBookId, books, idps } = this.props
+    const { bookList=[], navigation, books, idps } = this.props
     const { bookWidth } = this.state
     
     return (
@@ -55,7 +55,6 @@ class LibraryCovers extends React.Component {
             key={bookId}
             bookId={bookId}
             navigation={navigation}
-            confirmRemove={() => setRemoveBookId(bookId)}
             style={styles.book}
           >
             <Cover

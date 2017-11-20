@@ -2,7 +2,7 @@ import React from "react"
 import { AppState } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Content, Text, ActionSheet, View } from "native-base"
+import { Container, Content, Text, View } from "native-base"
 import { StyleSheet } from "react-native"
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
@@ -13,8 +13,6 @@ import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 import Options from "../major/Options.js"
 import Spin from "../basic/Spin.js"
-
-import removeEpub from "../../utils/removeEpub.js"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
@@ -103,13 +101,6 @@ class Library extends React.Component {
     }
   }
 
-  removeBook = bookId => {
-    const { books, setDownloadStatus } = this.props
-
-    setDownloadStatus({ bookId, downloadStatus: 0 })
-    removeEpub({ bookId })
-  }
-  
   render() {
 
     const { library, books, fetchingBooks, navigation, setSort } = this.props
@@ -153,25 +144,6 @@ class Library extends React.Component {
                     <LibraryViewer
                       bookList={bookList}
                       navigation={navigation}
-                      setRemoveBookId={bookId => ActionSheet.show(
-                        {
-                          options: [
-                            { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
-                            { text: i18n("Cancel"), icon: "close" }
-                          ],
-                          destructiveButtonIndex: 0,
-                          cancelButtonIndex: 1,
-                          title: i18n(
-                            'Are you sure you want to remove "{{book_title}}" from this device?',
-                            {
-                              book_title: books[bookId].title,
-                            }
-                          ),
-                        },
-                        buttonIndex => {
-                          if(buttonIndex == 0) this.removeBook(bookId)
-                        }
-                      )}
                     />
                   </Content>
                   {showOptions && 

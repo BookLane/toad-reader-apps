@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
 
 import fetchEpub from "../../utils/fetchEpub.js"
+import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
 import { setDownloadStatus } from "../../redux/actions.js";
 
@@ -33,12 +34,12 @@ class LibraryBook extends React.Component {
   }
   
   onLongPress() {
-    const { bookId, confirmRemove } = this.props
+    const { bookId, books, setDownloadStatus } = this.props
 
     if(this.getDownloadStatus(bookId) == 0) {
       this.onPress()
     } else {
-      confirmRemove()
+      confirmRemoveEPub({ books, bookId, setDownloadStatus })
     }
   }
 
