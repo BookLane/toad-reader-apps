@@ -52,7 +52,17 @@
         "1:-1",
         "2:3"
       ],
-      "downloadStatus": 1
+      "downloadStatus": 1,
+      "toc": [
+        {
+          "label": "Chapter 1",
+          "href": "chapter1.xhtml"
+        },
+        {
+          "label": "Chapter 2",
+          "href": "chapter2.xhtml"
+        }
+      ]
     }
   },
   "userDataByBookId": {

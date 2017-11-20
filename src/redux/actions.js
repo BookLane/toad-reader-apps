@@ -10,6 +10,12 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
+export const setTOC = ({ bookId, toc }) => ({
+  type: "SET_TOC",
+  bookId,
+  toc,
+})
+
 export const setSort = ({ sort }) => ({
   type: "SET_SORT",
   sort,

@@ -5,7 +5,6 @@ import { View } from "native-base"
 import { StyleSheet } from "react-native"
 
 import LibraryBook from "../basic/LibraryBook.js"
-import fetchEpub from "../../utils/fetchEpub.js"
 import BookInfo from "../basic/BookInfo.js"
 
 const styles = StyleSheet.create({

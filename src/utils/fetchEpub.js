@@ -2,7 +2,7 @@ import { FileSystem } from "expo"
 import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 
-const fetchEpub = async ({ domain, bookId, checkWasCancelled, success }) => {
+const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
   
   const epubBaseUrl = `https://${domain}/epub_content/book_${bookId}/`
   const localBaseUri = `${FileSystem.documentDirectory}books/${bookId}/`
@@ -65,8 +65,6 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled, success }) => {
     await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
     return
   }
-
-  success && success()
 
   console.log(`Done downloading from ${epubBaseUrl}.`)
 }

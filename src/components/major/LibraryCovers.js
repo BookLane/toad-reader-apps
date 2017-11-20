@@ -5,7 +5,6 @@ import { View } from "native-base"
 import { StyleSheet, Dimensions } from "react-native"
 
 import LibraryBook from "../basic/LibraryBook.js"
-import fetchEpub from "../../utils/fetchEpub.js"
 import Cover from "../basic/Cover.js"
 
 const MAXIMUM_BOOK_WIDTH = 100

@@ -19,7 +19,8 @@
     "react-redux": "5.0.6",
     "reduce-reducers": "0.1.2",
     "redux": "3.7.2",
-    "redux-persist": "4.10.1"
+    "redux-persist": "4.10.1",
+    "xml2js": "0.4.19"
   },
   "devDependencies": {
     "redux-devtools": "^3.4.0"

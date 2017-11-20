@@ -44,9 +44,21 @@ export default function(state = initialState, action) {
 
     case "SET_DOWNLOADED_STATUS":
       if(newState[action.bookId]) {
+        if(action.downloadStatus == 0) {
+          delete newState[action.bookId].toc
+        }
         newState[action.bookId] = {
           ...newState[action.bookId],
           downloadStatus: action.downloadStatus,
+        }
+      }
+      return newState
+
+    case "SET_TOC":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          toc: action.toc,
         }
       }
       return newState
