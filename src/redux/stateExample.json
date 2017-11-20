@@ -55,12 +55,22 @@
       "downloadStatus": 1,
       "toc": [
         {
-          "label": "Chapter 1",
-          "href": "chapter1.xhtml"
+          "label": "Part 1",
+          "href": "part1.xhtml",
+          "subNav": [
+            {
+              "label": "Chapter 1",
+              "href": "chapter1.xhtml"
+            },
+            {
+              "label": "Chapter 2",
+              "href": "chapter2.xhtml"
+            }
+          ]
         },
         {
-          "label": "Chapter 2",
-          "href": "chapter2.xhtml"
+          "label": "Part 2",
+          "href": "part2.xhtml"
         }
       ]
     }

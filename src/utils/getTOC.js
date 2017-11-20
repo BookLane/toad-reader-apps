@@ -57,8 +57,17 @@ const getTOC = async ({ bookId }) => {
       }
     }
     
-    console.log(findNavToc(navObj))
-    console.log(navObj)
+    const navToc = findNavToc(navObj)
+
+    const getTocObjInfo = ol => ol.map(li => ({
+      label: (li.$ && li.$.title) || li._,
+      href: li.$ && li.$.href,
+      subNav: li.ol && getTocObjInfo(li.ol[0]),
+    }))
+
+    const toc = getTocObjInfo(navToc.ol[0])
+
+    return toc
 
   } catch(e) {
 
@@ -91,16 +100,26 @@ const getTOC = async ({ bookId }) => {
 
 
 
-//       "toc": [
-//         {
-//           "label": "Chapter 1",
-//           "href": "chapter1.xhtml"
-//         },
-//         {
-//           "label": "Chapter 2",
-//           "href": "chapter2.xhtml"
-//         }
-//       ]
+      // "toc": [
+      //   {
+      //     "label": "Part 1",
+      //     "href": "part1.xhtml",
+      //     "subNav": [
+      //       {
+      //         "label": "Chapter 1",
+      //         "href": "chapter1.xhtml"
+      //       },
+      //       {
+      //         "label": "Chapter 2",
+      //         "href": "chapter2.xhtml"
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     "label": "Part 2",
+      //     "href": "part2.xhtml"
+      //   }
+      // ]
 
 
 }
