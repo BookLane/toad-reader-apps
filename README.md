@@ -14,3 +14,5 @@
 - Periodically, a book that normally displays does not display
 - On some books, characters might be corrupted by android ajax hack
 - first time I open the app, book images do not show
+- I believe that internal links also cause page turns or middle tab (they shouldn't)
+- I belive external links are not handled properly
