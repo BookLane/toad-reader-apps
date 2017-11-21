@@ -29,10 +29,6 @@ class Page extends React.Component {
             source={{
               uri: `${FileSystem.documentDirectory}reader/index.html`
                 + `?epub=${encodeURIComponent(`${FileSystem.documentDirectory}books/${bookId}`)}`
-              // uri: 'https://www.desiringgod.org/'
-              // html: `<html><body style="background: red;">Hello<img src="image1.png" /></body></html>`,
-              // html: `Hello world<br>hi<br>hi<br>hi!!`,
-              // baseUrl: `${FileSystem.documentDirectory}test/GoogleDoc/images/test.html`,
             }}
             mixedContentMode="always"
             onError={e => console.log('webview error', e)}
