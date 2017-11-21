@@ -73,7 +73,7 @@
           "href": "part2.xhtml"
         }
       ],
-      "spine": [
+      "spines": [
         {
           "label": "Part 1",
           "numPages": 1
