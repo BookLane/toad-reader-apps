@@ -13,6 +13,7 @@ import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 import Options from "../major/Options.js"
 import Spin from "../basic/Spin.js"
+import PageCapture from "../major/PageCapture.js"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
@@ -118,7 +119,12 @@ class Library extends React.Component {
           books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope.split(':')[0])
         ))
       )
-  
+
+    const pageCaptureBookIds = Object.keys(books).filter(bookId => {
+      const book = books[bookId]
+      return book.downloadStatus == 2 && book.spines && book.spines.some(spine => spine.numPages == null)
+    })
+    
     return (
       <Container>
         <LibraryHeader
@@ -145,6 +151,12 @@ class Library extends React.Component {
                       bookList={bookList}
                       navigation={navigation}
                     />
+                    {pageCaptureBookIds.map(bookId => (
+                      <PageCapture
+                        key={bookId}
+                        bookId={bookId}
+                      />
+                    ))}
                   </Content>
                   {showOptions && 
                     <Options

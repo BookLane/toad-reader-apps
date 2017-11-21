@@ -10,8 +10,8 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
-export const setTOC = ({ bookId, toc }) => ({
-  type: "SET_TOC",
+export const setTocAndPrepSpines = ({ bookId, toc }) => ({
+  type: "SET_TOC_AND_PREP_SPINES",
   bookId,
   toc,
 })

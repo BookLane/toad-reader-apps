@@ -18,7 +18,7 @@ const getXmlAsObj = async url => {
   )
 }
 
-const getTOC = async ({ bookId }) => {
+const getToc = async ({ bookId }) => {
   
   const localBaseUri = `${FileSystem.documentDirectory}books/${bookId}/`
 
@@ -90,4 +90,4 @@ const getTOC = async ({ bookId }) => {
 
 }
 
-export default getTOC
+export default getToc

@@ -46,6 +46,7 @@ export default function(state = initialState, action) {
       if(newState[action.bookId]) {
         if(action.downloadStatus == 0) {
           delete newState[action.bookId].toc
+          delete newState[action.bookId].spines
         }
         newState[action.bookId] = {
           ...newState[action.bookId],
@@ -54,11 +55,33 @@ export default function(state = initialState, action) {
       }
       return newState
 
-    case "SET_TOC":
+    case "SET_TOC_AND_PREP_SPINES":
+
+      const getSpinesFromToc = toc => {
+        let spines = []
+        const spineHrefs = {}
+  
+        ;(toc || []).forEach(tocItem => {
+          const spineHrefWithoutHash = tocItem.href.replace(/#.*$/, '')
+
+          if(spineHrefs[spineHrefWithoutHash]) return
+          spineHrefs[spineHrefWithoutHash] = true
+
+          spines.push({
+            "label": tocItem.label,
+            "href": spineHrefWithoutHash,
+          })
+          spines = [...spines, ...getSpinesFromToc(tocItem.subNav)]
+        })
+  
+        return spines
+      }
+        
       if(newState[action.bookId]) {
         newState[action.bookId] = {
           ...newState[action.bookId],
           toc: action.toc,
+          spines: getSpinesFromToc(action.toc),
         }
       }
       return newState
