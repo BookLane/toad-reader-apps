@@ -30,7 +30,7 @@ class Highlights extends React.Component {
           </Card>
         </Content>
       </Container>
-    );
+    )
   }
 }
 

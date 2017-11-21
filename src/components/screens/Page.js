@@ -37,7 +37,7 @@ class Page extends React.Component {
             mixedContentMode="always"
             onError={e => console.log('webview error', e)}
             onMessage={event => {
-              const data = JSON.parse(event.nativeEvent.data);
+              const data = JSON.parse(event.nativeEvent.data)
               switch(data.identifier) {
                 case 'consoleLog':
                   console.log('consoleLog', data.payload.message)
@@ -86,7 +86,7 @@ class Page extends React.Component {
           </Button> */}
         </Content>
       </Container>
-    );
+    )
   }
 }
 

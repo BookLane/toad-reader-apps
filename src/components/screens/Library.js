@@ -57,7 +57,7 @@ class Library extends React.Component {
           response = await fetch(libraryUrl)
         }
         if(response.status != 200) {
-          throw new Error('Unable to fetch library');
+          throw new Error('Unable to fetch library')
         }
         const books = await response.json()
         // TODO: needs to call function to remove books that are no longer in the account
@@ -87,12 +87,12 @@ class Library extends React.Component {
   }
   
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
+    AppState.addEventListener('change', this._handleAppStateChange)
     this.fetchAll()
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
+    AppState.removeEventListener('change', this._handleAppStateChange)
   }
 
   _handleAppStateChange = () => {
@@ -170,7 +170,7 @@ class Library extends React.Component {
         }
         {/* TODO: Add modal for error message */}
       </Container>
-    );
+    )
   }
 }
 

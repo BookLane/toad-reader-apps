@@ -21,7 +21,7 @@ class Chooser extends React.Component {
           </Button>
         </Content>
       </Container>
-    );
+    )
   }
 }
 
