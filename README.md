@@ -7,6 +7,7 @@
 - Make edges of page clickable for turning pages, etc
 - Do not start a download if there is no internet connection
 - Handle book download error
+- Add refresh library menu item
 
 ### Bugs
 
