@@ -72,6 +72,11 @@
           "label": "Part 2",
           "href": "part2.xhtml"
         }
+      ],
+      "spine": [
+        12,
+        3,
+        5
       ]
     }
   },
