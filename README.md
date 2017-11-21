@@ -12,6 +12,7 @@
 
 ### Bugs
 
+- toc data getting wiped on relaunch of app
 - Bloodlines does not display
 - Periodically, a book that normally displays does not display
 - On some books, characters might be corrupted by android ajax hack
