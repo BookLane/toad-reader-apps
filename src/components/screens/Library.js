@@ -49,7 +49,7 @@ class Library extends React.Component {
 
         // update books
         const [ idpId, userId ] = accountId.split(':')
-        // await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
+        await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
         if(response.status == 403) {
