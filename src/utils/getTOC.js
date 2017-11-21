@@ -1,3 +1,5 @@
+// See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
+
 import { FileSystem } from "expo"
 import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
@@ -44,28 +46,37 @@ const getTOC = async ({ bookId }) => {
   
     const navObj = await getXmlAsObj(`${localBaseUri}${navRelativeUri}`)
 
-
     const findNavToc = objOrArray => {
       if(objOrArray instanceof Array) {
-        for(let i=0; i<arrayElement.length; i++) {
-          const nav = findNavToc(arrayElement)
+        for(let i=0; i<objOrArray.length; i++) {
+          const nav = findNavToc(objOrArray[i])
           if(nav) return nav
         }
       } else if(typeof objOrArray == 'object') {
-        const isNavToc = objOrArray.nav && objOrArray.nav.$ && objOrArray.nav.$['epub:type'] == "toc"
-        return (isNavToc && objOrArray.nav) || findNavToc(Object.values(objOrArray))
+        if(objOrArray.nav) {
+          let navToc
+          ;(objOrArray.nav instanceof Array ? objOrArray.nav : [objOrArray.nav]).some(nav => {
+            if(nav.$ && nav.$['epub:type'] == "toc") {
+              navToc = nav
+              return true
+            }
+          })
+          if(navToc) return navToc
+          delete objOrArray.nav
+        }
+        return findNavToc(Object.values(objOrArray))
       }
     }
     
-    const navToc = findNavToc(navObj)
+    const navTocObj = findNavToc(navObj)
 
-    const getTocObjInfo = ol => ol.map(li => ({
-      label: (li.$ && li.$.title) || li._,
-      href: li.$ && li.$.href,
+    const getTocObjInfo = ol => ol.li.map(li => ({
+      label: li.a[0].$.title || li.a[0]._,
+      href: li.a[0].$.href,
       subNav: li.ol && getTocObjInfo(li.ol[0]),
     }))
 
-    const toc = getTocObjInfo(navToc.ol[0])
+    const toc = getTocObjInfo(navTocObj.ol[0])
 
     return toc
 
@@ -76,51 +87,6 @@ const getTOC = async ({ bookId }) => {
     return []
     
   }
-
-// <?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="en" xml:lang="en">
-//   <head>
-//     <meta charset="utf-8"/>
-//   </head>
-//   <body>
-//     <nav epub:type="toc" id="toc">
-//       <ol>
-//         <li id="front">
-//           <a href="Untitleddocument.xhtml">Untitled document</a>
-//         </li>
-//         <li>
-//           <a href="Untitleddocument.xhtml#h.lnei1otvw6z3">Test</a>
-//         </li>
-//         <li>
-//           <a href="Untitleddocument.xhtml#h.p720cs4aizw6">Asdf</a>
-//         </li>
-//       </ol>
-//     </nav>
-//   </body>
-// </html>
-
-
-
-      // "toc": [
-      //   {
-      //     "label": "Part 1",
-      //     "href": "part1.xhtml",
-      //     "subNav": [
-      //       {
-      //         "label": "Chapter 1",
-      //         "href": "chapter1.xhtml"
-      //       },
-      //       {
-      //         "label": "Chapter 2",
-      //         "href": "chapter2.xhtml"
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     "label": "Part 2",
-      //     "href": "part2.xhtml"
-      //   }
-      // ]
-
 
 }
 
