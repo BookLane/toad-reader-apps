@@ -8,6 +8,7 @@
 - Do not start a download if there is no internet connection
 - Handle book download error
 - Add refresh library menu item
+- Progress bar on book download
 
 ### Bugs
 
