@@ -16,6 +16,12 @@ export const setTocAndPrepSpines = ({ bookId, toc }) => ({
   toc,
 })
 
+export const setSpines = ({ bookId, spines }) => ({
+  type: "SET_SPINES",
+  bookId,
+  spines,
+})
+
 export const setSort = ({ sort }) => ({
   type: "SET_SORT",
   sort,

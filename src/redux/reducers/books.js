@@ -86,6 +86,15 @@ export default function(state = initialState, action) {
       }
       return newState
 
+    case "SET_SPINES":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          spines: action.spines,
+        }
+      }
+      return newState
+
   }
 
   return state
