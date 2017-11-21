@@ -74,9 +74,22 @@
         }
       ],
       "spine": [
-        12,
-        3,
-        5
+        {
+          "label": "Part 1",
+          "numPages": 1
+        },
+        {
+          "label": "Chapter 1",
+          "numPages": 12
+        },
+        {
+          "label": "Chapter 2",
+          "numPages": 14
+        },
+        {
+          "label": "Part 2",
+          "numPages": 22
+        }
       ]
     }
   },
