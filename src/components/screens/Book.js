@@ -33,12 +33,11 @@ class Book extends React.Component {
 
     const BookViewComponent = bookView == 'pages' ? BookPages : BookContents
 
-console.log(books, bookId, books[bookId])
     return (
       <Container>
         <BookHeader
           bookId={bookId}
-          subtitle={subtitle}
+          subtitle={bookView == 'pages' && subtitle}
           navigation={navigation}
           bookView={bookView}
           toggleBookView={() => this.setState({

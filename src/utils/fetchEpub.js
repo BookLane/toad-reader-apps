@@ -10,7 +10,7 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
   console.log(`Downloading epub from ${epubBaseUrl}...`)
 
   // get the zip file
-  const data = await new JSZip.external.Promise((resolve, reject) => {
+  const zipData = await new JSZip.external.Promise((resolve, reject) => {
     JSZipUtils.getBinaryContent(`${epubBaseUrl}book.epub`, (err, data) => {
       if(err) {
         reject(err)
@@ -24,7 +24,7 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
   await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
 
   // unzip
-  const zip = await JSZip.loadAsync(data)
+  const zip = await JSZip.loadAsync(zipData)
 
   // create all necessary dirs
   const dirs = []
@@ -40,7 +40,7 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
 
   // write unzipped files 
   const writePromises = []
-  zip.forEach(async (relativePath, file) => {
+  zip.forEach((relativePath, file) => {
     if(file.dir) return
 
     if(relativePath.match(/\.(jpeg|jpg|png|git|mp4|mp3|webm|otf|ttf|fnt)$/i)) {
@@ -56,8 +56,14 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
       return
     }
 
-    const content = await file.async('binarystring')
-    writePromises.push(FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content))
+    writePromises.push(
+      new Promise(resolve => {
+        file.async('binarystring').then(content => {
+          FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content).then(resolve)
+        })
+      })
+    )
+    
   })
   await Promise.all(writePromises)
 
