@@ -9,6 +9,7 @@
 - Handle book download error
 - Add refresh library menu item
 - Progress bar on book download
+- Before pushing live, make sure the cache policy on the reader files is right (or use a bust string). Also, handle scenario where they have no internet connection.
 
 ### Bugs
 
