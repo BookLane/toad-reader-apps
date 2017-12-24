@@ -20,7 +20,7 @@ class BookPages extends React.Component {
         <Text>Book pages</Text>
         <Button full rounded dark
           style={{ marginTop: 10 }}
-          onPress={() => this.props.navigation.goBack()}
+          onPress={() => navigation.goBack()}
         >
           <Text>Back to reading</Text>
         </Button>
