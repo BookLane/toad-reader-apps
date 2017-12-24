@@ -3,7 +3,7 @@ import { FileSystem } from "expo"
 import downloadAsync from "./downloadAsync.js"
 
 // configuration constants
-const readerAssetsLastUpdatedDate = `2017-11-14_33`  // this needs to be updated any time any reader files are updated
+const readerAssetsLastUpdatedDate = `2017-12-24__18`  // this needs to be updated any time any reader files are updated
 const readerAssetsRemoteURL = `https://s3-us-west-2.amazonaws.com/biblemesh-readium-dev/cloud-reader-lite/`
 const readerAssetFiles = [
   'index.html',
@@ -42,7 +42,7 @@ const updateReader = async () => {
   console.log(`Download updated reader...`)
   
   await FileSystem.deleteAsync(readerDir, { idempotent: true })
-  
+
   await Promise.all(
     readerAssetFiles.map(readerAssetFile => (
       downloadAsync(
@@ -52,7 +52,7 @@ const updateReader = async () => {
     ))
   )
 
-  await FileSystem.writeAsStringAsync(`${readerDir}/lastUpdateDate.txt`, readerAssetsLastUpdatedDate)
+  await FileSystem.writeAsStringAsync(lastUpdateDateUri, readerAssetsLastUpdatedDate)
 
   console.log(`Done downloading reader.`)
         
