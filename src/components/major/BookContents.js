@@ -20,7 +20,7 @@ class BookContents extends React.Component {
   render() {
 
     const { navigation, books } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId, goToHref } = navigation.state.params
 
     const getListItems = (toc, indentLevel=0) => {
       let listItems = []
@@ -30,7 +30,10 @@ class BookContents extends React.Component {
           <ListItem
             key={`${tocItem.label}-${tocItem.href}`}
             style={{...baseListItemStyle, paddingLeft: indentLevel * 15 }}
-            onPress={() => this.props.navigation.goBack()}
+            onPress={() => {
+              goToHref(tocItem.href)
+              navigation.goBack()
+            }}
           >
             <Text>{tocItem.label}</Text>
           </ListItem>

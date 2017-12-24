@@ -39,16 +39,26 @@ class Page extends React.Component {
                   console.log('consoleLog', data.payload.message)
                   break;
                 case 'showPageListView':
+                  const goToHref = href => {
+                    console.log('postMessage (goToHref) to webview: ' + href)
+                    this.webView.postMessage(percentageEscape(JSON.stringify({
+                      identifier: 'goToHref',
+                      payload: {
+                        href,
+                      },
+                    })))
+                  }
                   this.props.navigation.navigate("Book", {
                     pageKey: this.props.navigation.state.key,
                     bookId,
+                    goToHref,
                   })
                   break;
                 case 'getFileAsText':
                   const uri = data.payload.uri
                   FileSystem.readAsStringAsync(`${uri}`)
                     .then(fileText => {
-                      console.log('postMessage to webview: ' + uri)
+                      console.log('postMessage (fileAsText) to webview: ' + uri)
                       this.webView.postMessage(percentageEscape(JSON.stringify({
                         identifier: 'fileAsText',
                         payload: {
@@ -58,7 +68,7 @@ class Page extends React.Component {
                       })))
                     })
                     .catch(fileText => {
-                      console.log('postMessage (error) to webview: ' + uri)
+                      console.log('postMessage (fileAsText--error) to webview: ' + uri)
                       this.webView.postMessage(percentageEscape(JSON.stringify({
                         identifier: 'fileAsText',
                         payload: {
