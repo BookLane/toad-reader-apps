@@ -24,7 +24,7 @@ class PageCapture extends React.Component {
     ;(books[bookId].spines || []).some(spine => {
       if(spine.numPages == null) {
 
-        setTimeout(() => {
+        // setTimeout(() => {
 
 // I AM HERE
 
@@ -38,13 +38,13 @@ class PageCapture extends React.Component {
 // Also, I want to extract getFileAsText since it is used in two different
 // components, or else create a PageWebView component that has this.
 
-          this.webView.postMessage(percentageEscape(JSON.stringify({
-            identifier: 'loadSpineAndGetPagesInfo',
-            payload: {
-              spineIdRef: 'main', //spine.href,
-            },
-          })))
-        }, 2000)
+          // this.webView.postMessage(percentageEscape(JSON.stringify({
+          //   identifier: 'loadSpineAndGetPagesInfo',
+          //   payload: {
+          //     spineIdRef: 'main', //spine.href,
+          //   },
+          // })))
+        // }, 2000)
 
         return true
       }
@@ -80,7 +80,7 @@ class PageCapture extends React.Component {
               const uri = data.payload.uri
               FileSystem.readAsStringAsync(`${uri}`)
                 .then(fileText => {
-                  console.log('postMessage to webview: ' + uri)
+                  console.log('postMessage (fileAsText) to webview: ' + uri)
                   this.webView.postMessage(percentageEscape(JSON.stringify({
                     identifier: 'fileAsText',
                     payload: {
@@ -90,7 +90,7 @@ class PageCapture extends React.Component {
                   })))
                 })
                 .catch(fileText => {
-                  console.log('postMessage (error) to webview: ' + uri)
+                  console.log('postMessage (fileAsText--error) to webview: ' + uri)
                   this.webView.postMessage(percentageEscape(JSON.stringify({
                     identifier: 'fileAsText',
                     payload: {
