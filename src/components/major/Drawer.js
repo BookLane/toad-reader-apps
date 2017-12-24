@@ -28,7 +28,7 @@ class Drawer extends React.Component {
 
   render() {
 
-    const { accounts, idps, books, setDownloadStatus } = this.props
+    const { accounts, idps, books, setDownloadStatus, navigation } = this.props
     const accountIdpIds = []
     const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
       const idpId = accountId.split(':')[0]
@@ -50,7 +50,7 @@ class Drawer extends React.Component {
           <List>
             <ListItem icon
               button
-              onPress={() => this.props.navigation.navigate("Library", { scope: "all" })}
+              onPress={() => navigation.navigate("Library", { scope: "all" })}
             >
               <Left>
                 <Icon name="book" />
@@ -63,7 +63,7 @@ class Drawer extends React.Component {
               <ListItem icon
                 key={id}
                 button
-                onPress={() => this.props.navigation.navigate("Library", { scope: id })}
+                onPress={() => navigation.navigate("Library", { scope: id })}
               >
                 <Left>
                   <Icon name="book" />
@@ -78,7 +78,7 @@ class Drawer extends React.Component {
             ))}
             <ListItem icon
               button
-              onPress={() => this.props.navigation.navigate("Library", { scope: "device" })}
+              onPress={() => navigation.navigate("Library", { scope: "device" })}
             >
               <Left>
                 <Icon name="checkmark" />
@@ -90,7 +90,7 @@ class Drawer extends React.Component {
             <Separator bordered />
             <ListItem icon
               button
-              onPress={() => this.props.navigation.navigate("Accounts")}
+              onPress={() => navigation.navigate("Accounts")}
             >
               <Left>
                 <Icon name="person" />

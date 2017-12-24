@@ -64,7 +64,7 @@ class Book extends React.Component {
                 },
                 {
                   text: i18n("My highlights and notes"),
-                  onPress: () => this.props.navigation.navigate("Highlights"),
+                  onPress: () => navigation.navigate("Highlights"),
                 },
                 {
                   text: i18n("Remove from device"),
@@ -73,7 +73,7 @@ class Book extends React.Component {
                     bookId,
                     setDownloadStatus,
                     done: () => {
-                      this.props.navigation.goBack(this.props.navigation.state.params.pageKey)
+                      navigation.goBack(navigation.state.params.pageKey)
                     }
                   }),
                 },

@@ -3,6 +3,7 @@ import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Car
 
 class Chooser extends React.Component {
   render() {
+    const { navigation } = this.props
     return (
       <Container>
         <Content padder>
@@ -15,7 +16,7 @@ class Chooser extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.goBack()}
+            onPress={() => navigation.goBack()}
           >
             <Text>Back</Text>
           </Button>

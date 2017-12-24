@@ -48,8 +48,8 @@ class Page extends React.Component {
                       },
                     })))
                   }
-                  this.props.navigation.navigate("Book", {
-                    pageKey: this.props.navigation.state.key,
+                  navigation.navigate("Book", {
+                    pageKey: navigation.state.key,
                     bookId,
                     goToHref,
                   })
@@ -87,7 +87,7 @@ class Page extends React.Component {
           {/* 
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={() => this.props.navigation.navigate("Chooser")}>
+            onPress={() => navigation.navigate("Chooser")}>
             <Text>Page Chooser (comes up if current location unknown)</Text>
           </Button> */}
         </Content>
