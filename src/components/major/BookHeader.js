@@ -2,7 +2,7 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
-import { StatusBar } from "react-native"
+// import { StatusBar } from "react-native"
 import AppHeader from "../basic/AppHeader.js"
 
 // import {  } from "../../redux/actions.js"
@@ -10,11 +10,11 @@ import AppHeader from "../basic/AppHeader.js"
 class BookHeader extends React.Component {
 
   componentDidMount() {
-    StatusBar.setHidden(false)
+    // StatusBar.setHidden(false)
   }
 
   componentWillUnmount() {
-    this.skipHideStatusBar || StatusBar.setHidden(true)
+    // this.skipHideStatusBar || StatusBar.setHidden(true)
   }
 
   render() {
@@ -27,8 +27,8 @@ class BookHeader extends React.Component {
           <Button
             transparent
             onPress={() => {
-              this.skipHideStatusBar = true
-              this.props.navigation.goBack(this.props.navigation.state.params.pageKey)
+              // this.skipHideStatusBar = true
+              navigation.goBack(navigation.state.params.pageKey)
             }}
           >
             <Icon name="home" />
