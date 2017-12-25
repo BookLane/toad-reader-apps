@@ -1,9 +1,8 @@
 import React from "react"
 import { Container, Content } from "native-base"
-import { WebView, StatusBar } from "react-native"
-import { FileSystem } from "expo"
+import { StatusBar } from "react-native"
 
-import { patchPostMessageJsCode, percentageEscape } from "../../utils/fixes.js"
+import PageWebView from "../major/PageWebView"
 
 class Page extends React.Component {
 
@@ -23,21 +22,11 @@ class Page extends React.Component {
     return (
       <Container>
         <Content contentContainerStyle={{flex: 1}}>
-          <WebView
-            injectedJavaScript={patchPostMessageJsCode}
-            ref={view => this.webView = view}
-            source={{
-              uri: `${FileSystem.documentDirectory}reader/index.html`
-                + `?epub=${encodeURIComponent(`${FileSystem.documentDirectory}books/${bookId}`)}`
-            }}
-            mixedContentMode="always"
-            onError={e => console.log('webview error', e)}
-            onMessage={event => {
-              const data = JSON.parse(event.nativeEvent.data)
+          <PageWebView
+            bookId={bookId}
+            setWebViewEl={webViewEl => this.webView = webViewEl}
+            onMessage={data => {
               switch(data.identifier) {
-                case 'consoleLog':
-                  console.log('consoleLog', data.payload.message)
-                  break;
                 case 'showPageListView':
                   const goToHref = href => {
                     console.log('postMessage (goToHref) to webview: ' + href)
@@ -53,34 +42,7 @@ class Page extends React.Component {
                     bookId,
                     goToHref,
                   })
-                  break;
-                case 'getFileAsText':
-                  const uri = data.payload.uri
-                  FileSystem.readAsStringAsync(`${uri}`)
-                    .then(fileText => {
-                      console.log('postMessage (fileAsText) to webview: ' + uri)
-                      this.webView.postMessage(percentageEscape(JSON.stringify({
-                        identifier: 'fileAsText',
-                        payload: {
-                          uri,
-                          fileText,
-                        },
-                      })))
-                    })
-                    .catch(fileText => {
-                      console.log('postMessage (fileAsText--error) to webview: ' + uri)
-                      this.webView.postMessage(percentageEscape(JSON.stringify({
-                        identifier: 'fileAsText',
-                        payload: {
-                          uri: uri,
-                          error: true,
-                        },
-                      })))
-                    })
-                  break;
-                default:
-                  console.log(data.identifier, JSON.stringify(data.payload))
-                  break;
+                  return true
               }
             }}
           />
