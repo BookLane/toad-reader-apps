@@ -17,9 +17,8 @@ class PagesPage extends React.Component {
     return (
       <View
         style={{
-          borderWidth: 1,
-          borderColor: '#000000',
-          borderRadius: 2,
+          borderWidth: 2,
+          borderColor: 'transparent',
           backgroundColor: '#ffffff',
           marginBottom: 10,
           marginRight: 10,
