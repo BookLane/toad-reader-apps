@@ -30,6 +30,8 @@ export default function(state = initialState, action) {
           totalCharacterCount: book.totalCharacterCount,
           coverFilename: (book.coverHref || "").split('/').pop(),
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
+          toc: (state[book.id] && state[book.id].toc) || undefined,
+          spines: (state[book.id] && state[book.id].spines) || undefined,
           accountIds: [
             ...((newState[book.id] && newState[book.id].accountIds) || []),
             action.accountId,
