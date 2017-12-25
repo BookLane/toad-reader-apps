@@ -4,13 +4,6 @@ import { connect } from "react-redux"
 import { Text, List, ListItem } from "native-base"
 import { StyleSheet } from "react-native"
 
-const styles = StyleSheet.create({
-  container: {
-    minHeight: 300,
-    zIndex: 1,
-  },
-})
-
 const baseListItemStyle = {
   backgroundColor: 'transparent',
 }
@@ -43,7 +36,7 @@ class BookContents extends React.Component {
 
       return listItems
     }
-    
+
     return (
       <List>
         {getListItems(books[bookId].toc)}

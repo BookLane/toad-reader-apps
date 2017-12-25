@@ -21,11 +21,8 @@ const styles = StyleSheet.create({
 
 class LibraryCovers extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      bookWidth: MAXIMUM_BOOK_WIDTH,
-    }
+  state={
+    bookWidth: MAXIMUM_BOOK_WIDTH,
   }
 
   componentDidMount() {
