@@ -4,6 +4,8 @@ import { StatusBar } from "react-native"
 
 import PageWebView from "../major/PageWebView"
 
+import { postMessage } from "../../utils/postMessage.js"
+
 class Page extends React.Component {
 
   componentDidMount() {
@@ -28,19 +30,10 @@ class Page extends React.Component {
             onMessage={data => {
               switch(data.identifier) {
                 case 'showPageListView':
-                  const goToHref = href => {
-                    console.log('postMessage (goToHref) to webview: ' + href)
-                    this.webView.postMessage(percentageEscape(JSON.stringify({
-                      identifier: 'goToHref',
-                      payload: {
-                        href,
-                      },
-                    })))
-                  }
                   navigation.navigate("Book", {
                     pageKey: navigation.state.key,
                     bookId,
-                    goToHref,
+                    goToHref: href => postMessage(this.webView, 'goToHref', { href }),
                   })
                   return true
               }

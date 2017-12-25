@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { WebView, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 
-import { patchPostMessageJsCode, percentageEscape } from "../../utils/fixes.js"
+import { postMessage } from "../../utils/postMessage.js"
 
 import PageWebView from "./PageWebView"
 
@@ -28,14 +28,9 @@ console.log('getPageInfo')
       if(spine.numPages == null) {
 
         setTimeout(() => {
-
-console.log('get spine', spine.href)
-          this.webView.postMessage(percentageEscape(JSON.stringify({
-            identifier: 'loadSpineAndGetPagesInfo',
-            payload: {
-              spineIdRef: spine.href,
-            },
-          })))
+          postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
+            spineIdRef: spine.href,
+          })
         }, 1000)
 
         return true

@@ -2,7 +2,7 @@ import React from "react"
 import { View, WebView, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 
-import { patchPostMessageJsCode, percentageEscape } from "../../utils/fixes.js"
+import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 
 class PageWebView extends React.Component {
 
@@ -64,24 +64,17 @@ class PageWebView extends React.Component {
                 const { uri } = data.payload
                 FileSystem.readAsStringAsync(`${uri}`)
                   .then(fileText => {
-                    console.log('postMessage (fileAsText) to webview: ' + uri)
-                    this.webView.postMessage(percentageEscape(JSON.stringify({
-                      identifier: 'fileAsText',
-                      payload: {
-                        uri,
-                        fileText,
-                      },
-                    })))
+                    postMessage(this.webView, 'fileAsText', {
+                      uri,
+                      fileText,
+                    })
                   })
                   .catch(fileText => {
-                    console.log('postMessage (fileAsText--error) to webview: ' + uri)
-                    this.webView.postMessage(percentageEscape(JSON.stringify({
-                      identifier: 'fileAsText',
-                      payload: {
-                        uri: uri,
-                        error: true,
-                      },
-                    })))
+                    console.log('getFileAsText error: ' + uri)
+                    postMessage(this.webView, 'fileAsText', {
+                      uri,
+                      error: true,
+                    })
                   })
                 break;
               default:
