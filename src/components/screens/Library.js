@@ -1,5 +1,5 @@
 import React from "react"
-import { AppState, StyleSheet, Dimensions } from "react-native"
+import { AppState, StyleSheet } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
@@ -12,7 +12,7 @@ import LibraryCovers from "../major/LibraryCovers.js"
 import LibraryList from "../major/LibraryList.js"
 import Options from "../major/Options.js"
 import Spin from "../basic/Spin.js"
-import PageCapture from "../major/PageCapture.js"
+import PageCaptureManager from "../major/PageCaptureManager.js"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
@@ -119,19 +119,6 @@ class Library extends React.Component {
         ))
       )
 
-    const pageCaptureBookIds = Object.keys(books).filter(bookId => {
-      const book = books[bookId]
-      const { width, height } = Dimensions.get('window')
-      return
-        book.downloadStatus == 2
-        && book.spines
-        && book.spines.some(spine => (
-          spine.numPages == null
-          || spine.numPages[`${width}x${height}`] == null
-          || spine.numPages[`${height}x${width}`] == null
-        ))
-    })
-    
     return (
       <Container>
         <LibraryHeader
@@ -158,12 +145,7 @@ class Library extends React.Component {
                       bookList={bookList}
                       navigation={navigation}
                     />
-                    {pageCaptureBookIds.map(bookId => (
-                      <PageCapture
-                        key={bookId}
-                        bookId={bookId}
-                      />
-                    ))}
+                    <PageCaptureManager />
                   </Content>
                   {showOptions && 
                     <Options

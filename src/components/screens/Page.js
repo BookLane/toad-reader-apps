@@ -18,6 +18,7 @@ class Page extends React.Component {
 
   onMessageEvent = data => {
     const { navigation } = this.props
+    const { bookId } = navigation.state.params || {}
 
     switch(data.identifier) {
       case 'showPageListView':
@@ -32,8 +33,7 @@ class Page extends React.Component {
 
   render() {
     const { navigation } = this.props
-
-    let { bookId } = navigation.state.params || {}
+    const { bookId } = navigation.state.params || {}
 
     return (
       <Container>

@@ -1,8 +1,6 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { WebView, Dimensions } from "react-native"
-import { FileSystem } from "expo"
 
 import { postMessage } from "../../utils/postMessage.js"
 
@@ -16,46 +14,32 @@ class PageCapture extends React.Component {
     this.getPageInfo()
   }
 
-  getPageInfo = newProps => {
-    const { bookId, books } = newProps || this.props
-    const { width, height } = Dimensions.get('window')
+  componentDidUpdate() {
+    this.getPageInfo()
+  }
 
-    // return
-    //   book.downloadStatus == 2
-    //   && book.spines
-    //   && book.spines.some(spine => (
-    //     spine.numPages == null
-    //     || spine.numPages[`${width}x${height}`] == null
-    //     || spine.numPages[`${height}x${width}`] == null
-  
-// console.log('getPageInfo', books[bookId])
-    // ;(books[bookId].spines || []).some(spine => {
-    //   if(spine.numPages == null) {
+  getPageInfo = () => {
+    const { spineIdRef } = this.props
 
-    //     setTimeout(() => {
-    //       postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
-    //         spineIdRef: spine.idref,
-    //       })
-    //     }, 1000)
-
-    //     return true
-    //   }
-    // })
+    postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
+      spineIdRef,
+    })
   }
 
   onMessageEvent = data => {
-    const { bookId, books, setSpines } = this.props
     
     switch(data.identifier) {
       case 'pagesInfo':
-        const spines = [...books[bookId].spines] || []
-{/* console.log('pagesInfo', data.payload) */}
+        const { bookId, spines, width, height, setSpines } = this.props
         
         spines.some((spine, index) => {
-          if(spine.href == data.payload.spineIdRef) {
+          if(spine.idref == data.payload.spineIdRef) {
             spines[index] = {
               ...spine,
-              numPages: data.payload.numPages,
+              numPages: {
+                ...(spine.numPages || {}),
+                [`${width}x${height}`]: data.payload.numPages,
+              }
             }
             return true
           }
@@ -63,24 +47,21 @@ class PageCapture extends React.Component {
         
         setSpines({ bookId, spines })
 
-        this.getPageInfo()
-
         return true
     }
   }
 
   render() {
-    const { bookId, books } = this.props
-
-    const windowDimentions = Dimensions.get('window')
+    const { bookId, width, height, spineIdRef } = this.props
 
     return (
       <PageWebView
+        id={spineIdRef}  // meant to force an 'update'
         style={{
           position: 'absolute',
-          width: windowDimentions.width,
-          height: windowDimentions.height,
-          top: windowDimentions.width + windowDimentions.height,
+          width,
+          height,
+          top: (width + height) * 10,  // simply to ensure it is out of view
           left: 0,
         }}
         bookId={bookId}
@@ -92,7 +73,6 @@ class PageCapture extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  books: state.books,
 })
 
 const  matchDispatchToProps = (dispatch, x) => bindActionCreators({

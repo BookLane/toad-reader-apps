@@ -39,6 +39,7 @@ class BookPages extends React.Component {
     const { navigation, books } = this.props
     const { bookId, goToHref } = navigation.state.params
     const { pageWidth, pageHeight } = this.state
+    const { width, height } = Dimensions.get('window')
 
     return (
       <View
@@ -48,7 +49,8 @@ class BookPages extends React.Component {
         {(books[bookId].spines || []).map((spine, index) => {
 
           const pages = []
-          for(let i=0; i<(spine.numPages || 5); i++) {
+          const numPages = (spine.numPages && spine.numPages[`${width}x${height}`]) || 1
+          for(let i=0; i<numPages; i++) {
             pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
           }
 
