@@ -11,6 +11,10 @@ class PageWebView extends React.Component {
     height: '100%',
   }
 
+  componentDidMount() {
+    this.calcSize()
+  }
+
   calcSize = () => {
     // I do this and everything else related to size to avoid a flash in android caused by 
     // the status bar existing for a half second in the transition
@@ -18,12 +22,45 @@ class PageWebView extends React.Component {
     this.setState({ width, height })
   }
 
-  componentDidMount() {
-    this.calcSize()
+  onMessageEvent = event => {
+    const { onMessage } = this.props
+    const data = JSON.parse(event.nativeEvent.data)
+
+    if(onMessage && onMessage(data)) return
+
+    switch(data.identifier) {
+
+      case 'consoleLog':
+        console.log('consoleLog', data.payload.message)
+        break;
+
+      case 'getFileAsText':
+        const { uri } = data.payload
+        FileSystem.readAsStringAsync(`${uri}`)
+          .then(fileText => {
+            postMessage(this.webView, 'fileAsText', {
+              uri,
+              fileText,
+            })
+          })
+          .catch(fileText => {
+            console.log('getFileAsText error: ' + uri)
+            postMessage(this.webView, 'fileAsText', {
+              uri,
+              error: true,
+            })
+          })
+        break;
+
+      default:
+        console.log(data.identifier, JSON.stringify(data.payload))
+        break;
+
+    }
   }
 
   render() {
-    const { setWebViewEl, bookId, onMessage, style } = this.props
+    const { setWebViewEl, bookId, style } = this.props
     const { width, height } = this.state
 
     return (
@@ -51,37 +88,7 @@ class PageWebView extends React.Component {
           }}
           mixedContentMode="always"
           onError={e => console.log('webview error', e)}
-          onMessage={event => {
-            const data = JSON.parse(event.nativeEvent.data)
-
-            if(onMessage && onMessage(data)) return
-
-            switch(data.identifier) {
-              case 'consoleLog':
-                console.log('consoleLog', data.payload.message)
-                break;
-              case 'getFileAsText':
-                const { uri } = data.payload
-                FileSystem.readAsStringAsync(`${uri}`)
-                  .then(fileText => {
-                    postMessage(this.webView, 'fileAsText', {
-                      uri,
-                      fileText,
-                    })
-                  })
-                  .catch(fileText => {
-                    console.log('getFileAsText error: ' + uri)
-                    postMessage(this.webView, 'fileAsText', {
-                      uri,
-                      error: true,
-                    })
-                  })
-                break;
-              default:
-                console.log(data.identifier, JSON.stringify(data.payload))
-                break;
-            }
-          }}
+          onMessage={this.onMessageEvent}
         />
       </View>
     )

@@ -15,14 +15,19 @@ class PageCapture extends React.Component {
   componentDidMount() {
     this.getPageInfo()
   }
-  
-  componentWillReceiveProps(newProps) {
-    this.getPageInfo()
-  }
 
   getPageInfo = newProps => {
     const { bookId, books } = newProps || this.props
+    const { width, height } = Dimensions.get('window')
 
+    // return
+    //   book.downloadStatus == 2
+    //   && book.spines
+    //   && book.spines.some(spine => (
+    //     spine.numPages == null
+    //     || spine.numPages[`${width}x${height}`] == null
+    //     || spine.numPages[`${height}x${width}`] == null
+  
 // console.log('getPageInfo', books[bookId])
     // ;(books[bookId].spines || []).some(spine => {
     //   if(spine.numPages == null) {
@@ -38,8 +43,34 @@ class PageCapture extends React.Component {
     // })
   }
 
-  render() {
+  onMessageEvent = data => {
     const { bookId, books, setSpines } = this.props
+    
+    switch(data.identifier) {
+      case 'pagesInfo':
+        const spines = [...books[bookId].spines] || []
+{/* console.log('pagesInfo', data.payload) */}
+        
+        spines.some((spine, index) => {
+          if(spine.href == data.payload.spineIdRef) {
+            spines[index] = {
+              ...spine,
+              numPages: data.payload.numPages,
+            }
+            return true
+          }
+        })
+        
+        setSpines({ bookId, spines })
+
+        this.getPageInfo()
+
+        return true
+    }
+  }
+
+  render() {
+    const { bookId, books } = this.props
 
     const windowDimentions = Dimensions.get('window')
 
@@ -54,26 +85,7 @@ class PageCapture extends React.Component {
         }}
         bookId={bookId}
         setWebViewEl={webViewEl => this.webView = webViewEl}
-        onMessage={data => {
-          switch(data.identifier) {
-            case 'pagesInfo':
-              const spines = [...books[bookId].spines] || []
-{/* console.log('pagesInfo', data.payload) */}
-              
-              spines.some((spine, index) => {
-                if(spine.href == data.payload.spineIdRef) {
-                  spines[index] = {
-                    ...spine,
-                    numPages: data.payload.numPages,
-                  }
-                  return true
-                }
-              })
-              
-              setSpines({ bookId, spines })
-              return true
-          }
-        }}
+        onMessage={this.onMessageEvent}
       />
     )
   }

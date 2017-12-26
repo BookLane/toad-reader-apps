@@ -16,6 +16,20 @@ class Page extends React.Component {
     StatusBar.setHidden(false)
   }
 
+  onMessageEvent = data => {
+    const { navigation } = this.props
+
+    switch(data.identifier) {
+      case 'showPageListView':
+        navigation.navigate("Book", {
+          pageKey: navigation.state.key,
+          bookId,
+          goToHref: href => postMessage(this.webView, 'goToHref', { href }),
+        })
+        return true
+    }
+  }
+
   render() {
     const { navigation } = this.props
 
@@ -27,17 +41,7 @@ class Page extends React.Component {
           <PageWebView
             bookId={bookId}
             setWebViewEl={webViewEl => this.webView = webViewEl}
-            onMessage={data => {
-              switch(data.identifier) {
-                case 'showPageListView':
-                  navigation.navigate("Book", {
-                    pageKey: navigation.state.key,
-                    bookId,
-                    goToHref: href => postMessage(this.webView, 'goToHref', { href }),
-                  })
-                  return true
-              }
-            }}
+            onMessage={this.onMessageEvent}
           />
           {/* 
           <Button full rounded dark
