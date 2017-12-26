@@ -2,7 +2,6 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Text, List, ListItem } from "native-base"
-import { StyleSheet } from "react-native"
 
 const baseListItemStyle = {
   backgroundColor: 'transparent',

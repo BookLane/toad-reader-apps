@@ -2,17 +2,12 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
-import { StyleSheet, Dimensions } from "react-native"
+import { Dimensions } from "react-native"
 
 import PagesSpine from "../basic/PagesSpine.js"
 import PagesPage from "../basic/PagesPage.js"
 
 const MAXIMUM_PAGE_SIZE = 150
-
-const styles = StyleSheet.create({
-  container: {
-  },
-})
 
 class BookPages extends React.Component {
 
@@ -43,7 +38,6 @@ class BookPages extends React.Component {
 
     return (
       <View
-        style={styles.container}
         onLayout={this.calcPageWidth}
       >
         {(books[bookId].spines || []).map((spine, index) => {
