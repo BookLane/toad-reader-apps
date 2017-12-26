@@ -77,22 +77,34 @@
         {
           "idref": "p1",
           "label": "Part 1",
-          "numPages": 1
+          "numPages": {
+            "640x320": 2,
+            "320x640": 3
+          }
         },
         {
           "idref": "p1-c1",
           "label": "Chapter 1",
-          "numPages": 12
+          "numPages": {
+            "640x320": 12,
+            "320x640": 11
+          }
         },
         {
           "idref": "p1-c2",
           "label": "Chapter 2",
-          "numPages": 14
+          "numPages": {
+            "640x320": 21,
+            "320x640": 21
+          }
         },
         {
           "idref": "p2",
           "label": "Part 2",
-          "numPages": 22
+          "numPages": {
+            "640x320": 15,
+            "320x640": 17
+          }
         }
       ]
     }

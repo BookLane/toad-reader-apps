@@ -1,5 +1,5 @@
 import React from "react"
-import { AppState, StyleSheet } from "react-native"
+import { AppState, StyleSheet, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
@@ -121,7 +121,15 @@ class Library extends React.Component {
 
     const pageCaptureBookIds = Object.keys(books).filter(bookId => {
       const book = books[bookId]
-      return book.downloadStatus == 2 && book.spines && book.spines.some(spine => spine.numPages == null)
+      const { width, height } = Dimensions.get('window')
+      return
+        book.downloadStatus == 2
+        && book.spines
+        && book.spines.some(spine => (
+          spine.numPages == null
+          || spine.numPages[`${width}x${height}`] == null
+          || spine.numPages[`${height}x${width}`] == null
+        ))
     })
     
     return (
