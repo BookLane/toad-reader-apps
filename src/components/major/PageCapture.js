@@ -23,19 +23,19 @@ class PageCapture extends React.Component {
   getPageInfo = newProps => {
     const { bookId, books } = newProps || this.props
 
-console.log('getPageInfo')
-    ;(books[bookId].spines || []).some(spine => {
-      if(spine.numPages == null) {
+// console.log('getPageInfo', books[bookId])
+    // ;(books[bookId].spines || []).some(spine => {
+    //   if(spine.numPages == null) {
 
-        setTimeout(() => {
-          postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
-            spineIdRef: spine.href,
-          })
-        }, 1000)
+    //     setTimeout(() => {
+    //       postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
+    //         spineIdRef: spine.idref,
+    //       })
+    //     }, 1000)
 
-        return true
-      }
-    })
+    //     return true
+    //   }
+    // })
   }
 
   render() {
@@ -58,7 +58,7 @@ console.log('getPageInfo')
           switch(data.identifier) {
             case 'pagesInfo':
               const spines = [...books[bookId].spines] || []
-console.log('pagesInfo', data.payload)
+{/* console.log('pagesInfo', data.payload) */}
               
               spines.some((spine, index) => {
                 if(spine.href == data.payload.spineIdRef) {

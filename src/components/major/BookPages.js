@@ -45,31 +45,22 @@ class BookPages extends React.Component {
         style={styles.container}
         onLayout={this.calcPageWidth}
       >
-        {(books[bookId].spines || []).map((spine, index) => (
-          <PagesSpine
-            key={index}
-            heading={spine.label}
-          >
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-          </PagesSpine>
-        ))}
-        {(books[bookId].spines || []).map((spine, index) => (
-          <PagesSpine
-            key={index}
-            heading={spine.label}
-          >
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-            <PagesPage pageWidth={pageWidth} pageHeight={pageHeight} />
-          </PagesSpine>
-        ))}
+        {(books[bookId].spines || []).map((spine, index) => {
+
+          const pages = []
+          for(let i=0; i<(spine.numPages || 5); i++) {
+            pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
+          }
+
+          return (
+            <PagesSpine
+              key={index}
+              heading={spine.label}
+            >
+              {pages}
+            </PagesSpine>
+          )
+        })}
         {/* <Button full rounded dark
           style={{ marginTop: 10 }}
           onPress={() => navigation.goBack()}

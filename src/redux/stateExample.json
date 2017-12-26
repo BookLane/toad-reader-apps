@@ -75,18 +75,22 @@
       ],
       "spines": [
         {
+          "idref": "p1",
           "label": "Part 1",
           "numPages": 1
         },
         {
+          "idref": "p1-c1",
           "label": "Chapter 1",
           "numPages": 12
         },
         {
+          "idref": "p1-c2",
           "label": "Chapter 2",
           "numPages": 14
         },
         {
+          "idref": "p2",
           "label": "Part 2",
           "numPages": 22
         }

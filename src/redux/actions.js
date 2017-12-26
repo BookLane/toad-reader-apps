@@ -10,10 +10,11 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
-export const setTocAndPrepSpines = ({ bookId, toc }) => ({
-  type: "SET_TOC_AND_PREP_SPINES",
+export const setTocAndSpines = ({ bookId, toc, spines }) => ({
+  type: "SET_TOC_AND_SPINES",
   bookId,
   toc,
+  spines,
 })
 
 export const setSpines = ({ bookId, spines }) => ({

@@ -4,10 +4,10 @@ import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
 
 import fetchEpub from "../../utils/fetchEpub.js"
-import getToc from "../../utils/getToc.js"
+import parseEpub from "../../utils/parseEpub.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, setTocAndPrepSpines } from "../../redux/actions.js";
+import { setDownloadStatus, setTocAndSpines } from "../../redux/actions.js";
 
 class LibraryBook extends React.Component {
 
@@ -17,7 +17,7 @@ class LibraryBook extends React.Component {
   }
 
   async onPress() {
-    const { bookId, navigation, setDownloadStatus, setTocAndPrepSpines, idps, books } = this.props
+    const { bookId, navigation, setDownloadStatus, setTocAndSpines, idps, books } = this.props
     const downloadStatus = this.getDownloadStatus(bookId)
 
     if(downloadStatus == 2) {
@@ -30,8 +30,8 @@ class LibraryBook extends React.Component {
         bookId,
         checkWasCancelled: () => (this.getDownloadStatus(bookId) != 1),
       })
-      const toc = await getToc({ bookId })
-      setTocAndPrepSpines({ bookId, toc })
+      const { toc, spines } = await parseEpub({ bookId })
+      setTocAndSpines({ bookId, toc, spines })
       setDownloadStatus({ bookId, downloadStatus: 2 })
     }
   }
@@ -65,7 +65,7 @@ const mapStateToProps = (state) => ({
 
 const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
-  setTocAndPrepSpines,
+  setTocAndSpines,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryBook)
