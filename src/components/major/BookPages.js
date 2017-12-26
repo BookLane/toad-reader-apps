@@ -1,8 +1,7 @@
 import React from "react"
+import { Dimensions, FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "native-base"
-import { Dimensions } from "react-native"
 
 import PagesSpine from "../basic/PagesSpine.js"
 import PagesPage from "../basic/PagesPage.js"
@@ -11,22 +10,23 @@ const MAXIMUM_PAGE_SIZE = 150
 
 class BookPages extends React.Component {
 
-  state={
-    pageWidth: 0,
-    pageHeight: 0,
+  constructor() {
+    super()
+    this.state={
+      ...(this.getPageSize()),
+    }
   }
 
-  componentDidMount() {
-    this.calcPageWidth()
-  }
-
-  calcPageWidth = () => {
+  getPageSize = () => {
     const { width, height } = Dimensions.get('window')
     const maxWidth = height < width ? MAXIMUM_PAGE_SIZE : MAXIMUM_PAGE_SIZE * ( width / height )
     const pagesPerRow = parseInt(width / maxWidth)
     const pageWidth = (width - ((pagesPerRow + 1) * 10)) / pagesPerRow
     const pageHeight = pageWidth / ( width / height )
-    this.setState({ pageWidth, pageHeight })
+    return {
+      pageWidth,
+      pageHeight,
+    }
   }
 
   render() {
@@ -37,34 +37,30 @@ class BookPages extends React.Component {
     const { width, height } = Dimensions.get('window')
 
     return (
-      <View
-        onLayout={this.calcPageWidth}
-      >
-        {(books[bookId].spines || []).map((spine, index) => {
+      <FlatList
+        onLayout={() => this.setState({ ...(this.getPageSize()) })}
+        data={(books[bookId].spines || [])}
+        renderItem={({item}) => {
 
           const pages = []
-          const numPages = (spine.numPages && spine.numPages[`${width}x${height}`]) || 1
+          const numPages = (item.numPages && item.numPages[`${width}x${height}`]) || 1
           for(let i=0; i<numPages; i++) {
             pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
           }
 
           return (
             <PagesSpine
-              key={index}
-              heading={spine.label}
+              heading={item.label}
             >
               {pages}
             </PagesSpine>
           )
-        })}
-        {/* <Button full rounded dark
-          style={{ marginTop: 10 }}
-          onPress={() => navigation.goBack()}
-        >
-          <Text>Back to reading</Text>
-        </Button> */}
-      </View>
+        }}
+        keyExtractor={item => item.idref}
+        extraData={{ selected: pageWidth }}  // used to force render
+      />
     )
+
   }
 }
 

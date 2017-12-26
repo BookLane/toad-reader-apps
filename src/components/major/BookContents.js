@@ -1,7 +1,8 @@
 import React from "react"
+import { FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Text, List, ListItem } from "native-base"
+import { Text, ListItem } from "native-base"
 
 const baseListItemStyle = {
   backgroundColor: 'transparent',
@@ -9,37 +10,45 @@ const baseListItemStyle = {
 
 class BookContents extends React.Component {
 
-  render() {
+  getListItems = (toc, indentLevel=0) => {
+    let listItems = []
 
+    ;(toc || []).forEach(tocItem => {
+      listItems = [
+        ...listItems,
+        {
+          ...tocItem,
+          indentLevel,
+        },
+        ...this.getListItems(tocItem.subNav, indentLevel+1),
+      ]
+    })
+
+    return listItems
+  }
+
+  renderItem = ({ item }) => (
+    <ListItem
+      style={{...baseListItemStyle, paddingLeft: item.indentLevel * 15 }}
+      onPress={() => {
+        goToHref(item.href)
+        navigation.goBack()
+      }}
+    >
+      <Text>{item.label}</Text>
+    </ListItem>
+  )
+
+  render() {
     const { navigation, books } = this.props
     const { bookId, goToHref } = navigation.state.params
 
-    const getListItems = (toc, indentLevel=0) => {
-      let listItems = []
-
-      ;(toc || []).forEach(tocItem => {
-        listItems.push(
-          <ListItem
-            key={`${tocItem.label}-${tocItem.href}`}
-            style={{...baseListItemStyle, paddingLeft: indentLevel * 15 }}
-            onPress={() => {
-              goToHref(tocItem.href)
-              navigation.goBack()
-            }}
-          >
-            <Text>{tocItem.label}</Text>
-          </ListItem>
-        )
-        listItems = [...listItems, ...getListItems(tocItem.subNav, indentLevel+1)]
-      })
-
-      return listItems
-    }
-
     return (
-      <List>
-        {getListItems(books[bookId].toc)}
-      </List>
+      <FlatList
+        data={this.getListItems(books[bookId].toc)}
+        renderItem={this.renderItem}
+        keyExtractor={item => `${item.label}-${item.href}`}
+      />
     )
   }
 }
