@@ -1,32 +1,42 @@
 import React from "react"
 import { View } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback } from "react-native"
 
 import PagesBookmark from "./PagesBookmark.js"
 
 const styles = StyleSheet.create({
-  image: {
+  page: {
+    backgroundColor: '#ffffff',
+    width: '100%',
+    height: '100%',
   },
 })
 
 class PagesPage extends React.Component {
 
+  
   render() {
-    const { children, header, pageWidth, pageHeight } = this.props
+    const { children, header, pageWidth, pageHeight, goToPage} = this.props
+
+    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
+    const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
 
     return (
       <View
         style={{
-          borderWidth: 2,
-          borderColor: 'transparent',
-          backgroundColor: '#ffffff',
           marginBottom: 10,
           marginRight: 10,
           width: pageWidth,
           height: pageHeight,
         }}
       >
-        <PagesBookmark />
+        <TouchableComponent
+          onPress={goToPage}
+          background={TouchableBackground}
+          delayPressIn={0}
+        >
+          <View style={styles.page} />
+        </TouchableComponent>
       </View>
     )
   }

@@ -30,13 +30,23 @@ class BookPages extends React.Component {
   }
 
   renderItem = ({ item }) => {
+    const { goToPage } = this.props
     const { pageWidth, pageHeight } = this.state
     const { width, height } = Dimensions.get('window')
+    const { numPages={}, idref } = item
 
     const pages = []
-    const numPages = (item.numPages && item.numPages[`${width}x${height}`]) || 1
-    for(let i=0; i<numPages; i++) {
-      pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
+    const numPagesThisSize = numPages[`${width}x${height}`] || 1
+    for(let i=0; i<numPagesThisSize; i++) {
+      const pageIndexInSpine = i
+      pages.push(
+        <PagesPage
+          key={i}
+          pageWidth={pageWidth}
+          pageHeight={pageHeight}
+          goToPage={() => goToPage({ spineIdRef: idref, pageIndexInSpine })}
+        />
+      )
     }
 
     return (
