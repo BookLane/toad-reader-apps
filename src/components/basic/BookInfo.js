@@ -2,10 +2,10 @@ import React from "react"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
 
-import BookInfoCover from "./BookInfoCover.js"
-import BookInfoTitle from "./BookInfoTitle.js"
-import BookInfoAuthor from "./BookInfoAuthor.js"
-import BookInfoDetails from "./BookInfoDetails.js"
+import BookInfoCover from "./BookInfoCover"
+import BookInfoTitle from "./BookInfoTitle"
+import BookInfoAuthor from "./BookInfoAuthor"
+import BookInfoDetails from "./BookInfoDetails"
 
 const styles = StyleSheet.create({
   container: {

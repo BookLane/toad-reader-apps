@@ -3,10 +3,10 @@ import { StackNavigator } from "react-navigation"
 import { StyleSheet } from "react-native"
 
 import HomeNavigator from "./Home.js"
-import Chooser from "../components/screens/Chooser.js"
-import Book from "../components/screens/Book.js"
-import Highlights from "../components/screens/Highlights.js"
-import Accounts from "../components/screens/Accounts.js"
+import Chooser from "../components/screens/Chooser"
+import Book from "../components/screens/Book"
+import Highlights from "../components/screens/Highlights"
+import Accounts from "../components/screens/Accounts"
 
 const noHeader = {
   navigationOptions: ({navigation}) => ({

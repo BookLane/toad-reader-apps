@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
-import AppHeader from "../basic/AppHeader.js"
+import AppHeader from "../basic/AppHeader"
 
 import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
 

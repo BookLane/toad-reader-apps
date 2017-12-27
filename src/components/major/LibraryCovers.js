@@ -4,8 +4,8 @@ import { connect } from "react-redux"
 import { View } from "native-base"
 import { StyleSheet, Dimensions } from "react-native"
 
-import LibraryBook from "../basic/LibraryBook.js"
-import Cover from "../basic/Cover.js"
+import LibraryBook from "../basic/LibraryBook"
+import Cover from "../basic/Cover"
 
 const MAXIMUM_BOOK_WIDTH = 100
 

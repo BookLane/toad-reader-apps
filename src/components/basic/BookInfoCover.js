@@ -3,7 +3,7 @@ import { FileSystem } from "expo"
 import { Image, StyleSheet } from "react-native"
 import { View } from "native-base"
 
-import Spin from "./Spin.js"
+import Spin from "./Spin"
 
 const styles = StyleSheet.create({
   container: {

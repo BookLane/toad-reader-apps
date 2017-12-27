@@ -2,7 +2,7 @@ import React from "react"
 import { View } from "native-base"
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback } from "react-native"
 
-import PagesBookmark from "./PagesBookmark.js"
+import PagesBookmark from "./PagesBookmark"
 
 const styles = StyleSheet.create({
   page: {
@@ -35,7 +35,9 @@ class PagesPage extends React.Component {
           background={TouchableBackground}
           delayPressIn={0}
         >
-          <View style={styles.page} />
+          <View style={styles.page}>
+            <PagesBookmark />
+          </View>
         </TouchableComponent>
       </View>
     )

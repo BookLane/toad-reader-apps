@@ -7,12 +7,12 @@ import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 
-import LibraryHeader from "../major/LibraryHeader.js"
-import LibraryCovers from "../major/LibraryCovers.js"
-import LibraryList from "../major/LibraryList.js"
-import Options from "../major/Options.js"
-import Spin from "../basic/Spin.js"
-import PageCaptureManager from "../major/PageCaptureManager.js"
+import LibraryHeader from "../major/LibraryHeader"
+import LibraryCovers from "../major/LibraryCovers"
+import LibraryList from "../major/LibraryList"
+import Options from "../major/Options"
+import Spin from "../basic/Spin"
+import PageCaptureManager from "../major/PageCaptureManager"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 

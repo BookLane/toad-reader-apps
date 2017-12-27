@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
 
-import PageCapture from "./PageCapture.js"
+import PageCapture from "./PageCapture"
 
 class PageCaptureManager extends React.Component {
 

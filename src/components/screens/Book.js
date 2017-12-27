@@ -6,12 +6,12 @@ import { Container, Content } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import i18n from "../../utils/i18n.js"
 
-import BookPage from "../major/BookPage.js"
-import BookHeader from "../major/BookHeader.js"
-import BookPages from "../major/BookPages.js"
-import BookContents from "../major/BookContents.js"
-import BookProgress from "../major/BookProgress.js"
-import Options from "../major/Options.js"
+import BookPage from "../major/BookPage"
+import BookHeader from "../major/BookHeader"
+import BookPages from "../major/BookPages"
+import BookContents from "../major/BookContents"
+import BookProgress from "../major/BookProgress"
+import Options from "../major/Options"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 

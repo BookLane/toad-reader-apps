@@ -1,6 +1,6 @@
 import React from "react"
 import { Container, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
-import AppHeader from "../basic/AppHeader.js"
+import AppHeader from "../basic/AppHeader"
 
 class Highlights extends React.Component {
   render() {

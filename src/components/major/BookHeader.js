@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
 // import { StatusBar } from "react-native"
-import AppHeader from "../basic/AppHeader.js"
+import AppHeader from "../basic/AppHeader"
 
 // import {  } from "../../redux/actions.js"
 

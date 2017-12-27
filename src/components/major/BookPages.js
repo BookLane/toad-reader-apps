@@ -3,8 +3,8 @@ import { Dimensions, FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import PagesSpine from "../basic/PagesSpine.js"
-import PagesPage from "../basic/PagesPage.js"
+import PagesSpine from "../basic/PagesSpine"
+import PagesPage from "../basic/PagesPage"
 
 const MAXIMUM_PAGE_SIZE = 150
 

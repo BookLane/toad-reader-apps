@@ -4,8 +4,8 @@ import { connect } from "react-redux"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
 
-import LibraryBook from "../basic/LibraryBook.js"
-import BookInfo from "../basic/BookInfo.js"
+import LibraryBook from "../basic/LibraryBook"
+import BookInfo from "../basic/BookInfo"
 
 const styles = StyleSheet.create({
   container: {
