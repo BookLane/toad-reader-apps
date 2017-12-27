@@ -6,13 +6,19 @@ import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 
 class PageWebView extends React.Component {
 
-  state={
-    width: '100%',
-    height: '100%',
+  constructor() {
+    super()
+
+    const { width, height } = Dimensions.get('window')
+
+    this.state = {
+      width,
+      height,
+    }
   }
 
-  componentDidMount() {
-    this.calcSize()
+  componentWillUnmount() {
+    this.webView.unmounted = true
   }
 
   calcSize = () => {
@@ -29,6 +35,11 @@ class PageWebView extends React.Component {
     if(onMessage && onMessage(data)) return
 
     switch(data.identifier) {
+
+      case 'loaded':
+        console.log('reader loaded')
+        this.webView.loaded = true
+        break;
 
       case 'consoleLog':
         console.log('consoleLog', data.payload.message)

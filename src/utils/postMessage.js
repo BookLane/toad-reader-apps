@@ -25,9 +25,28 @@ export const patchPostMessageJsCode = '(' + String(patchPostMessageFunction) + '
 const percentageEscape = (str) => str.replace(/%/g, '{"}')
 
 export const postMessage = (webView, identifier, payload) => {
-  console.log(`postMessage (${identifier}) to webview`)
-  webView.postMessage(percentageEscape(JSON.stringify({
-    identifier,
-    payload,
-  })))
+
+  let attempts = 0
+
+  const goPostMessage = () => {
+    if(attempts++ > 1875) {  // i.e. 30 seconds
+      console.log(`postMessage (${identifier}) to webview failed due to too many attempts`)
+      
+    } else if(webView.unmounted) {
+      console.log(`postMessage (${identifier}) to webview failed due to webview no longer existing`)
+
+    } else if(!webView.loaded) {
+      setTimeout(goPostMessage, 16)
+
+    } else {
+      console.log(`postMessage (${identifier}) to webview`)
+      webView.postMessage(percentageEscape(JSON.stringify({
+        identifier,
+        payload,
+      })))
+    }
+  }
+
+  goPostMessage()
+
 }
