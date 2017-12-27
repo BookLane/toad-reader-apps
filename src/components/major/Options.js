@@ -1,11 +1,12 @@
 import React from "react"
 import { Card, CardItem, Icon, Text, View } from "native-base"
 import { StyleSheet, TouchableWithoutFeedback, BackHandler } from "react-native"
+import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 0,
+    top: nativeBasePlatformVariables.toolbarHeight,
     bottom: 0,
     right: 0,
     left: 0,

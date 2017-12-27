@@ -24,9 +24,6 @@ const styles = StyleSheet.create({
   spinnerContainer: {
     padding: 40,
   },
-  libraryContainer: {
-    flex: 1,
-  },
 })
 
 class Library extends React.Component {
@@ -139,36 +136,35 @@ class Library extends React.Component {
                 <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
               )
               : (
-                <View style={styles.libraryContainer}>
-                  <Content>
-                    <LibraryViewer
-                      bookList={bookList}
-                      navigation={navigation}
-                    />
-                    <PageCaptureManager />
-                  </Content>
-                  {showOptions && 
-                    <Options
-                      requestHide={() => this.setState({ showOptions: false })}
-                      headerText={i18n("Sort by...")}
-                      options={[
-                        {
-                          text: i18n("Title"),
-                          selected: library.sort == 'title',
-                          onPress: () => setSort({ sort: 'title' }),
-                        },
-                        {
-                          text: i18n("Author"),
-                          selected: library.sort == 'author',
-                          onPress: () => setSort({ sort: 'author' }),
-                        },
-                      ]}
-                    />
-                  }
-                </View>
+                <Content>
+                  <LibraryViewer
+                    bookList={bookList}
+                    navigation={navigation}
+                  />
+                  <PageCaptureManager />
+                </Content>
               )
           )
         }
+        {showOptions && 
+          <Options
+            requestHide={() => this.setState({ showOptions: false })}
+            headerText={i18n("Sort by...")}
+            options={[
+              {
+                text: i18n("Title"),
+                selected: library.sort == 'title',
+                onPress: () => setSort({ sort: 'title' }),
+              },
+              {
+                text: i18n("Author"),
+                selected: library.sort == 'author',
+                onPress: () => setSort({ sort: 'author' }),
+              },
+            ]}
+          />
+        }
+        
         {/* TODO: Add modal for error message */}
       </Container>
     )

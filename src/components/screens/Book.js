@@ -142,38 +142,37 @@ class Book extends React.Component {
             navigation={navigation}
           />
         </View>
-        <Content>
-          {showOptions && mode !== 'page' &&
-            <Options
-              requestHide={() => this.setState({ showOptions: false })}
-              options={[
-                {
-                  text: i18n("Display settings"),
-                  onPress: () => alert('Display settings'),
-                },
-                {
-                  text: i18n("Recommend this book"),
-                  onPress: () => alert('Recommend this book'),
-                },
-                {
-                  text: i18n("My highlights and notes"),
-                  onPress: () => navigation.navigate("Highlights"),
-                },
-                {
-                  text: i18n("Remove from device"),
-                  onPress: () => confirmRemoveEPub({
-                    books,
-                    bookId,
-                    setDownloadStatus,
-                    done: () => {
-                      navigation.goBack(navigation.state.params.pageKey)
-                    }
-                  }),
-                },
-              ]}
-            />
-          }
-        </Content>
+        {showOptions && mode !== 'page' &&
+          <Options
+            requestHide={() => this.setState({ showOptions: false })}
+            options={[
+              {
+                text: i18n("Display settings"),
+                onPress: () => alert('Display settings'),
+              },
+              {
+                text: i18n("Recommend this book"),
+                onPress: () => alert('Recommend this book'),
+              },
+              {
+                text: i18n("My highlights and notes"),
+                onPress: () => navigation.navigate("Highlights"),
+              },
+              {
+                text: i18n("Remove from device"),
+                onPress: () => confirmRemoveEPub({
+                  books,
+                  bookId,
+                  setDownloadStatus,
+                  done: () => {
+                    navigation.goBack(navigation.state.params.pageKey)
+                  }
+                }),
+              },
+            ]}
+          />
+        }
+        <Content />
         <BookProgress
           hide={mode !== 'pages'}
         />
