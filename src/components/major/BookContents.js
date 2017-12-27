@@ -27,21 +27,25 @@ class BookContents extends React.Component {
     return listItems
   }
 
-  renderItem = ({ item }) => (
-    <ListItem
-      style={{...baseListItemStyle, paddingLeft: item.indentLevel * 15 }}
-      onPress={() => {
-        goToHref(item.href)
-        navigation.goBack()
-      }}
-    >
-      <Text>{item.label}</Text>
-    </ListItem>
-  )
+  renderItem = ({ item }) => {
+    const { goToHref } = this.props
+    const { href, indentLevel } = item
+
+    return (
+      <ListItem
+        style={{...baseListItemStyle, paddingLeft: indentLevel * 15 }}
+        onPress={() => {
+          goToHref({ href })
+        }}
+      >
+        <Text>{item.label}</Text>
+      </ListItem>
+    )
+  }
 
   render() {
     const { navigation, books } = this.props
-    const { bookId, goToHref } = navigation.state.params
+    const { bookId } = navigation.state.params
 
     return (
       <FlatList

@@ -5,7 +5,7 @@ class Spin extends React.Component {
 
   render() {
     return (
-      <Spinner color='#4075af' />
+      <Spinner color='#4075ae' />
     )
   }
 }

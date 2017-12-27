@@ -18,11 +18,13 @@ class BookHeader extends React.Component {
   }
 
   render() {
-    const { bookId, subtitle, navigation, bookView, toggleBookView, toggleShowOptions, books } = this.props
+    const { bookId, subtitle, navigation, bookView, toggleBookView, toggleShowOptions, books, hide } = this.props
     const { title } = books[bookId]
     
     return (
-      <AppHeader>
+      <AppHeader
+        hide={hide}
+      >
         <Left>
           <Button
             transparent

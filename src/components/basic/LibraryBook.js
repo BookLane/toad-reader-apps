@@ -21,7 +21,7 @@ class LibraryBook extends React.Component {
     const downloadStatus = this.getDownloadStatus(bookId)
 
     if(downloadStatus == 2) {
-      navigation.navigate("Page", { bookId })
+      navigation.navigate("Book", { bookId })
 
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })

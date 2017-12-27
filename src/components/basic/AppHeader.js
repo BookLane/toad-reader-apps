@@ -1,29 +1,32 @@
 import React from "react"
 import { Header } from "native-base"
 import { Platform } from "react-native"
+import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 class AppHeader extends React.Component {
 
   // There is a bug by which the backgroundColor in the header does not get set on load.
   // Thus, this component is a hack to force it to render properly.
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      backgroundColor: "#4075ae",
-    }
-  }
-
-  componentDidMount() {
-    this.setState({ backgroundColor: "#4075af" })
-  }
-
   render() {
+    const { hide } = this.props
+
+    const style = {
+      zIndex: 3,
+    }
+
+    if(hide) {
+      style.top = nativeBasePlatformVariables.toolbarHeight * -1
+    }
+
+    if(Platform.OS === 'android') {
+      style.backgroundColor = "#4075ae"
+    }
+
     return (
       <Header
-        backgroundColor={Platform.OS === 'ios' ? null : this.state.backgroundColor}
         androidStatusBarColor="#2c5b8e"
+        style={style}
       >
         {this.props.children}
       </Header>

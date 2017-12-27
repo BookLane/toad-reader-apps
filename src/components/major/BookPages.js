@@ -29,33 +29,35 @@ class BookPages extends React.Component {
     }
   }
 
-  render() {
-
-    const { navigation, books } = this.props
-    const { bookId, goToHref } = navigation.state.params
+  renderItem = ({ item }) => {
     const { pageWidth, pageHeight } = this.state
     const { width, height } = Dimensions.get('window')
+
+    const pages = []
+    const numPages = (item.numPages && item.numPages[`${width}x${height}`]) || 1
+    for(let i=0; i<numPages; i++) {
+      pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
+    }
+
+    return (
+      <PagesSpine
+        heading={item.label}
+      >
+        {pages}
+      </PagesSpine>
+    )
+  }
+
+  render() {
+    const { navigation, books } = this.props
+    const { bookId } = navigation.state.params
+    const { pageWidth } = this.state
 
     return (
       <FlatList
         onLayout={() => this.setState({ ...(this.getPageSize()) })}
         data={(books[bookId].spines || [])}
-        renderItem={({item}) => {
-
-          const pages = []
-          const numPages = (item.numPages && item.numPages[`${width}x${height}`]) || 1
-          for(let i=0; i<numPages; i++) {
-            pages.push(<PagesPage key={i} pageWidth={pageWidth} pageHeight={pageHeight} />)
-          }
-
-          return (
-            <PagesSpine
-              heading={item.label}
-            >
-              {pages}
-            </PagesSpine>
-          )
-        }}
+        renderItem={this.renderItem}
         keyExtractor={item => item.idref}
         extraData={{ selected: pageWidth }}  // used to force render
       />
