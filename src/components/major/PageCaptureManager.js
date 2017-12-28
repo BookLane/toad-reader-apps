@@ -10,11 +10,11 @@ class PageCaptureManager extends React.Component {
 
   render() {
     const { books } = this.props
-    let { width, height } = Dimensions.get('window')
 
     const pageCaptureObjs =
       Object.keys(books)
         .map(bookId => {
+          let { width, height } = Dimensions.get('window')
           const book = books[bookId] || {}
           const spines = book.spines
           let spineIdRef
