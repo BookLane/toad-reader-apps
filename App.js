@@ -15,11 +15,8 @@ import updateReader from "./src/utils/updateReader.js"
 const store = compose(autoRehydrate())(createStore)(reducers)
 
 export default class App extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      isReady: false,
-    }
+  state = {
+    isReady: false,
   }
 
   async componentWillMount() {

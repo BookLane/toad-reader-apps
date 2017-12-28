@@ -10,9 +10,9 @@ const MAXIMUM_PAGE_SIZE = 150
 
 class BookPages extends React.Component {
 
-  constructor() {
-    super()
-    this.state={
+  constructor(props) {
+    super(props)
+    this.state = {
       ...(this.getPageSize()),
     }
   }

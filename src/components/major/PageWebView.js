@@ -6,8 +6,8 @@ import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 
 class PageWebView extends React.Component {
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     const { width, height } = Dimensions.get('window')
 

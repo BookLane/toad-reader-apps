@@ -79,15 +79,12 @@ const styles = StyleSheet.create({
 
 class Book extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      mode: 'page',
-      subtitle: 'chapter here',
-      showOptions: false,
-      goToHref: null,
-      goToPage: null,
-    }
+  state = {
+    mode: 'page',
+    subtitle: 'chapter here',
+    showOptions: false,
+    goToHref: null,
+    goToPage: null,
   }
 
   componentDidMount() {

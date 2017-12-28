@@ -44,11 +44,8 @@ const styles = StyleSheet.create({
 
 class Cover extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      imageError: false,
-    }
+  state = {
+    imageError: false,
   }
   
   render() {

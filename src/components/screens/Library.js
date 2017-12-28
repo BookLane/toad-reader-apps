@@ -28,11 +28,8 @@ const styles = StyleSheet.create({
 
 class Library extends React.Component {
 
-  constructor() {
-    super()
-    this.state = {
-      showOptions: false,
-    }
+  state = {
+    showOptions: false,
   }
 
   async fetchAll() {
