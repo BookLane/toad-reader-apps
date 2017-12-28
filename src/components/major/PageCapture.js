@@ -23,13 +23,13 @@ class PageCapture extends React.Component {
   }
 
   getPageInfo = () => {
-    const { reportNoResponse, bookId, spineIdRef, width, height } = this.props
+    const { reportNoResponse, bookId, spineIdRef, width, height, timeout } = this.props
 
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
     })
     
-    this.getPageInfoTimeout = setTimeout(() => reportNoResponse({ bookId, spineIdRef, width, height }), 10000)
+    this.getPageInfoTimeout = setTimeout(() => reportNoResponse({ bookId, spineIdRef, width, height }), timeout)
   }
 
   onMessageEvent = data => {

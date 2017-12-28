@@ -6,35 +6,56 @@ import { View } from "native-base"
 
 import PageCapture from "./PageCapture"
 
+const INITIAL_LOAD_TIMEOUT = 2000
+
 class PageCaptureManager extends React.Component {
 
   state = {
-    skipList: [],
-    lastSkipList: [],
-    doubleSkipList: [],
+    skipList: {},
   }
 
   componentWillUnmount() {
     this.unmounted = true
   }
 
-  reportNoResponse = ({ bookId, spineIdRef, width, height }) => {
-    const { skipList, lastSkipList, doubleSkipList } = this.state
+  getKey = ({ bookId, spineIdRef, width, height }) => `${bookId} ${spineIdRef} ${width}x${height}`
 
-    const key = `${bookId} ${spineIdRef} ${width}x${height}`
+  reportNoResponse = ({ bookId, spineIdRef, width, height }) => {
+    if(this.unmounted) return
+
+    const { skipList } = this.state
+
+    const key = this.getKey({ bookId, spineIdRef, width, height })
+    const timeout = ((skipList[key] && skipList[key].timeout) || INITIAL_LOAD_TIMEOUT) * 2
 
     console.log('skip spine', key)
-    this.setState({ skipList: [...skipList, key] })
+    this.setState({
+      skipList: {
+        ...skipList,
+        [key]: {
+          skip: true,
+          timeout,
+        } 
+      }
+    })
 
-    if(lastSkipList.includes(key)) {
-      console.log('double-skip spine', key)
-      this.setState({ doubleSkipList: [...doubleSkipList, key] })
-    }
+    setTimeout(() => {
+      if(this.unmounted) return
+
+      const skipList = { ...this.state.skipList }
+      skipList[key] = {
+        ...skipList[key],
+        skip: false,
+      }
+      
+      this.setState({ skipList })
+      
+    }, timeout)
   }
 
   render() {
     const { books } = this.props
-    const { skipList, lastSkipList, doubleSkipList } = this.state
+    const { skipList } = this.state
 
     let pageCaptureObj
 
@@ -49,9 +70,10 @@ class PageCaptureManager extends React.Component {
           [ width, height ] = [ height, width ]
         }
         return spines.some(spine => {
+          const key = this.getKey({ bookId, spineIdRef: spine.idref, width, height })
           if(
             (!spine.numPages || spine.numPages[`${width}x${height}`] == null)
-            && !skipList.includes(`${bookId} ${spine.idref} ${width}x${height}`)
+            && !(skipList[key] || {}).skip
           ) {
             spineIdRef = spine.idref
             return true
@@ -65,41 +87,31 @@ class PageCaptureManager extends React.Component {
 
       if(!spineIdRef) continue
 
+      const key = this.getKey({ bookId, spineIdRef, width, height })
+
       pageCaptureObj = {
-        // key: bookId,
         bookId,
         spines,
         spineIdRef,
         width,
         height,
+        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_LOAD_TIMEOUT,
       }
 
       break
     }
    
     if(!pageCaptureObj) {
-      if(skipList.length == doubleSkipList.length) {
-        console.log('PageCaptureManager at rest', doubleSkipList)
-        if(lastSkipList.length > 0) {
-          setTimeout(() => {
-            if(this.unmounted) return
-            this.setState({
-              lastSkipList: [],
-            })
-          }, 16)
-        }
-      } else {
-        setTimeout(() => {
-          if(this.unmounted) return
-          this.setState({
-            skipList: [...doubleSkipList],
-            lastSkipList: [...skipList],
-          })
-        }, 16)
-      }
+      console.log('PageCaptureManager at rest. Skip list:', Object.keys(skipList))
+      return null
     }
 
-    return pageCaptureObj ? <PageCapture {...pageCaptureObj} reportNoResponse={this.reportNoResponse} /> : null
+    return (
+      <PageCapture
+        {...pageCaptureObj} 
+        reportNoResponse={this.reportNoResponse}
+      />
+    )
   }
 }
 
