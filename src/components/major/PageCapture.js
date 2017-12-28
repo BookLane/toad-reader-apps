@@ -14,16 +14,22 @@ class PageCapture extends React.Component {
     this.getPageInfo()
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return [ "bookId", "spineIdRef", "width", "height" ].some(key => this.props[key] != nextProps[key])
+  }
+
   componentDidUpdate() {
     this.getPageInfo()
   }
 
   getPageInfo = () => {
-    const { spineIdRef } = this.props
+    const { reportNoResponse, bookId, spineIdRef, width, height } = this.props
 
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
     })
+    
+    this.getPageInfoTimeout = setTimeout(() => reportNoResponse({ bookId, spineIdRef, width, height }), 10000)
   }
 
   onMessageEvent = data => {
@@ -31,6 +37,8 @@ class PageCapture extends React.Component {
     switch(data.identifier) {
       case 'pagesInfo':
         const { bookId, spines, width, height, setSpines } = this.props
+
+        clearTimeout(this.getPageInfoTimeout)
         
         spines.some((spine, index) => {
           if(spine.idref == data.payload.spineIdRef) {
@@ -44,7 +52,7 @@ class PageCapture extends React.Component {
             return true
           }
         })
-        
+
         setSpines({ bookId, spines })
 
         return true
@@ -52,11 +60,10 @@ class PageCapture extends React.Component {
   }
 
   render() {
-    const { bookId, width, height, spineIdRef } = this.props
+    const { bookId, width, height } = this.props
 
     return (
       <PageWebView
-        id={spineIdRef}  // meant to force an 'update'
         style={{
           position: 'absolute',
           width,

@@ -21,6 +21,14 @@ class PageWebView extends React.Component {
     this.webView.unmounted = true
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { bookId } = this.props
+
+    if(nextProps.bookId != bookId) {
+      delete this.webView.loaded
+    }
+  }
+
   calcSize = () => {
     // I do this and everything else related to size to avoid a flash in android caused by 
     // the status bar existing for a half second in the transition
