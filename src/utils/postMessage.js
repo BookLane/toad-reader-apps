@@ -32,7 +32,7 @@ export const postMessage = (webView, identifier, payload) => {
     if(attempts++ > 1875) {  // i.e. 30 seconds
       console.log(`postMessage (${identifier}) to webview failed due to too many attempts`)
       
-    } else if(webView.unmounted) {
+    } else if(!webView || webView.unmounted) {
       console.log(`postMessage (${identifier}) to webview failed due to webview no longer existing`)
 
     } else if(!webView.loaded) {
