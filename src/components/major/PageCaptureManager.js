@@ -20,6 +20,15 @@ class PageCaptureManager extends React.Component {
 
   getKey = ({ bookId, spineIdRef, width, height }) => `${bookId} ${spineIdRef} ${width}x${height}`
 
+  reportSuccess = ({ bookId, spineIdRef, width, height }) => {
+    const skipList = { ...this.state.skipList }
+    const key = this.getKey({ bookId, spineIdRef, width, height })
+
+    delete skipList[key]
+
+    this.setState({ skipList })
+  }
+
   reportNoResponse = ({ bookId, spineIdRef, width, height }) => {
     if(this.unmounted) return
 
@@ -102,13 +111,14 @@ class PageCaptureManager extends React.Component {
     }
    
     if(!pageCaptureObj) {
-      console.log('PageCaptureManager at rest. Skip list:', Object.keys(skipList))
+      console.log('PageCaptureManager at rest. Skip list:', skipList)
       return null
     }
 
     return (
       <PageCapture
         {...pageCaptureObj} 
+        reportSuccess={this.reportSuccess}
         reportNoResponse={this.reportNoResponse}
       />
     )

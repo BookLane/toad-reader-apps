@@ -36,7 +36,7 @@ class PageCapture extends React.Component {
     
     switch(data.identifier) {
       case 'pagesInfo':
-        const { bookId, spines, width, height, setSpines } = this.props
+        const { bookId, spines, width, height, reportSuccess, setSpines } = this.props
 
         clearTimeout(this.getPageInfoTimeout)
         
@@ -53,6 +53,7 @@ class PageCapture extends React.Component {
           }
         })
 
+        reportSuccess({ bookId, spineIdRef: data.payload.spineIdRef, width, height })
         setSpines({ bookId, spines })
 
         return true
