@@ -5,11 +5,15 @@
 ### ToDo's
 
 - Progress bar on book download
+- Book display settings
+- Highlights, note and sharing functionality
+- Authentication
 - Speed up initial page load by only doing load of BookPages and BookContents when it is done
 - Make edges of page clickable for turning pages, etc
 - Do not start a download if there is no internet connection
 - Handle book download error
 - Add refresh library menu item
+- Page flipping
 - Before pushing live, make sure the cache policy on the reader files is right (or use a bust string). Also, handle scenario where they have no internet connection.
 - Back button from BookPages / BookContents should go back to reading (?)
 - Library listing should become a FlatList (both views) to ensure it is still fast even on a big library
