@@ -4,7 +4,7 @@
 
 ### ToDo's
 
-- Progress bar on book download
+- Progress bar (for book navigation)
 - Book display settings
 - Highlights, note and sharing functionality
 - Authentication
@@ -18,6 +18,7 @@
 - Back button from BookPages / BookContents should go back to reading (?)
 - Library listing should become a FlatList (both views) to ensure it is still fast even on a big library
 - Get images for each page for BookPages (redo necessary pages on every highlight, be it on this device or another)
+- Progress bar on book download
 
 ### Bugs
 
