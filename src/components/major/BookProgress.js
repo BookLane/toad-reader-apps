@@ -1,36 +1,51 @@
 import React from "react"
+import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Footer, Text } from "native-base"
-import { Platform } from "react-native"
+import { Footer } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
+
+import ProgressDot from "../basic/ProgressDot"
 
 // import {  } from "../../redux/actions.js"
 
+const SIDE_SPACING = 20
+
+const styles = StyleSheet.create({
+  footer: {
+    backgroundColor: '#4075ae',
+    flexDirection: 'row',
+  },
+  line: {
+    backgroundColor: 'white',
+    flex: 1,
+    marginLeft: SIDE_SPACING,
+    marginRight: SIDE_SPACING,
+    height: 1,
+    top: nativeBasePlatformVariables.footerHeight / 2 - .5,
+  },
+})
+
 class BookProgress extends React.Component {
 
-  // There is a bug by which the backgroundColor in the header does not get set on load.
-  // Thus, this component is a hack to force it to render properly.
-  
   render() {
     const { hide } = this.props
 
-    const style = {}
-  
-    if(hide) {
-      style.top = nativeBasePlatformVariables.footerHeight
-    }
-  
-    if(Platform.OS === 'android') {
-      style.backgroundColor = "#4075ae"
-    }
-    
     return (
       <Footer
         androidStatusBarColor="#4075ae"
-        style={style}
+        style={styles.footer}
       >
-        <Text>progress shown here</Text>
+        <View style={styles.line}/>
+        <ProgressDot
+          left={SIDE_SPACING + 0}
+          size={30}
+          label="13%"
+        />
+        <ProgressDot
+          left={SIDE_SPACING + 100}
+          size={6}
+        />
       </Footer>
     )
   }
