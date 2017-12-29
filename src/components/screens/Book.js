@@ -115,7 +115,6 @@ class Book extends React.Component {
             showOptions: false,
           })}
           toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
-          hide={mode === 'page'}
         />
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage

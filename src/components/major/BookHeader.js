@@ -18,12 +18,12 @@ class BookHeader extends React.Component {
   }
 
   render() {
-    const { bookId, subtitle, navigation, bookView, toggleBookView, toggleShowOptions, books, hide } = this.props
+    const { bookId, subtitle, navigation, mode, toggleBookView, toggleShowOptions, books } = this.props
     const { title } = books[bookId]
     
     return (
       <AppHeader
-        hide={hide}
+        hide={mode === 'page'}
       >
         <Left>
           <Button
@@ -48,7 +48,7 @@ class BookHeader extends React.Component {
             transparent
             onPress={() => toggleBookView()}
           >
-            <Icon name={bookView == "pages" ? "list" : "apps"} />
+            <Icon name={mode === "pages" ? "list" : "apps"} />
           </Button>
           <Button
             transparent
