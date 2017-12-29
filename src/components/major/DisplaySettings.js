@@ -3,6 +3,8 @@ import { Card, CardItem, Button, Icon, Text, View, ListItem, Left, Radio } from 
 import { StyleSheet, TouchableHighlight, TouchableNativeFeedback, Platform } from "react-native"
 import i18n from "../../utils/i18n.js"
 
+import BackFunction from '../basic/BackFunction'
+
 const themeOptions = [
   {
     id: "author",
@@ -92,6 +94,7 @@ class DisplaySettings extends React.Component {
     
     return (
       <View style={styles.container}>
+        <BackFunction func={requestHide} />
         <Card style={styles.settings}>
 
           <View style={styles.headerContainer}>

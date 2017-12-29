@@ -1,7 +1,9 @@
 import React from "react"
 import { Card, CardItem, Icon, Text, View } from "native-base"
-import { StyleSheet, TouchableWithoutFeedback, BackHandler } from "react-native"
+import { StyleSheet, TouchableWithoutFeedback, BackAndroid } from "react-native"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
+
+import BackFunction from '../basic/BackFunction'
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +35,7 @@ class Options extends React.Component {
 
     return (
       <View style={styles.container}>
+        <BackFunction func={requestHide} />
         <TouchableWithoutFeedback
           onPress={requestHide}
         >
