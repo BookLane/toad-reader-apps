@@ -126,11 +126,11 @@ class Book extends React.Component {
         </View>
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
-          goToPage={params => {
-            goToPage(params)
-            this.setState({ mode: 'page' })
-          }}
-          navigation={navigation}
+            goToPage={params => {
+              goToPage(params)
+              this.setState({ mode: 'page' })
+            }}
+            navigation={navigation}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
