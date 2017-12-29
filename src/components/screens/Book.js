@@ -13,6 +13,7 @@ import BookContents from "../major/BookContents"
 import BookProgress from "../major/BookProgress"
 import Options from "../major/Options"
 import DisplaySettings from "../major/DisplaySettings"
+import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
@@ -120,6 +121,7 @@ class Book extends React.Component {
 
     return (
       <Container>
+        {mode !== 'page' && <BackFunction func={() => this.setState({ mode: 'page' })} />}
         <BookHeader
           bookId={bookId}
           subtitle={mode === 'pages' && subtitle}
