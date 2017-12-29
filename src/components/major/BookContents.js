@@ -1,12 +1,21 @@
 import React from "react"
 import { FlatList } from "react-native"
+// import { StyleSheet, View, FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Text, ListItem } from "native-base"
 
+// import Spin from "../basic/Spin"
+
 const baseListItemStyle = {
   backgroundColor: 'transparent',
 }
+
+// const styles = StyleSheet.create({
+//   spinnerContainer: {
+//     padding: 40,
+//   },
+// })
 
 class BookContents extends React.Component {
 
@@ -44,7 +53,16 @@ class BookContents extends React.Component {
   }
 
   render() {
-    const { bookId, books } = this.props
+    const { bookId, books, showWaiting } = this.props
+
+    if(showWaiting) {
+      return null
+      // return (
+      //   <View style={styles.spinnerContainer}>
+      //     <Spin />
+      //   </View>
+      // )
+    }
 
     return (
       <FlatList

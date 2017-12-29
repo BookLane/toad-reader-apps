@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
 class Book extends React.Component {
 
   state = {
+    bookLoaded: false,
     mode: 'page',
     subtitle: 'chapter here',
     showOptions: false,
@@ -115,7 +116,7 @@ class Book extends React.Component {
 
     const { navigation, books, setDownloadStatus } = this.props
     const { bookId } = navigation.state.params
-    const { mode, subtitle, showOptions, showSettings } = this.state
+    const { bookLoaded, mode, subtitle, showOptions, showSettings } = this.state
 
     return (
       <Container>
@@ -136,18 +137,21 @@ class Book extends React.Component {
             requestShowBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
             showSettings={showSettings}
             requestHideSettings={() => this.setState({ showSettings: false })}
+            indicateLoaded={() => this.setState({ bookLoaded: true })}
           />
         </View>
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
             goToPage={this.goToPage}
             bookId={bookId}
+            showWaiting={!bookLoaded}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
           <BookContents
             goToHref={this.goToHref}
             bookId={bookId}
+            showWaiting={!bookLoaded}
           />
         </View>
         {showOptions && mode !== 'page' &&

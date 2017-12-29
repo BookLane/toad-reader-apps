@@ -39,9 +39,13 @@ class BookPage extends React.Component {
   }
 
   onMessageEvent = data => {
-    const { bookId, requestShowBook } = this.props
+    const { bookId, requestShowBook, indicateLoaded } = this.props
 
     switch(data.identifier) {
+      case 'pageChanged':
+        indicateLoaded()
+        return false  // i.e. still process pageChanged in the general PageWebView component
+
       case 'showPageListView':
         requestShowBook({
           goToHref: params => postMessage(this.webView, 'goToHref', params),

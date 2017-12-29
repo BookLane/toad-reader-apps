@@ -1,12 +1,20 @@
 import React from "react"
 import { Dimensions, FlatList } from "react-native"
+// import { StyleSheet, Dimensions, FlatList, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
+// import Spin from "../basic/Spin"
 import PagesSpine from "../basic/PagesSpine"
 import PagesPage from "../basic/PagesPage"
 
 const MAXIMUM_PAGE_SIZE = 150
+
+// const styles = StyleSheet.create({
+//   spinnerContainer: {
+//     padding: 40,
+//   },
+// })
 
 class BookPages extends React.Component {
 
@@ -59,8 +67,17 @@ class BookPages extends React.Component {
   }
 
   render() {
-    const { bookId, books } = this.props
+    const { bookId, books, showWaiting } = this.props
     const { pageWidth } = this.state
+
+    if(showWaiting) {
+      return null
+      // return (
+      //   <View style={styles.spinnerContainer}>
+      //     <Spin />
+      //   </View>
+      // )
+    }
 
     return (
       <FlatList
