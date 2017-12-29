@@ -12,6 +12,7 @@ import BookPages from "../major/BookPages"
 import BookContents from "../major/BookContents"
 import BookProgress from "../major/BookProgress"
 import Options from "../major/Options"
+import DisplaySettings from "../major/DisplaySettings"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
@@ -83,6 +84,7 @@ class Book extends React.Component {
     mode: 'page',
     subtitle: 'chapter here',
     showOptions: false,
+    showSettings: false,
     goToHref: null,
     goToPage: null,
   }
@@ -99,7 +101,7 @@ class Book extends React.Component {
 
     const { navigation, books, setDownloadStatus } = this.props
     const { bookId } = navigation.state.params
-    const { mode, subtitle, showOptions, goToHref, goToPage } = this.state
+    const { mode, subtitle, showOptions, showSettings, goToHref, goToPage } = this.state
 
     return (
       <Container>
@@ -121,6 +123,11 @@ class Book extends React.Component {
             showBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
           />
         </View>
+        {showSettings && 
+          <DisplaySettings
+            requestHide={() => this.setState({ showSettings: false })}
+          />
+        }
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
           goToPage={params => {
@@ -145,7 +152,9 @@ class Book extends React.Component {
             options={[
               {
                 text: i18n("Display settings"),
-                onPress: () => alert('Display settings'),
+                onPress: () => {
+                  this.setState({ mode: 'page', showSettings: true })
+                },
               },
               {
                 text: i18n("Recommend this book"),
