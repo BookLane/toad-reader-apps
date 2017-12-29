@@ -59,8 +59,7 @@ class BookPages extends React.Component {
   }
 
   render() {
-    const { navigation, books } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId, books } = this.props
     const { pageWidth } = this.state
 
     return (

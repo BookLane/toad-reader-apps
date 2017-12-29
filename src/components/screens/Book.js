@@ -96,12 +96,26 @@ class Book extends React.Component {
   componentWillUnmount() {
     StatusBar.setHidden(false)
   }
+
+  goToPage = params => {
+    const { goToPage } = this.state
+
+    goToPage(params)
+    this.setState({ mode: 'page' })
+  }
   
+  goToHref = params => {
+    const { goToHref } = this.state
+
+    goToHref(params)
+    this.setState({ mode: 'page' })
+  }
+
   render() {
 
     const { navigation, books, setDownloadStatus } = this.props
     const { bookId } = navigation.state.params
-    const { mode, subtitle, showOptions, showSettings, goToHref, goToPage } = this.state
+    const { mode, subtitle, showOptions, showSettings } = this.state
 
     return (
       <Container>
@@ -118,28 +132,22 @@ class Book extends React.Component {
         />
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
-            navigation={navigation}
-            showBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
+            bookId={bookId}
+            requestShowBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
             showSettings={showSettings}
             requestHideSettings={() => this.setState({ showSettings: false })}
           />
         </View>
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
-            goToPage={params => {
-              goToPage(params)
-              this.setState({ mode: 'page' })
-            }}
-            navigation={navigation}
+            goToPage={this.goToPage}
+            bookId={bookId}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
           <BookContents
-            goToHref={params => {
-              goToHref(params)
-              this.setState({ mode: 'page' })
-            }}
-            navigation={navigation}
+            goToHref={this.goToHref}
+            bookId={bookId}
           />
         </View>
         {showOptions && mode !== 'page' &&

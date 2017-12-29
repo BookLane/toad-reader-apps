@@ -39,12 +39,11 @@ class BookPage extends React.Component {
   }
 
   onMessageEvent = data => {
-    const { navigation, showBook } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { bookId, requestShowBook } = this.props
 
     switch(data.identifier) {
       case 'showPageListView':
-        showBook({
+        requestShowBook({
           goToHref: params => postMessage(this.webView, 'goToHref', params),
           goToPage: params => postMessage(this.webView, 'goToPage', params),
         })
@@ -53,8 +52,7 @@ class BookPage extends React.Component {
   }
 
   render() {
-    const { navigation, showSettings, requestHideSettings } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { bookId, showSettings, requestHideSettings } = this.props
 
     return (
       <View style={styles.container}>
