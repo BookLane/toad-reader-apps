@@ -42,7 +42,7 @@ class BookContents extends React.Component {
 
     return (
       <ListItem
-        style={{...baseListItemStyle, paddingLeft: indentLevel * 15 }}
+        style={{...baseListItemStyle, paddingLeft: indentLevel * 20 }}
         onPress={() => {
           goToHref({ href })
         }}
