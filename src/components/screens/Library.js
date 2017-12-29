@@ -177,7 +177,7 @@ const mapStateToProps = (state) => ({
   errorMessage: state.errorMessage,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
   reSort,
   setSort,

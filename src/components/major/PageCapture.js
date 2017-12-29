@@ -83,7 +83,7 @@ class PageCapture extends React.Component {
 const mapStateToProps = (state) => ({
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSpines,
 }, dispatch)
 

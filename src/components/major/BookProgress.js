@@ -40,7 +40,7 @@ const mapStateToProps = (state) => ({
   // books: state.books,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookProgress)

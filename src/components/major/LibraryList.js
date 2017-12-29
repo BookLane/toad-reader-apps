@@ -41,7 +41,7 @@ const mapStateToProps = (state) => ({
   idps: state.idps,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryCovers)

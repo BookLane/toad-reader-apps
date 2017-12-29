@@ -63,7 +63,7 @@ const mapStateToProps = (state) => ({
   idps: state.idps,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   setTocAndSpines,
 }, dispatch)

@@ -74,7 +74,7 @@ const mapStateToProps = (state) => ({
   library: state.library,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   toggleView,
   setSort,
   setErrorMessage,
