@@ -1,21 +1,26 @@
 import React from "react"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { Card, CardItem, Button, Icon, Text, View, ListItem, Left, Radio } from "native-base"
 import { StyleSheet, TouchableHighlight, TouchableNativeFeedback, Platform } from "react-native"
+
 import i18n from "../../utils/i18n.js"
 
 import BackFunction from '../basic/BackFunction'
 
+import { setTextSize, setTextSpacing, setTheme } from "../../redux/actions.js"
+
 const themeOptions = [
   {
-    id: "author",
+    id: "author-theme",
     label: i18n("Author's theme"),
   },
   {
-    id: "contrast",
+    id: "default-theme",
     label: i18n("High contrast"),
   },
   {
-    id: "lowlight",
+    id: "night-theme",
     label: i18n("Low light"),
   },
 ]
@@ -82,13 +87,9 @@ const styles = StyleSheet.create({
 
 class DisplaySettings extends React.Component {
 
-  state = {
-    theme: 'author',
-  }
-
   render() {
-    const { requestHide } = this.props
-    const { theme } = this.state
+    const { requestHide, displaySettings, setTextSize, setTextSpacing, setTheme } = this.props
+    const { textSize, textSpacing, theme } = displaySettings
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     
@@ -117,36 +118,36 @@ class DisplaySettings extends React.Component {
               <View style={styles.buttonRow}>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={null}
+                  onPress={() => setTextSize({ textSize: textSize - 10 })}
                 >
                   <Icon name='remove' />
                 </Button>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={null}
+                  onPress={() => setTextSize({ textSize: textSize + 10 })}
                 >
                   <Icon name='add' />
                 </Button>
               </View>
             </View>
 
-            <View style={styles.setting}>
+            {/* <View style={styles.setting}>
               <Text style={styles.heading}>{i18n("Spacing")}</Text>
               <View style={styles.buttonRow}>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={null}
+                  onPress={() => setTextSpacing({ textSpacing: textSize - .1 })}
                 >
                   <Icon name='remove' />
                 </Button>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={null}
+                  onPress={() => setTextSpacing({ textSpacing: textSize + .1 })}
                 >
                   <Icon name='add' />
                 </Button>
               </View>
-            </View>
+            </View> */}
           </View>
 
           <View style={styles.settingContainer}>
@@ -156,7 +157,7 @@ class DisplaySettings extends React.Component {
                 {themeOptions.map(themeOption => (
                   <TouchableComponent
                     key={themeOption.id}
-                    onPress={() => this.setState({ theme: themeOption.id })}
+                    onPress={() => setTheme({ theme: themeOption.id })}
                   >
                     <View
                       style={styles.radioLine}
@@ -179,4 +180,14 @@ class DisplaySettings extends React.Component {
   }
 }
 
-export default DisplaySettings
+const mapStateToProps = (state) => ({
+  displaySettings: state.displaySettings,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setTextSize,
+  setTextSpacing,
+  setTheme,
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(DisplaySettings)

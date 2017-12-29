@@ -121,13 +121,10 @@ class Book extends React.Component {
           <BookPage
             navigation={navigation}
             showBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
+            showSettings={showSettings}
+            requestHideSettings={() => this.setState({ showSettings: false })}
           />
         </View>
-        {showSettings && 
-          <DisplaySettings
-            requestHide={() => this.setState({ showSettings: false })}
-          />
-        }
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
           goToPage={params => {
@@ -191,7 +188,7 @@ const mapStateToProps = (state) => ({
   books: state.books,
 })
 
-const  matchDispatchToProps = (dispatch, x) => bindActionCreators({
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
 }, dispatch)
 
