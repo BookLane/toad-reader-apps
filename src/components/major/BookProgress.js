@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, Platform, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
@@ -11,18 +11,20 @@ import ProgressDot from "../basic/ProgressDot"
 
 const SIDE_SPACING = 20
 
+const footerHeight = nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
+
 const styles = StyleSheet.create({
   footer: {
-    backgroundColor: '#4075ae',
+    ...(Platform.OS === 'android' ? {backgroundColor: '#4075ae'} : {}),
     flexDirection: 'row',
   },
   line: {
-    backgroundColor: 'white',
+    backgroundColor: Platform.OS === 'android' ? 'white' : 'black',
     flex: 1,
     marginLeft: SIDE_SPACING,
     marginRight: SIDE_SPACING,
     height: 1,
-    top: nativeBasePlatformVariables.footerHeight / 2 - .5,
+    top: footerHeight / 2 - .5,
   },
 })
 
