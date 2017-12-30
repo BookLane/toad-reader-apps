@@ -10,7 +10,6 @@ import BookPage from "../major/BookPage"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import BookContents from "../major/BookContents"
-import BookProgress from "../major/BookProgress"
 import Options from "../major/Options"
 import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
@@ -31,7 +30,7 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: nativeBasePlatformVariables.toolbarHeight,
-  bottom: nativeBasePlatformVariables.footerHeight,
+  bottom: 0,
   left: 0,
   right: 0,
   backgroundColor: '#e9e9ef',
@@ -43,7 +42,7 @@ const contentsStyles = {
   bottom: 0,
   left: 0,
   right: 0,
-  backgroundColor: '#eee',
+  backgroundColor: '#fff',
 }
 
 const showStyles = {
@@ -189,9 +188,6 @@ class Book extends React.Component {
           />
         }
         <Content />
-        <BookProgress
-          hide={mode !== 'pages'}
-        />
       </Container>
     )
   }

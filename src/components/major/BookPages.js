@@ -1,5 +1,5 @@
 import React from "react"
-import { Dimensions, FlatList } from "react-native"
+import { StyleSheet, Dimensions, View, FlatList } from "react-native"
 // import { StyleSheet, Dimensions, FlatList, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,14 +7,15 @@ import { connect } from "react-redux"
 // import Spin from "../basic/Spin"
 import PagesSpine from "../basic/PagesSpine"
 import PagesPage from "../basic/PagesPage"
+import BookProgress from "./BookProgress"
 
 const MAXIMUM_PAGE_SIZE = 150
 
-// const styles = StyleSheet.create({
-//   spinnerContainer: {
-//     padding: 40,
-//   },
-// })
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})
 
 class BookPages extends React.Component {
 
@@ -23,6 +24,10 @@ class BookPages extends React.Component {
     this.state = {
       ...(this.getPageSize()),
     }
+  }
+
+  componentDidMount() {
+
   }
 
   getPageSize = () => {
@@ -68,7 +73,7 @@ class BookPages extends React.Component {
 
   render() {
     const { bookId, books, showWaiting } = this.props
-    const { pageWidth } = this.state
+    const { pageWidth, scrollPercentage } = this.state
 
     if(showWaiting) {
       return null
@@ -80,13 +85,23 @@ class BookPages extends React.Component {
     }
 
     return (
-      <FlatList
-        onLayout={() => this.setState({ ...(this.getPageSize()) })}
-        data={(books[bookId].spines || [])}
-        renderItem={this.renderItem}
-        keyExtractor={item => item.idref}
-        extraData={{ selected: pageWidth }}  // used to force render
-      />
+      <View style={styles.container}>
+        <FlatList
+          onLayout={() => this.setState({ ...(this.getPageSize()) })}
+          data={(books[bookId].spines || [])}
+          renderItem={this.renderItem}
+          keyExtractor={item => item.idref}
+          extraData={{ selected: pageWidth }}  // used to force render
+          showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={[]}
+          scrollEventThrottle={50}
+          scrollsToTop={false}
+        />
+        <BookProgress
+          scrollPercentage={scrollPercentage}
+          updateScrollPercentage={percent => {}}
+        />
+      </View>
     )
 
   }
