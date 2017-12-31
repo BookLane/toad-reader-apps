@@ -73,7 +73,7 @@ class BookPages extends React.Component {
       this.headerIndices.push(this.list.length - 1)
       offset += HEADER_ROW_HEIGHT
 
-      const numPagesThisSize = numPages[`${width}x${height}`]
+      const numPagesThisSize = numPages ? numPages[`${width}x${height}`] : 0
       for(let i=0; i<(numPagesThisSize || 1); i+=pagesPerRow) {
         const numPagesInSpine = Math.min(numPagesThisSize - i, pagesPerRow)
         const pageIndicesInSpine = []
