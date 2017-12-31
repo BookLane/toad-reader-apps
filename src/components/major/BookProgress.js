@@ -32,8 +32,7 @@ const styles = StyleSheet.create({
 class BookProgress extends React.Component {
 
   render() {
-    const { mainDotLeft, updateScrollPercentage } = this.props
-
+    const { mainDotLeft, scrollPercentage, updateScrollPercentage } = this.props
 
     return (
       <Footer
@@ -44,8 +43,7 @@ class BookProgress extends React.Component {
         <ProgressDot
           left={mainDotLeft}
           size={30}
-          // label={i18n("{{percent}}%", { percent: Math.round(scrollPercentage * 100) })}
-          label={i18n("{{percent}}%", { percent: 20 })}
+          label={i18n("{{percent}}%", { percent: scrollPercentage })}
         />
         {/* <ProgressDot
           left={SIDE_SPACING + 100}

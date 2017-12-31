@@ -36,6 +36,7 @@ class BookPages extends React.Component {
     this.state = {
       ...(this.getPageSize()),
       animatedScrollPosition: new Animated.Value(0),
+      scrollPercentage: 0,
     }
 
     this.calcList()
@@ -57,6 +58,7 @@ class BookPages extends React.Component {
     if(!spines) return
 
     const { width, height } = Dimensions.get('window')
+    const listHeight = (height - nativeBasePlatformVariables.footerHeight - nativeBasePlatformVariables.toolbarHeight)
     this.list = []
     this.headerIndices = []
     let offset = 0
@@ -87,9 +89,19 @@ class BookPages extends React.Component {
       }
     })
 
-    this.scrollContentHeight = offset
+    this.maxScroll = offset - listHeight
   }
-  
+
+  updateScrollPercentage = event => {
+    const scrollY = event.nativeEvent.contentOffset.y
+
+    const scrollPercentage = Math.round((scrollY / this.maxScroll) * 100)
+
+    if(scrollPercentage !== this.state.scrollPercentage) {
+      this.setState({ scrollPercentage })
+    }
+  }
+
   getPageSize = () => {
     const { width, height } = Dimensions.get('window')
     const maxWidth = height < width ? MAXIMUM_PAGE_SIZE : MAXIMUM_PAGE_SIZE * ( width / height )
@@ -144,31 +156,25 @@ class BookPages extends React.Component {
     }
   }
 
-  // onScroll = event => {
-  //   this.setState({ scrollPercentage:  })
-  // }
-
-  updateScrollPercentage = percent => {
+  scrollToPercentage = percent => {
 
   }
 
   render() {
     const { spines } = this.props
-    const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition } = this.state
+    const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition, scrollPercentage } = this.state
 
     if(!spines) return null
 
-    const { width, height } = Dimensions.get('window')
+    const { width } = Dimensions.get('window')
 
-    const opacity = this.state.animatedScrollPosition.interpolate({
+    const opacity = animatedScrollPosition.interpolate({
       inputRange: [0, 5],
       outputRange: [0, 1],
     })
 
-    const listHeight = (height - nativeBasePlatformVariables.footerHeight - nativeBasePlatformVariables.toolbarHeight)
-    
-    const mainDotLeft = this.state.animatedScrollPosition.interpolate({
-      inputRange: [0, this.scrollContentHeight - listHeight],
+    const mainDotLeft = animatedScrollPosition.interpolate({
+      inputRange: [0, this.maxScroll],
       outputRange: [SIDE_SPACING, width - SIDE_SPACING],
     })
 
@@ -185,15 +191,10 @@ class BookPages extends React.Component {
           stickyHeaderIndices={this.headerIndices}
           getItemLayout={this.getItemLayout}
           onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: { y: this.state.animatedScrollPosition },
-                },
-              },
-            ],
+            [{ nativeEvent: { contentOffset: { y: animatedScrollPosition } } }],
             {
               useNativeDriver: true,
+              listener: this.updateScrollPercentage,
             },
           )}
           scrollEventThrottle={1}
@@ -202,7 +203,8 @@ class BookPages extends React.Component {
         <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} />
         <BookProgress
           mainDotLeft={mainDotLeft}
-          updateScrollPercentage={this.updateScrollPercentage}
+          scrollPercentage={scrollPercentage}
+          scrollToPercentage={this.scrollToPercentage}
         />
       </View>
     )
