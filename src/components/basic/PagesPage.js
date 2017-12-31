@@ -24,7 +24,6 @@ class PagesPage extends React.Component {
     return (
       <View
         style={{
-          marginBottom: 10,
           marginRight: 10,
           width: pageWidth,
           height: pageHeight,
