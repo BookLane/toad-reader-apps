@@ -14,9 +14,8 @@ const styles = StyleSheet.create({
 
 class PagesPage extends React.Component {
 
-  
   render() {
-    const { children, header, pageWidth, pageHeight, goToPage} = this.props
+    const { children, header, pageWidth, pageHeight, goToPage } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
