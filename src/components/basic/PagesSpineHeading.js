@@ -17,6 +17,10 @@ const styles = StyleSheet.create({
 
 class PagesSpineHeading extends React.Component {
 
+  shouldComponentUpdate() {
+    return false
+  }
+
   render() {
     const { children } = this.props
 

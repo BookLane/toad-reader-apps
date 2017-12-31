@@ -13,6 +13,10 @@ const styles = StyleSheet.create({
 })
 
 class PagesPage extends React.Component {
+  
+  shouldComponentUpdate() {
+    return false
+  }
 
   render() {
     const { children, header, pageWidth, pageHeight, goToPage } = this.props

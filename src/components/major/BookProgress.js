@@ -1,9 +1,10 @@
 import React from "react"
-import { StyleSheet, Platform, View } from "react-native"
+import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
+import i18n from "../../utils/i18n.js"
 
 import ProgressDot from "../basic/ProgressDot"
 
@@ -31,7 +32,8 @@ const styles = StyleSheet.create({
 class BookProgress extends React.Component {
 
   render() {
-    const { scrollPercentage, updateScrollPercentage } = this.props
+    const { mainDotLeft, updateScrollPercentage } = this.props
+
 
     return (
       <Footer
@@ -40,9 +42,10 @@ class BookProgress extends React.Component {
       >
         <View style={styles.line}/>
         <ProgressDot
-          left={SIDE_SPACING + 0}
+          left={mainDotLeft}
           size={30}
-          label="13%"
+          // label={i18n("{{percent}}%", { percent: Math.round(scrollPercentage * 100) })}
+          label={i18n("{{percent}}%", { percent: 20 })}
         />
         {/* <ProgressDot
           left={SIDE_SPACING + 100}

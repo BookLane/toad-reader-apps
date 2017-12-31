@@ -83,7 +83,6 @@ class Book extends React.Component {
   state = {
     bookLoaded: false,
     mode: 'page',
-    subtitle: 'chapter here',
     showOptions: false,
     showSettings: false,
     goToHref: null,
@@ -112,47 +111,58 @@ class Book extends React.Component {
     this.setState({ mode: 'page' })
   }
 
+  toggleBookView = () => {
+    const { mode } = this.state
+    
+    this.setState({
+      mode: mode === 'pages' ? 'contents' : 'pages',
+      showOptions: false,
+    })
+  }
+
+  toggleShowOptions = () => this.setState({ showOptions: !showOptions })
+
+  requestShowBook = stateVars => this.setState({ ...stateVars, mode: 'pages' })
+
+  requestHideSettings = () => this.setState({ showSettings: false })
+
+  indicateLoaded = () => this.setState({ bookLoaded: true })
+
   render() {
 
     const { navigation, books, setDownloadStatus } = this.props
     const { bookId } = navigation.state.params
-    const { bookLoaded, mode, subtitle, showOptions, showSettings } = this.state
+    const { bookLoaded, mode, showOptions, showSettings } = this.state
 
     return (
       <Container>
         {mode !== 'page' && <BackFunction func={() => this.setState({ mode: 'page' })} />}
         <BookHeader
           bookId={bookId}
-          subtitle={mode === 'pages' && subtitle}
           navigation={navigation}
           mode={mode}
-          toggleBookView={() => this.setState({
-            mode: mode === 'pages' ? 'contents' : 'pages',
-            showOptions: false,
-          })}
-          toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
+          toggleBookView={this.toggleBookView}
+          toggleShowOptions={this.toggleShowOptions}
         />
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
-            requestShowBook={stateVars => this.setState({ ...stateVars, mode: 'pages' })}
+            requestShowBook={this.requestShowBook}
             showSettings={showSettings}
-            requestHideSettings={() => this.setState({ showSettings: false })}
-            indicateLoaded={() => this.setState({ bookLoaded: true })}
+            requestHideSettings={this.requestHideSettings}
+            indicateLoaded={this.indicateLoaded}
           />
         </View>
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
             goToPage={this.goToPage}
-            bookId={bookId}
-            showWaiting={!bookLoaded}
+            spines={bookLoaded && books[bookId].spines}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
           <BookContents
             goToHref={this.goToHref}
-            bookId={bookId}
-            showWaiting={!bookLoaded}
+            toc={bookLoaded && books[bookId].toc}
           />
         </View>
         {showOptions && mode !== 'page' &&

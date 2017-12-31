@@ -1,21 +1,10 @@
 import React from "react"
 import { FlatList } from "react-native"
-// import { StyleSheet, View, FlatList } from "react-native"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 import { Text, ListItem } from "native-base"
-
-// import Spin from "../basic/Spin"
 
 const baseListItemStyle = {
   backgroundColor: 'transparent',
 }
-
-// const styles = StyleSheet.create({
-//   spinnerContainer: {
-//     padding: 40,
-//   },
-// })
 
 class BookContents extends React.Component {
 
@@ -53,20 +42,13 @@ class BookContents extends React.Component {
   }
 
   render() {
-    const { bookId, books, showWaiting } = this.props
+    const { toc } = this.props
 
-    if(showWaiting) {
-      return null
-      // return (
-      //   <View style={styles.spinnerContainer}>
-      //     <Spin />
-      //   </View>
-      // )
-    }
+    if(!toc) return null
 
     return (
       <FlatList
-        data={this.getListItems(books[bookId].toc)}
+        data={this.getListItems(toc)}
         renderItem={this.renderItem}
         keyExtractor={item => `${item.label}-${item.href}`}
       />
@@ -74,11 +56,4 @@ class BookContents extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(BookContents)
+export default BookContents

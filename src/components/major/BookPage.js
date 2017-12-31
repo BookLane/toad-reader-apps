@@ -38,8 +38,12 @@ class BookPage extends React.Component {
     })
   }
 
+  goToHref = params => postMessage(this.webView, 'goToHref', params)
+
+  goToPage = params => postMessage(this.webView, 'goToPage', params)
+
   onMessageEvent = data => {
-    const { bookId, requestShowBook, indicateLoaded } = this.props
+    const { requestShowBook, indicateLoaded } = this.props
 
     switch(data.identifier) {
       case 'pageChanged':
@@ -48,8 +52,8 @@ class BookPage extends React.Component {
 
       case 'showPageListView':
         requestShowBook({
-          goToHref: params => postMessage(this.webView, 'goToHref', params),
-          goToPage: params => postMessage(this.webView, 'goToPage', params),
+          goToHref: this.goToHref,
+          goToPage: this.goToPage,
         })
         return true
     }

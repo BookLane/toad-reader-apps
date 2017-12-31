@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform } from "react-native"
+import { StyleSheet, Platform, Animated } from "react-native"
 import { View, Text } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
@@ -20,6 +20,7 @@ class ProgressDot extends React.Component {
     const dotBaseStyles = {
       position: 'absolute',
       top: (footerHeight - size) / 2,
+      left: 0,
       width: size,
       height: size,
       borderRadius: size / 2,
@@ -31,9 +32,18 @@ class ProgressDot extends React.Component {
     }
 
     return (
-      <View style={{ ...dotBaseStyles, left }}>
+      <Animated.View
+        style={{
+          ...dotBaseStyles,
+          transform: [
+            {
+              translateX: left,
+            },
+          ],
+        }}
+      >
         <Text style={styles.dotText}>{label}</Text>
-      </View>
+      </Animated.View>
     )
   }
 }

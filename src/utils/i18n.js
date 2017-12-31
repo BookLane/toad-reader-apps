@@ -31,6 +31,6 @@ const i18n = (str, swaps={}, desc) =>
           : translations[str]
       )
       : str
-  ).replace(/{{([^}]+)}}/g, (x, swapSpot) => swaps[swapSpot] || "")
+  ).replace(/{{([^}]+)}}/g, (x, swapSpot) => swaps[swapSpot]!==undefined ? swaps[swapSpot] : "")
 
 export default i18n
