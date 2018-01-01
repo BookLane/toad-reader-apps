@@ -3,6 +3,13 @@ import { Container, Title, Left, Right, Button, Icon, Body, Content, Text, Card,
 import AppHeader from "../basic/AppHeader"
 
 class Highlights extends React.Component {
+
+  goBack = () => {
+    const { navigation } = this.props
+
+    navigation.goBack()
+  }
+
   render() {
     const { navigation } = this.props
     return (
@@ -11,7 +18,7 @@ class Highlights extends React.Component {
           <Left>
             <Button
               transparent
-              onPress={() => navigation.goBack()}
+              onPress={this.goBack}
             >
               <Icon name="arrow-back" />
             </Button>

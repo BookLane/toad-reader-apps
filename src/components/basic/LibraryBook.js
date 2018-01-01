@@ -16,7 +16,7 @@ class LibraryBook extends React.Component {
     return books[bookId].downloadStatus
   }
 
-  async onPress() {
+  onPress = async () => {
     const { bookId, navigation, setDownloadStatus, setTocAndSpines, idps, books } = this.props
     const downloadStatus = this.getDownloadStatus(bookId)
 
@@ -36,7 +36,7 @@ class LibraryBook extends React.Component {
     }
   }
   
-  onLongPress() {
+  onLongPress = () => {
     const { bookId, books, setDownloadStatus } = this.props
 
     if(this.getDownloadStatus(bookId) == 0) {
@@ -51,8 +51,8 @@ class LibraryBook extends React.Component {
 
     return (
       <TouchableOpacity
-        onPress={() => this.onPress()}
-        onLongPress={() => this.onLongPress()}
+        onPress={this.onPress}
+        onLongPress={this.onLongPress}
       >{children}</TouchableOpacity>
     )
   }

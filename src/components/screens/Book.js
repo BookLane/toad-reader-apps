@@ -113,14 +113,22 @@ class Book extends React.Component {
 
   toggleBookView = () => {
     const { mode } = this.state
-    
+
     this.setState({
       mode: mode === 'pages' ? 'contents' : 'pages',
       showOptions: false,
     })
   }
 
-  toggleShowOptions = () => this.setState({ showOptions: !showOptions })
+  backToReading = () => this.setState({ mode: 'page' })
+
+  toggleShowOptions = () => {
+    const { showOptions } = this.state
+
+    this.setState({ showOptions: !showOptions })
+  }
+  
+  hideOptions = () => this.setState({ showOptions: false })
 
   requestShowBook = stateVars => this.setState({ ...stateVars, mode: 'pages' })
 
@@ -136,7 +144,7 @@ class Book extends React.Component {
 
     return (
       <Container>
-        {mode !== 'page' && <BackFunction func={() => this.setState({ mode: 'page' })} />}
+        {mode !== 'page' && <BackFunction func={this.backToReading} />}
         <BookHeader
           bookId={bookId}
           navigation={navigation}
@@ -167,7 +175,7 @@ class Book extends React.Component {
         </View>
         {showOptions && mode !== 'page' &&
           <Options
-            requestHide={() => this.setState({ showOptions: false })}
+            requestHide={this.hideOptions}
             options={[
               {
                 text: i18n("Display settings"),

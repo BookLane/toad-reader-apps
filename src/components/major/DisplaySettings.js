@@ -87,6 +87,34 @@ const styles = StyleSheet.create({
 
 class DisplaySettings extends React.Component {
 
+  increaseTextSize = () => {
+    const { displaySettings, setTextSize } = this.props
+    const { textSize } = displaySettings
+
+    setTextSize({ textSize: textSize + 10 })
+  }
+
+  decreaseTextSize = () => {
+    const { displaySettings, setTextSize } = this.props
+    const { textSize } = displaySettings
+
+    setTextSize({ textSize: textSize - 10 })
+  }
+
+  // increaseTextSpacing = () => {
+  //   const { displaySettings, setTextSpacing } = this.props
+  //   const { textSpacing } = displaySettings
+
+  //   setTextSpacing({ textSpacing: textSpacing + 10 })
+  // }
+
+  // decreaseTextSpacing = () => {
+  //   const { displaySettings, setTextSpacing } = this.props
+  //   const { textSpacing } = displaySettings
+
+  //   setTextSpacing({ textSpacing: textSpacing - 10 })
+  // }
+
   render() {
     const { requestHide, displaySettings, setTextSize, setTextSpacing, setTheme } = this.props
     const { textSize, textSpacing, theme } = displaySettings
@@ -118,13 +146,13 @@ class DisplaySettings extends React.Component {
               <View style={styles.buttonRow}>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={() => setTextSize({ textSize: textSize - 10 })}
+                  onPress={this.decreaseTextSize}
                 >
                   <Icon name='remove' />
                 </Button>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={() => setTextSize({ textSize: textSize + 10 })}
+                  onPress={this.increaseTextSize}
                 >
                   <Icon name='add' />
                 </Button>
@@ -136,13 +164,13 @@ class DisplaySettings extends React.Component {
               <View style={styles.buttonRow}>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={() => setTextSpacing({ textSpacing: textSize - .1 })}
+                  onPress={this.decreaseTextSpacing}
                 >
                   <Icon name='remove' />
                 </Button>
                 <Button light
                   style={styles.addRemoveButton}
-                  onPress={() => setTextSpacing({ textSpacing: textSize + .1 })}
+                  onPress={this.increaseTextSpacing}
                 >
                   <Icon name='add' />
                 </Button>

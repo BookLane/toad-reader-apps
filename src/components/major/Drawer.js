@@ -26,6 +26,30 @@ const styles = StyleSheet.create({
 
 class Drawer extends React.Component {
 
+  showAll = () => {
+    const { navigation } = this.props
+
+    navigation.navigate("Library", { scope: "all" })
+  }
+
+  showDeviceOnly = () => {
+    const { navigation } = this.props
+
+    navigation.navigate("Library", { scope: "device" })
+  }
+
+  goToAccounts = () => {
+    const { navigation } = this.props
+
+    navigation.navigate("Accounts")
+  }
+
+  removeAllEPubs = () => {
+    const { books, setDownloadStatus } = this.props
+    
+    confirmRemoveAllEPubs({ books, setDownloadStatus })
+  }
+
   render() {
 
     const { accounts, idps, books, setDownloadStatus, navigation } = this.props
@@ -50,7 +74,7 @@ class Drawer extends React.Component {
           <List>
             <ListItem icon
               button
-              onPress={() => navigation.navigate("Library", { scope: "all" })}
+              onPress={this.showAll}
             >
               <Left>
                 <Icon name="book" />
@@ -78,7 +102,7 @@ class Drawer extends React.Component {
             ))}
             <ListItem icon
               button
-              onPress={() => navigation.navigate("Library", { scope: "device" })}
+              onPress={this.showDeviceOnly}
             >
               <Left>
                 <Icon name="checkmark" />
@@ -90,7 +114,7 @@ class Drawer extends React.Component {
             <Separator bordered />
             <ListItem icon
               button
-              onPress={() => navigation.navigate("Accounts")}
+              onPress={this.goToAccounts}
             >
               <Left>
                 <Icon name="person" />
@@ -101,7 +125,7 @@ class Drawer extends React.Component {
             </ListItem>
             <ListItem icon
               button
-              onPress={() => confirmRemoveAllEPubs({ books, setDownloadStatus })}
+              onPress={this.removeAllEPubs}
             >
               <Left>
                 <Icon name="remove-circle" />

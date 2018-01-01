@@ -3,8 +3,14 @@ import { Container, Title, Left, Icon, Right, Button, Body, Content } from "nati
 import AppHeader from "../basic/AppHeader"
 
 class Accounts extends React.Component {
-  render() {
+
+  goBack = () => {
     const { navigation } = this.props
+
+    navigation.goBack()
+  }
+
+  render() {
 
     return (
       <Container>
@@ -12,7 +18,7 @@ class Accounts extends React.Component {
           <Left>
             <Button
               transparent
-              onPress={() => navigation.goBack()}
+              onPress={this.goBack}
             >
               <Icon name="arrow-back" />
             </Button>

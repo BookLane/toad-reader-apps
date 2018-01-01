@@ -17,6 +17,13 @@ class BookHeader extends React.Component {
     // this.skipHideStatusBar || StatusBar.setHidden(true)
   }
 
+  onBackPress = () => {
+    const { navigation } = this.props
+    
+    // this.skipHideStatusBar = true
+    navigation.goBack(navigation.state.params.pageKey)
+  }
+
   render() {
     const { bookId, subtitle, navigation, mode, toggleBookView, toggleShowOptions, books } = this.props
     const { title } = books[bookId]
@@ -28,10 +35,7 @@ class BookHeader extends React.Component {
         <Left>
           <Button
             transparent
-            onPress={() => {
-              // this.skipHideStatusBar = true
-              navigation.goBack(navigation.state.params.pageKey)
-            }}
+            onPress={this.onBackPress}
           >
             <Icon name="home" />
           </Button>
@@ -46,7 +50,7 @@ class BookHeader extends React.Component {
         <Right>
           <Button
             transparent
-            onPress={() => toggleBookView()}
+            onPress={toggleBookView}
           >
             <Icon name={mode === "pages" ? "list" : "apps"} />
           </Button>

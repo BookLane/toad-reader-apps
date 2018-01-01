@@ -13,13 +13,19 @@ const styles = StyleSheet.create({
 })
 
 class PagesPage extends React.Component {
-  
+
   shouldComponentUpdate() {
     return false
   }
 
+  goToPage = () => {
+    const { goToPage, spineIdRef, pageIndexInSpine } = this.props
+    
+    goToPage({ spineIdRef, pageIndexInSpine })
+  }
+
   render() {
-    const { children, header, pageWidth, pageHeight, goToPage } = this.props
+    const { pageWidth, pageHeight } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
@@ -33,7 +39,7 @@ class PagesPage extends React.Component {
         }}
       >
         <TouchableComponent
-          onPress={goToPage}
+          onPress={this.goToPage}
           background={TouchableBackground}
           delayPressIn={0}
         >

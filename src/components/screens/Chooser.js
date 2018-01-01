@@ -2,8 +2,14 @@ import React from "react"
 import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
 
 class Chooser extends React.Component {
-  render() {
+
+  goBack = () => {
     const { navigation } = this.props
+
+    navigation.goBack()
+  }
+
+  render() {
     return (
       <Container>
         <Content padder>
@@ -16,7 +22,7 @@ class Chooser extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={() => navigation.goBack()}
+            onPress={this.goBack}
           >
             <Text>Back</Text>
           </Button>

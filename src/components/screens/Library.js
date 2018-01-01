@@ -95,6 +95,14 @@ class Library extends React.Component {
     }
   }
 
+  toggleShowOptions = () => {
+    const { showOptions } = this.state
+
+    this.setState({ showOptions: !showOptions })
+  }
+  
+  hideOptions = () => this.setState({ showOptions: false })
+
   render() {
 
     const { library, books, fetchingBooks, navigation, setSort } = this.props
@@ -118,8 +126,8 @@ class Library extends React.Component {
         <LibraryHeader
           scope={scope}
           navigation={navigation}
-          toggleShowOptions={() => this.setState({ showOptions: !showOptions })}
-          hideOptions={() => this.setState({ showOptions: false })}
+          toggleShowOptions={this.toggleShowOptions}
+          hideOptions={this.hideOptions}
         />
         {fetchingBooks && bookList.length == 0
           ? (
@@ -145,7 +153,7 @@ class Library extends React.Component {
         }
         {showOptions && 
           <Options
-            requestHide={() => this.setState({ showOptions: false })}
+            requestHide={this.hideOptions}
             headerText={i18n("Sort by...")}
             options={[
               {

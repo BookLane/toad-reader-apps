@@ -1,6 +1,7 @@
 import React from "react"
 import { FlatList } from "react-native"
-import { Text, ListItem } from "native-base"
+
+import BookContentsLine from "../basic/BookContentsLine"
 
 const baseListItemStyle = {
   backgroundColor: 'transparent',
@@ -30,14 +31,12 @@ class BookContents extends React.Component {
     const { href, indentLevel } = item
 
     return (
-      <ListItem
-        style={{...baseListItemStyle, paddingLeft: indentLevel * 20 }}
-        onPress={() => {
-          goToHref({ href })
-        }}
-      >
-        <Text>{item.label}</Text>
-      </ListItem>
+      <BookContentsLine
+        indentLevel={indentLevel}
+        goToHref={goToHref}
+        href={href}
+        label={item.label}
+      />
     )
   }
 

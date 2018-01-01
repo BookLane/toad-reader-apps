@@ -47,6 +47,8 @@ class Cover extends React.Component {
   state = {
     imageError: false,
   }
+
+  imageOnError = () => this.setState({ imageError: true })
   
   render() {
     const { bookId, bookInfo, bookWidth } = this.props
@@ -73,7 +75,7 @@ class Cover extends React.Component {
           source={{ uri }}
           style={styles.image}
           resizeMode='cover'
-          onError={() => this.setState({ imageError: true })}
+          onError={this.imageOnError}
         />
         {downloadStatus == 1 &&
           <View style={styles.spinnerContainer}>
