@@ -60,6 +60,8 @@ class PageCapture extends React.Component {
     }
   }
 
+  setWebViewEl = webViewEl => this.webView = webViewEl
+
   render() {
     const { bookId, width, height } = this.props
 
@@ -73,7 +75,7 @@ class PageCapture extends React.Component {
           left: 0,
         }}
         bookId={bookId}
-        setWebViewEl={webViewEl => this.webView = webViewEl}
+        setWebViewEl={this.setWebViewEl}
         onMessage={this.onMessageEvent}
       />
     )

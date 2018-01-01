@@ -59,6 +59,8 @@ class BookPage extends React.Component {
     }
   }
 
+  setWebViewEl = webViewEl => this.webView = webViewEl
+
   render() {
     const { bookId, showSettings, requestHideSettings } = this.props
 
@@ -66,7 +68,7 @@ class BookPage extends React.Component {
       <View style={styles.container}>
         <PageWebView
           bookId={bookId}
-          setWebViewEl={webViewEl => this.webView = webViewEl}
+          setWebViewEl={this.setWebViewEl}
           onMessage={this.onMessageEvent}
         />
         {showSettings && 

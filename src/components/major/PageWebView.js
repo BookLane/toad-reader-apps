@@ -78,6 +78,15 @@ class PageWebView extends React.Component {
     }
   }
 
+  setWebViewEl = webViewEl => {
+    const { setWebViewEl } = this.props
+
+    this.webView = webViewEl
+    setWebViewEl && setWebViewEl(webViewEl)
+  }
+
+  onError = e => console.log('webview error', e)
+
   render() {
     const { setWebViewEl, bookId, style } = this.props
     const { width, height } = this.state
@@ -97,16 +106,13 @@ class PageWebView extends React.Component {
             ...style
           }}
           injectedJavaScript={patchPostMessageJsCode}
-          ref={webViewEl => {
-            this.webView = webViewEl
-            setWebViewEl && setWebViewEl(webViewEl)
-          }}
+          ref={this.setWebViewEl}
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
               + `?epub=${encodeURIComponent(`${FileSystem.documentDirectory}books/${bookId}`)}`
           }}
           mixedContentMode="always"
-          onError={e => console.log('webview error', e)}
+          onError={this.onError}
           onMessage={this.onMessageEvent}
         />
       </View>

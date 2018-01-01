@@ -18,6 +18,7 @@ class BookContents extends React.Component {
         {
           ...tocItem,
           indentLevel,
+          key: `${tocItem.label}-${tocItem.href}`,
         },
         ...this.getListItems(tocItem.subNav, indentLevel+1),
       ]
@@ -49,7 +50,6 @@ class BookContents extends React.Component {
       <FlatList
         data={this.getListItems(toc)}
         renderItem={this.renderItem}
-        keyExtractor={item => `${item.label}-${item.href}`}
       />
     )
   }
