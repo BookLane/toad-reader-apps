@@ -5,12 +5,11 @@ import { connect } from "react-redux"
 import { Footer } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import i18n from "../../utils/i18n.js"
+import { PROGRESS_BAR_SIDE_SPACING } from "../../utils/constants.js"
 
 import ProgressDot from "../basic/ProgressDot"
 
 // import {  } from "../../redux/actions.js"
-
-const SIDE_SPACING = 20
 
 const footerHeight = nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
 
@@ -22,8 +21,8 @@ const styles = StyleSheet.create({
   line: {
     backgroundColor: Platform.OS === 'android' ? 'white' : 'black',
     flex: 1,
-    marginLeft: SIDE_SPACING,
-    marginRight: SIDE_SPACING,
+    marginLeft: PROGRESS_BAR_SIDE_SPACING,
+    marginRight: PROGRESS_BAR_SIDE_SPACING,
     height: 1,
     top: footerHeight / 2 - .5,
   },
@@ -46,7 +45,7 @@ class BookProgress extends React.Component {
           label={i18n("{{percent}}%", { percent: scrollPercentage })}
         />
         {/* <ProgressDot
-          left={SIDE_SPACING + 100}
+          left={PROGRESS_BAR_SIDE_SPACING + 100}
           size={6}
         /> */}
       </Footer>

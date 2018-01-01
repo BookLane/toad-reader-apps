@@ -3,10 +3,9 @@ import { Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
+import { INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT } from "../../utils/constants.js"
 
 import PageCapture from "./PageCapture"
-
-const INITIAL_LOAD_TIMEOUT = 2000
 
 class PageCaptureManager extends React.Component {
 
@@ -35,7 +34,7 @@ class PageCaptureManager extends React.Component {
     const { skipList } = this.state
 
     const key = this.getKey({ bookId, spineIdRef, width, height })
-    const timeout = ((skipList[key] && skipList[key].timeout) || INITIAL_LOAD_TIMEOUT) * 2
+    const timeout = ((skipList[key] && skipList[key].timeout) || INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT) * 2
 
     console.log('skip spine', key)
     this.setState({
@@ -104,7 +103,7 @@ class PageCaptureManager extends React.Component {
         spineIdRef,
         width,
         height,
-        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_LOAD_TIMEOUT,
+        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT,
       }
 
       break

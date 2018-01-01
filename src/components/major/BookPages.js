@@ -1,5 +1,11 @@
 import React from "react"
 import { StyleSheet, Dimensions, View, FlatList, Animated } from "react-native"
+import {
+  PAGE_LIST_MAXIMUM_PAGE_SIZE,
+  PAGE_LIST_HEADER_ROW_HEIGHT,
+  PAGES_ROW_EXTRA_VERTICAL_SPACE,
+  PROGRESS_BAR_SIDE_SPACING,
+} from "../../utils/constants.js"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
@@ -9,18 +15,13 @@ import nativeBasePlatformVariables from 'native-base/src/theme/variables/platfor
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
-const MAXIMUM_PAGE_SIZE = 150
-const HEADER_ROW_HEIGHT = 40
-const PAGES_ROW_EXTRA_VERTICAL_SPACE = 10  // = the PagesRow paddingTop
-const SIDE_SPACING = 20
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   headerBottomBorder: {
     position: 'absolute',
-    top: HEADER_ROW_HEIGHT - 1,
+    top: PAGE_LIST_HEADER_ROW_HEIGHT - 1,
     left: 0,
     right: 0,
     height: 1,
@@ -71,7 +72,7 @@ class BookPages extends React.Component {
         offset,
       })
       this.headerIndices.push(this.list.length - 1)
-      offset += HEADER_ROW_HEIGHT
+      offset += PAGE_LIST_HEADER_ROW_HEIGHT
 
       const numPagesThisSize = numPages ? numPages[`${width}x${height}`] : 0
       for(let i=0; i<(numPagesThisSize || 1); i+=pagesPerRow) {
@@ -104,7 +105,7 @@ class BookPages extends React.Component {
 
   getPageSize = () => {
     const { width, height } = Dimensions.get('window')
-    const maxWidth = height < width ? MAXIMUM_PAGE_SIZE : MAXIMUM_PAGE_SIZE * ( width / height )
+    const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
     const pagesPerRow = parseInt(width / maxWidth)
     const pageWidth = (width - ((pagesPerRow + 1) * 10)) / pagesPerRow
     const pageHeight = pageWidth / ( width / height )
@@ -151,7 +152,7 @@ class BookPages extends React.Component {
 
     return {
       offset,  // the distance from the top of the first row to this row
-      length: key.substr(0,2) == 'H:' ? HEADER_ROW_HEIGHT : pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE,  // the height of the row
+      length: key.substr(0,2) == 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE,  // the height of the row
       index,
     }
   }
@@ -175,7 +176,7 @@ class BookPages extends React.Component {
 
     const mainDotLeft = animatedScrollPosition.interpolate({
       inputRange: [0, this.maxScroll],
-      outputRange: [SIDE_SPACING, width - SIDE_SPACING],
+      outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
     })
 
     return (

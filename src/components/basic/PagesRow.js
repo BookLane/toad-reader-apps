@@ -1,6 +1,7 @@
 import React from "react"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
+import { PAGES_ROW_EXTRA_VERTICAL_SPACE } from "../../utils/constants.js"
 
 const styles = StyleSheet.create({
   pages: {
@@ -9,6 +10,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     padding: 10,
     paddingTop: 0,
+    paddingBottom: PAGES_ROW_EXTRA_VERTICAL_SPACE,
   },
 })
 
