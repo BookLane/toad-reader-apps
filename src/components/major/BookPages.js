@@ -162,8 +162,10 @@ class BookPages extends React.Component {
     }
   }
 
-  scrollToPercentage = percent => {
+  setFlatListEl = ref => this.flatListEl = ref && ref._component
 
+  scrollToPercentage = percent => {
+    this.flatListEl && this.flatListEl.scrollToOffset({ offset: (percent/100) * this.maxScroll })
   }
 
   render() {
@@ -204,7 +206,7 @@ class BookPages extends React.Component {
             },
           )}
           scrollEventThrottle={1}
-          // scrollsToTop={false}
+          ref={this.setFlatListEl}
         />
         <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} />
         <BookProgress

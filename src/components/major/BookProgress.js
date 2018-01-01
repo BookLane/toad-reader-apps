@@ -1,6 +1,6 @@
 import React from "react"
 import Expo from "expo"
-import { StyleSheet, Platform, View, Dimensions } from "react-native"
+import { StyleSheet, Platform, View, Dimensions, TouchableWithoutFeedback } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
@@ -23,6 +23,16 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'android' ? {backgroundColor: ANDROID_TOOLBAR_COLOR} : {}),
     flexDirection: 'row',
   },
+  touchResponder: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9,
+    backgroundColor: 'transparent',
+  },
   line: {
     backgroundColor: Platform.OS === 'android' ? 'white' : 'black',
     flex: 1,
@@ -35,11 +45,40 @@ const styles = StyleSheet.create({
 
 class BookProgress extends React.Component {
 
+  doScroll = pageX => {
+    const { mainDotLeft, scrollToPercentage } = this.props
+    const { width } = Dimensions.get('window')
+
+    const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
+    const percent = Math.min(Math.max(percentageFraction * 100, 0), 100)
+    
+    scrollToPercentage(percent)
+  }
+
+  onStartShouldSetResponder = event => true
+
+  onResponderGrant = event => {
+    const { pageX } = event.nativeEvent
+    this.doScroll(pageX)
+  }
+
+  onResponderMove = event => {
+    const { pageX } = event.nativeEvent
+    this.doScroll(pageX)
+  }
+
   render() {
-    const { mainDotLeft, scrollPercentage, updateScrollPercentage } = this.props
+    const { mainDotLeft, scrollPercentage } = this.props
 
     return (
       <Footer style={styles.footer}>
+        <View
+          style={styles.touchResponder}
+          onStartShouldSetResponderCapture={this.onStartShouldSetResponder}
+          onStartShouldSetResponder={this.onStartShouldSetResponder}
+          onResponderGrant={this.onResponderGrant}
+          onResponderMove={this.onResponderMove}
+        />
         <View style={styles.line}/>
         <ProgressDot
           left={mainDotLeft}
