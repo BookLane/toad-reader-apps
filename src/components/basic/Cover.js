@@ -9,6 +9,10 @@ import CoverCheck from "./CoverCheck"
 // import CoverSize from "./CoverSize"
 
 const styles = StyleSheet.create({
+  cover: {
+    marginBottom: 30,
+    marginRight: 10,
+  },
   titleContainer: {
     position: 'absolute',
     top: 0,
@@ -59,12 +63,13 @@ class Cover extends React.Component {
     
     return (
       <View
-        style={{
-          marginBottom: 30,
-          marginRight: 10,
-          width: bookWidth,
-          paddingTop: bookWidth/.75,
-        }}
+        style={[
+          styles.cover,
+          {
+            width: bookWidth,
+            paddingTop: bookWidth/.75,
+          },
+        ]}
       >
         {imageError &&
           <View style={styles.titleContainer}>

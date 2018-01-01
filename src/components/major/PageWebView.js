@@ -1,8 +1,14 @@
 import React from "react"
-import { View, WebView, Dimensions } from "react-native"
+import { StyleSheet, View, WebView, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})
 
 class PageWebView extends React.Component {
 
@@ -93,9 +99,7 @@ class PageWebView extends React.Component {
 
     return (
       <View
-        style={{
-          flex: 1,
-        }}
+        style={styles.container}
         onLayout={this.calcSize}
       >
         <WebView

@@ -5,6 +5,9 @@ import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback } fro
 import PagesBookmark from "./PagesBookmark"
 
 const styles = StyleSheet.create({
+  container: {
+    marginRight: 10,
+  },
   page: {
     backgroundColor: '#ffffff',
     width: '100%',
@@ -32,11 +35,13 @@ class PagesPage extends React.Component {
 
     return (
       <View
-        style={{
-          marginRight: 10,
-          width: pageWidth,
-          height: pageHeight,
-        }}
+        style={[
+          styles.container,
+          {
+            width: pageWidth,
+            height: pageHeight,
+          },
+        ]}
       >
         <TouchableComponent
           onPress={this.goToPage}
