@@ -1,12 +1,16 @@
 import React from "react"
+import Expo from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
 import { StyleSheet, Dimensions } from "react-native"
-import { MAXIMUM_BOOK_COVER_WIDTH } from "../../utils/constants.js"
 
 import LibraryBook from "../basic/LibraryBook"
 import Cover from "../basic/Cover"
+
+const {
+  LIBRARY_MAXIMUM_BOOK_COVER_WIDTH,
+} = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {
@@ -21,7 +25,7 @@ const styles = StyleSheet.create({
 class LibraryCovers extends React.Component {
 
   state = {
-    bookWidth: MAXIMUM_BOOK_COVER_WIDTH,
+    bookWidth: LIBRARY_MAXIMUM_BOOK_COVER_WIDTH,
   }
 
   componentDidMount() {
@@ -30,7 +34,7 @@ class LibraryCovers extends React.Component {
 
   calcBookWidth = () => {
     const windowWidth = Dimensions.get('window').width
-    const booksPerRow = parseInt(windowWidth / MAXIMUM_BOOK_COVER_WIDTH)
+    const booksPerRow = parseInt(windowWidth / LIBRARY_MAXIMUM_BOOK_COVER_WIDTH)
     const bookWidth = (windowWidth - ((booksPerRow + 1) * 10)) / booksPerRow
     this.setState({ bookWidth })
   }

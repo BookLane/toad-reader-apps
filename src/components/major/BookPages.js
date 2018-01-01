@@ -1,11 +1,6 @@
 import React from "react"
+import Expo from "expo"
 import { StyleSheet, Dimensions, View, FlatList, Animated } from "react-native"
-import {
-  PAGE_LIST_MAXIMUM_PAGE_SIZE,
-  PAGE_LIST_HEADER_ROW_HEIGHT,
-  PAGES_ROW_EXTRA_VERTICAL_SPACE,
-  PROGRESS_BAR_SIDE_SPACING,
-} from "../../utils/constants.js"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
@@ -14,6 +9,13 @@ import BookProgress from "./BookProgress"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
+
+const {
+  PAGE_LIST_MAXIMUM_PAGE_SIZE,
+  PAGE_LIST_HEADER_ROW_HEIGHT,
+  PAGES_ROW_EXTRA_VERTICAL_SPACE,
+  PROGRESS_BAR_SIDE_SPACING,
+} = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

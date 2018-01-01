@@ -35,6 +35,16 @@
       "associatedDomains": [
         "https://read.biblemesh.com"
       ]
+    },
+    "extra": {
+      "ANDROID_TOOLBAR_COLOR": "#4075ae",
+      "ANDROID_STATUS_BAR_COLOR": "#2c5b8e",
+      "LIBRARY_MAXIMUM_BOOK_COVER_WIDTH": 100,
+      "PAGE_LIST_MAXIMUM_PAGE_SIZE": 150,
+      "PAGE_LIST_HEADER_ROW_HEIGHT": 40,
+      "PAGES_ROW_EXTRA_VERTICAL_SPACE": 10,
+      "PROGRESS_BAR_SIDE_SPACING": 20,
+      "INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT": 2000
     }
   }
 }

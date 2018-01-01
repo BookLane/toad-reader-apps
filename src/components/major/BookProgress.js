@@ -1,21 +1,26 @@
 import React from "react"
+import Expo from "expo"
 import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import i18n from "../../utils/i18n.js"
-import { PROGRESS_BAR_SIDE_SPACING } from "../../utils/constants.js"
 
 import ProgressDot from "../basic/ProgressDot"
 
 // import {  } from "../../redux/actions.js"
 
+const {
+  ANDROID_TOOLBAR_COLOR,
+  PROGRESS_BAR_SIDE_SPACING,
+} = Expo.Constants.manifest.extra
+
 const footerHeight = nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
 
 const styles = StyleSheet.create({
   footer: {
-    ...(Platform.OS === 'android' ? {backgroundColor: '#4075ae'} : {}),
+    ...(Platform.OS === 'android' ? {backgroundColor: ANDROID_TOOLBAR_COLOR} : {}),
     flexDirection: 'row',
   },
   line: {
@@ -34,10 +39,7 @@ class BookProgress extends React.Component {
     const { mainDotLeft, scrollPercentage, updateScrollPercentage } = this.props
 
     return (
-      <Footer
-        androidStatusBarColor="#4075ae"
-        style={styles.footer}
-      >
+      <Footer style={styles.footer}>
         <View style={styles.line}/>
         <ProgressDot
           left={mainDotLeft}

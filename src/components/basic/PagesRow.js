@@ -1,7 +1,11 @@
 import React from "react"
+import Expo from "expo"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
-import { PAGES_ROW_EXTRA_VERTICAL_SPACE } from "../../utils/constants.js"
+
+const {
+  PAGES_ROW_EXTRA_VERTICAL_SPACE,
+} = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   pages: {

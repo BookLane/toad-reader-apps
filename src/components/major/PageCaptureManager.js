@@ -1,11 +1,15 @@
 import React from "react"
+import Expo from "expo"
 import { Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
-import { INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT } from "../../utils/constants.js"
 
 import PageCapture from "./PageCapture"
+
+const {
+  INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT,
+} = Expo.Constants.manifest.extra
 
 class PageCaptureManager extends React.Component {
 
