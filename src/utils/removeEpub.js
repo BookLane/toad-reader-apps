@@ -1,6 +1,10 @@
-import { FileSystem } from "expo"
+import Expo, { FileSystem } from "expo"
 import i18n from "./i18n.js"
 import { ActionSheet, Toast } from "native-base"
+
+const {
+  REMOVE_ICON_COLOR,
+} = Expo.Constants.manifest.extra
 
 const removeEpub = async ({ bookId, success }) => {
   
@@ -17,7 +21,7 @@ export const confirmRemoveEPub = ({ books, bookId, setDownloadStatus, done }) =>
   ActionSheet.show(
     {
       options: [
-        { text: i18n("Remove from device"), icon: "remove-circle", iconColor: "#fa213b" },
+        { text: i18n("Remove from device"), icon: "remove-circle", iconColor: REMOVE_ICON_COLOR },
         { text: i18n("Cancel"), icon: "close" }
       ],
       destructiveButtonIndex: 0,
@@ -43,7 +47,7 @@ export const confirmRemoveAllEPubs = ({ books, setDownloadStatus }) => {
   ActionSheet.show(
     {
       options: [
-        { text: i18n("Remove all books"), icon: "remove-circle", iconColor: "#fa213b" },
+        { text: i18n("Remove all books"), icon: "remove-circle", iconColor: REMOVE_ICON_COLOR },
         { text: i18n("Cancel"), icon: "close" }
       ],
       destructiveButtonIndex: 0,
