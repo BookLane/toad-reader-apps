@@ -45,11 +45,14 @@ class BookPages extends React.Component {
     this.calcList()
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.calcList(nextProps)
+  }
+
   componentWillUpdate(nextProps, nextState) {
-    const { spines } = this.props
     const { pageWidth } = this.state
 
-    if(nextProps.spines !== spines || nextState.pageWidth !== pageWidth) {
+    if(nextState.pageWidth !== pageWidth) {
       this.calcList(nextProps, nextState)
     }
   }
