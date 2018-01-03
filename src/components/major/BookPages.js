@@ -95,13 +95,13 @@ class BookPages extends React.Component {
       }
     })
 
-    this.maxScroll = offset - listHeight
+    this.maxScroll = Math.max(offset - listHeight, 0)
   }
 
   updateScrollPercentage = event => {
     const scrollY = event.nativeEvent.contentOffset.y
 
-    const scrollPercentage = Math.round((scrollY / this.maxScroll) * 100)
+    const scrollPercentage = this.maxScroll ? Math.round((scrollY / this.maxScroll) * 100) : 0
 
     if(scrollPercentage !== this.state.scrollPercentage) {
       this.setState({ scrollPercentage })
@@ -209,11 +209,15 @@ class BookPages extends React.Component {
           ref={this.setFlatListEl}
         />
         <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} />
-        <BookProgress
-          mainDotLeft={mainDotLeft}
-          scrollPercentage={scrollPercentage}
-          scrollToPercentage={this.scrollToPercentage}
-        />
+        {this.maxScroll
+          ?
+            <BookProgress
+              mainDotLeft={mainDotLeft}
+              scrollPercentage={scrollPercentage}
+              scrollToPercentage={this.scrollToPercentage}
+            />
+          : null
+        }
       </View>
     )
 
