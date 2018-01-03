@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, StatusBar, View } from "react-native"
+import { StyleSheet, StatusBar, View, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
@@ -97,11 +97,18 @@ class Book extends React.Component {
     StatusBar.setHidden(false)
   }
 
+  setStatusBarHidden = setHidden => {
+    if(Platform.OS === 'ios') {
+      StatusBar.setHidden(setHidden)
+    }
+  }
+
   goToPage = params => {
     const { goToPage } = this.state
 
     goToPage(params)
     this.setState({ mode: 'page' })
+    this.setStatusBarHidden(true)
   }
   
   goToHref = params => {
@@ -109,6 +116,7 @@ class Book extends React.Component {
 
     goToHref(params)
     this.setState({ mode: 'page' })
+    this.setStatusBarHidden(true)
   }
 
   toggleBookView = () => {
@@ -120,7 +128,10 @@ class Book extends React.Component {
     })
   }
 
-  backToReading = () => this.setState({ mode: 'page' })
+  backToReading = () => {
+    this.setState({ mode: 'page' })
+    this.setStatusBarHidden(true)
+  }
 
   toggleShowOptions = () => {
     const { showOptions } = this.state
@@ -130,13 +141,19 @@ class Book extends React.Component {
   
   hideOptions = () => this.setState({ showOptions: false })
 
-  requestShowBook = stateVars => this.setState({ ...stateVars, mode: 'pages' })
+  requestShowPages = stateVars => {
+    this.setState({ ...stateVars, mode: 'pages' })
+    this.setStatusBarHidden(false)
+  }
 
   requestHideSettings = () => this.setState({ showSettings: false })
 
   indicateLoaded = () => this.setState({ bookLoaded: true })
 
-  showDisplaySettings = () => this.setState({ mode: 'page', showSettings: true })
+  showDisplaySettings = () => {
+    this.setState({ mode: 'page', showSettings: true })
+    this.setStatusBarHidden(true)
+  }
 
   recommendBook = () => alert('Recommend this book')
 
@@ -180,7 +197,7 @@ class Book extends React.Component {
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
-            requestShowBook={this.requestShowBook}
+            requestShowPages={this.requestShowPages}
             showSettings={showSettings}
             requestHideSettings={this.requestHideSettings}
             indicateLoaded={this.indicateLoaded}

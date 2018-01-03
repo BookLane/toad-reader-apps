@@ -1,6 +1,5 @@
 import React from "react"
 import { StyleSheet, Platform, Dimensions } from "react-native"
-// import { StyleSheet, Platform, Dimensions, StatusBar } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
@@ -21,18 +20,9 @@ const styles = StyleSheet.create({
 
 class BookHeader extends React.Component {
 
-  componentDidMount() {
-    // StatusBar.setHidden(false)
-  }
-
-  componentWillUnmount() {
-    // this.skipHideStatusBar || StatusBar.setHidden(true)
-  }
-
   onBackPress = () => {
     const { navigation } = this.props
     
-    // this.skipHideStatusBar = true
     navigation.goBack(navigation.state.params.pageKey)
   }
 
