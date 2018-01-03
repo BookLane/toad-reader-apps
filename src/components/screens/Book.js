@@ -136,9 +136,33 @@ class Book extends React.Component {
 
   indicateLoaded = () => this.setState({ bookLoaded: true })
 
+  showDisplaySettings = () => this.setState({ mode: 'page', showSettings: true })
+
+  recommendBook = () => alert('Recommend this book')
+
+  goToHighlights = () => {
+    const { navigation } = this.props
+
+    navigation.navigate("Highlights")
+  }
+
+  removeFromDevice = () => {
+    const { navigation, books, setDownloadStatus } = this.props
+    const { bookId } = navigation.state.params
+
+    confirmRemoveEPub({
+      books,
+      bookId,
+      setDownloadStatus,
+      done: () => {
+        navigation.goBack(navigation.state.params.pageKey)
+      }
+    })    
+  }
+
   render() {
 
-    const { navigation, books, setDownloadStatus } = this.props
+    const { navigation, books } = this.props
     const { bookId } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings } = this.state
 
@@ -151,6 +175,7 @@ class Book extends React.Component {
           mode={mode}
           toggleBookView={this.toggleBookView}
           toggleShowOptions={this.toggleShowOptions}
+          showDisplaySettings={this.showDisplaySettings}
         />
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
@@ -178,29 +203,16 @@ class Book extends React.Component {
             requestHide={this.hideOptions}
             options={[
               {
-                text: i18n("Display settings"),
-                onPress: () => {
-                  this.setState({ mode: 'page', showSettings: true })
-                },
-              },
-              {
                 text: i18n("Recommend this book"),
-                onPress: () => alert('Recommend this book'),
+                onPress: this.recommendBook,
               },
               {
                 text: i18n("My highlights and notes"),
-                onPress: () => navigation.navigate("Highlights"),
+                onPress: this.goToHighlights,
               },
               {
                 text: i18n("Remove from device"),
-                onPress: () => confirmRemoveEPub({
-                  books,
-                  bookId,
-                  setDownloadStatus,
-                  done: () => {
-                    navigation.goBack(navigation.state.params.pageKey)
-                  }
-                }),
+                onPress: this.removeFromDevice,
               },
             ]}
           />

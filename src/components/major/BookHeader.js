@@ -25,7 +25,8 @@ class BookHeader extends React.Component {
   }
 
   render() {
-    const { bookId, subtitle, navigation, mode, toggleBookView, toggleShowOptions, books } = this.props
+    const { bookId, subtitle, navigation, mode, showDisplaySettings,
+            toggleBookView, toggleShowOptions, books } = this.props
     const { title } = books[bookId]
     
     return (
@@ -48,6 +49,12 @@ class BookHeader extends React.Component {
           }
         </Body>
         <Right>
+          <Button
+            transparent
+            onPress={showDisplaySettings}
+          >
+            <Icon name="settings" />
+          </Button>
           <Button
             transparent
             onPress={toggleBookView}
