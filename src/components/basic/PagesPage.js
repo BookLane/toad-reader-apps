@@ -49,7 +49,7 @@ class PagesPage extends React.Component {
           delayPressIn={0}
         >
           <View style={styles.page}>
-            <PagesBookmark />
+            {/* <PagesBookmark /> */}
           </View>
         </TouchableComponent>
       </View>
