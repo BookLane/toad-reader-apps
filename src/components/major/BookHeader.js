@@ -1,11 +1,23 @@
 import React from "react"
+import { StyleSheet, Platform, Dimensions } from "react-native"
+// import { StyleSheet, Platform, Dimensions, StatusBar } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
-// import { StatusBar } from "react-native"
 import AppHeader from "../basic/AppHeader"
 
 // import {  } from "../../redux/actions.js"
+
+const isPhoneSize = () => {
+  const { width, height } = Dimensions.get('window')
+  return Math.min(width, height) < 500
+}
+
+const styles = StyleSheet.create({
+  title: {
+    ...(Platform.OS === 'ios' && isPhoneSize() ? { marginLeft: -50, left: -20 } : {}),
+  },
+})
 
 class BookHeader extends React.Component {
 
@@ -42,9 +54,9 @@ class BookHeader extends React.Component {
           </Button>
         </Left>
         <Body>
-          <Title>{title}</Title>
+          <Title style={styles.title}>{title}</Title>
           {subtitle
-            ? <Subtitle>{subtitle}</Subtitle>
+            ? <Subtitle style={styles.title}>{subtitle}</Subtitle>
             : null
           }
         </Body>
