@@ -67,11 +67,23 @@ export default function(state = initialState, action) {
       }
       return newState
 
-    case "SET_SPINES":
+    case "ADD_SPINE_NUM_PAGES_COUNT":
+      const objToInsert = { [action.key]: action.numPages }
       if(newState[action.bookId]) {
-        newState[action.bookId] = {
-          ...newState[action.bookId],
-          spines: action.spines,
+        newState[action.bookId] = { ...newState[action.bookId] }
+        if(newState[action.bookId].spines) {
+          newState[action.bookId].spines = newState[action.bookId].spines.map(spine => (
+            spine.idref == action.idref
+              ?
+                {
+                  ...spine,
+                  numPages: {
+                    ...(spine.numPages || {}),
+                    ...objToInsert,
+                  },
+                }
+              : spine
+          ))
         }
       }
       return newState

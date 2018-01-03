@@ -6,7 +6,7 @@ import { postMessage } from "../../utils/postMessage.js"
 
 import PageWebView from "./PageWebView"
 
-import { setSpines } from "../../redux/actions.js"
+import { addSpineNumPagesCount } from "../../redux/actions.js"
 
 class PageCapture extends React.Component {
 
@@ -36,25 +36,23 @@ class PageCapture extends React.Component {
     
     switch(data.identifier) {
       case 'pagesInfo':
-        const { bookId, spines, width, height, reportSuccess, setSpines } = this.props
+        const { bookId, spines, width, height, reportSuccess, addSpineNumPagesCount } = this.props
 
         clearTimeout(this.getPageInfoTimeout)
         
         spines.some((spine, index) => {
           if(spine.idref == data.payload.spineIdRef) {
-            spines[index] = {
-              ...spine,
-              numPages: {
-                ...(spine.numPages || {}),
-                [`${width}x${height}`]: data.payload.numPages,
-              }
-            }
+            addSpineNumPagesCount({
+              bookId,
+              idref: spine.idref,
+              key: [`${width}x${height}`],
+              numPages: data.payload.numPages,
+            })
             return true
           }
         })
 
         reportSuccess({ bookId, spineIdRef: data.payload.spineIdRef, width, height })
-        setSpines({ bookId, spines })
 
         return true
     }
@@ -86,7 +84,7 @@ const mapStateToProps = (state) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  setSpines,
+  addSpineNumPagesCount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(PageCapture)

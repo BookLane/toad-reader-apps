@@ -17,10 +17,12 @@ export const setTocAndSpines = ({ bookId, toc, spines }) => ({
   spines,
 })
 
-export const setSpines = ({ bookId, spines }) => ({
-  type: "SET_SPINES",
+export const addSpineNumPagesCount = ({ bookId, idref, key, numPages }) => ({
+  type: "ADD_SPINE_NUM_PAGES_COUNT",
   bookId,
-  spines,
+  idref,
+  key,
+  numPages,
 })
 
 export const setSort = ({ sort }) => ({
