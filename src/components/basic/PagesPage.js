@@ -1,6 +1,7 @@
 import React from "react"
+import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions } from "react-native"
+import { FileSystem } from "expo"
 import { View } from "native-base"
-import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback } from "react-native"
 
 import PagesBookmark from "./PagesBookmark"
 
@@ -12,6 +13,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     width: '100%',
     height: '100%',
+  },
+  image: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 })
 
@@ -28,10 +36,13 @@ class PagesPage extends React.Component {
   }
 
   render() {
-    const { pageWidth, pageHeight } = this.props
+    const { bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
+
+    const { width, height } = Dimensions.get('window')
+    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}`
 
     return (
       <View
@@ -49,6 +60,11 @@ class PagesPage extends React.Component {
           delayPressIn={0}
         >
           <View style={styles.page}>
+            <Image
+              source={{ uri }}
+              style={styles.image}
+              resizeMode='cover'
+            />
             {/* <PagesBookmark /> */}
           </View>
         </TouchableComponent>

@@ -243,6 +243,7 @@ class Book extends React.Component {
         <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
           <BookPages
             goToPage={this.goToPage}
+            bookId={bookId}
             spines={bookLoaded && books[bookId].spines}
             setFlatListEl={this.setFlatListEl}
           />

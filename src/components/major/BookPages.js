@@ -124,7 +124,7 @@ class BookPages extends React.Component {
   onLayout = () => this.setState({ ...(this.getPageSize()) })
 
   renderItem = ({ item }) => {
-    const { goToPage } = this.props
+    const { goToPage, bookId } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine } = item
 
@@ -141,6 +141,7 @@ class BookPages extends React.Component {
           key={i}
           pageWidth={pageWidth}
           pageHeight={pageHeight}
+          bookId={bookId}
           spineIdRef={spineIdRef}
           pageIndexInSpine={pageIndexInSpine}
           goToPage={goToPage}
