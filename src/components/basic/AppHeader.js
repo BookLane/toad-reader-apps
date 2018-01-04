@@ -1,7 +1,7 @@
 import React from "react"
 import Expo from "expo"
 import { Header } from "native-base"
-import { Platform, StyleSheet } from "react-native"
+import { Platform, StyleSheet, View } from "react-native"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const {
@@ -10,8 +10,10 @@ const {
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
-  header: {
+  container: {
     zIndex: 3,
+  },
+  header: {
     ...(Platform.OS === 'android' ? { backgroundColor: ANDROID_TOOLBAR_COLOR } : {}),
   },
 })
@@ -31,15 +33,17 @@ class AppHeader extends React.Component {
     }
 
     return (
-      <Header
-        androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
-        style={[
-          styles.header,
-          style,
-        ]}
-      >
-        {this.props.children}
-      </Header>
+      <View style={styles.container}>
+        <Header
+          androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
+          style={[
+            styles.header,
+            style,
+          ]}
+        >
+          {this.props.children}
+        </Header>
+      </View>
     )
   }
 }

@@ -57,7 +57,7 @@ class PageCapture extends React.Component {
         await takeSnapshot({
           view: this.view,
           bookId: bookId,
-          fileName: `${spine.idref}_${this.pageCfis.length-1}_${width}x${height}`,
+          fileName: `${spine.idref}_${this.pageCfis.length-1}_${width}x${height}.jpg`,
         })
 
         if(this.pageCfis.length < this.numPages) {
@@ -80,7 +80,6 @@ class PageCapture extends React.Component {
           })
           
           reportSuccess({ bookId, spine, width, height })
-  
           
         }
 
