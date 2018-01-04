@@ -1,13 +1,13 @@
 import { FileSystem, takeSnapshotAsync } from "expo"
 
-export default async ({ view, bookId, fileName }) => {
+export default async ({ view, bookId, fileName, width, height }) => {
 
   const initFileURI = await takeSnapshotAsync(view, {
     format: "jpg",
     quality: 0.8,
     result: "file",
-    // height,
-    // width,
+    width,
+    height,
   })
 
   const dir = `${FileSystem.documentDirectory}snapshots/${bookId}`

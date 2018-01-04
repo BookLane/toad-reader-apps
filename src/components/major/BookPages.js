@@ -8,10 +8,11 @@ import PagesPage from "../basic/PagesPage"
 import BookProgress from "./BookProgress"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
+import { getPageSize } from '../../utils/toolbox.js'
+
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 const {
-  PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_ROW_EXTRA_VERTICAL_SPACE,
   PROGRESS_BAR_SIDE_SPACING,
@@ -37,7 +38,7 @@ class BookPages extends React.Component {
     super(props)
 
     this.state = {
-      ...(this.getPageSize()),
+      ...(getPageSize()),
       animatedScrollPosition: new Animated.Value(0),
       scrollPercentage: 0,
     }
@@ -108,20 +109,7 @@ class BookPages extends React.Component {
     }
   }
 
-  getPageSize = () => {
-    const { width, height } = Dimensions.get('window')
-    const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
-    const pagesPerRow = parseInt(width / maxWidth)
-    const pageWidth = (width - ((pagesPerRow + 1) * 10)) / pagesPerRow
-    const pageHeight = pageWidth / ( width / height )
-    return {
-      pageWidth,
-      pageHeight,
-      pagesPerRow,
-    }
-  }
-
-  onLayout = () => this.setState({ ...(this.getPageSize()) })
+  onLayout = () => this.setState({ ...(getPageSize()) })
 
   renderItem = ({ item }) => {
     const { goToPage, bookId } = this.props

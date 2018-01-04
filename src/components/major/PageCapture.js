@@ -2,10 +2,11 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
+import PageWebView from "./PageWebView"
+
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-
-import PageWebView from "./PageWebView"
+import { getPageSize } from '../../utils/toolbox.js'
 
 import { addSpinePageCfis } from "../../redux/actions.js"
 
@@ -53,11 +54,15 @@ class PageCapture extends React.Component {
         // record cfi
         this.pageCfis.push(data.payload.newCfi)
 
+        const { pageWidth, pageHeight } = getPageSize({ width, height })
+
         // takeSnapshot, if none exists
         await takeSnapshot({
           view: this.view,
           bookId: bookId,
           fileName: `${spine.idref}_${this.pageCfis.length-1}_${width}x${height}.jpg`,
+          width: pageWidth,
+          height: pageHeight,
         })
 
         if(this.pageCfis.length < this.numPages) {
