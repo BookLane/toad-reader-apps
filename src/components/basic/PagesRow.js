@@ -20,8 +20,10 @@ const styles = StyleSheet.create({
 
 class PagesRow extends React.Component {
 
-  shouldComponentUpdate() {
-    return false
+  shouldComponentUpdate(nextProps) {
+    const { children } = this.props
+
+    return nextProps.children.length != children.length
   }
 
   render() {
