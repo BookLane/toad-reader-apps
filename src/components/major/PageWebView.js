@@ -6,7 +6,11 @@ import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 })
 
@@ -42,11 +46,11 @@ class PageWebView extends React.Component {
     this.setState({ width, height })
   }
 
-  onMessageEvent = event => {
+  onMessageEvent = async event => {
     const { onMessage } = this.props
     const data = JSON.parse(event.nativeEvent.data)
 
-    if(onMessage && onMessage(data)) return
+    if(onMessage && await onMessage(data)) return
 
     switch(data.identifier) {
 
@@ -94,20 +98,22 @@ class PageWebView extends React.Component {
   onError = e => console.log('webview error', e)
 
   render() {
-    const { setWebViewEl, bookId, style } = this.props
+    const { setWebViewEl, setView, bookId, style } = this.props
     const { width, height } = this.state
 
     return (
       <View
         style={styles.container}
         onLayout={this.calcSize}
+        collapsable={false}
+        ref={setView}
       >
         <WebView
           style={{
             width,
             height,
             minHeight: height,
-            ...style
+            ...style,
           }}
           injectedJavaScript={patchPostMessageJsCode}
           ref={this.setWebViewEl}

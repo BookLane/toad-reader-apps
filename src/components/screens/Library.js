@@ -16,6 +16,10 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
 
+const {
+  APP_BACKGROUND_COLOR,
+} = Expo.Constants.manifest.extra
+
 const styles = StyleSheet.create({
   noBooks: {
     marginTop: 50,
@@ -23,6 +27,10 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     padding: 40,
+  },
+  content: {
+    zIndex: 1,
+    backgroundColor: APP_BACKGROUND_COLOR,
   },
 })
 
@@ -141,12 +149,11 @@ class Library extends React.Component {
                 <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
               )
               : (
-                <Content>
+                <Content style={styles.content}>
                   <LibraryViewer
                     bookList={bookList}
                     navigation={navigation}
                   />
-                  <PageCaptureManager />
                 </Content>
               )
           )
@@ -169,7 +176,9 @@ class Library extends React.Component {
             ]}
           />
         }
-        
+
+        <PageCaptureManager />
+
         {/* TODO: Add modal for error message */}
       </Container>
     )

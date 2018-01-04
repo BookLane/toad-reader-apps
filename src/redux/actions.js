@@ -17,12 +17,16 @@ export const setTocAndSpines = ({ bookId, toc, spines }) => ({
   spines,
 })
 
-export const addSpineNumPagesCount = ({ bookId, idref, key, numPages }) => ({
-  type: "ADD_SPINE_NUM_PAGES_COUNT",
+export const addSpinePageCfis = ({ bookId, idref, key, pageCfis }) => ({
+  type: "ADD_SPINE_PAGE_CFIS",
   bookId,
   idref,
   key,
-  numPages,
+  pageCfis,
+})
+
+export const incrementSpineImagesIndex = () => ({
+  type: "INCREMENT_SPINE_IMAGES_INDEX",
 })
 
 export const setSort = ({ sort }) => ({

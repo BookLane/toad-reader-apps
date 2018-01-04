@@ -8,7 +8,7 @@ import { View } from "native-base"
 import PageCapture from "./PageCapture"
 
 const {
-  INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT,
+  INITIAL_SPINE_CAPTURE_TIMEOUT,
 } = Expo.Constants.manifest.extra
 
 class PageCaptureManager extends React.Component {
@@ -21,24 +21,24 @@ class PageCaptureManager extends React.Component {
     this.unmounted = true
   }
 
-  getKey = ({ bookId, spineIdRef, width, height }) => `${bookId} ${spineIdRef} ${width}x${height}`
+  getKey = ({ bookId, spine, width, height }) => `${bookId} ${spine.idref} ${width}x${height}`
 
-  reportSuccess = ({ bookId, spineIdRef, width, height }) => {
+  reportSuccess = ({ bookId, spine, width, height }) => {
     const skipList = { ...this.state.skipList }
-    const key = this.getKey({ bookId, spineIdRef, width, height })
+    const key = this.getKey({ bookId, spine, width, height })
 
     delete skipList[key]
 
     this.setState({ skipList })
   }
 
-  reportNoResponse = ({ bookId, spineIdRef, width, height }) => {
+  reportNoResponse = ({ bookId, spine, width, height }) => {
     if(this.unmounted) return
 
     const { skipList } = this.state
 
-    const key = this.getKey({ bookId, spineIdRef, width, height })
-    const timeout = ((skipList[key] && skipList[key].timeout) || INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT) * 2
+    const key = this.getKey({ bookId, spine, width, height })
+    const timeout = Math.min((skipList[key] && skipList[key].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT) * 2
 
     console.log('skip spine', key)
     this.setState({
@@ -75,19 +75,19 @@ class PageCaptureManager extends React.Component {
       let { width, height } = Dimensions.get('window')
       const book = books[bookId] || {}
       const spines = book.spines
-      let spineIdRef
+      let spine
 
       const findSpineToDo = flip => {
         if(flip) {
           [ width, height ] = [ height, width ]
         }
-        return spines.some(spine => {
-          const key = this.getKey({ bookId, spineIdRef: spine.idref, width, height })
+        return spines.some(thisSpine => {
+          const key = this.getKey({ bookId, spine: thisSpine, width, height })
           if(
-            (!spine.numPages || spine.numPages[`${width}x${height}`] == null)
+            (!thisSpine.pageCfis || thisSpine.pageCfis[`${width}x${height}`] == null)
             && !(skipList[key] || {}).skip
           ) {
-            spineIdRef = spine.idref
+            spine = thisSpine
             return true
           }
         })
@@ -97,17 +97,16 @@ class PageCaptureManager extends React.Component {
 
       findSpineToDo() || findSpineToDo(true)
 
-      if(!spineIdRef) continue
+      if(!spine) continue
 
-      const key = this.getKey({ bookId, spineIdRef, width, height })
+      const key = this.getKey({ bookId, spine, width, height })
 
       pageCaptureObj = {
         bookId,
-        spines,
-        spineIdRef,
+        spine,
         width,
         height,
-        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_PAGE_CAPTURE_LOAD_TIMEOUT,
+        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT,
       }
 
       break

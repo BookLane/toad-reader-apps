@@ -67,8 +67,8 @@ export default function(state = initialState, action) {
       }
       return newState
 
-    case "ADD_SPINE_NUM_PAGES_COUNT":
-      const objToInsert = { [action.key]: action.numPages }
+    case "ADD_SPINE_PAGE_CFIS":
+      const objToInsert = { [action.key]: action.pageCfis }
       if(newState[action.bookId]) {
         newState[action.bookId] = { ...newState[action.bookId] }
         if(newState[action.bookId].spines) {
@@ -77,10 +77,27 @@ export default function(state = initialState, action) {
               ?
                 {
                   ...spine,
-                  numPages: {
-                    ...(spine.numPages || {}),
+                  pageCfis: {
+                    ...(spine.pageCfis || {}),
                     ...objToInsert,
                   },
+                }
+              : spine
+          ))
+        }
+      }
+      return newState
+      
+    case "INCREMENT_SPINE_IMAGES_INDEX":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = { ...newState[action.bookId] }
+        if(newState[action.bookId].spines) {
+          newState[action.bookId].spines = newState[action.bookId].spines.map(spine => (
+            spine.idref == action.idref
+              ?
+                {
+                  ...spine,
+                  imgsIdx: (spine.imgsIdx || 0) + 1,
                 }
               : spine
           ))

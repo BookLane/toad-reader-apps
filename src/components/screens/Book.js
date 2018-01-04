@@ -18,6 +18,10 @@ import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
 import { setDownloadStatus } from "../../redux/actions.js";
 
+const {
+  APP_BACKGROUND_COLOR,
+} = Expo.Constants.manifest.extra
+
 const pageStyles = {
   position: 'absolute',
   top: 0,
@@ -33,7 +37,7 @@ const pagesStyles = {
   bottom: 0,
   left: 0,
   right: 0,
-  backgroundColor: '#e9e9ef',
+  backgroundColor: APP_BACKGROUND_COLOR,
 }
 
 const contentsStyles = {
@@ -177,6 +181,39 @@ class Book extends React.Component {
     })    
   }
 
+  setFlatListEl = ref => this.flatListEl = ref
+
+
+        // //copied from readium-js/readium-shared-js/plugins/highlights
+        // var biblemesh_parseContentCfi = function(cont) {
+        //     return cont.replace(/\[(.*?)\]/, "").split(/[\/,:]/).map(function(n) {
+        //         return parseInt(n);
+        //     }).filter(Boolean);
+        // }
+    
+        // //copied from readium-js/readium-shared-js/plugins/highlights
+        // var biblemesh_contentCfiComparator = function(cont1, cont2) {
+        //     cont1 = biblemesh_parseContentCfi(cont1);
+        //     cont2 = biblemesh_parseContentCfi(cont2);
+    
+        //     //compare cont arrays looking for differences
+        //     for (var i = 0; i < cont1.length; i++) {
+        //         if (cont1[i] > cont2[i]) {
+        //             return 1;
+        //         } else if (cont1[i] < cont2[i]) {
+        //             return -1;
+        //         }
+        //     }
+    
+        //     //no differences found, so confirm that cont2 did not have values we didn't check
+        //     if (cont1.length < cont2.length) {
+        //         return -1;
+        //     }
+    
+        //     //cont arrays are identical
+        //     return 0;
+        // }
+    
   render() {
 
     const { navigation, books } = this.props
@@ -207,6 +244,7 @@ class Book extends React.Component {
           <BookPages
             goToPage={this.goToPage}
             spines={bookLoaded && books[bookId].spines}
+            setFlatListEl={this.setFlatListEl}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>

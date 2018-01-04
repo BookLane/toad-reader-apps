@@ -22,6 +22,7 @@
 
 ### Bugs
 
+- For PageCapture, there needs to be a limit to the timeout such that it just tries next time they open the app; also, think about the app being killed at any point and if it could get stuck with skip: true; also, clearing it when book deleted
 - One book page parsing cuts off another so that the first does not finish
 - "Remove from device" option not showing on iOS X simulator (when viewing in BookPages or BookContents)
 - Logo not properly displayed on Sarah's iphone

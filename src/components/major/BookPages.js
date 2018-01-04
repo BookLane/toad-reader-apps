@@ -70,7 +70,7 @@ class BookPages extends React.Component {
     let offset = 0
 
     spines.forEach(spine => {
-      const { idref, label='', numPages } = spine
+      const { idref, label='', pageCfis } = spine
       this.list.push({
         key: `H:${pageWidth}:${idref}`,  // H = header
         label,
@@ -79,11 +79,11 @@ class BookPages extends React.Component {
       this.headerIndices.push(this.list.length - 1)
       offset += PAGE_LIST_HEADER_ROW_HEIGHT
 
-      const numPagesThisSize = numPages ? numPages[`${width}x${height}`] : 0
-      for(let i=0; i<(numPagesThisSize || 1); i+=pagesPerRow) {
-        const numPagesInSpine = Math.min(numPagesThisSize - i, pagesPerRow)
+      const numPagesInSpine = pageCfis ? (pageCfis[`${width}x${height}`] || []).length : 0
+      for(let i=0; i<(numPagesInSpine || 1); i+=pagesPerRow) {
+        const numRowsInSpine = Math.min(numPagesInSpine - i, pagesPerRow)
         const pageIndicesInSpine = []
-        for(let j=0; j<(numPagesInSpine || 1); j++) {
+        for(let j=0; j<(numRowsInSpine || 1); j++) {
           pageIndicesInSpine.push(i+j)
         }
         this.list.push({
@@ -135,7 +135,7 @@ class BookPages extends React.Component {
     } else {
 
       const spineIdRef = key.split(':').slice(3).join(':')
-      
+
       const pages = pageIndicesInSpine.map((pageIndexInSpine, i) => (
         <PagesPage
           key={i}
@@ -162,7 +162,12 @@ class BookPages extends React.Component {
     }
   }
 
-  setFlatListEl = ref => this.flatListEl = ref && ref._component
+  setFlatListEl = ref => {
+    const { setFlatListEl } = this.props
+
+    this.flatListEl = ref && ref._component
+    setFlatListEl && setFlatListEl(this.flatListEl)
+  }
 
   scrollToPercentage = percent => {
     this.flatListEl && this.flatListEl.scrollToOffset({ offset: (percent/100) * this.maxScroll, animated: false })
