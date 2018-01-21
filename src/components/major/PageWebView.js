@@ -103,7 +103,10 @@ class PageWebView extends React.Component {
 
     return (
       <View
-        style={styles.container}
+        style={[
+          styles.container,
+          style,
+        ]}
         onLayout={this.calcSize}
         collapsable={false}
         ref={setView}
