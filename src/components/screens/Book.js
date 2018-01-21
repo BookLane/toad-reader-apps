@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, StatusBar, View, Platform } from "react-native"
+import { StyleSheet, StatusBar, View, Platform, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
@@ -15,6 +15,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
+import { getPageIndexInSpine, latestLocationToObj } from "../../utils/toolbox.js"
 
 import { setDownloadStatus } from "../../redux/actions.js";
 
@@ -90,7 +91,8 @@ class Book extends React.Component {
     showOptions: false,
     showSettings: false,
     goToHref: null,
-    goToPage: null,
+    snapshotCoords: null,
+    snapshotZoomed: true,
   }
 
   componentDidMount() {
@@ -107,19 +109,32 @@ class Book extends React.Component {
     }
   }
 
-  goToPage = params => {
-    const { goToPage } = this.state
-
-    goToPage(params)  // triggers the postMessage to change the page in the WebView
-    this.setState({ mode: 'page' })
-    this.setStatusBarHidden(true)
+  pageLoaded = () => {
+    this.setState({
+      mode: 'page',
+    })
   }
   
+  zoomToPage = snapshotCoords => {
+    this.setState({
+      mode: 'zooming',
+      snapshotCoords,
+      snapshotZoomed: true,
+    })
+    this.setStatusBarHidden(true)
+
+    // TODO
+    setTimeout(this.pageLoaded, 2000)
+  }
+
   goToHref = params => {
     const { goToHref } = this.state
 
-    goToHref(params)
-    this.setState({ mode: 'page' })
+    goToHref(params)  // triggers the postMessage to change the page in the WebView
+    this.setState({
+      mode: 'page',
+      snapshotZoomed: true,
+    })
     this.setStatusBarHidden(true)
   }
 
@@ -133,8 +148,14 @@ class Book extends React.Component {
   }
 
   backToReading = () => {
-    this.setState({ mode: 'page' })
+    this.setState({
+      mode: 'zooming',
+      snapshotZoomed: true,
+    })
     this.setStatusBarHidden(true)
+
+    // TODO
+    setTimeout(this.pageLoaded, 2000)
   }
 
   toggleShowOptions = () => {
@@ -146,8 +167,20 @@ class Book extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   requestShowPages = stateVars => {
-    this.setState({ ...stateVars, mode: 'pages' })
+    // TODO: snapshotCoords is off if they scrolled
+    this.setState({
+      ...stateVars,  // goToHref
+      mode: 'zooming',
+      snapshotZoomed: false,
+    })
     this.setStatusBarHidden(false)
+
+    // TODO
+    setTimeout(() => {
+      this.setState({
+        mode: 'pages',
+      })      
+    }, 2000)
   }
 
   requestHideSettings = () => this.setState({ showSettings: false })
@@ -216,9 +249,25 @@ class Book extends React.Component {
     
   render() {
 
-    const { navigation, books } = this.props
-    const { bookId } = navigation.state.params
+    const { navigation, books, userDataByBookId } = this.props
+    const { bookId, snapshotCoords, snapshotZoomed } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings } = this.state
+
+    let latest_location, spineIdRef, pageIndexInSpine
+    try {
+      const { width, height } = Dimensions.get('window')
+      latest_location = userDataByBookId[bookId].latest_location
+      const latestLocation = latestLocationToObj(latest_location)
+      spineIdRef = latestLocation.spineIdRef
+      let pageCfis
+      books[bookId].spines.some(spine => {
+        if(spine.idref === spineIdRef) {
+          pageCfis = spine.pageCfis[`${width}x${height}`]
+          return true
+        }
+      })
+      pageIndexInSpine = getPageIndexInSpine({ pageCfis, cfi: latestLocation.cfi })
+    } catch(e) {}
 
     return (
       <Container>
@@ -234,20 +283,34 @@ class Book extends React.Component {
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
+            latest_location={latest_location}
+            spineIdRef={spineIdRef}
+            pageIndexInSpine={pageIndexInSpine}
             requestShowPages={this.requestShowPages}
             showSettings={showSettings}
             requestHideSettings={this.requestHideSettings}
             indicateLoaded={this.indicateLoaded}
           />
         </View>
-        <View style={mode === 'pages' ? styles.showPages : styles.hidePages}>
+        <View style={[ 'pages', 'zooming' ].includes(mode) ? styles.showPages : styles.hidePages}>
           <BookPages
-            goToPage={this.goToPage}
+            zoomToPage={this.zoomToPage}
             bookId={bookId}
+            spineIdRef={spineIdRef}
+            pageIndexInSpine={pageIndexInSpine}
             spines={bookLoaded && books[bookId].spines}
             setFlatListEl={this.setFlatListEl}
           />
         </View>
+        {/* <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+          <ZoomPage
+            bookId={bookId}
+            spineIdRef={spineIdRef}
+            pageIndexInSpine={pageIndexInSpine}
+            snapshotCoords={snapshotCoords}
+            zoomed={snapshotZoomed}
+          />
+        </View> */}
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
           <BookContents
             goToHref={this.goToHref}
@@ -281,6 +344,7 @@ class Book extends React.Component {
 
 const mapStateToProps = (state) => ({
   books: state.books,
+  userDataByBookId: state.userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

@@ -46,8 +46,18 @@ class BookPages extends React.Component {
     this.calcList()
   }
 
+  componentDidMount() {
+    this.scrollToLatestLocation()
+  }
+
   componentWillReceiveProps(nextProps) {
+    const { spineIdRef, pageIndexInSpine } = this.props
+
     this.calcList(nextProps)
+
+    if(nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine) {
+      this.scrollToLatestLocation(nextProps)
+    }
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -80,16 +90,20 @@ class BookPages extends React.Component {
       this.headerIndices.push(this.list.length - 1)
       offset += PAGE_LIST_HEADER_ROW_HEIGHT
 
-      const numPagesInSpine = pageCfis ? (pageCfis[`${width}x${height}`] || []).length : 0
+      const pageCfisInThisSpine = pageCfis && pageCfis[`${width}x${height}`]
+      const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
       for(let i=0; i<(numPagesInSpine || 1); i+=pagesPerRow) {
         const numRowsInSpine = Math.min(numPagesInSpine - i, pagesPerRow)
         const pageIndicesInSpine = []
+        const pageCfisInThisRow = []
         for(let j=0; j<(numRowsInSpine || 1); j++) {
           pageIndicesInSpine.push(i+j)
+          pageCfisInThisRow.push(pageCfisInThisSpine[i+j])
         }
         this.list.push({
           key: `P:${pageWidth}:${i}:${idref}`,  // P = pages
           pageIndicesInSpine,
+          cfis: pageCfisInThisRow,
           offset,
         })
         offset += pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE
@@ -97,6 +111,39 @@ class BookPages extends React.Component {
     })
 
     this.maxScroll = Math.max(offset - listHeight, 0)
+  }
+
+  scrollToLatestLocation = nextProps => {
+    const { spineIdRef, pageIndexInSpine } = nextProps || this.props
+
+    if(spineIdRef == null || pageIndexInSpine == null) return
+    if(!this.list) return
+    if(!this.flatListEl) return
+
+    let index = 0
+
+    this.list.some((item, idx) => {
+      const { key, pageIndicesInSpine } = item
+
+      // if it is a header row, no match
+      if(key.substr(0,2) === 'H:') return false
+  
+      // if not the correct spine, no match
+      if(key.split(':').slice(3).join(':') !== spineIdRef) return false
+  
+      // if page index not in this row, no match
+      if(pageIndicesInSpine.includes(pageIndexInSpine)) return false
+
+      index = idx
+      return true
+    })
+
+    this.flatListEl.scrollToIndex({
+      index,
+      viewOffset: 0,
+      viewPosition: 0.5,
+      animated: false,
+    })
   }
 
   updateScrollPercentage = event => {
@@ -112,11 +159,12 @@ class BookPages extends React.Component {
   onLayout = () => this.setState({ ...(getPageSize()) })
 
   renderItem = ({ item }) => {
-    const { goToPage, bookId } = this.props
+    // TODO : I need to hijack zoomToPage and have it not scroll on the change to latestLocation
+    const { zoomToPage, bookId } = this.props
     const { pageWidth, pageHeight } = this.state
-    const { key, label, pageIndicesInSpine } = item
+    const { key, label, pageIndicesInSpine, cfis } = item
 
-    if(key.substr(0,2) == 'H:') {
+    if(key.substr(0,2) === 'H:') {
       
       return <PagesSpineHeading>{label}</PagesSpineHeading>
 
@@ -132,7 +180,8 @@ class BookPages extends React.Component {
           bookId={bookId}
           spineIdRef={spineIdRef}
           pageIndexInSpine={pageIndexInSpine}
-          goToPage={goToPage}
+          cfi={cfis[i]}
+          zoomToPage={zoomToPage}
         />
       ))
   
@@ -146,7 +195,7 @@ class BookPages extends React.Component {
 
     return {
       offset,  // the distance from the top of the first row to this row
-      length: key.substr(0,2) == 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE,  // the height of the row
+      length: key.substr(0,2) === 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE,  // the height of the row
       index,
     }
   }

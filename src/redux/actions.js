@@ -67,3 +67,8 @@ export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })
 
+export const setLatestLocation = ({ bookId, latestLocation }) => ({
+  type: "SET_LATEST_LOCATION",
+  bookId,
+  latestLocation,
+})

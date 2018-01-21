@@ -10,7 +10,7 @@ import DisplaySettings from "./DisplaySettings"
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
 
-import { incrementSpineImagesIndex } from "../../redux/actions.js"
+import { incrementSpineImagesIndex, setLatestLocation } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -22,13 +22,18 @@ class BookPage extends React.Component {
 
   componentDidMount() {
     this.setDisplaySettings()
+    // this.goToLatestLocation()
   }
 
   componentWillReceiveProps(nextProps) {
-    const { displaySettings } = this.props
+    const { displaySettings, spineIdRef, pageIndexInSpine } = this.props
 
-    if(nextProps.displaySettings != displaySettings) {
+    if(nextProps.displaySettings !== displaySettings) {
       this.setDisplaySettings(nextProps)
+    }
+
+    if(nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine) {
+      this.goToLatestLocation(nextProps)
     }
   }
 
@@ -41,30 +46,44 @@ class BookPage extends React.Component {
     })
   }
 
+  goToLatestLocation = nextProps => {
+    const { spineIdRef, pageIndexInSpine } = nextProps || this.props
+
+    if(spineIdRef == null || pageIndexInSpine == null) return
+
+    postMessage(this.webView, 'goToPage', {
+      spineIdRef,
+      pageIndexInSpine,
+    })
+  }
+
   goToHref = params => postMessage(this.webView, 'goToHref', params)
 
-  goToPage = params => postMessage(this.webView, 'goToPage', params)
-
   onMessageEvent = async data => {
-    const { requestShowPages, indicateLoaded } = this.props
+    const { setLatestLocation, bookId, indicateLoaded, requestShowPages } = this.props
 
     switch(data.identifier) {
       case 'pageChanged':
-        indicateLoaded()
-        // this.currentPage = 
-        // console.log('data.payload', data.payload)
-// - scroll to spot
-// - update data in redux
-// - trigger server patch        
 
-// how do I get page number from cfi? from webview? kept in data?
-      // await this.doTakeSnapshot()
+        const { newSpineIdRef, newCfi } = data.payload
+
+        setLatestLocation({
+          bookId,
+          latestLocation: {
+            spineIdRef: newSpineIdRef,
+            cfi: newCfi,
+          },
+        })
+
+        indicateLoaded()
+
+        // await this.doTakeSnapshot()
+
         return false  // i.e. still process pageChanged in the general PageWebView component
 
       case 'showPageListView':
         requestShowPages({
           goToHref: this.goToHref,
-          goToPage: this.goToPage,
         })
         return true
     }
@@ -91,7 +110,7 @@ class BookPage extends React.Component {
 //   }
 
   render() {
-    const { bookId, showSettings, requestHideSettings } = this.props
+    const { bookId, showSettings, requestHideSettings, latest_location } = this.props
 
     return (
       <View style={styles.container}>
@@ -99,6 +118,7 @@ class BookPage extends React.Component {
           bookId={bookId}
           setWebViewEl={this.setWebViewEl}
           onMessage={this.onMessageEvent}
+          latest_location={latest_location}
           // setView={this.setView}
         />
         {showSettings && 
@@ -117,6 +137,7 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   incrementSpineImagesIndex,
+  setLatestLocation,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookPage)

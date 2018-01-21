@@ -1,9 +1,12 @@
 import React from "react"
-import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions, View } from "react-native"
 import { FileSystem } from "expo"
-import { View } from "native-base"
 
 import PagesBookmark from "./PagesBookmark"
+
+import { setLatestLocation } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -30,10 +33,20 @@ class PagesPage extends React.Component {
   }
 
   goToPage = () => {
-    const { goToPage, spineIdRef, pageIndexInSpine } = this.props
-    
-    goToPage({ spineIdRef, pageIndexInSpine })
+    const { setLatestLocation, bookId, spineIdRef, cfi, zoomToPage } = this.props
+
+    setLatestLocation({
+      bookId,
+      latestLocation: {
+        spineIdRef,
+        cfi,
+      },
+    })
+
+    this.view.measureInWindow((x, y) => { zoomToPage({ x, y }) })
   }
+
+  setView = ref => this.view = ref
 
   render() {
     const { bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight } = this.props
@@ -59,7 +72,10 @@ class PagesPage extends React.Component {
           background={TouchableBackground}
           delayPressIn={0}
         >
-          <View style={styles.page}>
+          <View
+            style={styles.page}
+            ref={this.setView}
+          >
             <Image
               source={{ uri }}
               style={styles.image}
@@ -73,4 +89,11 @@ class PagesPage extends React.Component {
   }
 }
 
-export default PagesPage
+const mapStateToProps = (state) => ({
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setLatestLocation,
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(PagesPage)
