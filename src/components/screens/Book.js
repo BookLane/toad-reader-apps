@@ -110,7 +110,7 @@ class Book extends React.Component {
   goToPage = params => {
     const { goToPage } = this.state
 
-    goToPage(params)
+    goToPage(params)  // triggers the postMessage to change the page in the WebView
     this.setState({ mode: 'page' })
     this.setStatusBarHidden(true)
   }
