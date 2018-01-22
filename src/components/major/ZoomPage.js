@@ -1,8 +1,12 @@
 import React from "react"
-import { Animated } from "react-native"
-import { StyleSheet } from "react-native"
+import { FileSystem } from "expo"
+import { Animated, StyleSheet, Dimensions } from "react-native"
 
 import { getPageSize } from '../../utils/toolbox.js'
+
+const {
+  PAGE_ZOOM_MILLISECONDS,
+} = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   snapshot: {
@@ -11,26 +15,38 @@ const styles = StyleSheet.create({
   },
 })
 
+const getZoomInFactor = () => {
+  const { width } = Dimensions.get('window')
+  const { pageWidth } = getPageSize()
+
+  return width / pageWidth
+}
+
 class ZoomPage extends React.Component {
 
   state = {
-    zoomFactor: new Animated.Value(1),
-  }
-
-  componentDidMount() {
-    // Animated.timing(
-    //   zoomFactor,
-    //   {
-    //     toValue: 3,
-    //     duration: 3000,
-    //   }
-    // ).start()
-  
+    zoomFactor: new Animated.Value(this.props.zoomed ? getZoomInFactor() : 1),
   }
 
   componentWillReceiveProps(nextProps) {
-    const { bookId, spineIdRef, pageIndexInSpine, zoomed } = this.props
+    const { zoomed } = this.props
 
+    if(nextProps.zoomed !== zoomed) {
+      this.animate(nextProps)
+    }
+  }
+
+  animate = nextProps => {
+    const { zoomed } = nextProps || this.props
+    const { zoomFactor } = this.state
+
+    Animated.timing(
+      zoomFactor,
+      {
+        toValue: zoomed ? getZoomInFactor() : 1,
+        duration: PAGE_ZOOM_MILLISECONDS,
+      }
+    ).start()
   }
 
   render() {
@@ -39,12 +55,16 @@ class ZoomPage extends React.Component {
 
     const { width, height } = Dimensions.get('window')
     const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
+
+    const { pageWidth, pageHeight } = getPageSize()
+    const top = (snapshotCoords && snapshotCoords.x) || width - pageWidth/2
+    const left = (snapshotCoords && snapshotCoords.y) || height - pageHeight/2
     
     const zoomStyles = {
-      top: 0,
-      left: 0,
-      width: 100,
-      height: 300,
+      top,
+      left,
+      width: pageWidth,
+      height: pageHeight,
       transform: [
         {
           scaleX: zoomFactor,
@@ -62,7 +82,7 @@ class ZoomPage extends React.Component {
           styles.snapshot,
           zoomStyles,
         ]}
-        style={styles.image}
+        // style={styles.image}
         // resizeMode='cover'
       />
     )

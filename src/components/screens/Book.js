@@ -9,6 +9,7 @@ import i18n from "../../utils/i18n.js"
 import BookPage from "../major/BookPage"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
+import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import Options from "../major/Options"
 import DisplaySettings from "../major/DisplaySettings"
@@ -40,6 +41,14 @@ const pagesStyles = {
   left: 0,
   right: 0,
   backgroundColor: APP_BACKGROUND_COLOR,
+}
+
+const zoomStyles = {
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
 }
 
 const contentsStyles = {
@@ -74,6 +83,14 @@ const styles = StyleSheet.create({
   },
   hidePages: {
     ...pagesStyles,
+  },
+  showZoom: {
+    ...zoomStyles,
+    ...showStyles,
+  },
+  hideZoom: {
+    ...zoomStyles,
+    ...hidePageStyles,
   },
   showContents: {
     ...contentsStyles,
@@ -220,8 +237,8 @@ class Book extends React.Component {
   render() {
 
     const { navigation, books, userDataByBookId } = this.props
-    const { bookId, snapshotCoords, snapshotZoomed } = navigation.state.params
-    const { bookLoaded, mode, showOptions, showSettings } = this.state
+    const { bookId } = navigation.state.params
+    const { bookLoaded, mode, showOptions, showSettings, snapshotCoords, snapshotZoomed } = this.state
 
     let latest_location, spineIdRef, pageIndexInSpine
     try {
@@ -272,7 +289,7 @@ class Book extends React.Component {
             setFlatListEl={this.setFlatListEl}
           />
         </View>
-        {/* <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+        <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
           <ZoomPage
             bookId={bookId}
             spineIdRef={spineIdRef}
@@ -280,7 +297,7 @@ class Book extends React.Component {
             snapshotCoords={snapshotCoords}
             zoomed={snapshotZoomed}
           />
-        </View> */}
+        </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
           <BookContents
             goToHref={this.goToHref}
