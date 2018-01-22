@@ -21,6 +21,7 @@ import { setDownloadStatus } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
+  PAGE_ZOOM_MILLISECONDS,
 } = Expo.Constants.manifest.extra
 
 const pageStyles = {
@@ -124,7 +125,7 @@ class Book extends React.Component {
     this.setStatusBarHidden(true)
 
     // TODO
-    setTimeout(this.pageLoaded, 2000)
+    setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
   }
 
   goToHref = params => {
@@ -155,7 +156,7 @@ class Book extends React.Component {
     this.setStatusBarHidden(true)
 
     // TODO
-    setTimeout(this.pageLoaded, 2000)
+    setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
   }
 
   toggleShowOptions = () => {
@@ -180,7 +181,7 @@ class Book extends React.Component {
       this.setState({
         mode: 'pages',
       })      
-    }, 2000)
+    }, PAGE_ZOOM_MILLISECONDS)
   }
 
   requestHideSettings = () => this.setState({ showSettings: false })
