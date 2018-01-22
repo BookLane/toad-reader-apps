@@ -9,6 +9,7 @@ import DisplaySettings from "./DisplaySettings"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
+import { getDisplaySettingsObj } from "../../utils/toolbox.js"
 
 import { incrementSpineImagesIndex, setLatestLocation } from "../../redux/actions.js"
 
@@ -19,11 +20,6 @@ const styles = StyleSheet.create({
 })
 
 class BookPage extends React.Component {
-
-  componentDidMount() {
-    this.setDisplaySettings()
-    // this.goToLatestLocation()
-  }
 
   componentWillReceiveProps(nextProps) {
     const { displaySettings, spineIdRef, pageIndexInSpine } = this.props
@@ -38,12 +34,7 @@ class BookPage extends React.Component {
   }
 
   setDisplaySettings = nextProps => {
-    const { displaySettings } = nextProps || this.props
-
-    postMessage(this.webView, 'setDisplaySettings', {
-      ...displaySettings,
-      columns: 'single',
-    })
+    postMessage(this.webView, 'setDisplaySettings', getDisplaySettingsObj(nextProps || this.props))
   }
 
   goToLatestLocation = nextProps => {
@@ -118,7 +109,8 @@ class BookPage extends React.Component {
           bookId={bookId}
           setWebViewEl={this.setWebViewEl}
           onMessage={this.onMessageEvent}
-          latest_location={latest_location}
+          initialLocation={latest_location}
+          initialDisplaySettings={getDisplaySettingsObj(this.props)}
           // setView={this.setView}
         />
         {showSettings && 

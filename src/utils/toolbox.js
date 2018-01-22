@@ -82,3 +82,12 @@ export const latestLocationToStr = latestLocation => {
     elementCfi: latestLocation.cfi,
   })
 }
+
+export const getDisplaySettingsObj = props => {
+  const { displaySettings } = props
+
+  return {
+    ...displaySettings,
+    columns: 'single',
+  }
+}

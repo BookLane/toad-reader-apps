@@ -6,7 +6,7 @@ import PageWebView from "./PageWebView"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize } from '../../utils/toolbox.js'
+import { getPageSize, getDisplaySettingsObj } from '../../utils/toolbox.js'
 
 import { addSpinePageCfis } from "../../redux/actions.js"
 
@@ -112,12 +112,14 @@ class PageCapture extends React.Component {
         setWebViewEl={this.setWebViewEl}
         setView={this.setView}
         onMessage={this.onMessageEvent}
+        initialDisplaySettings={getDisplaySettingsObj(this.props)}
       />
     )
   }
 }
 
 const mapStateToProps = (state) => ({
+  displaySettings: state.displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

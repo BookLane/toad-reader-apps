@@ -102,7 +102,7 @@ class PageWebView extends React.Component {
   onError = e => console.log('webview error', e)
 
   render() {
-    const { setWebViewEl, setView, bookId, style, latest_location } = this.props
+    const { setWebViewEl, setView, bookId, style, initialLocation, initialDisplaySettings } = this.props
     const { width, height } = this.state
 
     return (
@@ -127,7 +127,8 @@ class PageWebView extends React.Component {
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
               + `?epub=${encodeURIComponent(`${FileSystem.documentDirectory}books/${bookId}`)}`
-              + (latest_location ? `&goto=${encodeURIComponent(latest_location)}` : ``)
+              + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
+              + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
           }}
           mixedContentMode="always"
           onError={this.onError}
