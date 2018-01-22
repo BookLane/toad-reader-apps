@@ -160,7 +160,7 @@ class BookPages extends React.Component {
 
   renderItem = ({ item }) => {
     // TODO : I need to hijack zoomToPage and have it not scroll on the change to latestLocation
-    const { zoomToPage, bookId } = this.props
+    const { zoomToPage, bookId, spineIdRef, pageIndexInSpine } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
 
@@ -170,18 +170,19 @@ class BookPages extends React.Component {
 
     } else {
 
-      const spineIdRef = key.split(':').slice(3).join(':')
+      const itemSpineIdRef = key.split(':').slice(3).join(':')
 
-      const pages = pageIndicesInSpine.map((pageIndexInSpine, i) => (
+      const pages = pageIndicesInSpine.map((itemPageIndexInSpine, i) => (
         <PagesPage
           key={i}
           pageWidth={pageWidth}
           pageHeight={pageHeight}
           bookId={bookId}
-          spineIdRef={spineIdRef}
-          pageIndexInSpine={pageIndexInSpine}
+          spineIdRef={itemSpineIdRef}
+          pageIndexInSpine={itemPageIndexInSpine}
           cfi={cfis[i]}
           zoomToPage={zoomToPage}
+          isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
         />
       ))
   

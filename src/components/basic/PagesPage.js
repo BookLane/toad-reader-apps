@@ -8,9 +8,20 @@ import PagesBookmark from "./PagesBookmark"
 
 import { setLatestLocation } from "../../redux/actions.js"
 
+const {
+  CURRENT_PAGE_BORDER_COLOR,
+  CURRENT_PAGE_BORDER_WIDTH,
+} = Expo.Constants.manifest.extra
+
 const styles = StyleSheet.create({
   container: {
     marginRight: 10,
+  },
+  currentPageContainer: {
+    borderColor: CURRENT_PAGE_BORDER_COLOR,
+    borderWidth: CURRENT_PAGE_BORDER_WIDTH,
+    margin: CURRENT_PAGE_BORDER_WIDTH * -1,
+    marginRight: 10 - CURRENT_PAGE_BORDER_WIDTH,
   },
   page: {
     backgroundColor: '#ffffff',
@@ -28,8 +39,10 @@ const styles = StyleSheet.create({
 
 class PagesPage extends React.Component {
 
-  shouldComponentUpdate() {
-    return false
+  shouldComponentUpdate(nextProps) {
+    const { spineIdRef, pageIndexInSpine } = this.props
+    
+    return nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine
   }
 
   goToPage = () => {
@@ -49,22 +62,26 @@ class PagesPage extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight } = this.props
+    const { bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight, isCurrentPage } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
 
-    const { width, height } = Dimensions.get('window')
-    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
+    const dimensions = Dimensions.get('window')
+    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${dimensions.width}x${dimensions.height}.jpg`
 
+    const width = pageWidth + (isCurrentPage ? CURRENT_PAGE_BORDER_WIDTH*2 : 0)
+    const height = pageHeight + (isCurrentPage ? CURRENT_PAGE_BORDER_WIDTH*2 : 0)
+    
     return (
       <View
         style={[
           styles.container,
           {
-            width: pageWidth,
-            height: pageHeight,
+            width,
+            height,
           },
+          (isCurrentPage ? styles.currentPageContainer : {}),
         ]}
       >
         <TouchableComponent
