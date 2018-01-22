@@ -48,6 +48,7 @@ class ZoomPage extends React.Component {
       scale,
       {
         toValue: zoomed ? 1 : getZoomOutScale(),
+        easing: Easing.linear,
         duration: PAGE_ZOOM_MILLISECONDS,
       }
     ).start()
@@ -65,14 +66,17 @@ class ZoomPage extends React.Component {
     const top = ((snapshotCoords && snapshotCoords.y) || height - pageHeight/2) + (StatusBar.currentHeight || 0)
 
     const zoomOutScale = getZoomOutScale()
+    const easing = Easing.out(Easing.ease)
 
     const translateX = scale.interpolate({
       inputRange: [zoomOutScale, 1],
+      easing,
       outputRange: [PixelRatio.getPixelSizeForLayoutSize(left - (width/2 - pageWidth/2)), 0],
     })
 
     const translateY = scale.interpolate({
       inputRange: [zoomOutScale, 1],
+      easing,
       outputRange: [PixelRatio.getPixelSizeForLayoutSize(top - (height/2 - pageHeight/2)), 0],
     })
     
@@ -98,8 +102,6 @@ class ZoomPage extends React.Component {
           styles.snapshot,
           zoomStyles,
         ]}
-        // style={styles.image}
-        // resizeMode='cover'
       />
     )
   }
