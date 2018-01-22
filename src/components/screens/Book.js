@@ -64,6 +64,10 @@ const showStyles = {
   zIndex: 2,
 }
 
+const showZoomStyles = {
+  zIndex: 4,
+}
+
 const hidePageStyles = {
   left: '300%',
 }
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
   },
   showZoom: {
     ...zoomStyles,
-    ...showStyles,
+    ...showZoomStyles,
   },
   hideZoom: {
     ...zoomStyles,
