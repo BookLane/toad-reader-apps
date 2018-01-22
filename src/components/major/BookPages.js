@@ -98,7 +98,7 @@ class BookPages extends React.Component {
         const pageCfisInThisRow = []
         for(let j=0; j<(numRowsInSpine || 1); j++) {
           pageIndicesInSpine.push(i+j)
-          pageCfisInThisRow.push(pageCfisInThisSpine[i+j])
+          pageCfisInThisSpine && pageCfisInThisRow.push(pageCfisInThisSpine[i+j])
         }
         this.list.push({
           key: `P:${pageWidth}:${i}:${idref}`,  // P = pages

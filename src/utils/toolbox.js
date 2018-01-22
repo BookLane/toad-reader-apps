@@ -55,6 +55,8 @@ const contentCfiComparator = (cont1, cont2) => {
 }
 
 export const getPageIndexInSpine = ({ pageCfis, cfi }) => {
+  if(cfi == null) return 0
+
   let pageIndexInSpine = pageCfis.length - 1
 
   pageCfis.slice(1).some((pageCfi, idx) => {
@@ -79,7 +81,7 @@ export const latestLocationToObj = latest_location => {
 export const latestLocationToStr = latestLocation => {
   return JSON.stringify({
     idref: latestLocation.spineIdRef,
-    elementCfi: latestLocation.cfi,
+    ...(latestLocation.cfi != null ? { elementCfi: latestLocation.cfi } : {}),
   })
 }
 
