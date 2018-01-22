@@ -1,6 +1,6 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { Animated, StyleSheet, Dimensions } from "react-native"
+import { Animated, StyleSheet, Dimensions, StatusBar } from "react-native"
 
 import { getPageSize } from '../../utils/toolbox.js'
 
@@ -57,8 +57,8 @@ class ZoomPage extends React.Component {
     const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
 
     const { pageWidth, pageHeight } = getPageSize()
-    const top = (snapshotCoords && snapshotCoords.x) || width - pageWidth/2
-    const left = (snapshotCoords && snapshotCoords.y) || height - pageHeight/2
+    const left = (snapshotCoords && snapshotCoords.x) || width - pageWidth/2
+    const top = ((snapshotCoords && snapshotCoords.y) || height - pageHeight/2) + (StatusBar.currentHeight || 0)
     
     const zoomStyles = {
       top,

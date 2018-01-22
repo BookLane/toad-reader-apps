@@ -48,7 +48,7 @@ class PagesPage extends React.Component {
       },
     })
 
-    this.view.measureInWindow((x, y) => { zoomToPage({ x, y }) })
+    this.view.measureInWindow((x, y) => zoomToPage({ x, y }))
   }
 
   setView = ref => this.view = ref
