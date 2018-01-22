@@ -17,18 +17,16 @@ const styles = StyleSheet.create({
   container: {
     marginRight: 10,
   },
-  currentPageContainer: {
+  currentPage: {
     borderColor: CURRENT_PAGE_BORDER_COLOR,
     borderWidth: CURRENT_PAGE_BORDER_WIDTH,
-    margin: CURRENT_PAGE_BORDER_WIDTH * -1,
-    marginRight: 10 - CURRENT_PAGE_BORDER_WIDTH,
   },
   page: {
     backgroundColor: '#ffffff',
     width: '100%',
     height: '100%',
   },
-  image: {
+  coverAll: {
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -61,25 +59,22 @@ class PagesPage extends React.Component {
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
 
-    const dimensions = Dimensions.get('window')
-    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${dimensions.width}x${dimensions.height}.jpg`
+    const { width, height } = Dimensions.get('window')
+    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
 
-    const width = pageWidth + (isCurrentPage ? CURRENT_PAGE_BORDER_WIDTH*2 : 0)
-    const height = pageHeight + (isCurrentPage ? CURRENT_PAGE_BORDER_WIDTH*2 : 0)
-    
     return (
       <View
         style={[
           styles.container,
           {
-            width,
-            height,
+            width: pageWidth,
+            height: pageHeight,
           },
-          (isCurrentPage ? styles.currentPageContainer : {}),
         ]}
       >
         <TouchableComponent
           onPress={this.goToPage}
+          useForeground={true}
           background={TouchableBackground}
           delayPressIn={0}
         >
@@ -89,10 +84,16 @@ class PagesPage extends React.Component {
           >
             <Image
               source={{ uri }}
-              style={styles.image}
+              style={styles.coverAll}
               resizeMode='cover'
             />
             {/* <PagesBookmark /> */}
+            <View
+              style={[
+                styles.coverAll,
+                (isCurrentPage ? styles.currentPage : {}),
+              ]}
+            />
           </View>
         </TouchableComponent>
       </View>
