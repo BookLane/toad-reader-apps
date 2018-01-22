@@ -39,12 +39,6 @@ const styles = StyleSheet.create({
 
 class PagesPage extends React.Component {
 
-  shouldComponentUpdate(nextProps) {
-    const { spineIdRef, pageIndexInSpine } = this.props
-    
-    return nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine
-  }
-
   goToPage = () => {
     const { setLatestLocation, bookId, spineIdRef, cfi, zoomToPage } = this.props
 
