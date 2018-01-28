@@ -106,6 +106,7 @@ class BookPage extends React.Component {
     return (
       <View style={styles.container}>
         <PageWebView
+          key={bookId}
           bookId={bookId}
           setWebViewEl={this.setWebViewEl}
           onMessage={this.onMessageEvent}
