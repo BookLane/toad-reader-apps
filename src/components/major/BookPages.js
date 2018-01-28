@@ -92,7 +92,7 @@ class BookPages extends React.Component {
 
       const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
       const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
-      for(let i=0; i<(numPagesInSpine || 1); i+=pagesPerRow) {
+      for(let i=(numPagesInSpine ? 0 : -1); i<numPagesInSpine; i+=pagesPerRow) {
         const numRowsInSpine = Math.min(numPagesInSpine - i, pagesPerRow)
         const pageIndicesInSpine = []
         const pageCfisInThisRow = []
