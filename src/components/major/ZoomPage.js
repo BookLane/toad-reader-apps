@@ -2,7 +2,7 @@ import React from "react"
 import { FileSystem } from "expo"
 import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio } from "react-native"
 
-import { getPageSize } from '../../utils/toolbox.js'
+import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
 
 const {
   PAGE_ZOOM_MILLISECONDS,
@@ -55,13 +55,13 @@ class ZoomPage extends React.Component {
   }
 
   render() {
-    const { bookId, spineIdRef, pageIndexInSpine, snapshotCoords, zoomed } = this.props
+    const { snapshotCoords } = this.props
     const { scale } = this.state
 
-    const { width, height } = Dimensions.get('window')
-    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
+    const uri = getSnapshotURI(this.props)
 
     const { pageWidth, pageHeight } = getPageSize()
+    const { width, height } = Dimensions.get('window')
     const left = (snapshotCoords && snapshotCoords.x) || width - pageWidth/2
     const top = ((snapshotCoords && snapshotCoords.y) || height - pageHeight/2) + (StatusBar.currentHeight || 0)
 

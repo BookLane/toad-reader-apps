@@ -6,6 +6,8 @@ import { FileSystem } from "expo"
 
 import PagesBookmark from "./PagesBookmark"
 
+import { getSnapshotURI } from '../../utils/toolbox.js'
+
 import { setLatestLocation } from "../../redux/actions.js"
 
 const {
@@ -54,13 +56,12 @@ class PagesPage extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight, isCurrentPage } = this.props
+    const { pageWidth, pageHeight, isCurrentPage } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
 
-    const { width, height } = Dimensions.get('window')
-    const uri = `${FileSystem.documentDirectory}snapshots/${bookId}/${spineIdRef}_${pageIndexInSpine}_${width}x${height}.jpg`
+    const uri = getSnapshotURI(this.props)
 
     return (
       <View

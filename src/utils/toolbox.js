@@ -1,4 +1,5 @@
 import { Dimensions } from "react-native"
+import { FileSystem } from "expo"
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
@@ -93,3 +94,22 @@ export const getDisplaySettingsObj = props => {
     columns: 'single',
   }
 }
+
+export const getPageCfisKey = ({ displaySettings, width, height }) => {
+  const { textSize, textSpacing } = displaySettings
+  if(!width) {
+    width = Dimensions.get('window').width
+    height = Dimensions.get('window').height
+  }
+
+  return `${width}x${height}_${textSize}_${textSpacing}`
+}
+
+export const getSnapshotURI = params => {
+  let { bookId, spineIdRef, pageIndexInSpine=0, pageCfisKey } = params
+
+  return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
+}
+
+export const getBooksDir = () => `${FileSystem.documentDirectory}books/`
+export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`

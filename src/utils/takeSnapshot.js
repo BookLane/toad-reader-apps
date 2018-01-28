@@ -1,6 +1,6 @@
 import { FileSystem, takeSnapshotAsync } from "expo"
 
-export default async ({ view, bookId, fileName, width, height }) => {
+export default async ({ view, uri, width, height }) => {
 
   const initFileURI = await takeSnapshotAsync(view, {
     format: "jpg",
@@ -10,7 +10,7 @@ export default async ({ view, bookId, fileName, width, height }) => {
     height,
   })
 
-  const dir = `${FileSystem.documentDirectory}snapshots/${bookId}`
+  const dir = uri.replace(/[^/]+$/, '')
   
   try {
     await FileSystem.makeDirectoryAsync(dir, { intermediates: true })
@@ -18,7 +18,7 @@ export default async ({ view, bookId, fileName, width, height }) => {
   
   await FileSystem.moveAsync({
     from: initFileURI,
-    to: `${dir}/${fileName}`,
+    to: uri,
   })
 
   return true

@@ -3,6 +3,7 @@ import { StyleSheet, View, WebView, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
+import { getBooksDir } from "../../utils/toolbox.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -126,7 +127,7 @@ class PageWebView extends React.Component {
           ref={this.setWebViewEl}
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
-              + `?epub=${encodeURIComponent(`${FileSystem.documentDirectory}books/${bookId}`)}`
+              + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
               + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
               + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
           }}

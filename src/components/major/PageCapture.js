@@ -6,7 +6,7 @@ import PageWebView from "./PageWebView"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize, getDisplaySettingsObj } from '../../utils/toolbox.js'
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox.js'
 
 import { addSpinePageCfis } from "../../redux/actions.js"
 
@@ -17,7 +17,7 @@ class PageCapture extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return [ "bookId", "spine", "width", "height" ].some(key => this.props[key] != nextProps[key])
+    return getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
   }
 
   componentDidUpdate() {
@@ -25,22 +25,23 @@ class PageCapture extends React.Component {
   }
 
   getPageInfo = () => {
-    const { reportNoResponse, bookId, spine, width, height, timeout } = this.props
+    const { reportNoResponse, spineIdRef, timeout } = this.props
 
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
-      spineIdRef: spine.idref,
+      spineIdRef,
     })
     
-    this.getPageInfoTimeout = setTimeout(() => reportNoResponse({ bookId, spine, width, height }), timeout)
+    this.getPageInfoTimeout = setTimeout(() => reportNoResponse(this.props), timeout)
   }
 
   onMessageEvent = async data => {
-    const { bookId, spine, width, height, reportSuccess, addSpinePageCfis } = this.props
+    const { bookId, spineIdRef, width, height, displaySettings,
+      reportSuccess, addSpinePageCfis } = this.props
     
     switch(data.identifier) {
       case 'pagesInfo':
 
-        if(spine.idref !== data.payload.spineIdRef) return // just in case
+        if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
         this.numPages = data.payload.numPages
         this.pageCfis = []
@@ -49,18 +50,22 @@ class PageCapture extends React.Component {
 
       case 'pageChanged':
 
-        if(spine.idref !== data.payload.newSpineIdRef) return // just in case
+        if(spineIdRef !== data.payload.newSpineIdRef) return // just in case
 
         // record cfi
         this.pageCfis.push(data.payload.newCfi)
 
         const { pageWidth, pageHeight } = getPageSize({ width, height })
 
+        const uri = getSnapshotURI({
+          ...this.props,
+          pageIndexInSpine: this.pageCfis.length-1,
+        })
+
         // takeSnapshot, if none exists
         await takeSnapshot({
           view: this.view,
-          bookId: bookId,
-          fileName: `${spine.idref}_${this.pageCfis.length-1}_${width}x${height}.jpg`,
+          uri,
           width: pageWidth,
           height: pageHeight,
         })
@@ -68,7 +73,7 @@ class PageCapture extends React.Component {
         if(this.pageCfis.length < this.numPages) {
           // go to next page if there is another
           postMessage(this.webView, 'goToPage', {
-            spineIdRef: spine.idref,
+            spineIdRef,
             pageIndexInSpine: this.pageCfis.length,
           })
 
@@ -79,12 +84,12 @@ class PageCapture extends React.Component {
   
           addSpinePageCfis({
             bookId,
-            idref: spine.idref,
-            key: [`${width}x${height}`],
+            idref: spineIdRef,
+            key: [getPageCfisKey({ displaySettings, width, height })],
             pageCfis: this.pageCfis,
           })
           
-          reportSuccess({ bookId, spine, width, height })
+          reportSuccess(this.props)
           
         }
 
@@ -119,7 +124,6 @@ class PageCapture extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  displaySettings: state.displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

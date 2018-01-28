@@ -7,6 +7,8 @@ import { View } from "native-base"
 
 import PageCapture from "./PageCapture"
 
+import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox.js"
+
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
 } = Expo.Constants.manifest.extra
@@ -21,30 +23,28 @@ class PageCaptureManager extends React.Component {
     this.unmounted = true
   }
 
-  getKey = ({ bookId, spine, width, height }) => `${bookId} ${spine.idref} ${width}x${height}`
-
-  reportSuccess = ({ bookId, spine, width, height }) => {
+  reportSuccess = params => {
     const skipList = { ...this.state.skipList }
-    const key = this.getKey({ bookId, spine, width, height })
+    const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
 
-    delete skipList[key]
+    delete skipList[uriAsKey]
 
     this.setState({ skipList })
   }
 
-  reportNoResponse = ({ bookId, spine, width, height }) => {
+  reportNoResponse = params => {
     if(this.unmounted) return
 
     const { skipList } = this.state
 
-    const key = this.getKey({ bookId, spine, width, height })
-    const timeout = Math.min((skipList[key] && skipList[key].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT) * 2
+    const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
+    const timeout = Math.min((skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT) * 2
 
-    console.log('skip spine', key)
+    console.log('skip spine', uriAsKey)
     this.setState({
       skipList: {
         ...skipList,
-        [key]: {
+        [uriAsKey]: {
           skip: true,
           timeout,
         } 
@@ -55,8 +55,8 @@ class PageCaptureManager extends React.Component {
       if(this.unmounted) return
 
       const skipList = { ...this.state.skipList }
-      skipList[key] = {
-        ...skipList[key],
+      skipList[uriAsKey] = {
+        ...skipList[uriAsKey],
         skip: false,
       }
       
@@ -66,7 +66,7 @@ class PageCaptureManager extends React.Component {
   }
 
   render() {
-    const { books } = this.props
+    const { books, displaySettings } = this.props
     const { skipList } = this.state
 
     let pageCaptureObj
@@ -75,19 +75,25 @@ class PageCaptureManager extends React.Component {
       let { width, height } = Dimensions.get('window')
       const book = books[bookId] || {}
       const spines = book.spines
-      let spine
+      let pageCfisKey, spineIdRef, uriAsKey
 
       const findSpineToDo = flip => {
         if(flip) {
           [ width, height ] = [ height, width ]
         }
+        pageCfisKey = getPageCfisKey({ displaySettings, width, height })
         return spines.some(thisSpine => {
-          const key = this.getKey({ bookId, spine: thisSpine, width, height })
+          const thisUriAsKey = getSnapshotURI({
+            bookId,
+            spineIdRef: thisSpine.idref,
+            pageCfisKey,
+          })
           if(
-            (!thisSpine.pageCfis || thisSpine.pageCfis[`${width}x${height}`] == null)
-            && !(skipList[key] || {}).skip
+            (!thisSpine.pageCfis || thisSpine.pageCfis[pageCfisKey] == null)
+            && !(skipList[thisUriAsKey] || {}).skip
           ) {
-            spine = thisSpine
+            spineIdRef = thisSpine.idref
+            uriAsKey = thisUriAsKey
             return true
           }
         })
@@ -97,16 +103,15 @@ class PageCaptureManager extends React.Component {
 
       findSpineToDo() || findSpineToDo(true)
 
-      if(!spine) continue
-
-      const key = this.getKey({ bookId, spine, width, height })
+      if(!spineIdRef) continue
 
       pageCaptureObj = {
         bookId,
-        spine,
+        spineIdRef,
         width,
         height,
-        timeout: (skipList[key] && skipList[key].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT,
+        displaySettings,
+        timeout: (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT,
       }
 
       break
@@ -129,6 +134,7 @@ class PageCaptureManager extends React.Component {
 
 const mapStateToProps = (state) => ({
   books: state.books,
+  displaySettings: state.displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

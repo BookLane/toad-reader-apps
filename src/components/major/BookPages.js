@@ -69,12 +69,12 @@ class BookPages extends React.Component {
   }
 
   calcList = (nextProps, nextState) => {
-    const { spines } = nextProps || this.props
+    const { spines, pageCfisKey } = nextProps || this.props
     const { pageWidth, pageHeight, pagesPerRow } = nextState || this.state
 
     if(!spines) return
 
-    const { width, height } = Dimensions.get('window')
+    const { height } = Dimensions.get('window')
     const listHeight = (height - nativeBasePlatformVariables.footerHeight - nativeBasePlatformVariables.toolbarHeight)
     this.list = []
     this.headerIndices = []
@@ -90,7 +90,7 @@ class BookPages extends React.Component {
       this.headerIndices.push(this.list.length - 1)
       offset += PAGE_LIST_HEADER_ROW_HEIGHT
 
-      const pageCfisInThisSpine = pageCfis && pageCfis[`${width}x${height}`]
+      const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
       const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
       for(let i=0; i<(numPagesInSpine || 1); i+=pagesPerRow) {
         const numRowsInSpine = Math.min(numPagesInSpine - i, pagesPerRow)
@@ -160,7 +160,7 @@ class BookPages extends React.Component {
 
   renderItem = ({ item }) => {
     // TODO : I need to hijack zoomToPage and have it not scroll on the change to latestLocation
-    const { zoomToPage, bookId, spineIdRef, pageIndexInSpine } = this.props
+    const { zoomToPage, bookId, spineIdRef, pageIndexInSpine, pageCfisKey } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
 
@@ -179,6 +179,7 @@ class BookPages extends React.Component {
           pageHeight={pageHeight}
           bookId={bookId}
           spineIdRef={itemSpineIdRef}
+          pageCfisKey={pageCfisKey}
           pageIndexInSpine={itemPageIndexInSpine}
           cfi={cfis[i]}
           zoomToPage={zoomToPage}

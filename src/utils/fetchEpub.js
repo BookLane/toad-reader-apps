@@ -2,10 +2,12 @@ import { FileSystem } from "expo"
 import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 
+import { getBooksDir } from "./toolbox.js"
+
 const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
   
   const epubBaseUrl = `https://${domain}/epub_content/book_${bookId}/`
-  const localBaseUri = `${FileSystem.documentDirectory}books/${bookId}/`
+  const localBaseUri = `${getBooksDir()}${bookId}/`
 
   console.log(`Downloading epub from ${epubBaseUrl}...`)
 

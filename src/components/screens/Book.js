@@ -16,7 +16,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { getPageIndexInSpine, latestLocationToObj } from "../../utils/toolbox.js"
+import { getPageIndexInSpine, latestLocationToObj, getPageCfisKey } from "../../utils/toolbox.js"
 
 import { setDownloadStatus } from "../../redux/actions.js";
 
@@ -240,20 +240,21 @@ class Book extends React.Component {
 
   render() {
 
-    const { navigation, books, userDataByBookId } = this.props
+    const { navigation, books, userDataByBookId, displaySettings } = this.props
     const { bookId } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings, snapshotCoords, snapshotZoomed } = this.state
 
+    const pageCfisKey = getPageCfisKey({ displaySettings })
+
     let latest_location, spineIdRef, pageIndexInSpine
     try {
-      const { width, height } = Dimensions.get('window')
       latest_location = userDataByBookId[bookId].latest_location
       const latestLocation = latestLocationToObj(latest_location)
       spineIdRef = latestLocation.spineIdRef
       let pageCfis
       books[bookId].spines.some(spine => {
         if(spine.idref === spineIdRef) {
-          pageCfis = spine.pageCfis[`${width}x${height}`]
+          pageCfis = spine.pageCfis[pageCfisKey]
           return true
         }
       })
@@ -288,6 +289,7 @@ class Book extends React.Component {
             zoomToPage={this.zoomToPage}
             bookId={bookId}
             spineIdRef={spineIdRef}
+            pageCfisKey={pageCfisKey}
             pageIndexInSpine={pageIndexInSpine}
             spines={bookLoaded && books[bookId].spines}
             setFlatListEl={this.setFlatListEl}
@@ -297,6 +299,7 @@ class Book extends React.Component {
           <ZoomPage
             bookId={bookId}
             spineIdRef={spineIdRef}
+            pageCfisKey={pageCfisKey}
             pageIndexInSpine={pageIndexInSpine}
             snapshotCoords={snapshotCoords}
             zoomed={snapshotZoomed}
@@ -336,6 +339,7 @@ class Book extends React.Component {
 const mapStateToProps = (state) => ({
   books: state.books,
   userDataByBookId: state.userDataByBookId,
+  displaySettings: state.displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

@@ -2,15 +2,16 @@ import Expo, { FileSystem } from "expo"
 import i18n from "./i18n.js"
 import { ActionSheet, Toast } from "native-base"
 
+import { getBooksDir, getSnapshotsDir } from "./toolbox.js"
+
 const {
   REMOVE_ICON_COLOR,
 } = Expo.Constants.manifest.extra
 
 const removeEpub = async ({ bookId, success }) => {
   
-  const localBaseUri = `${FileSystem.documentDirectory}books/${bookId}/`
-
-  await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
+  await FileSystem.deleteAsync(`${getBooksDir()}${bookId}`, { idempotent: true })
+  await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
 
   success && success()
 

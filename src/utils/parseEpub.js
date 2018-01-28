@@ -5,6 +5,8 @@ import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 import { parseString } from "xml2js"
 
+import { getBooksDir } from "./toolbox.js"
+
 const getXmlAsObj = async url => {
   const xml = await FileSystem.readAsStringAsync(url)
   return await new Promise(
@@ -42,7 +44,7 @@ const findNavToc = objOrArray => {
 
 export default async ({ bookId }) => {
   
-  const localBaseUri = `${FileSystem.documentDirectory}books/${bookId}/`
+  const localBaseUri = `${getBooksDir()}${bookId}/`
   let
     opfRelativeUri,
     opfObj,
