@@ -19,48 +19,75 @@ class PageCaptureManager extends React.Component {
     skipList: {},
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { books } = nextProps
+    const { skipList } = this.state
+
+    // filter out books which have been removed
+    const newSkipList = {}
+    for(let uriAsKey in skipList) {
+      if(this.bookIsDownloaded({ uriAsKey, nextProps })) {
+        newSkipList[uriAsKey] = skipList[uriAsKey]
+      }
+    }
+
+    if(Object.keys(newSkipList).length !== Object.keys(skipList).length) {
+      this.setState({ skipList: newSkipList })
+    }
+  }
+
   componentWillUnmount() {
     this.unmounted = true
+  }
+
+  bookIsDownloaded = ({ uriAsKey, nextProps }) => {
+    const { books } = nextProps || this.props
+
+    const bookIdFromUri = (uriAsKey.match(/\/([0-9]+)\/[^\/]+$/) || [])[1]
+    return books[bookIdFromUri] && books[bookIdFromUri].downloadStatus == 2
   }
 
   reportSuccess = params => {
     const skipList = { ...this.state.skipList }
     const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
 
-    delete skipList[uriAsKey]
-
-    this.setState({ skipList })
+    if(skipList[uriAsKey]) {
+      delete skipList[uriAsKey]
+      this.setState({ skipList })
+    }
   }
 
   reportNoResponse = params => {
-    if(this.unmounted) return
-
     const { skipList } = this.state
-
     const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
+    
     const timeout = Math.min((skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT) * 2
 
-    console.log('skip spine', uriAsKey)
-    this.setState({
-      skipList: {
-        ...skipList,
-        [uriAsKey]: {
-          skip: true,
-          timeout,
-        } 
-      }
-    })
+    if(this.bookIsDownloaded({ uriAsKey })) {
+      console.log('skip spine', uriAsKey)
+      this.setState({
+        skipList: {
+          ...skipList,
+          [uriAsKey]: {
+            skip: true,
+            timeout,
+          } 
+        }
+      })
+    }
 
     setTimeout(() => {
       if(this.unmounted) return
 
       const skipList = { ...this.state.skipList }
-      skipList[uriAsKey] = {
-        ...skipList[uriAsKey],
-        skip: false,
+
+      if(skipList[uriAsKey]) {  // make sure the book has not been remove
+        skipList[uriAsKey] = {
+          ...skipList[uriAsKey],
+          skip: false,
+        }
+        this.setState({ skipList })
       }
-      
-      this.setState({ skipList })
       
     }, timeout)
   }
