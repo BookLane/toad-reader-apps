@@ -25,18 +25,18 @@ class PageCapture extends React.Component {
   }
 
   getPageInfo = () => {
-    const { reportNoResponse, spineIdRef, timeout } = this.props
+    const { spineIdRef } = this.props
 
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
     })
-    
-    this.getPageInfoTimeout = setTimeout(() => reportNoResponse(this.props), timeout)
   }
 
-  onMessageEvent = async data => {
+  onMessageEvent = async (webView, data) => {
     const { bookId, spineIdRef, width, height, displaySettings,
       reportSuccess, addSpinePageCfis } = this.props
+
+    if(webView !== this.webView) return // just in case
     
     switch(data.identifier) {
       case 'pagesInfo':
@@ -80,8 +80,6 @@ class PageCapture extends React.Component {
         } else {
           // record spine pageCfis in redux when complete
   
-          clearTimeout(this.getPageInfoTimeout)
-  
           addSpinePageCfis({
             bookId,
             idref: spineIdRef,
@@ -103,10 +101,11 @@ class PageCapture extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, width, height } = this.props
+    const { bookId, width, height, spineIdRef } = this.props
 
     return (
       <PageWebView
+        key={getSnapshotURI(this.props)}
         style={{
           position: 'absolute',
           width,
@@ -117,6 +116,7 @@ class PageCapture extends React.Component {
         setWebViewEl={this.setWebViewEl}
         setView={this.setView}
         onMessage={this.onMessageEvent}
+        initialLocation={JSON.stringify({ idref: spineIdRef })}
         initialDisplaySettings={getDisplaySettingsObj(this.props)}
       />
     )

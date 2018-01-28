@@ -50,9 +50,11 @@ class BookPage extends React.Component {
 
   goToHref = params => postMessage(this.webView, 'goToHref', params)
 
-  onMessageEvent = async data => {
+  onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages } = this.props
 
+    if(webView !== this.webView) return // just in case
+    
     switch(data.identifier) {
       case 'pageChanged':
 

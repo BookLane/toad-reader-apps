@@ -23,6 +23,7 @@ class PageWebView extends React.Component {
     const { width, height } = Dimensions.get('window')
 
     this.state = {
+      ...props,
       width,
       height,
     }
@@ -32,16 +33,9 @@ class PageWebView extends React.Component {
     this.webView.unmounted = true
   }
 
-  shouldComponentUpdate() {
-    return false
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { bookId } = this.props
-
-    if(nextProps.bookId != bookId) {
-      delete this.webView.loaded
-    }
+  shouldComponentUpdate(nextProps, nextState) {
+    const { width } = this.state
+    return nextState.width !== width
   }
 
   calcSize = () => {
@@ -52,10 +46,10 @@ class PageWebView extends React.Component {
   }
 
   onMessageEvent = async event => {
-    const { onMessage } = this.props
+    const { onMessage } = this.state
     const data = JSON.parse(event.nativeEvent.data)
 
-    if(onMessage && await onMessage(data)) return
+    if(onMessage && await onMessage(this.webView, data)) return
 
     switch(data.identifier) {
 
@@ -94,7 +88,7 @@ class PageWebView extends React.Component {
   }
 
   setWebViewEl = webViewEl => {
-    const { setWebViewEl } = this.props
+    const { setWebViewEl } = this.state
 
     this.webView = webViewEl
     setWebViewEl && setWebViewEl(webViewEl)
@@ -103,8 +97,7 @@ class PageWebView extends React.Component {
   onError = e => console.log('webview error', e)
 
   render() {
-    const { setWebViewEl, setView, bookId, style, initialLocation, initialDisplaySettings } = this.props
-    const { width, height } = this.state
+    const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
 
     return (
       <View
