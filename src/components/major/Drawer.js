@@ -7,7 +7,7 @@ import i18n from "../../utils/i18n.js"
 
 import { confirmRemoveAllEPubs } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus } from "../../redux/actions.js"
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -45,14 +45,12 @@ class Drawer extends React.Component {
   }
 
   removeAllEPubs = () => {
-    const { books, setDownloadStatus } = this.props
-    
-    confirmRemoveAllEPubs({ books, setDownloadStatus })
+    confirmRemoveAllEPubs(this.props)
   }
 
   render() {
 
-    const { accounts, idps, books, setDownloadStatus, navigation } = this.props
+    const { accounts, idps, books, navigation } = this.props
     const accountIdpIds = []
     const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
       const idpId = accountId.split(':')[0]
@@ -149,6 +147,8 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Drawer)

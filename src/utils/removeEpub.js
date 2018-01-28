@@ -8,17 +8,26 @@ const {
   REMOVE_ICON_COLOR,
 } = Expo.Constants.manifest.extra
 
-const removeEpub = async ({ bookId, success }) => {
+const removeEpub = async ({ bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
   
+  setDownloadStatus({ bookId, downloadStatus: 0 })
+  clearTocAndSpines({ bookId })
+  clearUserDataExceptProgress({ bookId })
   await FileSystem.deleteAsync(`${getBooksDir()}${bookId}`, { idempotent: true })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
 
-  success && success()
-
-  console.log(`Done removing book ${bookId}.`)
+  console.log(`Done removing snapshots and contents for book ${bookId}.`)
 }
 
-export const confirmRemoveEPub = ({ books, bookId, setDownloadStatus, done }) => {
+export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCfis, success }) => {
+  
+  clearAllSpinePageCfis({ bookId })
+  await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
+
+  console.log(`Done removing snapshots for book ${bookId}.`)
+}
+
+export const confirmRemoveEPub = ({ books, bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, done }) => {
   ActionSheet.show(
     {
       options: [
@@ -34,17 +43,16 @@ export const confirmRemoveEPub = ({ books, bookId, setDownloadStatus, done }) =>
         }
       ),
     },
-    buttonIndex => {
+    async buttonIndex => {
       if(buttonIndex == 0) {
-        setDownloadStatus({ bookId, downloadStatus: 0 })
-        removeEpub({ bookId })
+        await removeEpub({ bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
         done && done()
       }
     }
   )
 }
 
-export const confirmRemoveAllEPubs = ({ books, setDownloadStatus }) => {
+export const confirmRemoveAllEPubs = ({ books, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
   ActionSheet.show(
     {
       options: [
@@ -55,12 +63,11 @@ export const confirmRemoveAllEPubs = ({ books, setDownloadStatus }) => {
       cancelButtonIndex: 1,
       title: i18n("Are you sure you want to remove all books from this device?"),
     },
-    buttonIndex => {
+    async buttonIndex => {
       if(buttonIndex == 0) {
-        Object.keys(books).forEach(bookId => {
-          setDownloadStatus({ bookId, downloadStatus: 0 })
-          removeEpub({ bookId })
-        })
+        await Promise.all(Object.keys(books).map(bookId => (
+          removeEpub({ bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
+        )))
         Toast.show({
           text: i18n("All books removed."),
           buttonText: i18n("Okay"),

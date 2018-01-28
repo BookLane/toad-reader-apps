@@ -18,7 +18,7 @@ import BackFunction from '../basic/BackFunction'
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { getPageIndexInSpine, latestLocationToObj, getPageCfisKey } from "../../utils/toolbox.js"
 
-import { setDownloadStatus } from "../../redux/actions.js";
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
@@ -223,13 +223,12 @@ class Book extends React.Component {
   }
 
   removeFromDevice = () => {
-    const { navigation, books, setDownloadStatus } = this.props
+    const { navigation, books } = this.props
     const { bookId } = navigation.state.params
 
     confirmRemoveEPub({
-      books,
+      ...this.props,
       bookId,
-      setDownloadStatus,
       done: () => {
         navigation.goBack(navigation.state.params.pageKey)
       }
@@ -344,6 +343,8 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

@@ -7,7 +7,7 @@ import fetchEpub from "../../utils/fetchEpub.js"
 import parseEpub from "../../utils/parseEpub.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, setTocAndSpines } from "../../redux/actions.js";
+import { setDownloadStatus, setTocAndSpines, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
 
 class LibraryBook extends React.Component {
 
@@ -37,12 +37,12 @@ class LibraryBook extends React.Component {
   }
   
   onLongPress = () => {
-    const { bookId, books, setDownloadStatus } = this.props
+    const { bookId } = this.props
 
     if(this.getDownloadStatus(bookId) == 0) {
       this.onPress()
     } else {
-      confirmRemoveEPub({ books, bookId, setDownloadStatus })
+      confirmRemoveEPub(this.props)
     }
   }
 
@@ -66,6 +66,8 @@ const mapStateToProps = (state) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   setTocAndSpines,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryBook)

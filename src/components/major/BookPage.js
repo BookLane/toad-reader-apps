@@ -11,7 +11,7 @@ import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
 import { getDisplaySettingsObj } from "../../utils/toolbox.js"
 
-import { incrementSpineImagesIndex, setLatestLocation } from "../../redux/actions.js"
+import { setLatestLocation } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -85,7 +85,7 @@ class BookPage extends React.Component {
 //   setView = ref => this.view = ref
   
 //   doTakeSnapshot = async () => {
-//     const { bookId, incrementSpineImagesIndex } = this.props
+//     const { bookId } = this.props
 
 // console.log('before')
 //     await takeSnapshot({
@@ -93,8 +93,6 @@ class BookPage extends React.Component {
 //       bookId: bookId,
 //       fileName: `test.jpg`,
 //     })
-
-//     incrementSpineImagesIndex()
 
 //     return true
 
@@ -128,7 +126,6 @@ const mapStateToProps = (state) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  incrementSpineImagesIndex,
   setLatestLocation,
 }, dispatch)
 

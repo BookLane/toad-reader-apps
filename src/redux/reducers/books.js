@@ -67,6 +67,16 @@ export default function(state = initialState, action) {
       }
       return newState
 
+    case "CLEAR_TOC_AND_SPINES":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+        }
+        delete newState[action.bookId].toc
+        delete newState[action.bookId].spines
+      }
+      return newState
+
     case "ADD_SPINE_PAGE_CFIS":
       const objToInsert = { [action.key]: action.pageCfis }
       if(newState[action.bookId]) {
@@ -87,20 +97,16 @@ export default function(state = initialState, action) {
         }
       }
       return newState
-      
-    case "INCREMENT_SPINE_IMAGES_INDEX":
+
+    case "CLEAR_ALL_SPINE_PAGE_CFIS":
       if(newState[action.bookId]) {
-        newState[action.bookId] = { ...newState[action.bookId] }
-        if(newState[action.bookId].spines) {
-          newState[action.bookId].spines = newState[action.bookId].spines.map(spine => (
-            spine.idref == action.idref
-              ?
-                {
-                  ...spine,
-                  imgsIdx: (spine.imgsIdx || 0) + 1,
-                }
-              : spine
-          ))
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          spines: newState[action.bookId].spines.map(spine => {
+            const newSpine = {...spine}
+            delete newSpine.pageCfis
+            return newSpine
+          }),
         }
       }
       return newState

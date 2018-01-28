@@ -17,6 +17,16 @@ export const setTocAndSpines = ({ bookId, toc, spines }) => ({
   spines,
 })
 
+export const clearTocAndSpines = ({ bookId }) => ({
+  type: "CLEAR_TOC_AND_SPINES",
+  bookId,
+})
+
+export const clearUserDataExceptProgress = ({ bookId }) => ({
+  type: "CLEAR_USER_DATA_EXCEPT_PROGRESS",
+  bookId,
+})
+
 export const addSpinePageCfis = ({ bookId, idref, key, pageCfis }) => ({
   type: "ADD_SPINE_PAGE_CFIS",
   bookId,
@@ -25,8 +35,9 @@ export const addSpinePageCfis = ({ bookId, idref, key, pageCfis }) => ({
   pageCfis,
 })
 
-export const incrementSpineImagesIndex = () => ({
-  type: "INCREMENT_SPINE_IMAGES_INDEX",
+export const clearAllSpinePageCfis = ({ bookId }) => ({
+  type: "CLEAR_ALL_SPINE_PAGE_CFIS",
+  bookId,
 })
 
 export const setSort = ({ sort }) => ({
