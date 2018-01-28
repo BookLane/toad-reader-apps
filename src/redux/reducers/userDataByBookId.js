@@ -5,19 +5,18 @@ const initialState = {}
 export default function(state = initialState, action) {
     
   const newState = {...state}
-  const { type, bookId, latestLocation } = action
 
-  switch (type) {
+  switch (action.type) {
 
     case "SET_LATEST_LOCATION":
-      const latest_location = latestLocationToStr(latestLocation)
-      const userDataForThisBook = newState[bookId] || {}
+      const latest_location = latestLocationToStr(action.latestLocation)
+      const userDataForThisBook = newState[action.bookId] || {}
 
       if(latest_location === userDataForThisBook.latest_location) {
         return state
       }
 
-      newState[bookId] = {
+      newState[action.bookId] = {
         ...userDataForThisBook,
         latest_location,
       }
@@ -27,21 +26,21 @@ export default function(state = initialState, action) {
     case "CLEAR_USER_DATA_EXCEPT_PROGRESS":
       const resetUserDataForThisBook = {}
 
-      if(newState[bookId]) {
-        if(newState[bookId].progress !== undefined) {
-          resetUserDataForThisBook = newState[bookId].progress
+      if(newState[action.bookId]) {
+        if(newState[action.bookId].progress !== undefined) {
+          resetUserDataForThisBook = newState[action.bookId].progress
         }
   
-        if(newState[bookId].updated_at !== undefined) {
-          resetUserDataForThisBook = newState[bookId].updated_at
+        if(newState[action.bookId].updated_at !== undefined) {
+          resetUserDataForThisBook = newState[action.bookId].updated_at
         }
       }
 
-      if(JSON.stringify(resetUserDataForThisBook) === JSON.stringify(newState[bookId])) {
+      if(JSON.stringify(resetUserDataForThisBook) === JSON.stringify(newState[action.bookId])) {
         return state
       }
 
-      newState[bookId] = resetUserDataForThisBook
+      newState[action.bookId] = resetUserDataForThisBook
 
       return newState
 
