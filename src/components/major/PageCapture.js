@@ -34,7 +34,7 @@ class PageCapture extends React.Component {
 
   onMessageEvent = async (webView, data) => {
     const { bookId, spineIdRef, width, height, displaySettings,
-      reportSuccess, addSpinePageCfis } = this.props
+      reportInfoOrCapture, reportFinished, addSpinePageCfis } = this.props
 
     if(webView !== this.webView) return // just in case
     
@@ -45,6 +45,8 @@ class PageCapture extends React.Component {
 
         this.numPages = data.payload.numPages
         this.pageCfis = []
+
+        reportInfoOrCapture(this.props)
 
         return true
 
@@ -70,6 +72,8 @@ class PageCapture extends React.Component {
           height: pageHeight,
         })
 
+        reportInfoOrCapture(this.props)
+
         if(this.pageCfis.length < this.numPages) {
           // go to next page if there is another
           postMessage(this.webView, 'goToPage', {
@@ -87,7 +91,7 @@ class PageCapture extends React.Component {
             pageCfis: this.pageCfis,
           })
           
-          reportSuccess(this.props)
+          reportFinished(this.props)
           
         }
 

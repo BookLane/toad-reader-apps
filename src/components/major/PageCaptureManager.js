@@ -99,10 +99,8 @@ class PageCaptureManager extends React.Component {
       if(!spineIdRef) continue
 
       // set up no response timeout
-      clearTimeout(this.noResponseTimeout)
-      const timeout = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
-      this.noResponseTimeout = setTimeout(() => this.handleNoResponse({ uriAsKey }), timeout)
-      this.currentPageCapturePropsUriAsKey = uriAsKey
+      this.captureAllottedTime = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
+      this.setupTimeout({ uriAsKey })
 
       return {
         bookId,
@@ -123,14 +121,32 @@ class PageCaptureManager extends React.Component {
     return books[bookIdFromUri] && books[bookIdFromUri].downloadStatus == 2
   }
 
-  reportSuccess = params => {
-    const skipList = { ...this.state.skipList }
+  setupTimeout = ({ uriAsKey }) => {
+    clearTimeout(this.captureStallTimeout)
+
+    this.captureStallTimeout = setTimeout(() => this.handleTimeout({ uriAsKey }), this.captureAllottedTime)
+    this.currentPageCapturePropsUriAsKey = uriAsKey
+  }
+
+  clearTimeouts = () => {
+    clearTimeout(this.captureStallTimeout)
+    delete this.currentPageCapturePropsUriAsKey
+  }
+
+  reportInfoOrCapture = params => {
     const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
-console.log("reportSuccess", uriAsKey)
 
     if(this.currentPageCapturePropsUriAsKey === uriAsKey) {
-      clearTimeout(this.noResponseTimeout)
-      delete this.currentPageCapturePropsUriAsKey
+      this.setupTimeout({ uriAsKey })
+    }
+  }
+
+  reportFinished = params => {
+    const skipList = { ...this.state.skipList }
+    const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
+
+    if(this.currentPageCapturePropsUriAsKey === uriAsKey) {
+      this.clearTimeouts()
     }
 
     if(skipList[uriAsKey]) {
@@ -141,15 +157,14 @@ console.log("reportSuccess", uriAsKey)
     this.setState({ pageCaptureProps: this.getPageCaptureProps(null, { skipList }) })
   }
 
-  handleNoResponse = ({ uriAsKey }) => {
+  handleTimeout = ({ uriAsKey }) => {
     const { pageCaptureProps, skipList } = this.state
-console.log("handleNoResponse", uriAsKey)
 
     if(this.unmounted) return
     if(!pageCaptureProps) return
     if(this.currentPageCapturePropsUriAsKey !== uriAsKey) return
 
-    delete this.currentPageCapturePropsUriAsKey
+    this.clearTimeouts()
 
     const timeout = Math.min(((skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT) * 2, MAX_SPINE_CAPTURE_TIMEOUT)
 
@@ -172,7 +187,6 @@ console.log("handleNoResponse", uriAsKey)
       if(this.unmounted) return
 
       const skipList = { ...this.state.skipList }
-console.log("handleNoResponse - retry", uriAsKey)
 
       if(skipList[uriAsKey]) {  // make sure the book has not been remove
         skipList[uriAsKey] = {
@@ -200,7 +214,8 @@ console.log("handleNoResponse - retry", uriAsKey)
     return (
       <PageCapture
         {...pageCaptureProps} 
-        reportSuccess={this.reportSuccess}
+        reportInfoOrCapture={this.reportInfoOrCapture}
+        reportFinished={this.reportFinished}
       />
     )
   }
