@@ -1,7 +1,14 @@
 import { FileSystem, takeSnapshotAsync } from "expo"
 
-export default async ({ view, uri, width, height }) => {
+export default async ({ view, uri, width, height, force }) => {
 
+  const uriFileInfo = force || await FileSystem.getInfoAsync(uri)
+
+  if(!force && uriFileInfo.exists) {
+    console.log('Snapshot already exists--skipping', uri)
+    return true
+  }
+  
   await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
 
   const getSnapshot = async () => (
