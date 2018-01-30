@@ -9,6 +9,13 @@ const {
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
+  snapshotCont: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   snapshot: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -48,7 +55,8 @@ class ZoomPage extends React.Component {
       scale,
       {
         toValue: zoomed ? 1 : getZoomOutScale(),
-        easing: Easing.linear,
+        // easing: Easing.linear,
+        easing: Easing.inOut(Easing.cubic),
         duration: PAGE_ZOOM_MILLISECONDS,
       }
     ).start()
@@ -68,33 +76,26 @@ class ZoomPage extends React.Component {
       const top = snapshotCoords.y + (StatusBar.currentHeight || 0)
       const { width, height } = Dimensions.get('window')
       const { pageWidth, pageHeight } = getPageSize({ width, height })
-      const osTranslateFactor = Platform.OS === 'android' ? 1 : 2 // not sure why iOS needs this, but it does
-  
-      outputRangeX = PixelRatio.getPixelSizeForLayoutSize(left - (width/2 - pageWidth/2)) * osTranslateFactor
-      outputRangeY = PixelRatio.getPixelSizeForLayoutSize(top - (height/2 - pageHeight/2)) * osTranslateFactor
+
+      outputRangeX = left - (width/2 - pageWidth/2)
+      outputRangeY = top - (height/2 - pageHeight/2)
     }
 
     const zoomOutScale = getZoomOutScale()
-    const easing = Easing.out(Easing.ease)
 
     const translateX = scale.interpolate({
       inputRange: [zoomOutScale, 1],
-      easing,
       outputRange: [outputRangeX, 0],
     })
 
     const translateY = scale.interpolate({
       inputRange: [zoomOutScale, 1],
-      easing,
       outputRange: [outputRangeY, 0],
     })
     
     
-    const zoomStyles = {
+    const zoomStyles1 = {
       transform: [
-        {
-          scale,
-        },
         {
           translateX,
         },
@@ -103,15 +104,30 @@ class ZoomPage extends React.Component {
         },
       ],
     }
+
+    const zoomStyles2 = {
+      transform: [
+        {
+          scale,
+        },
+      ],
+    }
       
     return (
-      <Animated.Image
-        source={{ uri }}
+      <Animated.View
         style={[
-          styles.snapshot,
-          zoomStyles,
+          styles.snapshotCont,
+          zoomStyles1,
         ]}
-      />
+      >
+        <Animated.Image
+          source={{ uri }}
+          style={[
+            styles.snapshot,
+            zoomStyles2,
+          ]}
+        />
+      </Animated.View>
     )
   }
 }
