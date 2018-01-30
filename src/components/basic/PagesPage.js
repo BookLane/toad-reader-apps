@@ -40,7 +40,13 @@ const styles = StyleSheet.create({
 class PagesPage extends React.Component {
 
   goToPage = () => {
-    const { setLatestLocation, bookId, spineIdRef, cfi, zoomToPage } = this.props
+    const { setLatestLocation, bookId, spineIdRef, cfi, pageIndexInSpine, preventPageChangeScroll, zoomToPage } = this.props
+
+    preventPageChangeScroll({
+      bookId,
+      spineIdRef,
+      pageIndexInSpine,
+    })
 
     setLatestLocation({
       bookId,
