@@ -72,6 +72,7 @@ class PagesPage extends React.Component {
             height: pageHeight,
           },
         ]}
+        ref={Platform.OS !== 'android' && this.setView}
       >
         <TouchableComponent
           onPress={this.goToPage}
@@ -81,7 +82,7 @@ class PagesPage extends React.Component {
         >
           <View
             style={styles.page}
-            ref={this.setView}
+            ref={Platform.OS === 'android' && this.setView}
           >
             <Image
               source={{ uri }}

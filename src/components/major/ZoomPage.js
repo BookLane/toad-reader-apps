@@ -1,6 +1,6 @@
 import React from "react"
 import { FileSystem } from "expo"
-import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio } from "react-native"
+import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio, Platform } from "react-native"
 
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
 
@@ -60,10 +60,19 @@ class ZoomPage extends React.Component {
 
     const uri = getSnapshotURI(this.props)
 
-    const { pageWidth, pageHeight } = getPageSize()
-    const { width, height } = Dimensions.get('window')
-    const left = (snapshotCoords && snapshotCoords.x) || width - pageWidth/2
-    const top = ((snapshotCoords && snapshotCoords.y) || height - pageHeight/2) + (StatusBar.currentHeight || 0)
+    let outputRangeX = 1
+    let outputRangeY = 1
+
+    if(snapshotCoords) {
+      const left = snapshotCoords.x
+      const top = snapshotCoords.y + (StatusBar.currentHeight || 0)
+      const { width, height } = Dimensions.get('window')
+      const { pageWidth, pageHeight } = getPageSize({ width, height })
+      const osTranslateFactor = Platform.OS === 'android' ? 1 : 2 // not sure why iOS needs this, but it does
+  
+      outputRangeX = PixelRatio.getPixelSizeForLayoutSize(left - (width/2 - pageWidth/2)) * osTranslateFactor
+      outputRangeY = PixelRatio.getPixelSizeForLayoutSize(top - (height/2 - pageHeight/2)) * osTranslateFactor
+    }
 
     const zoomOutScale = getZoomOutScale()
     const easing = Easing.out(Easing.ease)
@@ -71,13 +80,13 @@ class ZoomPage extends React.Component {
     const translateX = scale.interpolate({
       inputRange: [zoomOutScale, 1],
       easing,
-      outputRange: [PixelRatio.getPixelSizeForLayoutSize(left - (width/2 - pageWidth/2)), 0],
+      outputRange: [outputRangeX, 0],
     })
 
     const translateY = scale.interpolate({
       inputRange: [zoomOutScale, 1],
       easing,
-      outputRange: [PixelRatio.getPixelSizeForLayoutSize(top - (height/2 - pageHeight/2)), 0],
+      outputRange: [outputRangeY, 0],
     })
     
     
