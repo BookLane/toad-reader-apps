@@ -9,7 +9,7 @@ import DisplaySettings from "./DisplaySettings"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getDisplaySettingsObj } from "../../utils/toolbox.js"
+import { getDisplaySettingsObj, getSpineAndPage } from "../../utils/toolbox.js"
 
 import { setLatestLocation } from "../../redux/actions.js"
 
@@ -21,8 +21,14 @@ const styles = StyleSheet.create({
 
 class BookPage extends React.Component {
 
+  state = {
+    spineIdRef: this.props.spineIdRef,
+    pageIndexInSpine: this.props.pageIndexInSpine,
+  }
+
   componentWillReceiveProps(nextProps) {
-    const { displaySettings, spineIdRef, pageIndexInSpine } = this.props
+    const { displaySettings } = this.props
+    const { spineIdRef, pageIndexInSpine } = this.state
 
     if(nextProps.displaySettings !== displaySettings) {
       this.setDisplaySettings(nextProps)
@@ -30,6 +36,10 @@ class BookPage extends React.Component {
 
     if(nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine) {
       this.goToLatestLocation(nextProps)
+      this.setState({
+        spineIdRef: nextProps.spineIdRef,
+        pageIndexInSpine: nextProps.pageIndexInSpine,
+      })
     }
   }
 
@@ -51,7 +61,7 @@ class BookPage extends React.Component {
   goToHref = params => postMessage(this.webView, 'goToHref', params)
 
   onMessageEvent = async (webView, data) => {
-    const { setLatestLocation, bookId, indicateLoaded, requestShowPages } = this.props
+    const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings } = this.props
 
     if(webView !== this.webView) return // just in case
     
@@ -60,13 +70,28 @@ class BookPage extends React.Component {
 
         const { newSpineIdRef, newCfi } = data.payload
 
-        setLatestLocation({
-          bookId,
-          latestLocation: {
-            spineIdRef: newSpineIdRef,
-            cfi: newCfi,
-          },
+        const { spineIdRef, pageIndexInSpine } = getSpineAndPage({
+          spineIdRef: newSpineIdRef,
+          cfi: newCfi,
+          book: books[bookId],
+          displaySettings,
         })
+
+        this.setState(
+          {
+            spineIdRef,
+            pageIndexInSpine,
+          },
+          () => {
+            setLatestLocation({
+              bookId,
+              latestLocation: {
+                spineIdRef,
+                cfi: newCfi,
+              },
+            })
+          }
+        )
 
         indicateLoaded()
 
@@ -126,6 +151,7 @@ class BookPage extends React.Component {
 
 const mapStateToProps = (state) => ({
   displaySettings: state.displaySettings,
+  books: state.books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

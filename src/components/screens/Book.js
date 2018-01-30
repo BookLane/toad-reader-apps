@@ -17,7 +17,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { getPageIndexInSpine, latestLocationToObj, getPageCfisKey } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
 
@@ -246,20 +246,8 @@ class Book extends React.Component {
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
-    let latest_location, spineIdRef, pageIndexInSpine
-    try {
-      latest_location = userDataByBookId[bookId].latest_location
-      const latestLocation = latestLocationToObj(latest_location)
-      spineIdRef = latestLocation.spineIdRef
-      let pageCfis
-      books[bookId].spines.some(spine => {
-        if(spine.idref === spineIdRef) {
-          pageCfis = spine.pageCfis[pageCfisKey]
-          return true
-        }
-      })
-      pageIndexInSpine = getPageIndexInSpine({ pageCfis, cfi: latestLocation.cfi })
-    } catch(e) {}
+    const latest_location = (userDataByBookId[bookId] || {}).latest_location
+    const { spineIdRef, pageIndexInSpine } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
     return (
       <Container>
