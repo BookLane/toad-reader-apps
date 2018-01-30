@@ -1,5 +1,6 @@
 import React from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions } from "react-native"
+import { KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
@@ -271,6 +272,7 @@ class Book extends React.Component {
           toggleShowOptions={this.toggleShowOptions}
           showDisplaySettings={this.showDisplaySettings}
         />
+        {mode === 'page' && <KeepAwake />}
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
