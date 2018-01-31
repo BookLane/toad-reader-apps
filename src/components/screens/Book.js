@@ -131,12 +131,6 @@ class Book extends React.Component {
     }
   }
 
-  pageLoaded = () => {
-    this.setState({
-      mode: 'page',
-    })
-  }
-  
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
     const { setLatestLocation } = this.props
     const { bookId, spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
@@ -151,6 +145,7 @@ class Book extends React.Component {
         this.setState({
           zoomToInfo: null,
           onZoomCompletion: null,
+          bookLoaded: false,
         })
 
         setLatestLocation({
@@ -160,13 +155,11 @@ class Book extends React.Component {
             cfi,
           },
         })
-
-        this.pageLoaded()
         
+        this.setStatusBarHidden(true)
+
       },
     })
-
-    this.setStatusBarHidden(true)
 
   }
 
@@ -198,7 +191,7 @@ class Book extends React.Component {
     this.setStatusBarHidden(true)
 
     // TODO
-    setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
+    // setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
   }
 
   toggleShowOptions = () => {
@@ -228,7 +221,12 @@ class Book extends React.Component {
 
   requestHideSettings = () => this.setState({ showSettings: false })
 
-  indicateLoaded = () => this.setState({ bookLoaded: true })
+  indicateLoaded = () => {
+    this.setState({
+      bookLoaded: true,
+      mode: 'page',
+    })
+  }
 
   showDisplaySettings = () => {
     this.setState({ mode: 'page', showSettings: true })

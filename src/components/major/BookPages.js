@@ -51,9 +51,18 @@ class BookPages extends React.Component {
 
     this.calcList(nextProps)
 
-    if(nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine) {
+    if(
+      nextProps.spineIdRef !== spineIdRef
+      || nextProps.pageIndexInSpine !== pageIndexInSpine
+      || this.scrollToLatestLocationNextTimeReceivingProps
+    ) {
+      delete this.scrollToLatestLocationNextTimeReceivingProps
       this.scrollToLatestLocation(nextProps)
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !!nextProps.spines
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -110,20 +119,14 @@ class BookPages extends React.Component {
   }
 
   scrollToLatestLocation = nextProps => {
-    const { bookId, spineIdRef, pageIndexInSpine } = nextProps || this.props
+    const { bookId, spineIdRef, pageIndexInSpine, spines } = nextProps || this.props
 
     if(spineIdRef == null || pageIndexInSpine == null) return
     if(!this.list) return
     if(!this.flatListEl) return
 
-    if(
-      this.delayPageChangeScrollInfo
-      && this.delayPageChangeScrollInfo.bookId === bookId
-      && this.delayPageChangeScrollInfo.spineIdRef === spineIdRef
-      && this.delayPageChangeScrollInfo.pageIndexInSpine === pageIndexInSpine
-    ) {
-      this.delayPageChangeScrollInfo = null
-      setTimeout(this.scrollToLatestLocation, 500)
+    if(!spines) {
+      this.scrollToLatestLocationNextTimeReceivingProps = true
       return
     }
 
@@ -168,7 +171,6 @@ class BookPages extends React.Component {
   delayPageChangeScroll = params => this.delayPageChangeScrollInfo = params
 
   renderItem = ({ item }) => {
-    // TODO : I need to hijack zoomToPage and have it not scroll on the change to latestLocation
     const { zoomToPage, bookId, spineIdRef, pageIndexInSpine, pageCfisKey } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
@@ -232,7 +234,7 @@ class BookPages extends React.Component {
 
     if(!this.list) return null
 
-    const { width } = Dimensions.get('window')
+    const { width, height } = Dimensions.get('window')
 
     const opacity = animatedScrollPosition.interpolate({
       inputRange: [0, 5],
@@ -244,6 +246,8 @@ class BookPages extends React.Component {
       outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
     })
 
+    const estimatedRowsPerPage = parseInt(height / pageHeight, 10) + 2
+
     return (
       <View
         style={styles.container}
@@ -253,6 +257,10 @@ class BookPages extends React.Component {
           data={this.list}
           renderItem={this.renderItem}
           extraData={{ selected: pageWidth }}  // used to force render when this changes
+          initialNumToRender={estimatedRowsPerPage}
+          maxToRenderPerBatch={estimatedRowsPerPage}
+          updateCellsBatchingPeriod={500}  // wait this # ms between render batches
+          windowSize={11}  // i.e. 5 pages above and below rendered
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={this.headerIndices}
           getItemLayout={this.getItemLayout}
