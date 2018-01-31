@@ -109,7 +109,7 @@ class Book extends React.Component {
     mode: 'page',
     showOptions: false,
     showSettings: false,
-    goToHref: null,
+    hrefToGoTo: null,
     zoomToInfo: null,
     snapshotCoords: null,
     snapshotZoomed: true,
@@ -178,10 +178,11 @@ class Book extends React.Component {
 
   updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
 
-  goToHref = params => {
+  goToHref = ({ href }) => {
     this.setState({
       mode: 'page',
       snapshotZoomed: true,
+      hrefToGoTo: href,
     })
     this.setStatusBarHidden(true)
   }
@@ -272,7 +273,7 @@ class Book extends React.Component {
     const { navigation, books, userDataByBookId, displaySettings } = this.props
     const { bookId } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo,
-      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight } = this.state
+      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
@@ -314,6 +315,7 @@ class Book extends React.Component {
             showSettings={showSettings}
             requestHideSettings={this.requestHideSettings}
             indicateLoaded={this.indicateLoaded}
+            hrefToGoTo={hrefToGoTo}
           />
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
@@ -325,6 +327,7 @@ class Book extends React.Component {
             onZoomCompletion={onZoomCompletion}
             snapshotCoords={snapshotCoords}
             zoomed={snapshotZoomed}
+            zoomingEnabled={mode === 'zooming'}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>

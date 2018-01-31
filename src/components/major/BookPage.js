@@ -27,7 +27,7 @@ class BookPage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { displaySettings } = this.props
+    const { displaySettings, hrefToGoTo } = this.props
     const { spineIdRef, pageIndexInSpine } = this.state
 
     if(nextProps.displaySettings !== displaySettings) {
@@ -40,6 +40,8 @@ class BookPage extends React.Component {
         spineIdRef: nextProps.spineIdRef,
         pageIndexInSpine: nextProps.pageIndexInSpine,
       })
+    } else if(nextProps.hrefToGoTo && nextProps.hrefToGoTo !== hrefToGoTo) {
+      postMessage(this.webView, 'goToHref', { href: nextProps.hrefToGoTo })
     }
   }
 
@@ -57,8 +59,6 @@ class BookPage extends React.Component {
       pageIndexInSpine,
     })
   }
-
-  goToHref = params => postMessage(this.webView, 'goToHref', params)
 
   onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings } = this.props
@@ -100,9 +100,7 @@ class BookPage extends React.Component {
         return false  // i.e. still process pageChanged in the general PageWebView component
 
       case 'showPageListView':
-        requestShowPages({
-          goToHref: this.goToHref,
-        })
+        requestShowPages()
         return true
     }
   }

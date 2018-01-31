@@ -48,7 +48,7 @@ class ZoomPage extends React.Component {
   }
 
   animate = nextProps => {
-    const { zoomed, onZoomCompletion } = nextProps || this.props
+    const { zoomed, zoomingEnabled, onZoomCompletion } = nextProps || this.props
     const { scale } = this.state
 
     Animated.timing(
@@ -57,9 +57,8 @@ class ZoomPage extends React.Component {
         toValue: zoomed ? 1 : getZoomOutScale(),
         // easing: Easing.linear,
         easing: Easing.inOut(Easing.cubic),
-        duration: PAGE_ZOOM_MILLISECONDS,
+        duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
       }
-    // ).start(() => console.log('done'))
     ).start(onZoomCompletion)
   }
 
