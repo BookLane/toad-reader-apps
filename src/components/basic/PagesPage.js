@@ -9,11 +9,12 @@ import { getSnapshotURI } from '../../utils/toolbox.js'
 const {
   CURRENT_PAGE_BORDER_COLOR,
   CURRENT_PAGE_BORDER_WIDTH,
+  PAGES_HORIZONTAL_MARGIN,
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {
-    marginRight: 10,
+    marginRight: PAGES_HORIZONTAL_MARGIN,
   },
   currentPage: {
     borderColor: CURRENT_PAGE_BORDER_COLOR,

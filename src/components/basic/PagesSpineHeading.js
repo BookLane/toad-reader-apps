@@ -5,13 +5,14 @@ import { StyleSheet } from "react-native"
 
 const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
+  PAGES_HORIZONTAL_MARGIN,
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   heading: {
     height: PAGE_LIST_HEADER_ROW_HEIGHT,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: PAGES_HORIZONTAL_MARGIN,
+    paddingRight: PAGES_HORIZONTAL_MARGIN,
     justifyContent: 'center',
     backgroundColor: '#e9e9ef',
   },

@@ -6,15 +6,15 @@ import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
 import BookProgress from "./BookProgress"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
-import { getPageSize } from '../../utils/toolbox.js'
+import { getPageSize, getFooterHeight, getToolbarHeight } from '../../utils/toolbox.js'
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
-  PAGES_ROW_EXTRA_VERTICAL_SPACE,
+  PAGES_VERTICAL_MARGIN,
+  PAGES_HORIZONTAL_MARGIN,
   PROGRESS_BAR_SIDE_SPACING,
 } = Expo.Constants.manifest.extra
 
@@ -80,7 +80,7 @@ class BookPages extends React.Component {
     if(!spines) return
 
     const { height } = Dimensions.get('window')
-    const listHeight = (height - nativeBasePlatformVariables.footerHeight - nativeBasePlatformVariables.toolbarHeight)
+    const listHeight = (height - getFooterHeight() - getToolbarHeight())
     this.list = []
     this.headerIndices = []
     let offset = 0
@@ -111,7 +111,7 @@ class BookPages extends React.Component {
           cfis: pageCfisInThisRow,
           offset,
         })
-        offset += pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE
+        offset += pageHeight + PAGES_VERTICAL_MARGIN
       }
     })
 
@@ -119,7 +119,8 @@ class BookPages extends React.Component {
   }
 
   scrollToLatestLocation = nextProps => {
-    const { bookId, spineIdRef, pageIndexInSpine, spines } = nextProps || this.props
+    const { bookId, spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight } = nextProps || this.props
+    const { pageWidth, pageHeight } = this.state
 
     if(spineIdRef == null || pageIndexInSpine == null) return
     if(!this.list) return
@@ -130,7 +131,9 @@ class BookPages extends React.Component {
       return
     }
 
+    const { height } = Dimensions.get('window')
     let index = 0
+    let indexInRow = 0
 
     this.list.some((item, idx) => {
       const { key, pageIndicesInSpine } = item
@@ -145,6 +148,7 @@ class BookPages extends React.Component {
       if(!pageIndicesInSpine.includes(pageIndexInSpine)) return false
 
       index = idx
+      indexInRow = pageIndicesInSpine.indexOf(pageIndexInSpine)
       return true
     })
 
@@ -153,6 +157,18 @@ class BookPages extends React.Component {
       viewOffset: 0,
       viewPosition: 0.5,
       animated: false,
+    })
+
+    // since this might not be immediately rendered (given the FlatList), let's calculate its position
+    const thisItemOffset = this.getItemLayout(this.list, index).offset
+    const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
+    const middleYPos = height/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2
+    const lastItemLayout = this.getItemLayout(this.list, this.list.length - 1)
+    const scrolledToBottomYPos = height - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
+    updateSnapshotCoords({
+      x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
+      // I am not sure why I need statusBarHeight in the next line, given that it is not shown, but I do
+      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos ) - statusBarHeight,
     })
   }
 
@@ -209,7 +225,7 @@ class BookPages extends React.Component {
 
     return {
       offset,  // the distance from the top of the first row to this row
-      length: key.substr(0,2) === 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_ROW_EXTRA_VERTICAL_SPACE,  // the height of the row
+      length: key.substr(0,2) === 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_VERTICAL_MARGIN,  // the height of the row
       index,
     }
   }
@@ -246,7 +262,7 @@ class BookPages extends React.Component {
       outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
     })
 
-    const estimatedRowsPerPage = parseInt(height / pageHeight, 10) + 2
+    const estimatedRowsPerPage = parseInt(height / (pageHeight + PAGES_VERTICAL_MARGIN), 10) + 2
 
     return (
       <View

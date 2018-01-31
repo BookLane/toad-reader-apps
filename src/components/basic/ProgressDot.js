@@ -1,9 +1,8 @@
 import React from "react"
 import { StyleSheet, Platform, Animated } from "react-native"
 import { View, Text } from "native-base"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
-const footerHeight = nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
+import { getFooterHeight } from "../../utils/toolbox.js"
 
 const styles = StyleSheet.create({
   dot: {
@@ -25,7 +24,7 @@ class ProgressDot extends React.Component {
     const { left, size, label } = this.props
     
     const dotStyles = {
-      top: (footerHeight - size) / 2,
+      top: (getFooterHeight() - size) / 2,
       width: size,
       height: size,
       borderRadius: size / 2,

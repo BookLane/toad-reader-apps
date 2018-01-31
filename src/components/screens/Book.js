@@ -4,7 +4,6 @@ import { KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import i18n from "../../utils/i18n.js"
 
 import BookPage from "../major/BookPage"
@@ -17,7 +16,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, setLatestLocation } from "../../redux/actions.js";
 
@@ -37,7 +36,7 @@ const pageStyles = {
 
 const pagesStyles = {
   position: 'absolute',
-  top: nativeBasePlatformVariables.toolbarHeight,
+  top: getToolbarHeight(),
   bottom: 0,
   left: 0,
   right: 0,
@@ -55,7 +54,7 @@ const zoomStyles = {
 
 const contentsStyles = {
   position: 'absolute',
-  top: nativeBasePlatformVariables.toolbarHeight,
+  top: getToolbarHeight(),
   bottom: 0,
   left: 0,
   right: 0,
@@ -115,6 +114,7 @@ class Book extends React.Component {
     snapshotCoords: null,
     snapshotZoomed: true,
     onZoomCompletion: null,
+    statusBarHeight: StatusBar.currentHeight,
   }
 
   componentDidMount() {
@@ -176,10 +176,9 @@ class Book extends React.Component {
     })
   }
 
-  goToHref = params => {
-    const { goToHref } = this.state
+  updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
 
-    goToHref(params)  // triggers the postMessage to change the page in the WebView
+  goToHref = params => {
     this.setState({
       mode: 'page',
       snapshotZoomed: true,
@@ -215,21 +214,20 @@ class Book extends React.Component {
   
   hideOptions = () => this.setState({ showOptions: false })
 
-  requestShowPages = stateVars => {
-    // TODO: snapshotCoords is off if they scrolled
+  requestShowPages = () => {
     this.setState({
-      ...stateVars,  // goToHref
       mode: 'zooming',
       snapshotZoomed: false,
-    })
-    this.setStatusBarHidden(false)
+      onZoomCompletion: () => {
 
-    // TODO
-    setTimeout(() => {
-      this.setState({
-        mode: 'pages',
-      })      
-    }, PAGE_ZOOM_MILLISECONDS)
+        this.setState({
+          mode: 'pages',
+          onZoomCompletion: null,
+        })
+
+        this.setStatusBarHidden(false)
+      },
+    })
   }
 
   requestHideSettings = () => this.setState({ showSettings: false })
@@ -274,7 +272,7 @@ class Book extends React.Component {
     const { navigation, books, userDataByBookId, displaySettings } = this.props
     const { bookId } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo,
-      snapshotCoords, snapshotZoomed, onZoomCompletion } = this.state
+      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
@@ -295,12 +293,14 @@ class Book extends React.Component {
         {mode === 'page' && <KeepAwake />}
         <View style={styles.pages}>
           <BookPages
-            zoomToPage={this.zoomToPage}
             bookId={bookId}
             spineIdRef={spineIdRef}
             pageCfisKey={pageCfisKey}
             pageIndexInSpine={pageIndexInSpine}
             spines={bookLoaded && books[bookId].spines}
+            zoomToPage={this.zoomToPage}
+            updateSnapshotCoords={this.updateSnapshotCoords}
+            statusBarHeight={statusBarHeight}
             setFlatListEl={this.setFlatListEl}
           />
         </View>

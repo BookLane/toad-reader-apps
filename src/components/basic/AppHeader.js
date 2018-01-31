@@ -2,7 +2,8 @@ import React from "react"
 import Expo from "expo"
 import { Header } from "native-base"
 import { Platform, StyleSheet, View } from "react-native"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
+
+import { getToolbarHeight } from '../../utils/toolbox.js'
 
 const {
   ANDROID_TOOLBAR_COLOR,
@@ -29,7 +30,7 @@ class AppHeader extends React.Component {
     const style = {}
 
     if(hide) {
-      style.top = nativeBasePlatformVariables.toolbarHeight * -1
+      style.top = getToolbarHeight() * -1
     }
 
     return (

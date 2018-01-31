@@ -4,10 +4,11 @@ import { StyleSheet, Platform, View, Dimensions, TouchableWithoutFeedback } from
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import i18n from "../../utils/i18n.js"
 
 import ProgressDot from "../basic/ProgressDot"
+
+import { getFooterHeight } from '../../utils/toolbox.js'
 
 // import {  } from "../../redux/actions.js"
 
@@ -15,8 +16,6 @@ const {
   ANDROID_TOOLBAR_COLOR,
   PROGRESS_BAR_SIDE_SPACING,
 } = Expo.Constants.manifest.extra
-
-const footerHeight = nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
 
 const styles = StyleSheet.create({
   footer: {
@@ -39,7 +38,7 @@ const styles = StyleSheet.create({
     marginLeft: PROGRESS_BAR_SIDE_SPACING,
     marginRight: PROGRESS_BAR_SIDE_SPACING,
     height: 1,
-    top: footerHeight / 2 - .5,
+    top: getFooterHeight() / 2 - .5,
   },
 })
 

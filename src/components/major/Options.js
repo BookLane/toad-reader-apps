@@ -1,14 +1,15 @@
 import React from "react"
 import { Card, CardItem, Icon, Text, View } from "native-base"
 import { StyleSheet, TouchableWithoutFeedback, BackAndroid } from "react-native"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 import BackFunction from '../basic/BackFunction'
+
+import { getToolbarHeight } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: nativeBasePlatformVariables.toolbarHeight,
+    top: getToolbarHeight(),
     bottom: 0,
     right: 0,
     left: 0,

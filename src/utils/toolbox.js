@@ -1,8 +1,10 @@
 import { Dimensions } from "react-native"
 import { FileSystem } from "expo"
+import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
+  PAGES_HORIZONTAL_MARGIN,
 } = Expo.Constants.manifest.extra
 
 const cachedSizes = {}
@@ -12,7 +14,7 @@ export const getPageSize = ({ width, height }=Dimensions.get('window')) => {
   if(!cachedSizes[`${width}x${height}`]) {
     const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
     const pagesPerRow = parseInt(width / maxWidth)
-    const pageWidth = (width - ((pagesPerRow + 1) * 10)) / pagesPerRow
+    const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
     const pageHeight = pageWidth / ( width / height )
 
     cachedSizes[`${width}x${height}`] = {
@@ -142,3 +144,6 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
     return {}
   }
 }
+
+export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
+export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
