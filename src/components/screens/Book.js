@@ -19,7 +19,7 @@ import BackFunction from '../basic/BackFunction'
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { getPageCfisKey, getSpineAndPage } from "../../utils/toolbox.js"
 
-import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, setLatestLocation } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
@@ -114,8 +114,10 @@ class Book extends React.Component {
     showOptions: false,
     showSettings: false,
     goToHref: null,
+    zoomToInfo: null,
     snapshotCoords: null,
     snapshotZoomed: true,
+    onZoomCompletion: null,
   }
 
   componentDidMount() {
@@ -138,16 +140,37 @@ class Book extends React.Component {
     })
   }
   
-  zoomToPage = snapshotCoords => {
+  zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
+    const { setLatestLocation } = this.props
+    const { bookId, spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
+
     this.setState({
       mode: 'zooming',
+      zoomToInfo,
       snapshotCoords,
       snapshotZoomed: true,
+      onZoomCompletion: () => {
+
+        this.setState({
+          zoomToInfo: null,
+          onZoomCompletion: null,
+        })
+
+        setLatestLocation({
+          bookId,
+          latestLocation: {
+            spineIdRef,
+            cfi,
+          },
+        })
+
+        this.pageLoaded()
+        
+      },
     })
+    
     this.setStatusBarHidden(true)
 
-    // TODO
-    setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
   }
 
   goToHref = params => {
@@ -242,7 +265,8 @@ class Book extends React.Component {
 
     const { navigation, books, userDataByBookId, displaySettings } = this.props
     const { bookId } = navigation.state.params
-    const { bookLoaded, mode, showOptions, showSettings, snapshotCoords, snapshotZoomed } = this.state
+    const { bookLoaded, mode, showOptions, showSettings, zoomToInfo,
+      snapshotCoords, snapshotZoomed, onZoomCompletion } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
@@ -286,10 +310,11 @@ class Book extends React.Component {
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
           <ZoomPage
-            bookId={bookId}
-            spineIdRef={spineIdRef}
+            bookId={zoomToInfo ? zoomToInfo.bookId : bookId}
+            spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
             pageCfisKey={pageCfisKey}
-            pageIndexInSpine={pageIndexInSpine}
+            pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
+            onZoomCompletion={onZoomCompletion}
             snapshotCoords={snapshotCoords}
             zoomed={snapshotZoomed}
           />
@@ -335,6 +360,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
+  setLatestLocation,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

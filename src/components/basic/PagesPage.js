@@ -1,14 +1,10 @@
 import React from "react"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions, View } from "react-native"
 import { FileSystem } from "expo"
 
 import PagesBookmark from "./PagesBookmark"
 
 import { getSnapshotURI } from '../../utils/toolbox.js'
-
-import { setLatestLocation } from "../../redux/actions.js"
 
 const {
   CURRENT_PAGE_BORDER_COLOR,
@@ -40,23 +36,29 @@ const styles = StyleSheet.create({
 class PagesPage extends React.Component {
 
   goToPage = () => {
-    const { setLatestLocation, bookId, spineIdRef, cfi, pageIndexInSpine, preventPageChangeScroll, zoomToPage } = this.props
+    const { bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage } = this.props
 
-    preventPageChangeScroll({
+    if(this.preventDoubleTap) return
+
+    delayPageChangeScroll({
       bookId,
       spineIdRef,
       pageIndexInSpine,
     })
 
-    setLatestLocation({
-      bookId,
-      latestLocation: {
+    this.preventDoubleTap = true
+
+    this.view.measureInWindow((x, y) => zoomToPage({
+      zoomToInfo: {
+        bookId,
         spineIdRef,
         cfi,
+        pageIndexInSpine,
       },
-    })
+      snapshotCoords: { x, y },
+    }))
 
-    this.view.measureInWindow((x, y) => zoomToPage({ x, y }))
+    setTimeout(() => delete this.preventDoubleTap, 1000)
   }
 
   setView = ref => this.view = ref
@@ -109,11 +111,4 @@ class PagesPage extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  setLatestLocation,
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(PagesPage)
+export default PagesPage

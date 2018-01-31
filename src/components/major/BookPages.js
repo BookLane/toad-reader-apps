@@ -115,12 +115,17 @@ class BookPages extends React.Component {
     if(spineIdRef == null || pageIndexInSpine == null) return
     if(!this.list) return
     if(!this.flatListEl) return
+
     if(
-      this.preventPageChangeScrollInfo
-      && this.preventPageChangeScrollInfo.bookId === bookId
-      && this.preventPageChangeScrollInfo.spineIdRef === spineIdRef
-      && this.preventPageChangeScrollInfo.pageIndexInSpine === pageIndexInSpine
-    ) return
+      this.delayPageChangeScrollInfo
+      && this.delayPageChangeScrollInfo.bookId === bookId
+      && this.delayPageChangeScrollInfo.spineIdRef === spineIdRef
+      && this.delayPageChangeScrollInfo.pageIndexInSpine === pageIndexInSpine
+    ) {
+      this.delayPageChangeScrollInfo = null
+      setTimeout(this.scrollToLatestLocation, 500)
+      return
+    }
 
     let index = 0
 
@@ -160,7 +165,7 @@ class BookPages extends React.Component {
 
   onLayout = () => this.setState({ ...(getPageSize()) })
 
-  preventPageChangeScroll = params => this.preventPageChangeScrollInfo = params
+  delayPageChangeScroll = params => this.delayPageChangeScrollInfo = params
 
   renderItem = ({ item }) => {
     // TODO : I need to hijack zoomToPage and have it not scroll on the change to latestLocation
@@ -186,7 +191,7 @@ class BookPages extends React.Component {
           pageCfisKey={pageCfisKey}
           pageIndexInSpine={itemPageIndexInSpine}
           cfi={cfis[i]}
-          preventPageChangeScroll={this.preventPageChangeScroll}
+          delayPageChangeScroll={this.delayPageChangeScroll}
           zoomToPage={zoomToPage}
           isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
         />
