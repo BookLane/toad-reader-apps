@@ -50,7 +50,6 @@ class PagesPage extends React.Component {
 
     this.view.measureInWindow((x, y) => zoomToPage({
       zoomToInfo: {
-        bookId,
         spineIdRef,
         cfi,
         pageIndexInSpine,

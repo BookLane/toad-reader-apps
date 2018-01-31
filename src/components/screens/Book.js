@@ -17,7 +17,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { getPageCfisKey, getSpineAndPage } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, setLatestLocation } from "../../redux/actions.js";
 
@@ -132,8 +132,10 @@ class Book extends React.Component {
   }
 
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
-    const { setLatestLocation } = this.props
-    const { bookId, spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
+    const { setLatestLocation, userDataByBookId, navigation } = this.props
+    const { bookId } = navigation.state.params
+
+    const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
     this.setState({
       mode: 'zooming',
@@ -142,25 +144,36 @@ class Book extends React.Component {
       snapshotZoomed: true,
       onZoomCompletion: () => {
 
-        this.setState({
-          zoomToInfo: null,
-          onZoomCompletion: null,
-          bookLoaded: false,
-        })
+        const prior_latest_location = (userDataByBookId[bookId] || {}).latest_location
+        const priorLatestLocation = latestLocationToObj(prior_latest_location || "{}")
 
-        setLatestLocation({
-          bookId,
-          latestLocation: {
-            spineIdRef,
-            cfi,
-          },
-        })
-        
+        if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi !== cfi) {
+          this.setState({
+            zoomToInfo: null,
+            onZoomCompletion: null,
+            bookLoaded: false,
+          })
+  
+          setLatestLocation({
+            bookId,
+            latestLocation: {
+              spineIdRef,
+              cfi,
+            },
+          })
+
+        } else {  // back to the same page
+
+          this.setState({
+            zoomToInfo: null,
+            onZoomCompletion: null,
+            mode: 'page',
+          })
+        }
+
         this.setStatusBarHidden(true)
-
       },
     })
-
   }
 
   goToHref = params => {
@@ -305,7 +318,7 @@ class Book extends React.Component {
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
           <ZoomPage
-            bookId={zoomToInfo ? zoomToInfo.bookId : bookId}
+            bookId={bookId}
             spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
             pageCfisKey={pageCfisKey}
             pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
