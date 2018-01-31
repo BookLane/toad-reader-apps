@@ -46,10 +46,6 @@ class BookPages extends React.Component {
     this.calcList()
   }
 
-  componentDidMount() {
-    this.scrollToLatestLocation()
-  }
-
   componentWillReceiveProps(nextProps) {
     const { spineIdRef, pageIndexInSpine } = this.props
 
@@ -216,6 +212,10 @@ class BookPages extends React.Component {
 
     this.flatListEl = ref && ref._component
     setFlatListEl && setFlatListEl(this.flatListEl)
+
+    // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout
+    // without this timeout, this.flatListEl is not set and sticky headers are not accounted for
+    setTimeout(this.scrollToLatestLocation, 300)
   }
 
   scrollToPercentage = percent => {
@@ -223,10 +223,9 @@ class BookPages extends React.Component {
   }
 
   render() {
-    const { spines } = this.props
     const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition, scrollPercentage } = this.state
 
-    if(!spines) return null
+    if(!this.list) return null
 
     const { width } = Dimensions.get('window')
 
