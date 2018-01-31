@@ -42,6 +42,7 @@ const pagesStyles = {
   left: 0,
   right: 0,
   backgroundColor: APP_BACKGROUND_COLOR,
+  zIndex: 2,
 }
 
 const zoomStyles = {
@@ -82,11 +83,7 @@ const styles = StyleSheet.create({
     ...pageStyles,
     ...hidePageStyles,
   },
-  showPages: {
-    ...pagesStyles,
-    ...showStyles,
-  },
-  hidePages: {
+  pages: {
     ...pagesStyles,
   },
   showZoom: {
@@ -168,7 +165,7 @@ class Book extends React.Component {
         
       },
     })
-    
+
     this.setStatusBarHidden(true)
 
   }
@@ -285,6 +282,17 @@ class Book extends React.Component {
           showDisplaySettings={this.showDisplaySettings}
         />
         {mode === 'page' && <KeepAwake />}
+        <View style={styles.pages}>
+          <BookPages
+            zoomToPage={this.zoomToPage}
+            bookId={bookId}
+            spineIdRef={spineIdRef}
+            pageCfisKey={pageCfisKey}
+            pageIndexInSpine={pageIndexInSpine}
+            spines={bookLoaded && books[bookId].spines}
+            setFlatListEl={this.setFlatListEl}
+          />
+        </View>
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
@@ -295,17 +303,6 @@ class Book extends React.Component {
             showSettings={showSettings}
             requestHideSettings={this.requestHideSettings}
             indicateLoaded={this.indicateLoaded}
-          />
-        </View>
-        <View style={[ 'pages', 'zooming' ].includes(mode) ? styles.showPages : styles.hidePages}>
-          <BookPages
-            zoomToPage={this.zoomToPage}
-            bookId={bookId}
-            spineIdRef={spineIdRef}
-            pageCfisKey={pageCfisKey}
-            pageIndexInSpine={pageIndexInSpine}
-            spines={bookLoaded && books[bookId].spines}
-            setFlatListEl={this.setFlatListEl}
           />
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
