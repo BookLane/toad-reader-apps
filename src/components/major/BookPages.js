@@ -133,12 +133,12 @@ class BookPages extends React.Component {
 
       // if it is a header row, no match
       if(key.substr(0,2) === 'H:') return false
-  
+      
       // if not the correct spine, no match
       if(key.split(':').slice(3).join(':') !== spineIdRef) return false
-  
+
       // if page index not in this row, no match
-      if(pageIndicesInSpine.includes(pageIndexInSpine)) return false
+      if(!pageIndicesInSpine.includes(pageIndexInSpine)) return false
 
       index = idx
       return true
