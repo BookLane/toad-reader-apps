@@ -34,7 +34,7 @@ class AppHeader extends React.Component {
     }
 
     return (
-      <View style={styles.container}>
+      <View style={!hide && styles.container}>
         <Header
           androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
           style={[
