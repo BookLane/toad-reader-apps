@@ -16,7 +16,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, setLatestLocation } from "../../redux/actions.js";
 
@@ -176,7 +176,7 @@ class Book extends React.Component {
     })
   }
 
-  updateSnapshotCoords = snapshotCoords => console.log(snapshotCoords) || this.setState({ snapshotCoords })
+  updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
 
   goToHref = ({ href }) => {
     this.setState({
@@ -197,11 +197,28 @@ class Book extends React.Component {
   }
 
   backToReading = () => {
-    // this.setState({
-    //   mode: 'zooming',
-    //   snapshotZoomed: true,
-    // })
-    // this.setStatusBarHidden(true)
+    const { width, height } = Dimensions.get('window')
+    const { pageWidth } = getPageSize({ width, height })
+
+    const snapshotCoords = {
+      x: width / 2  - pageWidth / 2,
+      y: height,
+    }
+
+    this.setState({
+      mode: 'zooming',
+      snapshotCoords,
+      snapshotZoomed: true,
+      onZoomCompletion: () => {
+
+        this.setState({
+          onZoomCompletion: null,
+          mode: 'page',
+        })
+
+        this.setStatusBarHidden(true)
+      },
+    })
   }
 
   toggleShowOptions = () => {
@@ -240,7 +257,12 @@ class Book extends React.Component {
   }
 
   showDisplaySettings = () => {
-    this.setState({ mode: 'page', showSettings: true })
+    this.setState({
+      showSettings: true,
+      mode: 'page',
+      snapshotZoomed: true,
+    })
+
     this.setStatusBarHidden(true)
   }
 
