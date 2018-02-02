@@ -10,7 +10,10 @@ const baseListItemStyle = {
 class BookContents extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !!nextProps.toc
+    return (
+      !!nextProps.toc
+      && Object.keys(nextProps).some(key => nextProps[key] !== this.props[key])
+    )
   }
 
   getListItems = (toc, indentLevel=0) => {
