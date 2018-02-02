@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class Options extends React.Component {
+class Options extends React.PureComponent {
 
   render() {
     const { options, requestHide } = this.props
