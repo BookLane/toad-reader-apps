@@ -196,7 +196,6 @@ class BookPages extends React.Component {
   delayPageChangeScroll = params => this.delayPageChangeScrollInfo = params
 
   renderItem = ({ item }) => {
-console.log('renderItem BookPages', ++this.c, item)
     const { zoomToPage, bookId, spineIdRef, pageIndexInSpine, pageCfisKey } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
@@ -224,7 +223,7 @@ console.log('renderItem BookPages', ++this.c, item)
           isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
         />
       ))
-  
+
       return <PagesRow>{pages}</PagesRow>
     }
   }
@@ -257,7 +256,7 @@ console.log('renderItem BookPages', ++this.c, item)
 
   render() {
     const { pageHeight } = this.state
-    
+
     if(!this.list) return null
 
     const { height } = Dimensions.get('window')

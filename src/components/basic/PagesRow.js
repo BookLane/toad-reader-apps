@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesRow extends React.Component {
+class PagesRow extends React.PureComponent {
 
   render() {
     const { children } = this.props

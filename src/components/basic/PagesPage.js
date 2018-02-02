@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesPage extends React.Component {
+class PagesPage extends React.PureComponent {
 
   goToPage = () => {
     const { bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage } = this.props
