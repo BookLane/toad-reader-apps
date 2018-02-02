@@ -45,6 +45,12 @@ class BookPage extends React.Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const { showSettings } = this.props
+
+    return nextProps.showSettings !== showSettings
+  }
+
   setDisplaySettings = nextProps => {
     postMessage(this.webView, 'setDisplaySettings', getDisplaySettingsObj(nextProps || this.props))
   }

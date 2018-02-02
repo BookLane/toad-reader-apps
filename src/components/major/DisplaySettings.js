@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class DisplaySettings extends React.Component {
+class DisplaySettings extends React.PureComponent {
 
   increaseTextSize = () => {
     const { displaySettings, setTextSize } = this.props
