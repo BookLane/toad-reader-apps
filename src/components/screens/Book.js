@@ -231,9 +231,11 @@ class Book extends React.Component {
   requestHideSettings = () => this.setState({ showSettings: false })
 
   indicateLoaded = () => {
+    const { mode } = this.state
+
     this.setState({
       bookLoaded: true,
-      mode: 'page',
+      mode: mode === 'zooming' ? 'page' : mode,
     })
   }
 
