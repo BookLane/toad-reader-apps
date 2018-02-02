@@ -35,8 +35,11 @@ const getZoomOutScale = () => {
 
 class ZoomPage extends React.Component {
 
-  state = {
-    scale: new Animated.Value(this.props.zoomed ? 1 : getZoomOutScale()),
+  constructor(props) {
+    super(props)
+    
+    this.scale = new Animated.Value(this.props.zoomed ? 1 : getZoomOutScale())
+    this.opacity = new Animated.Value(1)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,22 +52,47 @@ class ZoomPage extends React.Component {
 
   animate = nextProps => {
     const { zoomed, zoomingEnabled, onZoomCompletion } = nextProps || this.props
-    const { scale } = this.state
 
-    Animated.timing(
-      scale,
-      {
-        toValue: zoomed ? 1 : getZoomOutScale(),
-        // easing: Easing.linear,
-        easing: Easing.inOut(Easing.cubic),
-        duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
-      }
-    ).start(onZoomCompletion)
+    if(zoomed || !zoomingEnabled) {
+      Animated.timing(
+        this.scale,
+        {
+          toValue: 1,
+          // easing: Easing.linear,
+          easing: Easing.inOut(Easing.cubic),
+          duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
+        }
+      ).start(onZoomCompletion)
+  
+    } else {
+      Animated.sequence([
+        Animated.timing(
+          this.scale,
+          {
+            toValue: getZoomOutScale(),
+            easing: Easing.inOut(Easing.cubic),
+            duration: PAGE_ZOOM_MILLISECONDS,
+          }
+        ),
+        Animated.timing(
+          this.opacity,
+          {
+            toValue: 0,
+            easing: Easing.linear,
+            duration: PAGE_ZOOM_MILLISECONDS / 4,
+          }
+        )
+      ]).start(onZoomCompletion)
+
+      requestAnimationFrame(() => {
+        this.opacity = new Animated.Value(1)
+      })
+  
+    }
   }
 
   render() {
     const { snapshotCoords } = this.props
-    const { scale } = this.state
 
     const uri = getSnapshotURI(this.props)
 
@@ -83,12 +111,12 @@ class ZoomPage extends React.Component {
 
     const zoomOutScale = getZoomOutScale()
 
-    const translateX = scale.interpolate({
+    const translateX = this.scale.interpolate({
       inputRange: [zoomOutScale, 1],
       outputRange: [outputRangeX, 0],
     })
 
-    const translateY = scale.interpolate({
+    const translateY = this.scale.interpolate({
       inputRange: [zoomOutScale, 1],
       outputRange: [outputRangeY, 0],
     })
@@ -108,9 +136,10 @@ class ZoomPage extends React.Component {
     const zoomStyles2 = {
       transform: [
         {
-          scale,
+          scale: this.scale,
         },
       ],
+      opacity: this.opacity,
     }
       
     return (
