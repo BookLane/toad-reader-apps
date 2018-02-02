@@ -114,7 +114,7 @@ class Book extends React.Component {
     snapshotCoords: null,
     snapshotZoomed: true,
     onZoomCompletion: null,
-    statusBarHeight: StatusBar.currentHeight,
+    statusBarHeight: StatusBar.currentHeight || 0,
   }
 
   componentDidMount() {
@@ -176,7 +176,7 @@ class Book extends React.Component {
     })
   }
 
-  updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
+  updateSnapshotCoords = snapshotCoords => console.log(snapshotCoords) || this.setState({ snapshotCoords })
 
   goToHref = ({ href }) => {
     this.setState({
