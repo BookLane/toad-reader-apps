@@ -1,8 +1,15 @@
 import React from "react"
-import { StyleSheet, Platform, Animated } from "react-native"
-import { View, Text } from "native-base"
+import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
+import { View } from "native-base"
+import i18n from "../../utils/i18n.js"
+
+import ProgressDotLabel from "./ProgressDotLabel"
 
 import { getFooterHeight } from "../../utils/toolbox.js"
+
+const {
+  PROGRESS_BAR_SIDE_SPACING,
+} = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
   dot: {
@@ -12,17 +19,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  dotText: {
-    fontSize: 10,
-    color: Platform.OS === 'android' ? 'black' : 'white',
-  },
 })
 
 class ProgressDot extends React.Component {
 
   render() {
-    const { left, size, label } = this.props
-    
+    const { size, animatedScrollPosition, maxScroll } = this.props
+
+    const { width } = Dimensions.get('window')
+
+    const translateX = animatedScrollPosition.interpolate({
+      inputRange: [0, maxScroll],
+      outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
+    })
+
     const dotStyles = {
       top: (getFooterHeight() - size) / 2,
       width: size,
@@ -32,7 +42,7 @@ class ProgressDot extends React.Component {
       marginRight: size / -2,
       transform: [
         {
-          translateX: left,
+          translateX,
         },
       ],
     }
@@ -44,7 +54,10 @@ class ProgressDot extends React.Component {
           dotStyles,
         ]}
       >
-        <Text style={styles.dotText}>{label}</Text>
+        <ProgressDotLabel
+          animatedScrollPosition={animatedScrollPosition}
+          maxScroll={maxScroll}
+        />
       </Animated.View>
     )
   }

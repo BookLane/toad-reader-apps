@@ -1,10 +1,9 @@
 import React from "react"
 import Expo from "expo"
-import { StyleSheet, Platform, View, Dimensions, TouchableWithoutFeedback } from "react-native"
+import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Footer } from "native-base"
-import i18n from "../../utils/i18n.js"
 
 import ProgressDot from "../basic/ProgressDot"
 
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
 class BookProgress extends React.Component {
 
   doScroll = pageX => {
-    const { mainDotLeft, scrollToPercentage } = this.props
+    const { scrollToPercentage } = this.props
     const { width } = Dimensions.get('window')
 
     const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
@@ -67,7 +66,7 @@ class BookProgress extends React.Component {
   }
 
   render() {
-    const { mainDotLeft, scrollPercentage } = this.props
+    const { animatedScrollPosition, maxScroll } = this.props
 
     return (
       <Footer style={styles.footer}>
@@ -80,9 +79,9 @@ class BookProgress extends React.Component {
         />
         <View style={styles.line}/>
         <ProgressDot
-          left={mainDotLeft}
           size={30}
-          label={i18n("{{percent}}%", { percent: scrollPercentage })}
+          animatedScrollPosition={animatedScrollPosition}
+          maxScroll={maxScroll}
         />
         {/* <ProgressDot
           left={PROGRESS_BAR_SIDE_SPACING + 100}

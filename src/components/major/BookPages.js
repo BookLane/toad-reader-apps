@@ -15,7 +15,6 @@ const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-  PROGRESS_BAR_SIDE_SPACING,
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
@@ -40,7 +39,6 @@ class BookPages extends React.Component {
     this.state = {
       ...(getPageSize()),
       animatedScrollPosition: new Animated.Value(0),
-      scrollPercentage: 0,
     }
 
     this.calcList()
@@ -62,7 +60,13 @@ class BookPages extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !!nextProps.spines
+    return (
+      !!nextProps.spines
+      && (
+        Object.keys(nextProps).some(key => nextProps[key] !== this.props[key])
+        || Object.keys(nextState).some(key => nextState[key] !== this.state[key])
+      )
+    )
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -172,21 +176,12 @@ class BookPages extends React.Component {
     })
   }
 
-  updateScrollPercentage = event => {
-    const scrollY = event.nativeEvent.contentOffset.y
-
-    const scrollPercentage = this.maxScroll ? Math.round((scrollY / this.maxScroll) * 100) : 0
-
-    if(scrollPercentage !== this.state.scrollPercentage) {
-      this.setState({ scrollPercentage })
-    }
-  }
-
   onLayout = () => this.setState({ ...(getPageSize()) })
 
   delayPageChangeScroll = params => this.delayPageChangeScrollInfo = params
 
   renderItem = ({ item }) => {
+// console.log('renderItem BookPages')
     const { zoomToPage, bookId, spineIdRef, pageIndexInSpine, pageCfisKey } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
@@ -246,20 +241,15 @@ class BookPages extends React.Component {
   }
 
   render() {
-    const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition, scrollPercentage } = this.state
+    const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition } = this.state
 
     if(!this.list) return null
 
-    const { width, height } = Dimensions.get('window')
+    const { height } = Dimensions.get('window')
 
     const opacity = animatedScrollPosition.interpolate({
       inputRange: [0, 5],
       outputRange: [0, 1],
-    })
-
-    const mainDotLeft = animatedScrollPosition.interpolate({
-      inputRange: [0, this.maxScroll],
-      outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
     })
 
     const estimatedRowsPerPage = parseInt(height / (pageHeight + PAGES_VERTICAL_MARGIN), 10) + 2
@@ -284,7 +274,6 @@ class BookPages extends React.Component {
             [{ nativeEvent: { contentOffset: { y: animatedScrollPosition } } }],
             {
               useNativeDriver: true,
-              listener: this.updateScrollPercentage,
             },
           )}
           scrollEventThrottle={1}
@@ -294,8 +283,8 @@ class BookPages extends React.Component {
         {this.maxScroll
           ?
             <BookProgress
-              mainDotLeft={mainDotLeft}
-              scrollPercentage={scrollPercentage}
+              animatedScrollPosition={animatedScrollPosition}
+              maxScroll={this.maxScroll}
               scrollToPercentage={this.scrollToPercentage}
             />
           : null
