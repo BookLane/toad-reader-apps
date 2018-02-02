@@ -5,12 +5,7 @@ import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
 import AppHeader from "../basic/AppHeader"
 
-// import {  } from "../../redux/actions.js"
-
-const isPhoneSize = () => {
-  const { width, height } = Dimensions.get('window')
-  return Math.min(width, height) < 500
-}
+import { isPhoneSize } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   title: {
@@ -18,7 +13,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookHeader extends React.Component {
+class BookHeader extends React.PureComponent {
 
   onBackPress = () => {
     const { navigation } = this.props
@@ -27,9 +22,8 @@ class BookHeader extends React.Component {
   }
 
   render() {
-    const { bookId, subtitle, navigation, mode, showDisplaySettings,
-            toggleBookView, toggleShowOptions, books } = this.props
-    const { title } = books[bookId]
+    const { title, subtitle, navigation, mode, showDisplaySettings,
+            toggleBookView, toggleShowOptions } = this.props
     
     return (
       <AppHeader
@@ -75,11 +69,4 @@ class BookHeader extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(BookHeader)
+export default BookHeader

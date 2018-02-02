@@ -197,14 +197,11 @@ class Book extends React.Component {
   }
 
   backToReading = () => {
-    this.setState({
-      mode: 'zooming',
-      snapshotZoomed: true,
-    })
-    this.setStatusBarHidden(true)
-
-    // TODO
-    // setTimeout(this.pageLoaded, PAGE_ZOOM_MILLISECONDS)
+    // this.setState({
+    //   mode: 'zooming',
+    //   snapshotZoomed: true,
+    // })
+    // this.setStatusBarHidden(true)
   }
 
   toggleShowOptions = () => {
@@ -280,11 +277,13 @@ class Book extends React.Component {
     const latest_location = (userDataByBookId[bookId] || {}).latest_location
     const { spineIdRef, pageIndexInSpine } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
+    const { title } = (books && books[bookId]) || {}
+
     return (
       <Container>
         {mode !== 'page' && <BackFunction func={this.backToReading} />}
         <BookHeader
-          bookId={bookId}
+          title={title}
           navigation={navigation}
           mode={mode}
           toggleBookView={this.toggleBookView}
