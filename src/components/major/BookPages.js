@@ -180,7 +180,7 @@ class BookPages extends React.Component {
       index,
       viewOffset: 0,
       viewPosition: 0.5,
-      animated: false,
+      // animated: false,
     })
 
     // since this might not be immediately rendered (given the FlatList), let's calculate its position
