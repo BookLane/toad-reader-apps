@@ -37,17 +37,57 @@ class ZoomPage extends React.Component {
 
   constructor(props) {
     super(props)
-    
+
     this.scale = new Animated.Value(this.props.zoomed ? 1 : getZoomOutScale())
     this.opacity = new Animated.Value(1)
+    this.setUpInterpolatedValues(props)
   }
 
   componentWillReceiveProps(nextProps) {
-    const { zoomed } = this.props
+    const { snapshotCoords, zoomed } = this.props
+
+    if(JSON.stringify(nextProps.snapshotCoords) !== JSON.stringify(snapshotCoords)) {
+      this.setUpInterpolatedValues(nextProps)
+    }
 
     if(nextProps.zoomed !== zoomed) {
       requestAnimationFrame(() => this.animate(nextProps))
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return [ 'bookId', 'spineIdRef', 'pageCfisKey', 'pageIndexInSpine', 'snapshotCoords' ].some(key => (
+      nextProps[key] !== this.props[key]
+    ))
+  }
+
+  setUpInterpolatedValues = nextProps => {
+    const { snapshotCoords } = nextProps || this.props
+
+    let outputRangeX = 1
+    let outputRangeY = 1
+
+    if(snapshotCoords) {
+      const left = snapshotCoords.x
+      const top = snapshotCoords.y + (StatusBar.currentHeight || 0)
+      const { width, height } = Dimensions.get('window')
+      const { pageWidth, pageHeight } = getPageSize({ width, height })
+
+      outputRangeX = left - (width/2 - pageWidth/2)
+      outputRangeY = top - (height/2 - pageHeight/2)
+    }
+
+    const zoomOutScale = getZoomOutScale()
+
+    this.translateX = this.scale.interpolate({
+      inputRange: [zoomOutScale, 1],
+      outputRange: [outputRangeX, 0],
+    })
+
+    this.translateY = this.scale.interpolate({
+      inputRange: [zoomOutScale, 1],
+      outputRange: [outputRangeY, 0],
+    })
   }
 
   animate = nextProps => {
@@ -93,35 +133,10 @@ class ZoomPage extends React.Component {
 
   render() {
     const { snapshotCoords } = this.props
+    const { translateX, translateY, scale, opacity } = this
 
     const uri = getSnapshotURI(this.props)
 
-    let outputRangeX = 1
-    let outputRangeY = 1
-
-    if(snapshotCoords) {
-      const left = snapshotCoords.x
-      const top = snapshotCoords.y + (StatusBar.currentHeight || 0)
-      const { width, height } = Dimensions.get('window')
-      const { pageWidth, pageHeight } = getPageSize({ width, height })
-
-      outputRangeX = left - (width/2 - pageWidth/2)
-      outputRangeY = top - (height/2 - pageHeight/2)
-    }
-
-    const zoomOutScale = getZoomOutScale()
-
-    const translateX = this.scale.interpolate({
-      inputRange: [zoomOutScale, 1],
-      outputRange: [outputRangeX, 0],
-    })
-
-    const translateY = this.scale.interpolate({
-      inputRange: [zoomOutScale, 1],
-      outputRange: [outputRangeY, 0],
-    })
-    
-    
     const zoomStyles1 = {
       transform: [
         {
@@ -136,10 +151,10 @@ class ZoomPage extends React.Component {
     const zoomStyles2 = {
       transform: [
         {
-          scale: this.scale,
+          scale,
         },
       ],
-      opacity: this.opacity,
+      opacity,
     }
       
     return (
