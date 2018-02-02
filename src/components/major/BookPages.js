@@ -37,9 +37,17 @@ class BookPages extends React.Component {
     super(props)
 
     this.state = {
-      ...(getPageSize()),
-      animatedScrollPosition: new Animated.Value(0),
+      ...(getPageSize()),  // pageWidth, pageHeight, pagesPerRow
     }
+
+    this.animatedScrollPosition = new Animated.Value(0)
+
+    this.onScroll = Animated.event(
+      [{ nativeEvent: { contentOffset: { y: this.animatedScrollPosition } } }],
+      {
+        useNativeDriver: true,
+      },
+    )
 
     this.calcList()
   }
@@ -83,12 +91,19 @@ class BookPages extends React.Component {
 
     if(!spines) return
 
+    if(!this.list) {
+      this.list = []
+      this.headerIndices = []
+    }
+    
+    // clear the lists, but keep the same array objects
+    this.list.splice(0, this.list.length)
+    this.headerIndices.splice(0, this.headerIndices.length)
+
     const { height } = Dimensions.get('window')
     const listHeight = (height - getFooterHeight() - getToolbarHeight())
-    this.list = []
-    this.headerIndices = []
     let offset = 0
-
+    
     spines.forEach(spine => {
       const { idref, label='', pageCfis } = spine
       this.list.push({
@@ -181,7 +196,7 @@ class BookPages extends React.Component {
   delayPageChangeScroll = params => this.delayPageChangeScrollInfo = params
 
   renderItem = ({ item }) => {
-// console.log('renderItem BookPages')
+console.log('renderItem BookPages', ++this.c, item)
     const { zoomToPage, bookId, spineIdRef, pageIndexInSpine, pageCfisKey } = this.props
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
@@ -241,19 +256,19 @@ class BookPages extends React.Component {
   }
 
   render() {
-    const { pageWidth, pageHeight, pagesPerRow, animatedScrollPosition } = this.state
-
+    const { pageHeight } = this.state
+    
     if(!this.list) return null
 
     const { height } = Dimensions.get('window')
 
-    const opacity = animatedScrollPosition.interpolate({
+    const opacity = this.animatedScrollPosition.interpolate({
       inputRange: [0, 5],
       outputRange: [0, 1],
     })
 
     const estimatedRowsPerPage = parseInt(height / (pageHeight + PAGES_VERTICAL_MARGIN), 10) + 2
-
+    
     return (
       <View
         style={styles.container}
@@ -262,20 +277,18 @@ class BookPages extends React.Component {
         <AnimatedFlatList
           data={this.list}
           renderItem={this.renderItem}
-          extraData={{ selected: pageWidth }}  // used to force render when this changes
+          // The random number in extraData forces renderItem calls on every item
+          // in the data. (There is not a way to have renderItem called on only
+          // a subset of the changed data.)
+          extraData={{ selected: Math.random() }}  // forces rerender of all items
           initialNumToRender={estimatedRowsPerPage}
           maxToRenderPerBatch={estimatedRowsPerPage}
           updateCellsBatchingPeriod={500}  // wait this # ms between render batches
-          windowSize={11}  // i.e. 5 pages above and below rendered
+          windowSize={1}  // i.e. 5 pages above and below rendered
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={this.headerIndices}
           getItemLayout={this.getItemLayout}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: animatedScrollPosition } } }],
-            {
-              useNativeDriver: true,
-            },
-          )}
+          onScroll={this.onScroll}
           scrollEventThrottle={1}
           ref={this.setFlatListEl}
         />
@@ -283,7 +296,7 @@ class BookPages extends React.Component {
         {this.maxScroll
           ?
             <BookProgress
-              animatedScrollPosition={animatedScrollPosition}
+              animatedScrollPosition={this.animatedScrollPosition}
               maxScroll={this.maxScroll}
               scrollToPercentage={this.scrollToPercentage}
             />
