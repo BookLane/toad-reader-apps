@@ -283,7 +283,7 @@ class BookPages extends React.Component {
           initialNumToRender={estimatedRowsPerPage}
           maxToRenderPerBatch={estimatedRowsPerPage}
           updateCellsBatchingPeriod={500}  // wait this # ms between render batches
-          windowSize={1}  // i.e. 5 pages above and below rendered
+          windowSize={11}  // i.e. 5 pages above and below rendered
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={this.headerIndices}
           getItemLayout={this.getItemLayout}
