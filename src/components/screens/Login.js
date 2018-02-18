@@ -27,6 +27,7 @@ class Login extends React.Component {
 
   state = {
     loading: true,
+    leaving: false,
   }
 
   onError = () => {
@@ -45,16 +46,18 @@ class Login extends React.Component {
     const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
 
     if(url === userDataUrl) {
-      this.setState({ loading: true })
-      
+      this.setState({ leaving: true })
+
       // fetch usersetup.json and add account
       let response = await fetch(userDataUrl, REQUEST_OPTIONS)
       if(response.status != 200) {
         throw new Error('Unable to log in')
+        // TODO: something
       }
       const userData = await response.json()
       if(!userData || !userData.userInfo) {
         throw new Error('Unexpected data returned')
+        // TODO: something
       }
       
       addAccount({
@@ -67,7 +70,7 @@ class Login extends React.Component {
       })
       
       // TODO: need to record currentServerTime
-      
+
       navigation.goBack()
 
     } else {
@@ -79,26 +82,28 @@ class Login extends React.Component {
   render() {
     const { navigation, idps } = this.props
     const { idpId } = navigation.state.params
-    const { loading } = this.state
+    const { loading, leaving } = this.state
 
     const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
 
     return (
       <Container>
-        <WebView
-          style={styles.fullscreen}
-          source={{
-            uri: userDataUrl,
-            ...REQUEST_OPTIONS,
-          }}
-          mixedContentMode="always"
-          onError={this.onError}
-          onNavigationStateChange={this.onNavigationStateChange}
-          injectedJavaScript={`
-            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
-          `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-        />
-        {loading && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
+        {!leaving &&
+          <WebView
+            style={styles.fullscreen}
+            source={{
+              uri: userDataUrl,
+              ...REQUEST_OPTIONS,
+            }}
+            mixedContentMode="always"
+            onError={this.onError}
+            onNavigationStateChange={this.onNavigationStateChange}
+            injectedJavaScript={`
+              document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
+            `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
+          />
+        }
+        {(loading || leaving) && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
       </Container>
     )
   }
