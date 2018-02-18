@@ -1,9 +1,11 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet } from "react-native"
+import { Image, StyleSheet, WebView } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
+
+import FullScreenSpin from "../basic/FullScreenSpin"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
@@ -22,9 +24,20 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#eeeef3',
   },
+  hiddenWebView: {
+    position: 'absolute',
+    top: -300,
+    left: 0,
+    width: 1,
+    height: 1,
+  },
 })
 
 class Drawer extends React.Component {
+
+  state = {
+    logOutUrl: null,
+  }
 
   showAll = () => {
     const { navigation } = this.props
@@ -45,7 +58,7 @@ class Drawer extends React.Component {
   }
 
   confirmLogOut = () => {
-    const { accounts, idps, removeAccount } = this.props
+    const { accounts, idps } = this.props
 
     const accountId = Object.keys(accounts)[0] || ""
     const idpId = accountId.split(':')[0]
@@ -53,14 +66,24 @@ class Drawer extends React.Component {
     if(!idpId || !idps[idpId]) return
 
     const callback = async () => {
-// TODO: fetch /logout should work here, but it doesn't
+      // I need to log out via a webview (and not fetch) because log out urls might contain
+      // javascript or iframes needed to fully log the user out.
       const logOutUrl = `https://${idps[idpId].domain}/logout`
-// TODO: needs a spinner
-      // then removeAccount({ accountId }), which will trigger Login component
-      removeAccount({ accountId })
+      this.setState({ logOutUrl })
     }
 
     confirmRemoveAccountEPubs(this.props, callback)
+  }
+
+  logOurUrlOnLoad = () => {
+    const { removeAccount } = this.props
+
+    removeAccount({ accountId })
+    this.setState({ logOutUrl: null })
+  }
+
+  logOurUrlOnError = () => {
+    // TODO: something
   }
 
   removeAllEPubs = () => {
@@ -68,8 +91,9 @@ class Drawer extends React.Component {
   }
 
   render() {
-
     const { accounts, idps, books, navigation } = this.props
+    const { logOutUrl } = this.state
+
     const accountIdpIds = []
     const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
       const idpId = accountId.split(':')[0]
@@ -80,6 +104,16 @@ class Drawer extends React.Component {
     return (
       <Container>
         <Content>
+          {logOutUrl && 
+            <WebView
+              style={styles.hiddenWebView}
+              source={{
+                uri: logOutUrl,
+              }}
+              onLoad={this.logOurUrlOnLoad}
+              onError={this.logOurUrlOnError}
+            />
+          }
           <View style={styles.imageContainer}>
             <Image
               source={{
@@ -163,6 +197,7 @@ class Drawer extends React.Component {
               </Body>
             </ListItem>
           </List>
+          {logOutUrl && <FullScreenSpin />}
         </Content>
       </Container>
     )

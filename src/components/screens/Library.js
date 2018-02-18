@@ -40,8 +40,8 @@ class Library extends React.Component {
     showOptions: false,
   }
 
-  async fetchAll() {
-    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage, navigation } = this.props
+  async fetchAll(nextProps) {
+    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage, navigation } = nextProps || this.props
 
     if(Object.keys(accounts).length === 0) {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
@@ -62,7 +62,8 @@ class Library extends React.Component {
 // I AM HERE
 //   - I would think the next line should be /logout/callback, but that doesn't work
 //   - also, the hard logout from BibleMesh is not working either (I cannot understand why)
-        await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
+        // await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
+        console.log('fetch', await fetch(`https://${idps[idpId].domain}/logout`))  // this forces a refresh on the library
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
         if(response.status == 403) {
@@ -71,6 +72,7 @@ class Library extends React.Component {
         }
         if(response.status != 200) {
           throw new Error('Unable to fetch library')
+          // TODO: force a login
         }
         const books = await response.json()
         // TODO: needs to call function to remove books that are no longer in the account
@@ -112,7 +114,7 @@ class Library extends React.Component {
     const { accounts } = this.props
 
     if(nextProps.accounts !== accounts) {
-      this.fetchAll()
+      this.fetchAll(nextProps)
     }
   }
 
