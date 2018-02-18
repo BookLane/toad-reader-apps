@@ -94,6 +94,9 @@ class Login extends React.Component {
           mixedContentMode="always"
           onError={this.onError}
           onNavigationStateChange={this.onNavigationStateChange}
+          injectedJavaScript={`
+            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
+          `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
         />
         {loading && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
       </Container>
