@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, WebView, StatusBar } from "react-native"
+import { StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, View } from "native-base"
@@ -27,14 +27,6 @@ class Login extends React.Component {
 
   state = {
     loading: true,
-  }
-
-  componentDidMount() {
-    StatusBar.setHidden(true)
-  }
-
-  componentWillUnmount() {
-    StatusBar.setHidden(false)
   }
 
   onError = () => {

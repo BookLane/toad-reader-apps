@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
@@ -12,9 +12,10 @@ import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
 import Options from "../major/Options"
 import Spin from "../basic/Spin"
+import FullScreenSpin from "../basic/FullScreenSpin"
 import PageCaptureManager from "../major/PageCaptureManager"
 
-import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus } from "../../redux/actions.js"
+import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus, removeAccount } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -22,6 +23,9 @@ const {
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
   noBooks: {
     marginTop: 50,
     textAlign: 'center',
@@ -125,12 +129,25 @@ class Library extends React.Component {
   
   hideOptions = () => this.setState({ showOptions: false })
 
-  render() {
+  logOurUrlOnLoad = () => {
+    const { navigation, removeAccount } = this.props
+    let { logOutAccountId } = navigation.state.params || {}
 
+    removeAccount({ accountId: logOutAccountId })
+
+    navigation.state.params = {}
+    this.forceUpdate()
+  }
+
+  logOurUrlOnError = () => {
+    // TODO: something
+  }
+  
+  render() {
     const { library, books, fetchingBooks, navigation, setSort } = this.props
     const { showOptions } = this.state
 
-    let { scope } = navigation.state.params || {}
+    let { scope, logOutUrl } = navigation.state.params || {}
     scope = scope || "all"
 
     const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -142,6 +159,23 @@ class Library extends React.Component {
           books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope.split(':')[0])
         ))
       )
+
+    if(logOutUrl) {
+      return (
+        <View style={styles.flex1}>
+          <WebView
+            style={styles.flex1}
+            source={{
+              uri: logOutUrl,
+              ...REQUEST_OPTIONS,
+            }}
+            onLoad={this.logOurUrlOnLoad}
+            onError={this.logOurUrlOnError}
+          />
+          <FullScreenSpin style={{ backgroundColor: 'white' }} />
+        </View>
+      )
+    }
 
     return (
       <Container>
@@ -215,6 +249,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setFetchingBooks,
   setErrorMessage,
   setDownloadStatus,
+  removeAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

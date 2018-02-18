@@ -1,15 +1,13 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet, WebView } from "react-native"
+import { Image, StyleSheet } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import FullScreenSpin from "../basic/FullScreenSpin"
-
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeAccount } from "../../redux/actions.js"
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
 const {
   REQUEST_OPTIONS,
@@ -28,20 +26,9 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#eeeef3',
   },
-  hiddenWebView: {
-    position: 'absolute',
-    top: -300,
-    left: 0,
-    width: 1,
-    height: 1,
-  },
 })
 
 class Drawer extends React.Component {
-
-  state = {
-    logOutUrl: null,
-  }
 
   showAll = () => {
     const { navigation } = this.props
@@ -62,34 +49,19 @@ class Drawer extends React.Component {
   }
 
   confirmLogOut = () => {
-    const { accounts, idps } = this.props
+    const { accounts, idps, navigation } = this.props
 
     const accountId = Object.keys(accounts)[0] || ""
     const idpId = accountId.split(':')[0]
 
     if(!idpId || !idps[idpId]) return
 
-    const callback = async () => {
-      // I need to log out via a webview (and not fetch) because log out urls might contain
-      // javascript or iframes needed to fully log the user out.
-      const logOutUrl = `https://${idps[idpId].domain}/logout`
-      this.setState({ logOutUrl })
-    }
-
-    confirmRemoveAccountEPubs(this.props, callback)
-  }
-
-  logOurUrlOnLoad = () => {
-    const { removeAccount } = this.props
-
-    removeAccount({ accountId })
-    this.setState({ logOutUrl: null })
-
-    // TODO: navigation.navigate("Library", { spin: true })
-  }
-
-  logOurUrlOnError = () => {
-    // TODO: something
+    confirmRemoveAccountEPubs(this.props, () => {
+      navigation.navigate("Library", {
+        logOutUrl: `https://${idps[idpId].domain}/logout`,
+        logOutAccountId: accountId,
+      })
+    })
   }
 
   removeAllEPubs = () => {
@@ -98,7 +70,6 @@ class Drawer extends React.Component {
 
   render() {
     const { accounts, idps, books, navigation } = this.props
-    const { logOutUrl } = this.state
 
     const accountIdpIds = []
     const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
@@ -110,17 +81,6 @@ class Drawer extends React.Component {
     return (
       <Container>
         <Content>
-          {logOutUrl && 
-            <WebView
-              style={styles.hiddenWebView}
-              source={{
-                uri: logOutUrl,
-                ...REQUEST_OPTIONS,
-              }}
-              onLoad={this.logOurUrlOnLoad}
-              onError={this.logOurUrlOnError}
-            />
-          }
           <View style={styles.imageContainer}>
             <Image
               source={{
@@ -204,7 +164,6 @@ class Drawer extends React.Component {
               </Body>
             </ListItem>
           </List>
-          {logOutUrl && <FullScreenSpin />}
         </Content>
       </Container>
     )
@@ -221,7 +180,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
-  removeAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Drawer)
