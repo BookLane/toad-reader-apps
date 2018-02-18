@@ -77,3 +77,25 @@ export const confirmRemoveAllEPubs = ({ books, setDownloadStatus, clearTocAndSpi
     }
   )
 }
+
+export const confirmRemoveAccountEPubs = ({ books, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }, callback) => {
+  ActionSheet.show(
+    {
+      options: [
+        { text: i18n("Log out"), icon: "log-out", iconColor: REMOVE_ICON_COLOR },
+        { text: i18n("Cancel"), icon: "close" }
+      ],
+      destructiveButtonIndex: 0,
+      cancelButtonIndex: 1,
+      title: i18n("Are you sure you want to log out and remove all books from this device?"),
+    },
+    async buttonIndex => {
+      if(buttonIndex == 0) {
+        await Promise.all(Object.keys(books).map(bookId => (
+          removeEpub({ bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
+        )))
+        callback()
+      }
+    }
+  )
+}

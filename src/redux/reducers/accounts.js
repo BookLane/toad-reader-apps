@@ -1,10 +1,4 @@
-const initialState = {
-  "1:-1": {
-    "firstname": "Demo",
-    "lastname": "Account",
-    "email": "demo@email.com"
-  },
-}
+const initialState = {}
 
 export default function(state = initialState, action) {
   const newState = {...state}

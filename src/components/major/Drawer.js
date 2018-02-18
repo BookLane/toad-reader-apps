@@ -5,9 +5,9 @@ import { Image, StyleSheet } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import { confirmRemoveAllEPubs } from "../../utils/removeEpub.js"
+import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeAccount } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -42,6 +42,25 @@ class Drawer extends React.Component {
     const { navigation } = this.props
 
     navigation.navigate("Accounts")
+  }
+
+  confirmLogOut = () => {
+    const { accounts, idps, removeAccount } = this.props
+
+    const accountId = Object.keys(accounts)[0] || ""
+    const idpId = accountId.split(':')[0]
+
+    if(!idpId || !idps[idpId]) return
+
+    const callback = async () => {
+// TODO: fetch /logout should work here, but it doesn't
+      const logOutUrl = `https://${idps[idpId].domain}/logout`
+// TODO: needs a spinner
+      // then removeAccount({ accountId }), which will trigger Login component
+      removeAccount({ accountId })
+    }
+
+    confirmRemoveAccountEPubs(this.props, callback)
   }
 
   removeAllEPubs = () => {
@@ -110,7 +129,7 @@ class Drawer extends React.Component {
               </Body>
             </ListItem>
             <Separator bordered />
-            <ListItem icon
+            {/* <ListItem icon
               button
               onPress={this.goToAccounts}
             >
@@ -120,7 +139,7 @@ class Drawer extends React.Component {
               <Body>
                 <Text>{i18n("Accounts")}</Text> 
               </Body>
-            </ListItem>
+            </ListItem> */}
             <ListItem icon
               button
               onPress={this.removeAllEPubs}
@@ -130,6 +149,17 @@ class Drawer extends React.Component {
               </Left>
               <Body>
                 <Text>{i18n("Remove all books")}</Text>
+              </Body>
+            </ListItem>
+            <ListItem icon
+              button
+              onPress={this.confirmLogOut}
+            >
+              <Left>
+                <Icon name="log-out" />
+              </Left>
+              <Body>
+                <Text>{i18n("Log out")}</Text> 
               </Body>
             </ListItem>
           </List>
@@ -149,6 +179,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
+  removeAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Drawer)

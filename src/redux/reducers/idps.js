@@ -1,4 +1,8 @@
-const initialState = {
+const {
+  IDPS,
+} = Expo.Constants.manifest.extra
+
+const initialState = IDPS || {
   "1": {
     idpName: "ToadReader",
     domain: "demo.toadreader.com",

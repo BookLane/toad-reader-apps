@@ -3,7 +3,7 @@ const initialState = {}
 export default function(state = initialState, action) {
   const newState = {...state}
 
-  const removeAccount = (exceptBookIds) => {
+  const removeAccount = (exceptBookIds = []) => {
     for(bookId in newState) {
       if(exceptBookIds.includes(bookId)) continue
       const accountIds = newState[bookId].accountIds.filter(accountId => accountId != action.accountId)

@@ -1,3 +1,15 @@
+export const addAccount = ({ idpId, userId, accountInfo }) => ({
+  type: "ADD_ACCOUNT",
+  idpId,
+  userId,
+  accountInfo,
+})
+
+export const removeAccount = ({ accountId }) => ({
+  type: "REMOVE_ACCOUNT",
+  accountId,
+})
+
 export const addBooks = ({ books, accountId }) => ({
   type: "ADD_BOOKS",
   books,

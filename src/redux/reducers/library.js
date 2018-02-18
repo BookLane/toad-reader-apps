@@ -17,6 +17,10 @@ export default function(state = initialState, action) {
     case "TOGGLE_VIEW":
       newState.view = viewOptions[(viewOptions.indexOf(newState.view) + 1) % viewOptions.length]
       return newState
+
+    case "REMOVE_ACCOUNT":
+      newState.bookList = []
+      return newState
       
   }
   

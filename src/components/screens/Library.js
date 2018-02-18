@@ -41,7 +41,15 @@ class Library extends React.Component {
   }
 
   async fetchAll() {
-    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage } = this.props
+    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage, navigation } = this.props
+
+    if(Object.keys(accounts).length === 0) {
+      // when I move to multiple accounts, this will instead need to go to the Accounts screen
+      navigation.navigate("Login", {
+        idpId: Object.keys(idps)[0],
+      })
+      return
+    }
 
     // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
     this.setState({ lastFetchAll: Date.now() })
@@ -51,6 +59,9 @@ class Library extends React.Component {
 
         // update books
         const [ idpId, userId ] = accountId.split(':')
+// I AM HERE
+//   - I would think the next line should be /logout/callback, but that doesn't work
+//   - also, the hard logout from BibleMesh is not working either (I cannot understand why)
         await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl)
@@ -97,8 +108,18 @@ class Library extends React.Component {
     AppState.removeEventListener('change', this._handleAppStateChange)
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { accounts } = this.props
+
+    if(nextProps.accounts !== accounts) {
+      this.fetchAll()
+    }
+  }
+
   _handleAppStateChange = () => {
-    if(Date.now() - this.state.lastFetchAll > 60*60*1000) {  // an hour or more later
+    const { accounts } = this.props
+    
+    if(Object.keys(accounts).length === 0 || Date.now() - this.state.lastFetchAll > 60*60*1000) {  // an hour or more later
       this.fetchAll()
     }
   }

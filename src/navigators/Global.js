@@ -7,6 +7,7 @@ import Chooser from "../components/screens/Chooser"
 import Book from "../components/screens/Book"
 import Highlights from "../components/screens/Highlights"
 import Accounts from "../components/screens/Accounts"
+import Login from "../components/screens/Login"
 
 const noHeader = {
   navigationOptions: ({navigation}) => ({
@@ -21,6 +22,7 @@ const GlobalNavigator = StackNavigator(
     Book: { screen: Book, ...noHeader },
     Highlights: { screen: Highlights, ...noHeader },
     Accounts: { screen: Accounts, ...noHeader },
+    Login: { screen: Login, ...noHeader },
   },
 )
 

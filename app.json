@@ -52,7 +52,14 @@
       "INITIAL_SPINE_CAPTURE_TIMEOUT": 2000,
       "MAX_SPINE_CAPTURE_TIMEOUT": 30000,
       "REMOVE_ICON_COLOR": "#fa213b",
-      "SPINNER_COLOR": "#4075ae"
+      "SPINNER_COLOR": "#4075ae",
+      "IDPS": {
+        "2": {
+          "idpName": "BibleMesh",
+          "domain": "read.biblemesh.com",
+          "idpExpire": null
+        }
+      }
     }
   }
 }
