@@ -8,6 +8,10 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 
 import { addAccount } from "../../redux/actions.js"
 
+const {
+  REQUEST_OPTIONS,
+} = Expo.Constants.manifest.extra
+
 const styles = StyleSheet.create({
   fullscreen: {
     position: 'absolute',
@@ -52,7 +56,7 @@ class Login extends React.Component {
       this.setState({ loading: true })
       
       // fetch usersetup.json and add account
-      let response = await fetch(userDataUrl)
+      let response = await fetch(userDataUrl, REQUEST_OPTIONS)
       if(response.status != 200) {
         throw new Error('Unable to log in')
       }
@@ -93,9 +97,7 @@ class Login extends React.Component {
           style={styles.fullscreen}
           source={{
             uri: userDataUrl,
-            headers: {
-              "app-request": "true",
-            },
+            ...REQUEST_OPTIONS,
           }}
           mixedContentMode="always"
           onError={this.onError}

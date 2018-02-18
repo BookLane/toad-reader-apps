@@ -59,6 +59,11 @@
           "domain": "read.biblemesh.com",
           "idpExpire": null
         }
+      },
+      "REQUEST_OPTIONS": {
+        "headers": {
+          "App-Request": "true"
+        }
       }
     }
   }

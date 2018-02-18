@@ -11,6 +11,10 @@ import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/re
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeAccount } from "../../redux/actions.js"
 
+const {
+  REQUEST_OPTIONS,
+} = Expo.Constants.manifest.extra
+
 const styles = StyleSheet.create({
   imageContainer: {
     paddingBottom: '50%',
@@ -80,6 +84,8 @@ class Drawer extends React.Component {
 
     removeAccount({ accountId })
     this.setState({ logOutUrl: null })
+
+    // TODO: navigation.navigate("Library", { spin: true })
   }
 
   logOurUrlOnError = () => {
@@ -109,6 +115,7 @@ class Drawer extends React.Component {
               style={styles.hiddenWebView}
               source={{
                 uri: logOutUrl,
+                ...REQUEST_OPTIONS,
               }}
               onLoad={this.logOurUrlOnLoad}
               onError={this.logOurUrlOnError}

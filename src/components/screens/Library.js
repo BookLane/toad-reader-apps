@@ -1,5 +1,5 @@
 import React from "react"
-import { AppState, StyleSheet } from "react-native"
+import { StyleSheet } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
@@ -18,6 +18,7 @@ import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownlo
 
 const {
   APP_BACKGROUND_COLOR,
+  REQUEST_OPTIONS,
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
@@ -41,7 +42,7 @@ class Library extends React.Component {
   }
 
   async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, addBooks, reSort, setErrorMessage, navigation } = nextProps || this.props
+    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, setErrorMessage, navigation } = nextProps || this.props
 
     if(Object.keys(accounts).length === 0) {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
@@ -52,38 +53,41 @@ class Library extends React.Component {
     }
 
     // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
-    this.setState({ lastFetchAll: Date.now() })
     setFetchingBooks({ value: true })
     for(accountId in accounts) {
       try {
 
+        // no need to get the library listing if we already have it
+        if(Object.values(books).some(book => book.accountIds.includes(accountId))) continue
+
         // update books
-        const [ idpId, userId ] = accountId.split(':')
-// I AM HERE
-//   - I would think the next line should be /logout/callback, but that doesn't work
-//   - also, the hard logout from BibleMesh is not working either (I cannot understand why)
-        // await fetch(`https://${idps[idpId].domain}/logout`)  // this forces a refresh on the library
-        console.log('fetch', await fetch(`https://${idps[idpId].domain}/logout`))  // this forces a refresh on the library
+        const [ idpId ] = accountId.split(':')
+
+        // To forces a refresh on the library, I need to call the following fetch and then open
+        // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
+        // login process includes javascript onload calls. When that process was over and it
+        // arrives back at the userDataUrl, then I would want to continue to get the library
+        // listing. In other words, I basically need to call the next line and run the whole
+        // login process again, but hidden.
+        // await fetch(`https://${idps[idpId].domain}/logout/callback?noredirect=1`)
+        // const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
+
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
-        let response = await fetch(libraryUrl)
-        if(response.status == 403) {
-          await fetch(`https://${idps[idpId].domain}`)  // gets the cookie situated on the demo acct
-          response = await fetch(libraryUrl)
-        }
+        let response = await fetch(libraryUrl, REQUEST_OPTIONS)
         if(response.status != 200) {
           throw new Error('Unable to fetch library')
           // TODO: force a login
         }
-        const books = await response.json()
-        // TODO: needs to call function to remove books that are no longer in the account
+        const newBooks = await response.json()
+
         addBooks({
-          books,
+          books: newBooks,
           accountId,
         })
         reSort()
         
         // get covers
-        books.forEach(async book => {
+        newBooks.forEach(async book => {
           if(book.coverHref) {
             await downloadAsync(
               `https://${idps[idpId].domain}/${book.coverHref}`,
@@ -102,12 +106,7 @@ class Library extends React.Component {
   }
   
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange)
     this.fetchAll()
-  }
-
-  componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -115,14 +114,6 @@ class Library extends React.Component {
 
     if(nextProps.accounts !== accounts) {
       this.fetchAll(nextProps)
-    }
-  }
-
-  _handleAppStateChange = () => {
-    const { accounts } = this.props
-    
-    if(Object.keys(accounts).length === 0 || Date.now() - this.state.lastFetchAll > 60*60*1000) {  // an hour or more later
-      this.fetchAll()
     }
   }
 
