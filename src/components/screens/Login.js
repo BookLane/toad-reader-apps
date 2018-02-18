@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, View } from "native-base"
 
-import Spin from "../basic/Spin"
+import FullScreenSpin from "../basic/FullScreenSpin"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -16,9 +16,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     backgroundColor: 'white',
-  },
-  spacer: {
-    flex: 1,
   },
 })
 
@@ -104,15 +101,7 @@ class Login extends React.Component {
           onError={this.onError}
           onNavigationStateChange={this.onNavigationStateChange}
         />
-        {loading &&
-          <View
-            style={styles.fullscreen}
-          >
-            <View style={styles.spacer} />
-            <Spin />
-            <View style={styles.spacer} />
-          </View>
-        }
+        {loading && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
       </Container>
     )
   }

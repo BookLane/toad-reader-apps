@@ -3,7 +3,7 @@ import { FileSystem } from "expo"
 import { Image, StyleSheet } from "react-native"
 import { View } from "native-base"
 
-import Spin from "./Spin"
+import FullScreenSpin from "./FullScreenSpin"
 
 const styles = StyleSheet.create({
   container: {
@@ -17,18 +17,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(0, 0, 0, .1)'
-  },
-  spinnerContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(255, 255, 255, .8)',
-    display: 'flex',
-  },
-  spacer: {
-    flex: 1,
   },
 })
 
@@ -47,13 +35,7 @@ class BookInfoCover extends React.Component {
           style={styles.image}
           resizeMode='cover'
         />
-        {downloadStatus == 1 &&
-          <View style={styles.spinnerContainer}>
-            <View style={styles.spacer} />
-            <Spin />
-            <View style={styles.spacer} />
-          </View>
-        }
+        {downloadStatus == 1 && <FullScreenSpin />}
       </View>
     )
   }
