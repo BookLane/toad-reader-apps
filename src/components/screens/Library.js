@@ -14,6 +14,7 @@ import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
 import PageCaptureManager from "../major/PageCaptureManager"
+import AppHeader from "../basic/AppHeader.js";
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus, removeAccount } from "../../redux/actions.js"
 
@@ -162,7 +163,8 @@ class Library extends React.Component {
 
     if(logOutUrl) {
       return (
-        <View style={styles.flex1}>
+        <Container>
+          <AppHeader hide={true} />
           <WebView
             style={styles.flex1}
             source={{
@@ -173,7 +175,7 @@ class Library extends React.Component {
             onError={this.logOurUrlOnError}
           />
           <FullScreenSpin style={{ backgroundColor: 'white' }} />
-        </View>
+        </Container>
       )
     }
 
