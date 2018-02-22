@@ -37,8 +37,9 @@ class Login extends React.Component {
   onNavigationStateChange = async ({ url, loading }) => {
     const { navigation, idps, addAccount } = this.props
     const { idpId } = navigation.state.params
-    
-    if(loading) {
+
+    if(loading || !this.initialStateChangeAlreadyHappened) {
+      this.initialStateChangeAlreadyHappened = true
       this.setState({ loading: true })
       return
     }
@@ -54,7 +55,10 @@ class Login extends React.Component {
         throw new Error('Unable to log in')
         // TODO: something
       }
-      const userData = await response.json()
+      let userData
+      try {
+        userData = await response.json()
+      } catch(e) {}
       if(!userData || !userData.userInfo) {
         throw new Error('Unexpected data returned')
         // TODO: something
