@@ -6,6 +6,7 @@ import { StyleSheet } from "react-native"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
+import Highlighter from "./Highlighter";
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
@@ -24,6 +25,7 @@ class BookPage extends React.Component {
   state = {
     spineIdRef: this.props.spineIdRef,
     pageIndexInSpine: this.props.pageIndexInSpine,
+    selectionInfo: null,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -47,8 +49,9 @@ class BookPage extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { showSettings } = this.props
+    const { selectionInfo } = this.state
 
-    return nextProps.showSettings !== showSettings
+    return nextProps.showSettings !== showSettings || nextState.selectionInfo !== selectionInfo
   }
 
   setDisplaySettings = nextProps => {
@@ -108,6 +111,11 @@ class BookPage extends React.Component {
       case 'showPageListView':
         requestShowPages()
         return true
+
+      case 'textSelected':
+      case 'textUnselected':
+        this.setState({ selectionInfo: data.payload })
+        return true
     }
   }
 
@@ -131,6 +139,7 @@ class BookPage extends React.Component {
 
   render() {
     const { bookId, showSettings, requestHideSettings, latest_location } = this.props
+    const { selectionInfo } = this.state
 
     return (
       <View style={styles.container}>
@@ -146,6 +155,11 @@ class BookPage extends React.Component {
         {showSettings && 
           <DisplaySettings
             requestHide={requestHideSettings}
+          />
+        }
+        {selectionInfo &&
+          <Highlighter
+            selectionInfo={selectionInfo}
           />
         }
       </View>
