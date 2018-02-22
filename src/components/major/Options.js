@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, CardItem, Icon, Text, View } from "native-base"
-import { StyleSheet, TouchableWithoutFeedback, BackAndroid } from "react-native"
+import { StyleSheet, TouchableWithoutFeedback, BackAndroid, Platform } from "react-native"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -27,12 +27,19 @@ const styles = StyleSheet.create({
     top: -2,
     right: 1,
   },
+  header: {
+    fontWeight: 'bold',
+  },
+  icon: {
+    paddingLeft: 10,
+    width: 30,
+  },
 })
 
 class Options extends React.PureComponent {
 
   render() {
-    const { options, requestHide } = this.props
+    const { options, requestHide, headerText } = this.props
 
     return (
       <View style={styles.container}>
@@ -44,6 +51,15 @@ class Options extends React.PureComponent {
           </View>
         </TouchableWithoutFeedback>
         <Card style={styles.options}>
+          {headerText && 
+            <CardItem header>
+              <Text
+                style={styles.header}
+              >
+                {headerText}
+              </Text>
+            </CardItem>
+          }
           {options.map((option, index) => (
             <CardItem button
               key={index}
@@ -51,15 +67,22 @@ class Options extends React.PureComponent {
                 requestHide()
                 option.onPress()
               }}
-              style={styles.option}
             >
-              {option.selected && <Icon name="checkmark" />}
               <Text>{option.text}</Text>
+              {option.selected &&
+                <Icon
+                  name="checkmark"
+                  style={styles.icon}
+                />
+              }
             </CardItem>
           ))}
+          {Platform.OS === 'ios' && <CardItem />}
         </Card>
       </View>
     )
+
+    // Last blank CardItem needed to offset a bug in iOS
   }
 }
 
