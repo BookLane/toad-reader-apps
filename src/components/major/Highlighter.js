@@ -1,10 +1,14 @@
 import React from "react"
-import { Text, View, Icon } from "native-base"
 import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { Text, View, Icon } from "native-base"
 import i18n from "../../utils/i18n.js"
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
+
+import { setHighlight, deleteHighlight } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   container: {
@@ -52,17 +56,56 @@ const styles = StyleSheet.create({
 
 class Highlighter extends React.PureComponent {
 
-  toggleHighlight = () => {
-    
+  getHighlight = () => {
+    const { selectionInfo, userDataByBookId, bookId } = this.props
+    // example of selectionInfo: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+
+    let highlightToReturn
+    const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
+
+    thisBooksHighlights.some(highlight => {
+      if(highlight.spineIdRef === selectionInfo.spineIdRef && highlight.cfi === selectionInfo.cfi) {
+        highlightToReturn = highlight
+        return true
+      }
+    })
+
+    return highlightToReturn
   }
+
+  toggleHighlight = color => {
+    const { selectionInfo, bookId, setHighlight, deleteHighlight } = this.props
+    const { spineIdRef, cfi } = selectionInfo || {}
+    
+    const highlight = this.getHighlight() || {}
+    const note = highlight.note || ""
+
+    if(highlight && highlight.color === color) {
+      deleteHighlight({
+        bookId,
+        spineIdRef,
+        cfi,
+      })
+    } else {
+      setHighlight({
+        bookId,
+        spineIdRef,
+        cfi,
+        color,
+        note,      
+      })
+    }
+  }
+
+  toggleHighlight1 = () => this.toggleHighlight(1)
 
   render() {
     const { selectionInfo } = this.props
     // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
-    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
+    const highlight = this.getHighlight()
 
-    const highlighted = true
+    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
     return (
       <View
@@ -74,7 +117,7 @@ class Highlighter extends React.PureComponent {
         <View style={styles.colorOption}>
           <View style={styles.clickablePart}>
             <TouchableComponent
-              onPress={() => {}}
+              onPress={this.toggleHighlight1}
             >
               <View
                 style={[
@@ -82,8 +125,8 @@ class Highlighter extends React.PureComponent {
                   styles.highlight1,
                 ]}
               >
-                <Text>{highlighted ? i18n("Highlighted") : i18n("Highlight the selection")}</Text>
-                {highlighted && 
+                <Text>{highlight ? i18n("Highlighted") : i18n("Highlight the selection")}</Text>
+                {highlight && 
                   <Icon
                     name="close"
                     style={styles.close}
@@ -98,4 +141,13 @@ class Highlighter extends React.PureComponent {
   }
 }
 
-export default Highlighter
+const mapStateToProps = (state) => ({
+  userDataByBookId: state.userDataByBookId,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setHighlight,
+  deleteHighlight,
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)

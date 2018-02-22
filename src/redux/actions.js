@@ -95,3 +95,19 @@ export const setLatestLocation = ({ bookId, latestLocation }) => ({
   bookId,
   latestLocation,
 })
+
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note }) => ({
+  type: "SET_HIGHLIGHT",
+  bookId,
+  spineIdRef,
+  cfi,
+  color,
+  note,
+})
+
+export const deleteHighlight = ({ bookId, spineIdRef, cfi }) => ({
+  type: "DELETE_HIGHLIGHT",
+  bookId,
+  spineIdRef,
+  cfi,
+})

@@ -159,6 +159,7 @@ class BookPage extends React.Component {
         }
         {selectionInfo &&
           <Highlighter
+            bookId={bookId}
             selectionInfo={selectionInfo}
           />
         }
