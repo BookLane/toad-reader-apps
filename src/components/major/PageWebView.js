@@ -1,4 +1,6 @@
 import React from "react"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { StyleSheet, View, WebView, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 
@@ -14,6 +16,9 @@ const styles = StyleSheet.create({
     right: 0,
   },
 })
+
+const getHighlightsObj = props => (props.userDataByBookId[props.bookId] || {}).highlights || []
+const getLatestLocation = props => (props.userDataByBookId[props.bookId] || {}).latest_location
 
 class PageWebView extends React.Component {
 
@@ -33,9 +38,32 @@ class PageWebView extends React.Component {
     this.webView.unmounted = true
   }
 
+  componentWillReceiveProps(nextProps) {
+    const highlights = getHighlightsObj(nextProps)
+
+    if(highlights !== getHighlightsObj(this.props)) {
+      const newHighlightsInThisSpine = this.getHighlightsForThisSpine({
+        highlights,
+        location: getLatestLocation(nextProps),
+      })
+      postMessage(this.webView, 'renderHighlights', {
+        highlights: newHighlightsInThisSpine,
+      })
+    }
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     const { width } = this.state
     return nextState.width !== width
+  }
+
+  getHighlightsForThisSpine = ({ highlights, location }) => {
+    try {
+      const spineIdRef = JSON.parse(location).idref
+      return highlights.filter(highlight => highlight.spineIdRef === spineIdRef)
+    } catch(e) {
+      return []
+    }
   }
 
   calcSize = () => {
@@ -97,7 +125,13 @@ class PageWebView extends React.Component {
   onError = e => console.log('webview error', e)
 
   render() {
+    // I get these from state and not props because these are all initial values
     const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
+
+    const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
+      location: initialLocation,
+      highlights: getHighlightsObj(this.state),
+    })
 
     return (
       <View
@@ -116,7 +150,10 @@ class PageWebView extends React.Component {
             minHeight: height,
             ...style,
           }}
-          injectedJavaScript={patchPostMessageJsCode}
+          injectedJavaScript={`
+            window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
+            ${patchPostMessageJsCode}
+          `}
           ref={this.setWebViewEl}
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
@@ -133,4 +170,11 @@ class PageWebView extends React.Component {
   }
 }
 
-export default PageWebView
+const mapStateToProps = (state) => ({
+  userDataByBookId: state.userDataByBookId,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(PageWebView)
