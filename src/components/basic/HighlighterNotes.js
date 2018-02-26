@@ -15,18 +15,13 @@ const styles = StyleSheet.create({
 
 class HighlighterNotes extends React.PureComponent {
 
-  state = {
-    note: this.props.highlight.note,
-  }
-
-  updateNote = color => {
+  updateNote = note => {
     const { bookId, highlight, setHighlight } = this.props
-    const { note } = this.state
     
     setHighlight({
       ...highlight,
       bookId,
-      note,      
+      note,
     })
   }
 
@@ -35,13 +30,13 @@ class HighlighterNotes extends React.PureComponent {
 
   render() {
     const { highlight, setNoteBeingTouched } = this.props
-    const { note } = this.state
 
     return (
       <TextInput
         style={styles.textinput}
         placeholder={i18n("Notes")}
-        value={note}
+        value={highlight.note}
+        onChangeText={this.updateNote}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
       />
