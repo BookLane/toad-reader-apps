@@ -6,6 +6,7 @@ import { View } from "native-base"
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
+import BackFunction from '../basic/BackFunction'
 
 const styles = StyleSheet.create({
   container: {
@@ -45,13 +46,15 @@ class Highlighter extends React.PureComponent {
   }
 
   render() {
-    const { selectionInfo, bookId, setEditingNote } = this.props
+    const { selectionInfo, bookId, setEditingNote, unselectText } = this.props
     // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
     const highlight = this.getHighlight()
 
-    return (
+    return [
+      <BackFunction key="back" func={unselectText} />,
       <View
+        key="container"
         style={[
           styles.container,
           (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
@@ -61,6 +64,7 @@ class Highlighter extends React.PureComponent {
           selectionInfo={selectionInfo}
           bookId={bookId}
           highlight={highlight}
+          unselectText={unselectText}
         />
         {highlight && 
           <HighlighterNotes
@@ -69,9 +73,8 @@ class Highlighter extends React.PureComponent {
             setEditingNote={setEditingNote}
           />
         }
-
-      </View>
-    )
+      </View>,
+    ]
   }
 }
 
