@@ -31,9 +31,12 @@ class HighlighterShareIcon extends React.PureComponent {
       throw new Error('Unable to share')
     }
 
-    let url = `https://${domain}/book/${bookId}?goto=${encodeURIComponent(latest_location)}&highlight=${encodeURIComponent(selectionInfo.text)}`
+    let url = `https://${domain}/book/${bookId}`
+      + `?goto=${encodeURIComponent(latest_location)}`
+      + `&highlight=${encodeURIComponent(selectionInfo.text)}`
     if(highlight.note) {
-      url += `&note=${encodeURIComponent(highlight.note)}&sharer=${encodeURIComponent(fullname)}`
+      url += `&note=${encodeURIComponent(highlight.note)}`
+        + `&sharer=${encodeURIComponent(fullname)}`
     }
 
     const title = i18n("Quote from {{book}}", {
