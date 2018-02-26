@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Text, View, Icon } from "native-base"
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexDirection: 'row',
   },
-  close: {
+  trash: {
     marginLeft: 10,
     marginTop: -4,
     marginRight: -4,
@@ -43,7 +43,10 @@ const styles = StyleSheet.create({
   highlightText: {
     flexShrink: 1,
   },
-  share: {
+  smallEmptySpace: {
+    width: 10,
+  },
+  close: {
     padding: 4,
     fontSize: 22,
     lineHeight: 26,
@@ -90,6 +93,7 @@ class HighlighterLabel extends React.PureComponent {
   }
 
   toggleHighlight1 = () => this.toggleHighlight(1)
+  unselectText = () => this.props.setSelectionText()
 
   render() {
     const { bookId, selectionInfo, highlight } = this.props
@@ -97,31 +101,44 @@ class HighlighterLabel extends React.PureComponent {
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
+    const highlightButton = (
+      <View
+        style={[
+          styles.iconAndText,
+          styles.highlight1,
+        ]}
+      >
+        <Text
+          style={styles.highlightText}
+          numberOfLines={1}
+        >
+          {highlight ? selectionInfo.text : i18n("Highlight the selection")}
+        </Text>
+        {highlight && 
+          <TouchableComponent
+            onPress={this.toggleHighlight1}
+          >
+            <Icon
+              name="trash"
+              style={styles.trash}
+            />
+          </TouchableComponent>
+        }
+      </View>
+    )
+
     return (
       <View style={styles.container}>
-        <TouchableComponent
-          onPress={this.toggleHighlight1}
-        >
-          <View
-            style={[
-              styles.iconAndText,
-              styles.highlight1,
-            ]}
-          >
-            <Text
-              style={styles.highlightText}
-              numberOfLines={1}
+        {highlight
+          ?
+            highlightButton
+          :
+            <TouchableComponent
+              onPress={this.toggleHighlight1}
             >
-              {highlight ? selectionInfo.text : i18n("Highlight the selection")}
-            </Text>
-            {highlight && 
-              <Icon
-                name="close"
-                style={styles.close}
-              />
-            }
-          </View>
-        </TouchableComponent>
+              {highlightButton}
+            </TouchableComponent>
+        }
         <View style={styles.emptySpace} />
         {highlight &&
           <HighlighterShareIcon
@@ -130,6 +147,15 @@ class HighlighterLabel extends React.PureComponent {
             highlight={highlight}
           />
         }
+        <View style={styles.smallEmptySpace} />
+        <TouchableOpacity
+          onPress={this.unselectText}
+        >
+          <Icon
+            name="close"
+            style={styles.close}
+          />
+        </TouchableOpacity>
       </View>
     )
   }
