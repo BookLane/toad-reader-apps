@@ -26,6 +26,7 @@ class BookPage extends React.Component {
     spineIdRef: this.props.spineIdRef,
     pageIndexInSpine: this.props.pageIndexInSpine,
     selectionInfo: null,
+    editingNote: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -68,6 +69,8 @@ class BookPage extends React.Component {
       pageIndexInSpine,
     })
   }
+
+  isEditingNote = () => this.state.editingNote
 
   onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings } = this.props
@@ -112,14 +115,30 @@ class BookPage extends React.Component {
         requestShowPages()
         return true
 
-      case 'textSelected':
       case 'textUnselected':
+        // I tried to find a way to catch the initial tap on the text
+        // area so as to prevent the textUnselected before focus issue
+        // without using a timeout, but was unable to. This is less
+        // graceful, but it works.
+        if(!this.isEditingNote()) {
+          this.doUnselectText = setTimeout(() => {
+            if(!this.isEditingNote()) {
+              this.setState({ selectionInfo: data.payload })
+            }
+          }, 200)
+        }
+        return true
+
+      case 'textSelected':
+        clearTimeout(this.doUnselectText)
         this.setState({ selectionInfo: data.payload })
         return true
     }
   }
 
   setWebViewEl = webViewEl => this.webView = webViewEl
+
+  setEditingNote = editingNote => this.setState({ editingNote })
 
 //   setView = ref => this.view = ref
   
@@ -161,6 +180,7 @@ class BookPage extends React.Component {
           <Highlighter
             bookId={bookId}
             selectionInfo={selectionInfo}
+            setEditingNote={this.setEditingNote}
           />
         }
       </View>
