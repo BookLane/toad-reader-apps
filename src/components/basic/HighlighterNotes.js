@@ -8,8 +8,10 @@ import { setHighlight } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   textinput: {
-    height: 100,
-    borderWidth: 0,
+    height: 180,
+    textAlignVertical: 'top',
+    padding: 15,
+    paddingTop: 0,
   },
 })
 
@@ -35,6 +37,8 @@ class HighlighterNotes extends React.PureComponent {
       <TextInput
         style={styles.textinput}
         placeholder={i18n("Notes")}
+        multiline={true}
+        underlineColorAndroid="transparent"
         value={highlight.note}
         onChangeText={this.updateNote}
         onFocus={this.onFocus}
