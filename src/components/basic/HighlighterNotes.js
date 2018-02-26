@@ -8,7 +8,7 @@ import { setHighlight } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   textinput: {
-    height: 180,
+    height: 150,
     textAlignVertical: 'top',
     padding: 15,
     paddingTop: 0,
