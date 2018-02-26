@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   smallEmptySpace: {
-    width: 10,
+    width: 12,
   },
   close: {
     padding: 4,
