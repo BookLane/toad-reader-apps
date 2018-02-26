@@ -136,11 +136,13 @@ class BookPage extends React.Component {
     }
   }
 
-  unselectText = () => {
+  setSelectionText = payload => {
     // The next line is not needed, but avoids the delay in hiding the
     // highlighter panel.
-    this.setState({ selectionInfo: undefined })
-    postMessage(this.webView, 'setSelectionText')
+    if(!payload) {
+      this.setState({ selectionInfo: undefined })
+    }
+    postMessage(this.webView, 'setSelectionText', payload)
   }
 
   setWebViewEl = webViewEl => this.webView = webViewEl
@@ -188,7 +190,7 @@ class BookPage extends React.Component {
             bookId={bookId}
             selectionInfo={selectionInfo}
             setEditingNote={this.setEditingNote}
-            unselectText={this.unselectText}
+            setSelectionText={this.setSelectionText}
           />
         }
       </View>

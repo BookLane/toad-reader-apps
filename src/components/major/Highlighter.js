@@ -46,13 +46,13 @@ class Highlighter extends React.PureComponent {
   }
 
   render() {
-    const { selectionInfo, bookId, setEditingNote, unselectText } = this.props
+    const { selectionInfo, bookId, setEditingNote, setSelectionText } = this.props
     // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
     const highlight = this.getHighlight()
 
     return [
-      <BackFunction key="back" func={unselectText} />,
+      <BackFunction key="back" func={setSelectionText} />,
       <View
         key="container"
         style={[
@@ -64,6 +64,7 @@ class Highlighter extends React.PureComponent {
           selectionInfo={selectionInfo}
           bookId={bookId}
           highlight={highlight}
+          setSelectionText={setSelectionText}
         />
         {highlight && 
           <HighlighterNotes
