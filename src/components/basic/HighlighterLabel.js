@@ -50,15 +50,21 @@ const styles = StyleSheet.create({
   },
 })
 
+const notesForUndo = {}
+
 class HighlighterLabel extends React.PureComponent {
 
   toggleHighlight = color => {
     const { selectionInfo, bookId, highlight={}, setHighlight, deleteHighlight } = this.props
     const { spineIdRef, cfi } = selectionInfo || {}
     
-    const note = highlight.note || ""
+    const note = highlight.note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
 
     if(highlight && highlight.color === color) {
+      if(note) {
+        // save for if they highlight this selection again in the near future (effectively an "undo")
+        notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
+      }
       deleteHighlight({
         bookId,
         spineIdRef,
