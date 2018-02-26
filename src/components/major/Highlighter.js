@@ -64,7 +64,6 @@ class Highlighter extends React.PureComponent {
           selectionInfo={selectionInfo}
           bookId={bookId}
           highlight={highlight}
-          unselectText={unselectText}
         />
         {highlight && 
           <HighlighterNotes

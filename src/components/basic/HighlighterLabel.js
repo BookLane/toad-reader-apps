@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 class HighlighterLabel extends React.PureComponent {
 
   toggleHighlight = color => {
-    const { selectionInfo, bookId, highlight={}, unselectText, setHighlight, deleteHighlight } = this.props
+    const { selectionInfo, bookId, highlight={}, setHighlight, deleteHighlight } = this.props
     const { spineIdRef, cfi } = selectionInfo || {}
     
     const note = highlight.note || ""
@@ -64,7 +64,6 @@ class HighlighterLabel extends React.PureComponent {
         spineIdRef,
         cfi,
       })
-      unselectText()
       
     } else {
       setHighlight({
