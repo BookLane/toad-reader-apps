@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Text, View, Icon } from "native-base"
@@ -10,12 +10,16 @@ import { setHighlight, deleteHighlight } from "../../redux/actions.js";
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-  },
-  clickablePart: {
     flexDirection: 'row',
+    maxWidth: '100%',
+  },
+  emptySpace: {
+    flexGrow: 1,
+    minWidth: 30,
   },
   iconAndText: {
     padding: 8,
+    flexShrink: 1,
     flexDirection: 'row',
   },
   close: {
@@ -33,6 +37,14 @@ const styles = StyleSheet.create({
   },
   highlight1: {
     backgroundColor: 'rgba(28,96,171,.2)',
+  },
+  highlightText: {
+    flexShrink: 1,
+  },
+  share: {
+    padding: 4,
+    fontSize: 22,
+    lineHeight: 26,
   },
 })
 
@@ -63,6 +75,8 @@ class HighlighterLabel extends React.PureComponent {
 
   toggleHighlight1 = () => this.toggleHighlight(1)
 
+  goShare = () => console.log('hi')
+
   render() {
     const { selectionInfo, highlight } = this.props
     // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
@@ -71,26 +85,38 @@ class HighlighterLabel extends React.PureComponent {
 
     return (
       <View style={styles.container}>
-        <View style={styles.clickablePart}>
-          <TouchableComponent
-            onPress={this.toggleHighlight1}
+        <TouchableComponent
+          onPress={this.toggleHighlight1}
+        >
+          <View
+            style={[
+              styles.iconAndText,
+              styles.highlight1,
+            ]}
           >
-            <View
-              style={[
-                styles.iconAndText,
-                styles.highlight1,
-              ]}
+            <Text
+              style={styles.highlightText}
+              numberOfLines={1}
             >
-              <Text>{highlight ? i18n("Highlighted") : i18n("Highlight the selection")}</Text>
-              {highlight && 
-                <Icon
-                  name="close"
-                  style={styles.close}
-                />
-              }
-            </View>
-          </TouchableComponent>
-        </View>
+              {highlight ? selectionInfo.text : i18n("Highlight the selection")}
+            </Text>
+            {highlight && 
+              <Icon
+                name="close"
+                style={styles.close}
+              />
+            }
+          </View>
+        </TouchableComponent>
+        <View style={styles.emptySpace} />
+        <TouchableOpacity
+          onPress={this.goShare}
+        >
+          <Icon
+            name="share"
+            style={styles.share}
+          />
+        </TouchableOpacity>
       </View>
     )
   }
