@@ -1,9 +1,11 @@
 import React from "react"
-import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Text, View, Icon } from "native-base"
 import i18n from "../../utils/i18n.js"
+
+import HighlighterShareIcon from "./HighlighterShareIcon.js";
 
 import { setHighlight, deleteHighlight } from "../../redux/actions.js";
 
@@ -75,11 +77,9 @@ class HighlighterLabel extends React.PureComponent {
 
   toggleHighlight1 = () => this.toggleHighlight(1)
 
-  goShare = () => console.log('hi')
-
   render() {
-    const { selectionInfo, highlight } = this.props
-    // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+    const { bookId, selectionInfo, highlight } = this.props
+    // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
@@ -109,14 +109,13 @@ class HighlighterLabel extends React.PureComponent {
           </View>
         </TouchableComponent>
         <View style={styles.emptySpace} />
-        <TouchableOpacity
-          onPress={this.goShare}
-        >
-          <Icon
-            name="share"
-            style={styles.share}
+        {highlight &&
+          <HighlighterShareIcon
+            bookId={bookId}
+            selectionInfo={selectionInfo}
+            highlight={highlight}
           />
-        </TouchableOpacity>
+        }
       </View>
     )
   }

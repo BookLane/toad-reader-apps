@@ -152,3 +152,5 @@ export const isPhoneSize = () => {
   const { width, height } = Dimensions.get('window')
   return Math.min(width, height) < 500
 }
+
+export const getFullName = user => user ? `${user.firstname || ''} ${user.lastname || ''}`.trim() : ``
