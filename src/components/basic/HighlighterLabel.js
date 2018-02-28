@@ -2,7 +2,7 @@ import React from "react"
 import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Text, View, Icon } from "native-base"
+import { Text, View, Icon, Button } from "native-base"
 import i18n from "../../utils/i18n.js"
 
 import HighlighterShareIcon from "./HighlighterShareIcon.js";
@@ -51,11 +51,35 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 26,
   },
+  deletedMessageCont: {
+    flexShrink: 1,
+    flexDirection: 'row',
+    padding: 16,
+    margin: -8,
+  },
+  undoButton: {
+    marginTop: -11,
+    marginBottom: -13,
+    marginLeft: 20,
+    marginRight: 20,
+  },
 })
 
 const notesForUndo = {}
 
 class HighlighterLabel extends React.PureComponent {
+
+  state = {
+    showDeletedMsgAndUndo: false,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { selectionInfo } = this.props
+
+    if(JSON.stringify(nextProps.selectionInfo) !== JSON.stringify(selectionInfo)) {
+      this.setState({ showDeletedMsgAndUndo: false })
+    }
+  }
 
   toggleHighlight = color => {
     const { selectionInfo, bookId, highlight={}, setSelectionText, setHighlight, deleteHighlight } = this.props
@@ -80,6 +104,8 @@ class HighlighterLabel extends React.PureComponent {
         spineIdRef,
         cfi,
       })
+
+      this.setState({ showDeletedMsgAndUndo: true })
       
     } else {
       setHighlight({
@@ -89,6 +115,8 @@ class HighlighterLabel extends React.PureComponent {
         color,
         note,      
       })
+
+      this.setState({ showDeletedMsgAndUndo: false })
     }
   }
 
@@ -97,11 +125,12 @@ class HighlighterLabel extends React.PureComponent {
 
   render() {
     const { bookId, selectionInfo, highlight } = this.props
+    const { showDeletedMsgAndUndo } = this.state
     // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
-    const highlightButton = (
+    let highlightButton = (
       <View
         style={[
           styles.iconAndText,
@@ -127,18 +156,34 @@ class HighlighterLabel extends React.PureComponent {
       </View>
     )
 
+    if(showDeletedMsgAndUndo) {
+      highlightButton = (
+        <View style={styles.deletedMessageCont}>
+          <Text>
+            {i18n("Highlight deleted.")}
+          </Text>
+          <Button primary light
+            style={[styles.undoButton, { zIndex: 9}]}
+            onPress={this.toggleHighlight1}
+          >
+            <Text>{i18n("Undo")}</Text>
+          </Button>
+        </View>
+      )
+
+    } else if(!highlight) {
+      highlightButton = (
+        <TouchableComponent
+          onPress={this.toggleHighlight1}
+        >
+          {highlightButton}
+        </TouchableComponent>
+      )
+    }
+
     return (
       <View style={styles.container}>
-        {highlight
-          ?
-            highlightButton
-          :
-            <TouchableComponent
-              onPress={this.toggleHighlight1}
-            >
-              {highlightButton}
-            </TouchableComponent>
-        }
+        {highlightButton}
         <View style={styles.emptySpace} />
         {highlight &&
           <HighlighterShareIcon
