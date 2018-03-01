@@ -16,7 +16,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { refreshUserData, patch } from "../../utils/syncUserData.js"
+import { refreshUserData } from "../../utils/syncUserData.js"
 import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
