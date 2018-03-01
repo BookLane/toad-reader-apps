@@ -60,7 +60,7 @@ class PageWebView extends React.Component {
   getHighlightsForThisSpine = ({ highlights, location }) => {
     try {
       const spineIdRef = JSON.parse(location).idref
-      return highlights.filter(highlight => highlight.spineIdRef === spineIdRef)
+      return highlights.filter(highlight => highlight.spineIdRef === spineIdRef && !highlight._delete)
     } catch(e) {
       return []
     }

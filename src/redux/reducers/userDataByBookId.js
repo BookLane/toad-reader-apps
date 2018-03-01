@@ -13,7 +13,7 @@ export default function(state = initialState, action) {
     case "SET_USER_DATA":
       // It is possible that a new edit was made since the refreshUserData was called, so I need to
       // retain anything newer than lastSuccessfulPatch
-      const highlightsToRetain = highlights.filter(highlight => highlight.updated_at > action.lastSuccessfulPatch)
+      const highlightsToRetain = highlights.filter(highlight => highlight.updated_at > action.lastSuccessfulPatch && !highlight._delete)
       const partialHighlightsFromTheRefresh = action.userData.highlights.filter(highlight => (
         !highlightsToRetain.some(localHighlight => (
           localHighlight.spineIdRef === highlight.spineIdRef
@@ -53,7 +53,7 @@ export default function(state = initialState, action) {
       let noChange
       highlights = highlights.filter(highlight => {
         if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
-          if(highlight.color === action.color && highlight.note === action.note) {
+          if(highlight.color === action.color && highlight.note === action.note && !highlight._delete) {
             noChange = true
           } else {
             return false
@@ -76,24 +76,34 @@ export default function(state = initialState, action) {
 
       newState[action.bookId] = {
         ...userDataForThisBook,
-        highlights
+        highlights,
       }
 
       return newState
 
     case "DELETE_HIGHLIGHT":
-      const lengthBeforeFilter = highlights.length
-      highlights = highlights.filter(highlight => (
-        !(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi)
-      ))
+      let highlightToDel
+      highlights = highlights.filter(highlight => {
+        if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
+          highlightToDel = highlight
+          return false
+        }
+        return true
+      })
 
-      if(highlights.length === lengthBeforeFilter) {
+      if(!highlightToDel) {
         return state
       }
 
+      highlights.push({
+        ...highlightToDel,
+        _delete: true,
+        updated_at: Date.now(),
+      })
+
       newState[action.bookId] = {
         ...userDataForThisBook,
-        highlights
+        highlights,
       }
 
       return newState

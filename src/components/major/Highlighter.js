@@ -36,7 +36,7 @@ class Highlighter extends React.PureComponent {
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
     thisBooksHighlights.some(highlight => {
-      if(highlight.spineIdRef === selectionInfo.spineIdRef && highlight.cfi === selectionInfo.cfi) {
+      if(highlight.spineIdRef === selectionInfo.spineIdRef && highlight.cfi === selectionInfo.cfi && !highlight._delete) {
         highlightToReturn = highlight
         return true
       }
