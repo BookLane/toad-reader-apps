@@ -49,7 +49,8 @@ class Library extends React.Component {
   async fetchAll(nextProps) {
     const { setFetchingBooks, accounts, idps, books, addBooks, reSort, setErrorMessage, navigation } = nextProps || this.props
 
-    if(Object.keys(accounts).length === 0) {
+    const account = Object.values(accounts)[0]
+    if(!account || account.needToLogInAgain) {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
       navigation.navigate("Login", {
         idpId: Object.keys(idps)[0],
@@ -63,7 +64,7 @@ class Library extends React.Component {
       try {
 
         // no need to get the library listing if we already have it
-        if(Object.values(books).some(book => book.accountIds.includes(accountId))) continue
+        if(Object.values(books).some(book => book.accounts[accountId])) continue
 
         // update books
         const [ idpId ] = accountId.split(':')
@@ -157,7 +158,7 @@ class Library extends React.Component {
       : (scope == 'device'
         ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
         : library.bookList.filter(bookId => (
-          books[bookId].accountIds.some(accountId => accountId.split(':')[0] == scope.split(':')[0])
+          Object.keys(books[bookId].accounts).some(accountId => accountId.split(':')[0] == scope.split(':')[0])
         ))
       )
 

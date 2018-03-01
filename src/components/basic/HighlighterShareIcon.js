@@ -21,7 +21,7 @@ class HighlighterShareIcon extends React.PureComponent {
     const { idps, accounts, books, userDataByBookId, bookId, selectionInfo, highlight } = this.props
 
     const book = books[bookId] || {}
-    const accountId = (book.accountIds || [])[0] || ""
+    const accountId = Object.keys(book.accounts)[0] || ""
     const idpId = accountId.split(':')[0]
     const { domain } = idps[idpId] || {}
     const { latest_location } = (userDataByBookId[bookId] || {})

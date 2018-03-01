@@ -6,13 +6,15 @@ export default function(state = initialState, action) {
   const removeAccount = (exceptBookIds = []) => {
     for(bookId in newState) {
       if(exceptBookIds.includes(bookId)) continue
-      const accountIds = newState[bookId].accountIds.filter(accountId => accountId != action.accountId)
-      if(accountIds.length == 0) {
+      const accounts = {...newState[bookId].accounts}
+      delete accounts[action.accountId]
+      const newNumAccounts = Object.keys(accounts).length
+      if(newNumAccounts === 0) {
         delete newState[bookId]
-      } else if(newState[bookId].accountIds.length != accountIds.length) {
+      } else if(Object.keys(state[bookId].accounts).length !== newNumAccounts) {
         newState[bookId] = {
           ...newState[bookId],
-          accountIds,
+          accounts,
         }
       }
     }
@@ -32,16 +34,31 @@ export default function(state = initialState, action) {
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           toc: (state[book.id] && state[book.id].toc) || undefined,
           spines: (state[book.id] && state[book.id].spines) || undefined,
-          accountIds: [
-            ...((newState[book.id] && newState[book.id].accountIds) || []),
-            action.accountId,
-          ].filter((el, i, a) => i === a.indexOf(el))  // dedup
+          accounts: {
+            ...((state[book.id] && state[book.id].accounts) || {}),
+            [accountId]: {},
+          },
         }
       })
       return newState
 
     case "REMOVE_ACCOUNT":
       removeAccount()
+      return newState
+
+    case "UPDATE_BOOK_ACCOUNT":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...state[action.bookId],
+          accounts: {
+            ...state[action.bookId].accounts,
+            [action.accountId]: {
+              ...state[action.bookId].accounts[action.accountId],
+              ...action.accountInfo,
+            },
+          },
+        }
+      }
       return newState
 
     case "SET_DOWNLOADED_STATUS":

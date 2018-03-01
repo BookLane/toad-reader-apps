@@ -3,7 +3,7 @@ import Expo from "expo";
 import { Root } from "native-base"
 
 import { AsyncStorage } from "react-native"
-import { createStore, compose } from "redux"
+import { createStore, compose, applyMiddleware } from "redux"
 import { persistStore, autoRehydrate } from "redux-persist"
 import reducers from "./src/redux/reducers.js"
 import { Provider } from "react-redux"
@@ -11,8 +11,20 @@ import { Provider } from "react-redux"
 import GlobalNavigator from "./src/navigators/Global.js"
 
 import updateReader from "./src/utils/updateReader.js"
+import { patch } from "./src/utils/syncUserData.js"
 
-const store = compose(autoRehydrate())(createStore)(reducers)
+const patchMiddleware = store => next => action => {
+  const result = next(action)
+  if(action.patchInfo) {
+    patch({
+      ...action.patchInfo,
+      ...store.getState(),
+    })
+  }
+  return result
+}
+
+const store = compose(autoRehydrate())(createStore)(reducers, applyMiddleware(patchMiddleware))
 
 export default class App extends React.Component {
   state = {

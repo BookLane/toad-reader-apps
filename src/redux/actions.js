@@ -5,6 +5,12 @@ export const addAccount = ({ idpId, userId, accountInfo }) => ({
   accountInfo,
 })
 
+export const updateAccount = ({ accountId, accountInfo }) => ({
+  type: "UPDATE_ACCOUNT",
+  accountId,
+  accountInfo,
+})
+
 export const removeAccount = ({ accountId }) => ({
   type: "REMOVE_ACCOUNT",
   accountId,
@@ -14,6 +20,13 @@ export const addBooks = ({ books, accountId }) => ({
   type: "ADD_BOOKS",
   books,
   accountId,
+})
+
+export const updateBookAccount = ({ bookId, accountId, accountInfo }) => ({
+  type: "UPDATE_BOOK_ACCOUNT",
+  bookId,
+  accountId,
+  accountInfo,
 })
 
 export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
@@ -90,24 +103,34 @@ export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })
 
-export const setLatestLocation = ({ bookId, latestLocation }) => ({
+export const setLatestLocation = ({ bookId, latestLocation, patchInfo }) => ({
   type: "SET_LATEST_LOCATION",
   bookId,
   latestLocation,
+  patchInfo,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, patchInfo }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   color,
   note,
+  patchInfo,
 })
 
-export const deleteHighlight = ({ bookId, spineIdRef, cfi }) => ({
+export const deleteHighlight = ({ bookId, spineIdRef, cfi, patchInfo }) => ({
   type: "DELETE_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
+  patchInfo,
+})
+
+export const setUserData = ({ bookId, userData, lastSuccessfulPatch }) => ({
+  type: "SET_USER_DATA",
+  bookId,
+  userData,
+  lastSuccessfulPatch,
 })

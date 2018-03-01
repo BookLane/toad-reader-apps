@@ -63,18 +63,19 @@ class Login extends React.Component {
         throw new Error('Unexpected data returned')
         // TODO: something
       }
+
+      const { userInfo, currentServerTime } = userData
       
       addAccount({
         idpId,
-        userId: userData.userInfo.id,
+        userId: userInfo.id,
         accountInfo: {
-          firstname: userData.userInfo.firstname,
-          lastname: userData.userInfo.lastname,
+          firstname: userInfo.firstname,
+          lastname: userInfo.lastname,
+          serverTimeOffset: currentServerTime - Date.now(),
         },
       })
       
-      // TODO: need to record currentServerTime
-
       navigation.goBack()
 
     } else {

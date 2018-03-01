@@ -9,6 +9,13 @@ export default function(state = initialState, action) {
       newState[`${action.idpId}:${action.userId}`] = action.accountInfo
       return newState
 
+    case "UPDATE_ACCOUNT":
+      newState[action.accountId] = {
+        ...state[action.accountId],
+        ...action.accountInfo,
+      }
+      return newState
+
     case "REMOVE_ACCOUNT":
       delete newState[action.accountId]
       return newState

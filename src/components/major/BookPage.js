@@ -12,7 +12,7 @@ import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
 import { getDisplaySettingsObj, getSpineAndPage } from "../../utils/toolbox.js"
 
-import { setLatestLocation } from "../../redux/actions.js"
+import { setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -101,6 +101,7 @@ class BookPage extends React.Component {
                 spineIdRef,
                 cfi: newCfi,
               },
+              patchInfo: this.props,
             })
           }
         )
@@ -199,12 +200,15 @@ class BookPage extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  displaySettings: state.displaySettings,
   books: state.books,
+  displaySettings: state.displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookPage)

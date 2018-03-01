@@ -16,9 +16,11 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
+import { refreshUserData, patch } from "../../utils/syncUserData.js"
 import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize } from "../../utils/toolbox.js"
 
-import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, setLatestLocation } from "../../redux/actions.js";
+import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
+         setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
@@ -104,17 +106,23 @@ const styles = StyleSheet.create({
 
 class Book extends React.Component {
 
-  state = {
-    bookLoaded: false,
-    mode: 'page',
-    showOptions: false,
-    showSettings: false,
-    hrefToGoTo: null,
-    zoomToInfo: null,
-    snapshotCoords: null,
-    snapshotZoomed: true,
-    onZoomCompletion: null,
-    statusBarHeight: StatusBar.currentHeight || 0,
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      bookLoaded: false,
+      mode: 'page',
+      showOptions: false,
+      showSettings: false,
+      hrefToGoTo: null,
+      zoomToInfo: null,
+      snapshotCoords: null,
+      snapshotZoomed: true,
+      onZoomCompletion: null,
+      statusBarHeight: StatusBar.currentHeight || 0,
+    }
+
+    this.getFreshUserData()
   }
 
   componentDidMount() {
@@ -123,6 +131,19 @@ class Book extends React.Component {
 
   componentWillUnmount() {
     StatusBar.setHidden(false)
+  }
+
+  getFreshUserData = () => {
+    const { navigation, books } = this.props
+    const { bookId } = navigation.state.params
+
+    Object.keys(books[bookId].accounts).forEach(accountId => {
+      refreshUserData({
+        accountId,
+        bookId,
+        info: this.props,
+      })
+    })
   }
 
   setStatusBarHidden = setHidden => {
@@ -160,6 +181,7 @@ class Book extends React.Component {
               spineIdRef,
               cfi,
             },
+            patchInfo: this.props,
           })
 
         } else {  // back to the same page
@@ -387,6 +409,8 @@ class Book extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+  idps: state.idps,
+  accounts: state.accounts,
   books: state.books,
   userDataByBookId: state.userDataByBookId,
   displaySettings: state.displaySettings,
@@ -397,6 +421,9 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   setLatestLocation,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

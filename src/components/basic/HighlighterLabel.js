@@ -7,7 +7,7 @@ import i18n from "../../utils/i18n.js"
 
 import HighlighterShareIcon from "./HighlighterShareIcon.js";
 
-import { setHighlight, deleteHighlight } from "../../redux/actions.js";
+import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   container: {
@@ -97,6 +97,7 @@ class HighlighterLabel extends React.PureComponent {
         bookId,
         spineIdRef,
         cfi,
+        patchInfo: this.props,
       })
 
       // if they were editing the note, then this will not be set
@@ -113,7 +114,8 @@ class HighlighterLabel extends React.PureComponent {
         spineIdRef,
         cfi,
         color,
-        note,      
+        note,
+        patchInfo: this.props,
       })
 
       this.setState({ showDeletedMsgAndUndo: false })
@@ -212,6 +214,9 @@ const mapStateToProps = (state) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
   deleteHighlight,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(HighlighterLabel)

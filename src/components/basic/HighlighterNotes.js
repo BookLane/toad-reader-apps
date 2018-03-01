@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import i18n from "../../utils/i18n.js"
 
-import { setHighlight } from "../../redux/actions.js";
+import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   textinput: {
@@ -24,6 +24,7 @@ class HighlighterNotes extends React.PureComponent {
       ...highlight,
       bookId,
       note,
+      patchInfo: this.props,
     })
   }
 
@@ -53,6 +54,9 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(HighlighterNotes)

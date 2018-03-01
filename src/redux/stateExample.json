@@ -20,15 +20,16 @@
     "1:-1": {
       "firstname": "Demo",
       "lastname": "Account",
-      "email": "demo@email.com"
+      "email": "demo@email.com",
+      "serverTimeOffset": 60
     },
     "2:3": {
       "firstname": "Bill",
       "lastname": "Smith",
-      "email": "bill@email.com"
+      "email": "bill@email.com",
+      "serverTimeOffset": -20
     }
   },
-  "serverTimeOffset": 60,
   "fetchingBooks": false,
   "books": {
     "65": {
@@ -37,9 +38,9 @@
       "epubSizeInMB": 3,
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
-      "accountIds": [
-        "1:-1"
-      ],
+      "accounts": {
+        "1:-1": {}
+      },
       "downloadStatus": 0
     },
     "68": {
@@ -48,10 +49,14 @@
       "epubSizeInMB": 10,
       "totalCharacterCount": 383021,
       "coverFilename": "cover.jpg",
-      "accountIds": [
-        "1:-1",
-        "2:3"
-      ],
+      "accounts": {
+        "1:-1": {
+          "lastSuccessfulPatch": 1506078483419
+        },
+        "2:3": {
+          "lastSuccessfulPatch": 1506078483422
+        }
+      },
       "downloadStatus": 2,
       "toc": [
         {
@@ -145,5 +150,6 @@
   },
   "highlights": {
     "onlyShowColor": null
-  }
+  },
+  "errorMessage": "There is something wrong"
 }

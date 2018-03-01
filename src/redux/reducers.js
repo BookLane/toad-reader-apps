@@ -10,7 +10,6 @@ import fetchingBooks from "./reducers/fetchingBooks.js"
 import highlights from "./reducers/highlights.js"
 import idps from "./reducers/idps.js"
 import library from "./reducers/library.js"
-import serverTimeOffset from "./reducers/serverTimeOffset.js"
 import userDataByBookId from "./reducers/userDataByBookId.js"
 
 import setSort from "./reducers/setSort.js"
@@ -25,7 +24,6 @@ const slicedReducers = combineReducers({
   highlights,
   idps,
   library,
-  serverTimeOffset,
   userDataByBookId,
 })
 

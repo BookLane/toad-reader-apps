@@ -10,6 +10,30 @@ export default function(state = initialState, action) {
 
   switch (action.type) {
 
+    case "SET_USER_DATA":
+      // It is possible that a new edit was made since the refreshUserData was called, so I need to
+      // retain anything newer than lastSuccessfulPatch
+      const highlightsToRetain = highlights.filter(highlight => highlight.updated_at > action.lastSuccessfulPatch)
+      const partialHighlightsFromTheRefresh = action.userData.highlights.filter(highlight => (
+        !highlightsToRetain.some(localHighlight => (
+          localHighlight.spineIdRef === highlight.spineIdRef
+          && localHighlight.cfi === highlight.cfi
+        ))
+      ))
+
+      newState[action.bookId] = {
+        ...action.userData,
+        highlights: [
+          ...partialHighlightsFromTheRefresh,
+          ...highlightsToRetain,
+        ],
+      }
+
+      // TODO: To set up multiple accounts properly, I need to merge all highlight sets from different
+      // accounts together.
+
+      return newState
+
     case "SET_LATEST_LOCATION":
       const latest_location = latestLocationToStr(action.latestLocation)
 
@@ -20,6 +44,7 @@ export default function(state = initialState, action) {
       newState[action.bookId] = {
         ...userDataForThisBook,
         latest_location,
+        updated_at: Date.now(),
       }
 
       return newState

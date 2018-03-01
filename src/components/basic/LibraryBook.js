@@ -22,11 +22,11 @@ class LibraryBook extends React.Component {
 
     if(downloadStatus == 2) {
       navigation.navigate("Book", { bookId })
-
+      
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })
       await fetchEpub({
-        domain: idps[books[bookId].accountIds[0].split(':')[0]].domain,
+        domain: idps[Object.keys(books[bookId].accounts)[0].split(':')[0]].domain,
         bookId,
         checkWasCancelled: () => (this.getDownloadStatus(bookId) != 1),
       })
