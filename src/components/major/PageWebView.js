@@ -158,6 +158,7 @@ class PageWebView extends React.Component {
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
               + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
+              + `&app=1`
               + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
               + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
           }}
