@@ -50,7 +50,7 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
       // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
       // necessary in the future.
       // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
-
+      
       writePromises.push(FileSystem.downloadAsync(
         `${epubBaseUrl}${relativePath}`,
         `${localBaseUri}${relativePath}`
@@ -60,7 +60,7 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
 
     writePromises.push(
       new Promise(resolve => {
-        file.async('binarystring').then(content => {
+        file.async('string').then(content => {
           FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content).then(resolve)
         })
       })
