@@ -1,7 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { StyleSheet, View, WebView, Dimensions } from "react-native"
+import { StyleSheet, View, WebView, Dimensions, Platform } from "react-native"
 import { FileSystem } from "expo"
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
@@ -158,7 +158,7 @@ class PageWebView extends React.Component {
           source={{
             uri: `${FileSystem.documentDirectory}reader/index.html`
               + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
-              + `&app=1`
+              + `&${Platform.OS}=1`
               + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
               + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
           }}
