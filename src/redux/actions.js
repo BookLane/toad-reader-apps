@@ -16,10 +16,11 @@ export const removeAccount = ({ accountId }) => ({
   accountId,
 })
 
-export const addBooks = ({ books, accountId }) => ({
+export const addBooks = ({ books, accountId, domain }) => ({
   type: "ADD_BOOKS",
   books,
   accountId,
+  domain,
 })
 
 export const updateBookAccount = ({ bookId, accountId, accountInfo }) => ({

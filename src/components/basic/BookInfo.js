@@ -31,7 +31,7 @@ class BookInfo extends React.Component {
 
   render() {
     const { bookId, bookInfo } = this.props
-    const { coverFilename, title, author, downloadStatus, epubSizeInMB } = bookInfo
+    const { title, author } = bookInfo
 
     return (
       <View style={styles.container}>

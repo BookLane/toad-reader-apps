@@ -30,7 +30,7 @@ export default function(state = initialState, action) {
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
           totalCharacterCount: book.totalCharacterCount,
-          coverFilename: (book.coverHref || "").split('/').pop(),
+          coverHref: `https://${action.domain}/${book.coverHref}`,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           toc: (state[book.id] && state[book.id].toc) || undefined,
           spines: (state[book.id] && state[book.id].spines) || undefined,

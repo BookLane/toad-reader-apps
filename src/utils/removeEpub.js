@@ -8,17 +8,13 @@ const {
   REMOVE_ICON_COLOR,
 } = Expo.Constants.manifest.extra
 
-const removeEpub = async ({ books, bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
+const removeEpub = async ({ books, bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
   setDownloadStatus({ bookId, downloadStatus: 0 })
   clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
   await FileSystem.deleteAsync(`${getBooksDir()}${bookId}`, { idempotent: true })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
   
-  if(removeCover) {
-    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}`, { idempotent: true })
-  }
-
   console.log(`Done removing snapshots and contents for book ${bookId}.`)
 }
 
@@ -95,7 +91,7 @@ export const confirmRemoveAccountEPubs = ({ books, setDownloadStatus, clearTocAn
     async buttonIndex => {
       if(buttonIndex == 0) {
         await Promise.all(Object.keys(books).map(bookId => (
-          removeEpub({ books, bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover: true })
+          removeEpub({ books, bookId, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
         )))
         callback()
       }

@@ -45,11 +45,9 @@ class Cover extends React.Component {
   
   render() {
     const { bookId, bookInfo, bookWidth } = this.props
-    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { title, coverHref, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
     const { imageError } = this.state
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
-    
     return (
       <View
         style={[
@@ -66,7 +64,7 @@ class Cover extends React.Component {
           </View>
         }
         <Image
-          source={{ uri }}
+          source={{ uri: coverHref }}
           style={styles.image}
           resizeMode='cover'
           onError={this.imageOnError}

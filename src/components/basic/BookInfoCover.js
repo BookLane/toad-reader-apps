@@ -24,14 +24,12 @@ class BookInfoCover extends React.Component {
 
   render() {
     const { bookId, bookInfo } = this.props
-    const { coverFilename, downloadStatus } = bookInfo
-
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+    const { coverHref, downloadStatus } = bookInfo
 
     return (
       <View style={styles.container}>
         <Image
-          source={{ uri }}
+          source={{ uri: coverHref }}
           style={styles.image}
           resizeMode='cover'
         />

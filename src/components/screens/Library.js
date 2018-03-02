@@ -89,20 +89,10 @@ class Library extends React.Component {
         addBooks({
           books: newBooks,
           accountId,
+          domain: idps[idpId].domain,
         })
         reSort()
         
-        // get covers
-        newBooks.forEach(async book => {
-          if(book.coverHref) {
-            await downloadAsync(
-              `https://${idps[idpId].domain}/${book.coverHref}`,
-              `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
-              { skipIfExists: true }
-            )
-          }
-        })
-
       } catch(error) {
         console.log('error', error)
         setErrorMessage({ message: error.message || error || "Unknown error." })
