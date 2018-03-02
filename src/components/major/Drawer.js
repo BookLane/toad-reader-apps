@@ -14,16 +14,11 @@ const {
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    paddingBottom: '50%',
-    position: 'relative',
-  },
   image: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    width: '100%',
+    height: 0,
+    paddingBottom: '50%',
+    resizeMode: 'cover',
     backgroundColor: '#eeeef3',
   },
 })
@@ -81,14 +76,10 @@ class Drawer extends React.Component {
     return (
       <Container>
         <Content>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                uri: "https://s3-us-west-2.amazonaws.com/biblemesh-readium/tenant_assets/drawer-2.png"
-              }}
-              style={styles.image}
-            />
-          </View>
+          <Image
+            source={require('../../../assets/images/drawer.png')}
+            style={styles.image}
+          />
           <List>
             <ListItem icon
               button

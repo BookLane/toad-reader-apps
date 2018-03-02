@@ -39,6 +39,7 @@ export default class App extends React.Component {
         Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
         Ionicons: require("native-base/Fonts/Ionicons.ttf"),
       }),
+      Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
       updateReader(),
     ])
 
