@@ -18,8 +18,9 @@ class LibraryBook extends React.Component {
   }
 
   onPress = async () => {
-    const { bookId, navigation, setDownloadStatus, setTocAndSpines, idps, books } = this.props
+    const { bookId, navigation, setDownloadStatus, setTocAndSpines, idps, accounts, books } = this.props
     const downloadStatus = this.getDownloadStatus(bookId)
+    const accountId = Object.keys(books[bookId].accounts)[0]
 
     if(downloadStatus == 2) {
       debounce(navigation.navigate, "Book", { bookId })
@@ -27,7 +28,8 @@ class LibraryBook extends React.Component {
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })
       await fetchEpub({
-        domain: idps[Object.keys(books[bookId].accounts)[0].split(':')[0]].domain,
+        domain: idps[accountId.split(':')[0]].domain,
+        cookie: accounts[accountId].cookie,
         bookId,
         checkWasCancelled: () => (this.getDownloadStatus(bookId) != 1),
       })
@@ -62,6 +64,7 @@ class LibraryBook extends React.Component {
 const mapStateToProps = (state) => ({
   books: state.books,
   idps: state.idps,
+  accounts: state.accounts,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

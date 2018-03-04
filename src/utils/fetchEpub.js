@@ -4,7 +4,7 @@ import JSZip from "jszip"
 
 import { getBooksDir } from "./toolbox.js"
 
-const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
+const fetchEpub = async ({ domain, cookie, bookId, checkWasCancelled }) => {
   
   const epubBaseUrl = `https://${domain}/epub_content/book_${bookId}/`
   const localBaseUri = `${getBooksDir()}${bookId}/`
@@ -50,11 +50,18 @@ const fetchEpub = async ({ domain, bookId, checkWasCancelled }) => {
       // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
       // necessary in the future.
       // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
-      
-      writePromises.push(FileSystem.downloadAsync(
+
+      writePromises.push(FileSystem.createDownloadResumable(
         `${epubBaseUrl}${relativePath}`,
-        `${localBaseUri}${relativePath}`
-      ))
+        `${localBaseUri}${relativePath}`,
+        {
+          headers: {
+            Cookie: cookie,
+          },
+        },
+        // (a,b) => {} TODO: use this to calculate download progress
+      ).downloadAsync())
+
       return
     }
 

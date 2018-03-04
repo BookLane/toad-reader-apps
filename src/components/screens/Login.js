@@ -21,6 +21,13 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'white',
   },
+  hidden: {
+    transform: [
+      {
+        translateY: -99999,
+      },
+    ],
+  },
 })
 
 class Login extends React.Component {
@@ -35,7 +42,7 @@ class Login extends React.Component {
   }
 
   onNavigationStateChange = async ({ url, loading }) => {
-    const { navigation, idps, addAccount } = this.props
+    const { navigation, idps } = this.props
     const { idpId } = navigation.state.params
 
     if(loading || !this.initialStateChangeAlreadyHappened) {
@@ -44,21 +51,40 @@ class Login extends React.Component {
       return
     }
 
-    const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
+    const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
 
-    if(url === userDataUrl) {
+    if(url === userSetupUrl) {
       this.setState({ leaving: true })
 
-      // fetch usersetup.json and add account
-      let response = await fetch(userDataUrl, REQUEST_OPTIONS)
-      if(response.status != 200) {
-        throw new Error('Unable to log in')
-        // TODO: something
-      }
+      this.webView.injectJavaScript(`
+        window.postMessage(JSON.stringify({
+            identifier: "sendCookieAndContent",
+            payload: {
+              cookie: document.cookie,
+              content: document.body.innerText,
+            },
+        }), "*");
+      `)
+
+    } else {
+      this.setState({ loading: false })
+    }
+    
+  }
+
+  onMessageEvent = async event => {
+    const { navigation, addAccount } = this.props
+    const { idpId } = navigation.state.params
+    
+    const data = JSON.parse(event.nativeEvent.data)
+
+    if(data.identifier === 'sendCookieAndContent') {
+
       let userData
       try {
-        userData = await response.json()
+        userData = JSON.parse(data.payload.content)
       } catch(e) {}
+
       if(!userData || !userData.userInfo) {
         throw new Error('Unexpected data returned')
         // TODO: something
@@ -73,41 +99,44 @@ class Login extends React.Component {
           firstname: userInfo.firstname,
           lastname: userInfo.lastname,
           serverTimeOffset: currentServerTime - Date.now(),
+          cookie: data.payload.cookie,
         },
       })
       
       navigation.goBack()
 
-    } else {
-      this.setState({ loading: false })
     }
-    
   }
+
+  setWebViewEl = webViewEl => this.webView = webViewEl
 
   render() {
     const { navigation, idps } = this.props
     const { idpId } = navigation.state.params
     const { loading, leaving } = this.state
 
-    const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
+    const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
 
     return (
       <Container>
-        {!leaving &&
-          <WebView
-            style={styles.fullscreen}
-            source={{
-              uri: userDataUrl,
-              ...REQUEST_OPTIONS,
-            }}
-            mixedContentMode="always"
-            onError={this.onError}
-            onNavigationStateChange={this.onNavigationStateChange}
-            injectedJavaScript={`
-              document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
-            `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-          />
-        }
+        <WebView
+          style={[
+            styles.fullscreen,
+            (leaving ? styles.hidden : null),
+          ]}
+          source={{
+            uri: userSetupUrl,
+            ...REQUEST_OPTIONS,
+          }}
+          mixedContentMode="always"
+          onError={this.onError}
+          onNavigationStateChange={this.onNavigationStateChange}
+          injectedJavaScript={`
+            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
+          `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
+          ref={this.setWebViewEl}
+          onMessage={this.onMessageEvent}
+        />
         {(loading || leaving) && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
       </Container>
     )
