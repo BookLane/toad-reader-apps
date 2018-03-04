@@ -209,6 +209,12 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
         if(response.status < 400) {  // success
 
+          if(response._bodyText === "") {
+            // there has not yet been any user data set for this book
+            patch()
+            return
+          }
+
           response.json()
             .then(userData => {
               // put into redux
