@@ -165,6 +165,7 @@ class PageWebView extends React.Component {
           mixedContentMode="always"
           onError={this.onError}
           onMessage={this.onMessageEvent}
+          bounces={false}
         />
       </View>
     )
