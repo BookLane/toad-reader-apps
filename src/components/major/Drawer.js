@@ -6,6 +6,7 @@ import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, 
 import i18n from "../../utils/i18n.js"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
+import { debounce } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
@@ -28,19 +29,19 @@ class Drawer extends React.Component {
   showAll = () => {
     const { navigation } = this.props
 
-    navigation.navigate("Library", { scope: "all" })
+    debounce(navigation.navigate, "Library", { scope: "all" })
   }
 
   showDeviceOnly = () => {
     const { navigation } = this.props
 
-    navigation.navigate("Library", { scope: "device" })
+    debounce(navigation.navigate, "Library", { scope: "device" })
   }
 
   goToAccounts = () => {
     const { navigation } = this.props
 
-    navigation.navigate("Accounts")
+    debounce(navigation.navigate, "Accounts")
   }
 
   confirmLogOut = () => {
@@ -52,7 +53,7 @@ class Drawer extends React.Component {
     if(!idpId || !idps[idpId]) return
 
     confirmRemoveAccountEPubs(this.props, () => {
-      navigation.navigate("Library", {
+      debounce(navigation.navigate, "Library", {
         logOutUrl: `https://${idps[idpId].domain}/logout`,
         logOutAccountId: accountId,
       })
@@ -96,7 +97,7 @@ class Drawer extends React.Component {
               <ListItem icon
                 key={id}
                 button
-                onPress={() => navigation.navigate("Library", { scope: id })}
+                onPress={() => debounce(navigation.navigate, "Library", { scope: id })}
               >
                 <Left>
                   <Icon name="book" />

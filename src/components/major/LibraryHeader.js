@@ -5,6 +5,8 @@ import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-b
 import i18n from "../../utils/i18n.js"
 import AppHeader from "../basic/AppHeader"
 
+import { debounce } from "../../utils/toolbox.js"
+
 import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
 
 class LibraryHeader extends React.Component {
@@ -13,7 +15,7 @@ class LibraryHeader extends React.Component {
     const { navigation, hideOptions } = this.props
 
     hideOptions()
-    navigation.navigate("DrawerOpen")
+    debounce(navigation.navigate, "DrawerOpen")
   }
 
   toggleView = () => {

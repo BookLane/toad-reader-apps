@@ -17,7 +17,7 @@ import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize, debounce } from "../../utils/toolbox.js"
 
 import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
@@ -293,7 +293,7 @@ class Book extends React.Component {
   goToHighlights = () => {
     const { navigation } = this.props
 
-    navigation.navigate("Highlights")
+    debounce(navigation.navigate, "Highlights")
   }
 
   removeFromDevice = () => {

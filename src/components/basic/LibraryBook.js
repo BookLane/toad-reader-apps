@@ -5,6 +5,7 @@ import { TouchableOpacity } from "react-native"
 
 import fetchEpub from "../../utils/fetchEpub.js"
 import parseEpub from "../../utils/parseEpub.js"
+import { debounce } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
 import { setDownloadStatus, setTocAndSpines, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
@@ -21,7 +22,7 @@ class LibraryBook extends React.Component {
     const downloadStatus = this.getDownloadStatus(bookId)
 
     if(downloadStatus == 2) {
-      navigation.navigate("Book", { bookId })
+      debounce(navigation.navigate, "Book", { bookId })
       
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })
