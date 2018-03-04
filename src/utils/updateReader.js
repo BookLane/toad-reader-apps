@@ -3,7 +3,7 @@ import { FileSystem } from "expo"
 import downloadAsync from "./downloadAsync.js"
 
 // configuration constants
-const readerAssetsLastUpdatedDate = `2018-02-25`  // this needs to be updated any time any reader files are updated
+const readerAssetsLastUpdatedDate = `2018-03-04`  // this needs to be updated any time any reader files are updated
 const readerAssetsRemoteURL = `https://s3-us-west-2.amazonaws.com/biblemesh-readium-dev/cloud-reader-lite/`
 const readerAssetFiles = [
   'index.html',
