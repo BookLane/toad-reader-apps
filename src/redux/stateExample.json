@@ -21,12 +21,14 @@
       "firstname": "Demo",
       "lastname": "Account",
       "email": "demo@email.com",
+      "cookie": "connect.sid=lkjsdfljasdflkjsdf;",
       "serverTimeOffset": 60
     },
     "2:3": {
       "firstname": "Bill",
       "lastname": "Smith",
       "email": "bill@email.com",
+      "cookie": "connect.sid=lkjsdfljasdflkjsdsdff;",
       "serverTimeOffset": -20
     }
   },
