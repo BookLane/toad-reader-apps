@@ -60,6 +60,27 @@ class Drawer extends React.Component {
     })
   }
 
+  reLogin = async () => {
+    const { accounts, idps, navigation } = this.props
+
+    const accountId = Object.keys(accounts)[0] || ""
+    const idpId = accountId.split(':')[0]
+
+    if(!idpId || !idps[idpId]) return
+    
+    // To force a refresh on the library, I need to call the url below and then open
+    // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
+    // login process includes javascript onload calls. When that process was over and it
+    // arrives back at the userDataUrl, then I would want to continue to get the library
+    // listing. In other words, I basically need to call the next line and run the whole
+    // login process again, but hidden.
+
+    debounce(navigation.navigate, "Library", {
+      logOutUrl: `https://${idps[idpId].domain}/logout/callback?noredirect=1`,
+      refreshLibraryAccountId: accountId,
+    })
+  }
+
   removeAllEPubs = () => {
     confirmRemoveAllEPubs(this.props)
   }
@@ -133,6 +154,17 @@ class Drawer extends React.Component {
                 <Text>{i18n("Accounts")}</Text> 
               </Body>
             </ListItem> */}
+            <ListItem icon
+              button
+              onPress={this.reLogin}
+            >
+              <Left>
+                <Icon name="refresh" />
+              </Left>
+              <Body>
+                <Text>{i18n("Refresh book list")}</Text>
+              </Body>
+            </ListItem>
             <ListItem icon
               button
               onPress={this.removeAllEPubs}

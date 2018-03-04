@@ -16,7 +16,7 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 import PageCaptureManager from "../major/PageCaptureManager"
 import AppHeader from "../basic/AppHeader.js";
 
-import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus, removeAccount } from "../../redux/actions.js"
+import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus, removeAccount, updateAccount } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -47,7 +47,8 @@ class Library extends React.Component {
   }
 
   async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, setErrorMessage, navigation } = nextProps || this.props
+    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, setErrorMessage, updateAccount, navigation } = nextProps || this.props
+    const { refreshLibraryAccountId } = navigation.state.params || {}
 
     const account = Object.values(accounts)[0]
     if(!account || account.needToLogInAgain) {
@@ -64,19 +65,10 @@ class Library extends React.Component {
       try {
 
         // no need to get the library listing if we already have it
-        if(Object.values(books).some(book => book.accounts[accountId])) continue
+        if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) continue
 
         // update books
         const [ idpId ] = accountId.split(':')
-
-        // To forces a refresh on the library, I need to call the following fetch and then open
-        // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
-        // login process includes javascript onload calls. When that process was over and it
-        // arrives back at the userDataUrl, then I would want to continue to get the library
-        // listing. In other words, I basically need to call the next line and run the whole
-        // login process again, but hidden.
-        // await fetch(`https://${idps[idpId].domain}/logout/callback?noredirect=1`)
-        // const userDataUrl = `https://${idps[idpId].domain}/usersetup.json`
 
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl, REQUEST_OPTIONS)
@@ -92,6 +84,11 @@ class Library extends React.Component {
           domain: idps[idpId].domain,
         })
         reSort()
+
+        if(refreshLibraryAccountId) {
+          navigation.state.params = {}
+          this.forceUpdate()
+        }
         
       } catch(error) {
         console.log('error', error)
@@ -122,13 +119,23 @@ class Library extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   logOurUrlOnLoad = () => {
-    const { navigation, removeAccount } = this.props
-    let { logOutAccountId } = navigation.state.params || {}
+    const { navigation, removeAccount, updateAccount } = this.props
+    const { logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
 
-    removeAccount({ accountId: logOutAccountId })
+    if(refreshLibraryAccountId) {
+      updateAccount({
+        accountId: refreshLibraryAccountId,
+        accountInfo: {
+          needToLogInAgain: true,
+        },
+      })
+    }
 
-    navigation.state.params = {}
-    this.forceUpdate()
+    if(logOutAccountId) {
+      removeAccount({ accountId: logOutAccountId })
+      navigation.state.params = {}
+      this.forceUpdate()
+    }
   }
 
   logOurUrlOnError = () => {
@@ -243,6 +250,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setErrorMessage,
   setDownloadStatus,
   removeAccount,
+  updateAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)
