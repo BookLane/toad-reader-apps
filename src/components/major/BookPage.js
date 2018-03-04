@@ -1,7 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "react-native"
+import { View, Linking } from "react-native"
 import { StyleSheet } from "react-native"
 
 import PageWebView from "./PageWebView"
@@ -111,6 +111,13 @@ class BookPage extends React.Component {
         // await this.doTakeSnapshot()
 
         return false  // i.e. still process pageChanged in the general PageWebView component
+
+      case 'openURL':
+        Linking.openURL(data.payload.url).catch(err => {
+          // TODO: report the error
+          console.error('Error in opening URL', err)
+        })
+        return true
 
       case 'showPageListView':
         requestShowPages()
