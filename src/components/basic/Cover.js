@@ -40,14 +40,26 @@ class Cover extends React.Component {
 
   state = {
     imageError: false,
+    imageQueryStringIndex: 1,
   }
 
-  imageOnError = () => this.setState({ imageError: true })
+  componentWillUnmount() {
+    this.unmounted = true
+  }
+
+  imageOnError = () => {
+    const { imageQueryStringIndex } = this.state
+
+    this.setState({ imageError: true })
+    setTimeout(() => !this.unmounted && this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200)
+  }
   
   render() {
     const { bookId, bookInfo, bookWidth } = this.props
-    const { title, coverHref, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
-    const { imageError } = this.state
+    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { imageError, imageQueryStringIndex } = this.state
+
+    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
 
     return (
       <View
@@ -59,17 +71,19 @@ class Cover extends React.Component {
           },
         ]}
       >
-        {imageError &&
+        {(!coverFilename || imageError) &&
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>
           </View>
         }
-        <Image
-          source={{ uri: coverHref }}
-          style={styles.image}
-          resizeMode='cover'
-          onError={this.imageOnError}
-        />
+        {coverFilename &&
+          <Image
+            source={{ uri }}
+            style={styles.image}
+            resizeMode='cover'
+            onError={this.imageOnError}
+          />
+        }
         {downloadStatus == 1 && <FullScreenSpin />}
         {downloadStatus == 2 && <CoverCheck />}
         {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}

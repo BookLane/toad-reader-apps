@@ -22,16 +22,34 @@ const styles = StyleSheet.create({
 
 class BookInfoCover extends React.Component {
 
+  state = {
+    imageQueryStringIndex: 1,
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true
+  }
+  
+  imageOnError = () => {
+    const { imageQueryStringIndex } = this.state
+
+    setTimeout(() => !this.unmounted && this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200)
+  }
+  
   render() {
     const { bookId, bookInfo } = this.props
-    const { coverHref, downloadStatus } = bookInfo
+    const { coverFilename, downloadStatus } = bookInfo
+    const { imageQueryStringIndex } = this.state
+
+    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
 
     return (
       <View style={styles.container}>
         <Image
-          source={{ uri: coverHref }}
+          source={{ uri }}
           style={styles.image}
           resizeMode='cover'
+          onError={this.imageOnError}
         />
         {downloadStatus == 1 && <FullScreenSpin />}
       </View>

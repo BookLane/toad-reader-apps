@@ -39,7 +39,7 @@
       "author": "John Piper",
       "epubSizeInMB": 3,
       "totalCharacterCount": 938004,
-      "coverHref": "https://demo.toadreader.com/book/65/epub_content/images/cover.png",
+      "coverFilename": "cover.png",
       "accounts": {
         "1:-1": {}
       },
@@ -50,7 +50,7 @@
       "author": "John Piper",
       "epubSizeInMB": 10,
       "totalCharacterCount": 383021,
-      "coverHref": "https://demo.toadreader.com/book/68/epub_content/images/cover.png",
+      "coverFilename": "cover.jpg",
       "accounts": {
         "1:-1": {
           "lastSuccessfulPatch": 1506078483419

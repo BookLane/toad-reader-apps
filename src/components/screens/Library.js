@@ -81,10 +81,20 @@ class Library extends React.Component {
         addBooks({
           books: newBooks,
           accountId,
-          domain: idps[idpId].domain,
         })
         reSort()
 
+        // get covers
+        newBooks.forEach(book => {
+          if(book.coverHref) {
+            downloadAsync(
+              `https://${idps[idpId].domain}/${book.coverHref}`,
+              `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
+              { skipIfExists: true }
+            )
+          }
+        })
+        
         if(refreshLibraryAccountId) {
           navigation.state.params = {}
           this.forceUpdate()
