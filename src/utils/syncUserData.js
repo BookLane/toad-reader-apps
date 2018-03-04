@@ -140,8 +140,7 @@ export const patch = info => setTimeout(() => {
                 } else if(response.status === 403) {
                   // they need to login
                   updateAccount({
-                    idpId,
-                    userId, 
+                    accountId,
                     accountInfo: {
                       needToLogInAgain: true
                     },
@@ -249,8 +248,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
         } else if(response.status === 403) {
           // they need to login
           updateAccount({
-            idpId,
-            userId, 
+            accountId,
             accountInfo: {
               needToLogInAgain: true
             },
