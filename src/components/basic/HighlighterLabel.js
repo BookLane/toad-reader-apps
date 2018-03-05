@@ -64,6 +64,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
+  doneButton: {
+    marginTop: -6,
+    marginBottom: -18,
+    marginLeft: 0,
+    marginRight: 0,
+  },
 })
 
 const notesForUndo = {}
@@ -127,7 +133,7 @@ class HighlighterLabel extends React.PureComponent {
   // unselectText = () => this.props.setSelectionText()
 
   render() {
-    const { bookId, selectionInfo, highlight } = this.props
+    const { bookId, selectionInfo, highlight, isEditingNote, endEditingNote } = this.props
     const { showDeletedMsgAndUndo } = this.state
     // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
@@ -146,7 +152,7 @@ class HighlighterLabel extends React.PureComponent {
         >
           {highlight ? selectionInfo.text : i18n("Highlight the selection")}
         </Text>
-        {highlight && 
+        {highlight && !isEditingNote &&
           <TouchableComponent
             onPress={this.toggleHighlight1}
           >
@@ -166,7 +172,7 @@ class HighlighterLabel extends React.PureComponent {
             {i18n("Highlight deleted.")}
           </Text>
           <Button primary light
-            style={[styles.undoButton, { zIndex: 9}]}
+            style={styles.undoButton}
             onPress={this.toggleHighlight1}
           >
             <Text>{i18n("Undo")}</Text>
@@ -188,12 +194,20 @@ class HighlighterLabel extends React.PureComponent {
       <View style={styles.container}>
         {highlightButton}
         <View style={styles.emptySpace} />
-        {highlight &&
+        {highlight && !isEditingNote &&
           <HighlighterShareIcon
             bookId={bookId}
             selectionInfo={selectionInfo}
             highlight={highlight}
           />
+        }
+        {isEditingNote &&
+          <Button primary
+            style={styles.doneButton}
+            onPress={endEditingNote}
+          >
+            <Text>{i18n("Done")}</Text>
+          </Button>
         }
         {/* <View style={styles.smallEmptySpace} /> */}
         {/* <TouchableOpacity

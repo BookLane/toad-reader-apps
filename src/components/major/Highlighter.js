@@ -2,6 +2,7 @@ import React from "react"
 import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { View } from 'native-base'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -10,6 +11,15 @@ import BackFunction from '../basic/BackFunction'
 import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
+  clearCover: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    backgroundColor: 'transparent',
+    zIndex: 3,
+  },
   container: {
     position: 'absolute',
     bottom: 0,
@@ -83,13 +93,19 @@ class Highlighter extends React.PureComponent {
 
     }
   }
+
+  setNoteTextInputEl = el => this.noteTextInputEl = el
+  endEditingNote = () => this.noteTextInputEl.blur()
   
   render() {
     const { selectionInfo, bookId, noteInEdit, setSelectionText, updateNoteInEdit } = this.props
     // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
     const { highlight } = this.state
 
+    const isEditingNote = noteInEdit != null 
+
     return [
+      ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
       <BackFunction key="back" func={setSelectionText} />,
       <KeyboardAvoidingView
         key="container"
@@ -105,15 +121,18 @@ class Highlighter extends React.PureComponent {
           bookId={bookId}
           highlight={highlight}
           setSelectionText={setSelectionText}
+          isEditingNote={isEditingNote}
+          endEditingNote={this.endEditingNote}
         />
         {highlight && 
           <HighlighterNotes
-            note={noteInEdit != null ? noteInEdit : highlight.note}
+            note={isEditingNote ? noteInEdit : highlight.note}
             updateNoteInEdit={updateNoteInEdit}
             setEditingNote={this.setEditingNote}
+            setNoteTextInputEl={this.setNoteTextInputEl}
           />
         }
-      </KeyboardAvoidingView>,
+      </KeyboardAvoidingView>
     ]
   }
 }

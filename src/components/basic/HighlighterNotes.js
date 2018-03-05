@@ -17,7 +17,7 @@ class HighlighterNotes extends React.PureComponent {
   onBlur = () => this.props.setEditingNote(false)
 
   render() {
-    const { note, updateNoteInEdit } = this.props
+    const { note, updateNoteInEdit, setNoteTextInputEl } = this.props
 
     return (
       <TextInput
@@ -29,6 +29,7 @@ class HighlighterNotes extends React.PureComponent {
         onChangeText={updateNoteInEdit}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
+        ref={setNoteTextInputEl}
       />
     )
   }
