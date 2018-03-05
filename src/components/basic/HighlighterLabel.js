@@ -47,11 +47,11 @@ const styles = StyleSheet.create({
   // smallEmptySpace: {
   //   width: 12,
   // },
-  close: {
-    padding: 4,
-    fontSize: 22,
-    lineHeight: 26,
-  },
+  // close: {
+  //   padding: 4,
+  //   fontSize: 22,
+  //   lineHeight: 26,
+  // },
   deletedMessageCont: {
     flexShrink: 1,
     flexDirection: 'row',
