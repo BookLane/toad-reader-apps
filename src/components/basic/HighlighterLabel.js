@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     width: 29,
     textAlign: 'center',
     display: 'flex',
+    paddingTop: Platform.OS === 'ios' ? 2 : 0,
   },
   highlight1: {
     backgroundColor: 'rgba(28,96,171,.2)',
@@ -43,9 +44,9 @@ const styles = StyleSheet.create({
   highlightText: {
     flexShrink: 1,
   },
-  smallEmptySpace: {
-    width: 12,
-  },
+  // smallEmptySpace: {
+  //   width: 12,
+  // },
   close: {
     padding: 4,
     fontSize: 22,
@@ -123,7 +124,7 @@ class HighlighterLabel extends React.PureComponent {
   }
 
   toggleHighlight1 = () => this.toggleHighlight(1)
-  unselectText = () => this.props.setSelectionText()
+  // unselectText = () => this.props.setSelectionText()
 
   render() {
     const { bookId, selectionInfo, highlight } = this.props
@@ -194,15 +195,15 @@ class HighlighterLabel extends React.PureComponent {
             highlight={highlight}
           />
         }
-        <View style={styles.smallEmptySpace} />
-        <TouchableOpacity
+        {/* <View style={styles.smallEmptySpace} /> */}
+        {/* <TouchableOpacity
           onPress={this.unselectText}
         >
           <Icon
             name="close"
             style={styles.close}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     )
   }
