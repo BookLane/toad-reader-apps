@@ -1,7 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Linking } from "react-native"
+import { View, Linking, Platform } from "react-native"
 import { StyleSheet } from "react-native"
 
 import PageWebView from "./PageWebView"
@@ -145,12 +145,10 @@ class BookPage extends React.Component {
   }
 
   setSelectionText = payload => {
-    // The next line is not needed, but avoids the delay in hiding the
-    // highlighter panel.
     if(!payload) {
       this.setState({ selectionInfo: undefined })
     }
-    postMessage(this.webView, 'setSelectionText', payload)
+    Platform.OS !== 'ios' && postMessage(this.webView, 'setSelectionText', payload)
   }
 
   setWebViewEl = webViewEl => this.webView = webViewEl
