@@ -26,7 +26,7 @@ class BookPage extends React.Component {
     spineIdRef: this.props.spineIdRef,
     pageIndexInSpine: this.props.pageIndexInSpine,
     selectionInfo: null,
-    editingNote: false,
+    noteInEdit: null,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,9 +50,13 @@ class BookPage extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { showSettings } = this.props
-    const { selectionInfo } = this.state
+    const { selectionInfo, noteInEdit } = this.state
 
-    return nextProps.showSettings !== showSettings || nextState.selectionInfo !== selectionInfo
+    return (
+      nextProps.showSettings !== showSettings
+      || nextState.selectionInfo !== selectionInfo
+      || nextState.noteInEdit !== noteInEdit
+    )
   }
 
   setDisplaySettings = nextProps => {
@@ -70,7 +74,7 @@ class BookPage extends React.Component {
     })
   }
 
-  isEditingNote = () => this.state.editingNote
+  isEditingNote = () => this.state.noteInEdit != null
 
   onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings } = this.props
@@ -153,7 +157,7 @@ class BookPage extends React.Component {
 
   setWebViewEl = webViewEl => this.webView = webViewEl
 
-  setEditingNote = editingNote => this.setState({ editingNote })
+  updateNoteInEdit = noteInEdit => this.setState({ noteInEdit })
 
 //   setView = ref => this.view = ref
   
@@ -173,7 +177,7 @@ class BookPage extends React.Component {
 
   render() {
     const { bookId, showSettings, requestHideSettings, latest_location } = this.props
-    const { selectionInfo } = this.state
+    const { selectionInfo, noteInEdit } = this.state
 
     return (
       <View style={styles.container}>
@@ -195,7 +199,8 @@ class BookPage extends React.Component {
           <Highlighter
             bookId={bookId}
             selectionInfo={selectionInfo}
-            setEditingNote={this.setEditingNote}
+            noteInEdit={noteInEdit}
+            updateNoteInEdit={this.updateNoteInEdit}
             setSelectionText={this.setSelectionText}
           />
         }

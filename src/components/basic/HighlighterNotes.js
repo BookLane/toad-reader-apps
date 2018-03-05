@@ -1,10 +1,6 @@
 import React from "react"
 import { StyleSheet, TextInput } from "react-native"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 import i18n from "../../utils/i18n.js"
-
-import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
 
 const styles = StyleSheet.create({
   textinput: {
@@ -17,22 +13,11 @@ const styles = StyleSheet.create({
 
 class HighlighterNotes extends React.PureComponent {
 
-  updateNote = note => {
-    const { bookId, highlight, setHighlight } = this.props
-    
-    setHighlight({
-      ...highlight,
-      bookId,
-      note,
-      patchInfo: this.props,
-    })
-  }
-
   onFocus = () => this.props.setEditingNote(true)
   onBlur = () => this.props.setEditingNote(false)
 
   render() {
-    const { highlight, setNoteBeingTouched } = this.props
+    const { note, updateNoteInEdit } = this.props
 
     return (
       <TextInput
@@ -40,23 +25,12 @@ class HighlighterNotes extends React.PureComponent {
         placeholder={i18n("Notes")}
         multiline={true}
         underlineColorAndroid="transparent"
-        value={highlight.note}
-        onChangeText={this.updateNote}
+        value={note}
+        onChangeText={updateNoteInEdit}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
       />
     )
   }
 }
-
-const mapStateToProps = (state) => ({
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  setHighlight,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(HighlighterNotes)
+export default HighlighterNotes

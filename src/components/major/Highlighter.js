@@ -7,6 +7,8 @@ import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
 
+import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
+
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -27,8 +29,26 @@ const styles = StyleSheet.create({
 
 class Highlighter extends React.PureComponent {
 
-  getHighlight = () => {
-    const { selectionInfo, userDataByBookId, bookId } = this.props
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      highlight: this.getHighlight(props),
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { noteInEdit } = this.state
+
+    if(nextProps.noteInEdit == null) {
+      this.setState({
+        highlight: this.getHighlight(nextProps),
+      })
+    }
+  }
+
+  getHighlight = props => {
+    const { selectionInfo, userDataByBookId, bookId } = props || this.props
     // example of selectionInfo: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
     let highlightToReturn
@@ -44,11 +64,30 @@ class Highlighter extends React.PureComponent {
     return highlightToReturn
   }
 
-  render() {
-    const { selectionInfo, bookId, setEditingNote, setSelectionText } = this.props
-    // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+  setEditingNote = editingNote => {
+    const { bookId, noteInEdit, setHighlight, updateNoteInEdit } = this.props
+    const { highlight } = this.state
 
-    const highlight = this.getHighlight()
+    if(editingNote) {
+      updateNoteInEdit(highlight.note)
+
+    } else {
+      setHighlight({
+        ...highlight,
+        bookId,
+        note: noteInEdit,
+        patchInfo: this.props,
+      })
+
+      updateNoteInEdit(null)
+
+    }
+  }
+  
+  render() {
+    const { selectionInfo, bookId, noteInEdit, setSelectionText, updateNoteInEdit } = this.props
+    // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+    const { highlight } = this.state
 
     return [
       <BackFunction key="back" func={setSelectionText} />,
@@ -69,9 +108,9 @@ class Highlighter extends React.PureComponent {
         />
         {highlight && 
           <HighlighterNotes
-            bookId={bookId}
-            highlight={highlight}
-            setEditingNote={setEditingNote}
+            note={noteInEdit != null ? noteInEdit : highlight.note}
+            updateNoteInEdit={updateNoteInEdit}
+            setEditingNote={this.setEditingNote}
           />
         }
       </KeyboardAvoidingView>,
@@ -84,6 +123,10 @@ const mapStateToProps = (state) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setHighlight,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)
