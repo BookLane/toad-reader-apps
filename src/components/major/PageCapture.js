@@ -1,5 +1,4 @@
 import React from "react"
-import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -7,7 +6,7 @@ import PageWebView from "./PageWebView"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX } from '../../utils/toolbox.js'
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox.js'
 
 import { addSpinePageCfis } from "../../redux/actions.js"
 
@@ -116,9 +115,6 @@ class PageCapture extends React.Component {
           width,
           height,
           minHeight: height,
-        }}
-        containerViewStyleOnly={Platform.OS === 'ios' && !isIPhoneX && {
-          top: 100,  // this prevents the iOS status bar from pushing the view down
         }}
         bookId={bookId}
         setWebViewEl={this.setWebViewEl}

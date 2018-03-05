@@ -5,14 +5,28 @@ import { StyleSheet, View, WebView, Dimensions, Platform } from "react-native"
 import { FileSystem } from "expo"
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
-import { getBooksDir } from "../../utils/toolbox.js"
+import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"
 
 const styles = StyleSheet.create({
-  container: {
+  containerNormal: {
     position: 'absolute',
     top: 0,
     left: 0,
     bottom: 0,
+    right: 0,
+  },
+  containerOffset1: {
+    position: 'absolute',
+    top: 200,
+    left: 0,
+    bottom: -200,
+    right: 0,
+  },
+  containerOffset2: {
+    position: 'absolute',
+    top: -200,
+    left: 0,
+    bottom: 200,
     right: 0,
   },
 })
@@ -126,48 +140,55 @@ class PageWebView extends React.Component {
 
   render() {
     // I get these from state and not props because these are all initial values
-    const { setView, bookId, style, containerViewStyleOnly, initialLocation, initialDisplaySettings, width, height } = this.state
+    const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
       location: initialLocation,
       highlights: getHighlightsObj(this.state),
     })
 
+    // Special containers needed because otherwise the iOS status bar pushes the view down.
+    // However, on iphoneX, we want it pushed down.
+    const doPushDownPreventionTrick = Platform.OS === 'ios' && !isIPhoneX
+
     return (
       <View
-        style={[
-          styles.container,
-          style,
-          containerViewStyleOnly,
-        ]}
-        onLayout={this.calcSize}
-        collapsable={false}
-        ref={setView}
+        style={doPushDownPreventionTrick ? styles.containerOffset1 : styles.containerNormal}
       >
-        <WebView
-          style={{
-            width,
-            height,
-            minHeight: height,
-            ...style,
-          }}
-          injectedJavaScript={`
-            window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
-            ${patchPostMessageJsCode}
-          `}
-          ref={this.setWebViewEl}
-          source={{
-            uri: `${FileSystem.documentDirectory}reader/index.html`
-              + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
-              + `&${Platform.OS}=1`
-              + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
-              + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
-          }}
-          mixedContentMode="always"
-          onError={this.onError}
-          onMessage={this.onMessageEvent}
-          bounces={false}
-        />
+        <View
+          style={[
+            (doPushDownPreventionTrick ? styles.containerOffset2 : styles.containerNormal),
+            style,
+          ]}
+          onLayout={this.calcSize}
+          collapsable={false}
+          ref={setView}
+        >
+          <WebView
+            style={{
+              width,
+              height,
+              minHeight: height,
+              ...style,
+            }}
+            injectedJavaScript={`
+              window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
+              ${patchPostMessageJsCode}
+            `}
+            ref={this.setWebViewEl}
+            source={{
+              uri: `${FileSystem.documentDirectory}reader/index.html`
+                + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
+                + `&${Platform.OS}=1`
+                + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
+                + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
+            }}
+            mixedContentMode="always"
+            onError={this.onError}
+            onMessage={this.onMessageEvent}
+            bounces={false}
+          />
+        </View>
       </View>
     )
   }
