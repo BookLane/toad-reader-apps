@@ -1,8 +1,7 @@
 import React from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, KeyboardAvoidingView, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "native-base"
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -53,12 +52,14 @@ class Highlighter extends React.PureComponent {
 
     return [
       <BackFunction key="back" func={setSelectionText} />,
-      <View
+      <KeyboardAvoidingView
         key="container"
         style={[
           styles.container,
           (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
         ]}
+        keyboardVerticalOffset={Platform.OS === 'android' ? -100 : 0}
+        behavior="padding"
       >
         <HighlighterLabel
           selectionInfo={selectionInfo}
@@ -73,7 +74,7 @@ class Highlighter extends React.PureComponent {
             setEditingNote={setEditingNote}
           />
         }
-      </View>,
+      </KeyboardAvoidingView>,
     ]
   }
 }
