@@ -126,7 +126,7 @@ class PageWebView extends React.Component {
 
   render() {
     // I get these from state and not props because these are all initial values
-    const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
+    const { setView, bookId, style, containerViewStyleOnly, initialLocation, initialDisplaySettings, width, height } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
       location: initialLocation,
@@ -138,6 +138,7 @@ class PageWebView extends React.Component {
         style={[
           styles.container,
           style,
+          containerViewStyleOnly,
         ]}
         onLayout={this.calcSize}
         collapsable={false}

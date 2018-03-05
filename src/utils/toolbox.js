@@ -145,7 +145,8 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   }
 }
 
-export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (nativeBasePlatformVariables.isIphoneX ? 34 : 0)
+export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
+export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
 export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
 
 export const isPhoneSize = () => {
