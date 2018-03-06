@@ -2,18 +2,13 @@ import { FileSystem } from "expo"
 import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 
-import { getBooksDir } from "./toolbox.js"
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWasCancelled }) => {
 
-const fetchEpub = async ({ domain, cookie, bookId, checkWasCancelled }) => {
-  
-  const epubBaseUrl = `https://${domain}/epub_content/book_${bookId}/`
-  const localBaseUri = `${getBooksDir()}${bookId}/`
-
-  console.log(`Downloading epub from ${epubBaseUrl}...`)
+  console.log(`Downloading zip from ${zipUrl}...`)
 
   // get the zip file
   const zipData = await new JSZip.external.Promise((resolve, reject) => {
-    JSZipUtils.getBinaryContent(`${epubBaseUrl}book.epub`, (err, data) => {
+    JSZipUtils.getBinaryContent(zipUrl, (err, data) => {
       if(err) {
         reject(err)
       } else {
@@ -51,8 +46,10 @@ const fetchEpub = async ({ domain, cookie, bookId, checkWasCancelled }) => {
       // necessary in the future.
       // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
 
+      console.log(`Downloading zip asset from ${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}...`)
+
       writePromises.push(FileSystem.createDownloadResumable(
-        `${epubBaseUrl}${relativePath}`,
+        `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
         `${localBaseUri}${relativePath}`,
         {
           headers: {
@@ -81,7 +78,5 @@ const fetchEpub = async ({ domain, cookie, bookId, checkWasCancelled }) => {
     return
   }
 
-  console.log(`Done downloading from ${epubBaseUrl}.`)
+  console.log(`Done downloading ${zipUrl} and assets.`)
 }
-
-export default fetchEpub

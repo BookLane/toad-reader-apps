@@ -3,9 +3,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
 
-import fetchEpub from "../../utils/fetchEpub.js"
+import { fetchZipAndAssets } from "../../utils/fetchEpub.js"
 import parseEpub from "../../utils/parseEpub.js"
-import { debounce } from "../../utils/toolbox.js"
+import { debounce, getBooksDir } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
 import { setDownloadStatus, setTocAndSpines, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
@@ -27,10 +27,10 @@ class LibraryBook extends React.Component {
       
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })
-      await fetchEpub({
-        domain: idps[accountId.split(':')[0]].domain,
+      await fetchZipAndAssets({
+        zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
+        localBaseUri: `${getBooksDir()}${bookId}/`,
         cookie: accounts[accountId].cookie,
-        bookId,
         checkWasCancelled: () => (this.getDownloadStatus(bookId) != 1),
       })
       const { toc, spines } = await parseEpub({ bookId })
