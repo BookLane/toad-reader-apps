@@ -1,5 +1,4 @@
 import React from "react"
-import { FileSystem } from "expo"
 import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio, Platform } from "react-native"
 
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'

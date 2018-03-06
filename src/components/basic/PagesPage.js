@@ -1,6 +1,5 @@
 import React from "react"
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions, View } from "react-native"
-import { FileSystem } from "expo"
 
 import PagesBookmark from "./PagesBookmark"
 
