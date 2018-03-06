@@ -89,7 +89,7 @@ class HighlighterLabel extends React.PureComponent {
   }
 
   toggleHighlight = color => {
-    const { selectionInfo, bookId, highlight={}, setSelectionText, setHighlight, deleteHighlight } = this.props
+    const { selectionInfo, bookId, highlight={}, setHighlight, deleteHighlight } = this.props
     const { spineIdRef, cfi } = selectionInfo || {}
     
     const note = highlight.note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
@@ -105,12 +105,6 @@ class HighlighterLabel extends React.PureComponent {
         spineIdRef,
         cfi,
         patchInfo: this.props,
-      })
-
-      // if they were editing the note, then this will not be set
-      setSelectionText({
-        spineIdRef,
-        cfi,
       })
 
       this.setState({ showDeletedMsgAndUndo: true })

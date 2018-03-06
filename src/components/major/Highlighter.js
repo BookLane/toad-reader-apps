@@ -75,7 +75,8 @@ class Highlighter extends React.PureComponent {
   }
 
   setEditingNote = editingNote => {
-    const { bookId, noteInEdit, setHighlight, updateNoteInEdit } = this.props
+    const { bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText } = this.props
+    const { spineIdRef, cfi } = selectionInfo || {}
     const { highlight } = this.state
 
     if(editingNote) {
@@ -91,6 +92,10 @@ class Highlighter extends React.PureComponent {
 
       updateNoteInEdit(null)
 
+      setSelectionText({
+        spineIdRef,
+        cfi,
+      })
     }
   }
 
@@ -120,7 +125,7 @@ class Highlighter extends React.PureComponent {
           selectionInfo={selectionInfo}
           bookId={bookId}
           highlight={highlight}
-          setSelectionText={setSelectionText}
+          // setSelectionText={setSelectionText}
           isEditingNote={isEditingNote}
           endEditingNote={this.endEditingNote}
         />
