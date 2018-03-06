@@ -11,6 +11,7 @@ import { Provider } from "react-redux"
 import GlobalNavigator from "./src/navigators/Global.js"
 
 import updateReader from "./src/utils/updateReader.js"
+import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch } from "./src/utils/syncUserData.js"
 
 const patchMiddleware = store => next => action => {
@@ -42,6 +43,8 @@ export default class App extends React.Component {
       Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
       updateReader(),
     ])
+
+    await updateDataStructure()  // needs to be after the persistStore call above
 
     this.setState({ isReady: true })
   }
