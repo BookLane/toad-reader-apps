@@ -1,21 +1,17 @@
 {
   "expo": {
     "name": "BibleMesh",
-    "description": "Toad Reader for BibleMesh",
+    "description": "An eReader for BibleMesh’s trusted theological resources.",
     "slug": "biblemesh-ereader",
     "privacy": "unlisted",
     "sdkVersion": "23.0.0",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "default",
     "primaryColor": "#dfe7f1",
     "icon": "./assets/icons/biblemesh_reader_logo.png",
     "notification": {
       "icon": "./assets/icons/biblemesh_sm_bw.png",
       "color": "#2c5b8e"
-    },
-    "loading": {
-      "icon": "./assets/icons/biblemesh_logo.png",
-      "hideExponentText": true
     },
     "androidStatusBar": {
       "backgroundColor": "#ffffff"
@@ -25,16 +21,34 @@
       "assetExts": ["ttf", "mp4"],
       "config": "rn-cli.config.js"
     },
-    "android": {
-      "package": "com.biblemesh.read"
+    "splash": {
+      "backgroundColor": "#FFFFFF",
+      "image": "./assets/icons/splash-phone.png"
     },
     "ios": {
-      "bundleIdentifier": "com.biblemesh.read",
-      "buildNumber": "1.0.0",
-      "supportsTablet": true,
-      "associatedDomains": [
-        "https://read.biblemesh.com"
-      ]
+      "bundleIdentifier": "com.biblemesh.ereader",
+      "buildNumber": "2.0.0",
+      "icon": "./assets/icons/biblemesh_reader_logo_ios.png",
+      "loadJSInBackgroundExperimental": true,
+      "splash": {
+        "backgroundColor": "#FFFFFF",
+        "image": "./assets/icons/splash-phone.png",
+        "tabletImage": "./assets/icons/splash-tablet.png"
+      },
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.biblemesh.ereader",
+      "versionCode": 25,
+      "splash": {
+        "backgroundColor": "#FFFFFF",
+        "ldpi": "./assets/icons/splash-tablet.png",
+        "mdpi": "./assets/icons/splash-tablet.png",
+        "hdpi": "./assets/icons/splash-tablet.png",
+        "xhdpi": "./assets/icons/splash-phone.png",
+        "xxhdpi": "./assets/icons/splash-phone.png",
+        "xxxhdpi": "./assets/icons/splash-phone.png"
+      }
     },
     "extra": {
       "READER_VERSION_TIMESTAMP": "1520325374",
