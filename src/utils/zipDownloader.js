@@ -40,7 +40,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
   zip.forEach((relativePath, file) => {
     if(file.dir) return
 
-    if(relativePath.match(/\.(jpeg|jpg|png|git|mp4|mp3|webm|otf|ttf|fnt)$/i)) {
+    if(relativePath.match(/\.(jpeg|jpg|png|git|mp4|mp3|webm|otf|ttf|fnt|eot|woff|woff2)$/i)) {
 
       // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
       // necessary in the future.
