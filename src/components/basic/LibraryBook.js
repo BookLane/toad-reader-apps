@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
 
-import { fetchZipAndAssets } from "../../utils/fetchEpub.js"
+import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
 import parseEpub from "../../utils/parseEpub.js"
 import { debounce, getBooksDir } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
