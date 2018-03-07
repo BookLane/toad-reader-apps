@@ -38,7 +38,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.biblemesh.ereader",
+      "package": "com.biblemesh.read",
       "versionCode": 25,
       "splash": {
         "backgroundColor": "#FFFFFF",
