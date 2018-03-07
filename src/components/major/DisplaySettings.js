@@ -178,7 +178,7 @@ class DisplaySettings extends React.PureComponent {
             </View> */}
           </View>
 
-          <View style={styles.settingContainer}>
+          {/* <View style={styles.settingContainer}>
             <View style={styles.setting}>
               <Text style={styles.heading}>{i18n("Theme")}</Text>
               <View>
@@ -200,7 +200,7 @@ class DisplaySettings extends React.PureComponent {
                 ))}
               </View>
             </View>
-          </View>
+          </View> */}
 
         </Card>
       </View>

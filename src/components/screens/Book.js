@@ -312,14 +312,14 @@ class Book extends React.Component {
   setFlatListEl = ref => this.flatListEl = ref
 
   options = [
-    {
-      text: i18n("Recommend this book"),
-      onPress: this.recommendBook,
-    },
-    {
-      text: i18n("My highlights and notes"),
-      onPress: this.goToHighlights,
-    },
+    // {
+    //   text: i18n("Recommend this book"),
+    //   onPress: this.recommendBook,
+    // },
+    // {
+    //   text: i18n("My highlights and notes"),
+    //   onPress: this.goToHighlights,
+    // },
     {
       text: i18n("Remove from device"),
       onPress: this.removeFromDevice,
