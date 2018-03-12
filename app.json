@@ -14,7 +14,8 @@
       "color": "#2c5b8e"
     },
     "androidStatusBar": {
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content"
     },
     "scheme": "biblemesh",
     "packagerOpts": {
