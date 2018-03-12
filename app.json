@@ -22,6 +22,12 @@
       "assetExts": ["ttf", "mp4"],
       "config": "rn-cli.config.js"
     },
+    "assetBundlePatterns": [
+      "node_modules/native-base/Fonts/Roboto.ttf",
+      "node_modules/native-base/Fonts/Roboto_medium.ttf",
+      "node_modules/native-base/Fonts/Ionicons.ttf",
+      "assets/images/**"
+    ],
     "splash": {
       "backgroundColor": "#FFFFFF",
       "image": "./assets/icons/splash-phone.png"

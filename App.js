@@ -40,13 +40,15 @@ export default class App extends React.Component {
         Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
         Ionicons: require("native-base/Fonts/Ionicons.ttf"),
       }),
-      Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
       updateReader(),
     ])
-
+    
     await updateDataStructure()  // needs to be after the persistStore call above
 
     this.setState({ isReady: true })
+
+    // no need to wait for the following, but preload anyway
+    Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
   }
 
   render() {
