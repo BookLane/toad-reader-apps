@@ -42,6 +42,7 @@
       "versionCode": 25,
       "splash": {
         "backgroundColor": "#FFFFFF",
+        "resizeMode": "contain",
         "ldpi": "./assets/icons/splash-tablet.png",
         "mdpi": "./assets/icons/splash-tablet.png",
         "hdpi": "./assets/icons/splash-tablet.png",
