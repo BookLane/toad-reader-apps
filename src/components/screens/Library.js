@@ -14,7 +14,6 @@ import LibraryList from "../major/LibraryList"
 import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
-import PageCaptureManager from "../major/PageCaptureManager"
 import AppHeader from "../basic/AppHeader.js";
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus,
@@ -245,8 +244,6 @@ class Library extends React.Component {
             ]}
           />
         }
-
-        <PageCaptureManager />
 
         {/* TODO: Add modal for error message */}
       </Container>

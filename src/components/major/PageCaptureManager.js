@@ -59,59 +59,55 @@ class PageCaptureManager extends React.Component {
   }
 
   getPageCaptureProps = (nextProps, nextState) => {
-    const { books, displaySettings } = nextProps || this.props
+    const { bookId, books, displaySettings } = nextProps || this.props
     const { skipList } = nextState || this.state
 
-    if(!books || !displaySettings) return null
+    if(!bookId || !books || !books[bookId] || !displaySettings) return null
 
-    for(let bookId in books) {
-      let { width, height } = Dimensions.get('window')
-      const book = books[bookId] || {}
-      const spines = book.spines
-      let pageCfisKey, spineIdRef, uriAsKey
+    let { width, height } = Dimensions.get('window')
+    const book = books[bookId]
+    const spines = book.spines
+    let pageCfisKey, spineIdRef, uriAsKey
 
-      const findSpineToDo = flip => {
-        if(flip) {
-          [ width, height ] = [ height, width ]
-        }
-        pageCfisKey = getPageCfisKey({ displaySettings, width, height })
-        return spines.some(thisSpine => {
-          const thisUriAsKey = getSnapshotURI({
-            bookId,
-            spineIdRef: thisSpine.idref,
-            pageCfisKey,
-          })
-          if(
-            (!thisSpine.pageCfis || thisSpine.pageCfis[pageCfisKey] == null)
-            && !(skipList[thisUriAsKey] || {}).skip
-          ) {
-            spineIdRef = thisSpine.idref
-            uriAsKey = thisUriAsKey
-            return true
-          }
+    const findSpineToDo = flip => {
+      if(flip) {
+        [ width, height ] = [ height, width ]
+      }
+      pageCfisKey = getPageCfisKey({ displaySettings, width, height })
+      return spines.some(thisSpine => {
+        const thisUriAsKey = getSnapshotURI({
+          bookId,
+          spineIdRef: thisSpine.idref,
+          pageCfisKey,
         })
-      }
-
-      if(book.downloadStatus != 2 || !spines) continue
-
-      findSpineToDo() || findSpineToDo(true)
-
-      if(!spineIdRef) continue
-
-      // set up no response timeout
-      this.captureAllottedTime = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
-      this.setupTimeout({ uriAsKey })
-
-      return {
-        bookId,
-        spineIdRef,
-        width,
-        height,
-        displaySettings,
-      }
+        if(
+          (!thisSpine.pageCfis || thisSpine.pageCfis[pageCfisKey] == null)
+          && !(skipList[thisUriAsKey] || {}).skip
+        ) {
+          spineIdRef = thisSpine.idref
+          uriAsKey = thisUriAsKey
+          return true
+        }
+      })
     }
 
-    return null
+    if(book.downloadStatus != 2 || !spines) return null
+
+    findSpineToDo() || findSpineToDo(true)
+
+    if(!spineIdRef) return null
+
+    // set up no response timeout
+    this.captureAllottedTime = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
+    this.setupTimeout({ uriAsKey })
+
+    return {
+      bookId,
+      spineIdRef,
+      width,
+      height,
+      displaySettings,
+    }
   }
 
   bookIsDownloaded = ({ uriAsKey, nextProps }) => {

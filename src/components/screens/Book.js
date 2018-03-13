@@ -15,6 +15,7 @@ import Options from "../major/Options"
 import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 import FullScreenSpin from '../basic/FullScreenSpin'
+import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
@@ -414,6 +415,11 @@ class Book extends React.Component {
           />
         }
         <Content />
+
+        <PageCaptureManager
+          bookId={bookId}
+        />
+
       </Container>
     )
   }
