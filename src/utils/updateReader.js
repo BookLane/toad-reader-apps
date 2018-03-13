@@ -8,16 +8,18 @@ const {
   READER_VERSION_TIMESTAMP,
 } = Expo.Constants.manifest.extra
 
-export const readerNeedsUpdate = async () => {
+export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   
   console.log(`Check reader...`)
 
   const versionTimestampOfCurrentReader = await AsyncStorage.getItem('readerVersionTimestamp')
 
   if(versionTimestampOfCurrentReader == READER_VERSION_TIMESTAMP) {
+    setReaderStatus({ readerStatus: "ready" })
     console.log(`Reader up-to-date.`)
     return false
   } else {
+    setReaderStatus({ readerStatus: "missing" })
     console.log(`Reader requires update.`)
     return true
   }
@@ -25,7 +27,7 @@ export const readerNeedsUpdate = async () => {
 
 export const updateReader = async ({ setReaderStatus }) => {
   
-  if(await readerNeedsUpdate()) {
+  if(await readerNeedsUpdate({ setReaderStatus })) {
     console.log(`Download updated reader...`)
     setReaderStatus({ readerStatus: "downloading" })
     
