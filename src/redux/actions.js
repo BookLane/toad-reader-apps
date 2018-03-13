@@ -134,3 +134,8 @@ export const setUserData = ({ bookId, userData, lastSuccessfulPatch }) => ({
   userData,
   lastSuccessfulPatch,
 })
+
+export const setReaderStatus = ({ readerStatus }) => ({
+  type: "SET_READER_STATUS",
+  readerStatus,
+})

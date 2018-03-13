@@ -8,30 +8,39 @@ const {
   READER_VERSION_TIMESTAMP,
 } = Expo.Constants.manifest.extra
 
-const updateReader = async () => {
+export const readerNeedsUpdate = async () => {
   
   console.log(`Check reader...`)
 
   const versionTimestampOfCurrentReader = await AsyncStorage.getItem('readerVersionTimestamp')
+
   if(versionTimestampOfCurrentReader == READER_VERSION_TIMESTAMP) {
     console.log(`Reader up-to-date.`)
-    return
+    return false
+  } else {
+    console.log(`Reader requires update.`)
+    return true
   }
+}
 
-  console.log(`Download updated reader...`)
+export const updateReader = async ({ setReaderStatus }) => {
   
-  const zipUrl = `https://s3-us-west-2.amazonaws.com/biblemesh-readium/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
-  const localBaseUri = `${FileSystem.documentDirectory}reader/`
-
-  await fetchZipAndAssets({
-    zipUrl,
-    localBaseUri,
-  })
-
-  await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
-
-  console.log(`Done downloading reader.`)
+  if(await readerNeedsUpdate()) {
+    console.log(`Download updated reader...`)
+    setReaderStatus({ readerStatus: "downloading" })
+    
+    const zipUrl = `https://s3-us-west-2.amazonaws.com/biblemesh-readium/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
+    const localBaseUri = `${FileSystem.documentDirectory}reader/`
+  
+    await fetchZipAndAssets({
+      zipUrl,
+      localBaseUri,
+    })
+  
+    await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
+  
+    setReaderStatus({ readerStatus: "ready" })
+    console.log(`Done downloading reader.`)
+  }
         
-}    
-        
-export default updateReader
+}

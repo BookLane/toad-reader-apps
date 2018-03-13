@@ -6,6 +6,7 @@ import { Container, Content, Text, View } from "native-base"
 import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
+import { updateReader } from "../../utils/updateReader.js"
 
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
@@ -16,7 +17,8 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 import PageCaptureManager from "../major/PageCaptureManager"
 import AppHeader from "../basic/AppHeader.js";
 
-import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus, removeAccount, updateAccount } from "../../redux/actions.js"
+import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus,
+         removeAccount, updateAccount, setReaderStatus } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -44,6 +46,12 @@ class Library extends React.Component {
 
   state = {
     showOptions: false,
+  }
+
+  componentWillMount() {
+    const { setReaderStatus } = this.props
+
+    updateReader({ setReaderStatus })
   }
 
   async fetchAll(nextProps) {
@@ -261,6 +269,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   removeAccount,
   updateAccount,
+  setReaderStatus,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

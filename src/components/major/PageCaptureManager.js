@@ -203,8 +203,13 @@ class PageCaptureManager extends React.Component {
   }
 
   render() {
-    const { books, displaySettings } = this.props
+    const { books, displaySettings, readerStatus } = this.props
     const { pageCaptureProps, skipList } = this.state
+
+    if(readerStatus !== 'ready') {
+      console.log('PageCaptureManager waiting for reader update.')
+      return null
+    }
 
     if(!pageCaptureProps) {
       console.log('PageCaptureManager at rest. Skip list:', skipList)
@@ -224,6 +229,7 @@ class PageCaptureManager extends React.Component {
 const mapStateToProps = (state) => ({
   books: state.books,
   displaySettings: state.displaySettings,
+  readerStatus: state.readerStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

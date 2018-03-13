@@ -14,6 +14,7 @@ import BookContents from "../major/BookContents"
 import Options from "../major/Options"
 import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
+import FullScreenSpin from '../basic/FullScreenSpin'
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
@@ -328,7 +329,7 @@ class Book extends React.Component {
 
   render() {
 
-    const { navigation, books, userDataByBookId, displaySettings } = this.props
+    const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
     const { bookId } = navigation.state.params
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo,
       snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo } = this.state
@@ -339,6 +340,14 @@ class Book extends React.Component {
     const { spineIdRef, pageIndexInSpine } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
     const { title } = (books && books[bookId]) || {}
+
+    if(readerStatus !== 'ready') {
+      return (
+        <Container>
+          <FullScreenSpin />
+        </Container>
+      )
+    }
 
     return (
       <Container>
@@ -414,6 +423,7 @@ const mapStateToProps = (state) => ({
   books: state.books,
   userDataByBookId: state.userDataByBookId,
   displaySettings: state.displaySettings,
+  readerStatus: state.readerStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

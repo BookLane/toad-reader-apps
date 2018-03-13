@@ -10,7 +10,6 @@ import { Provider } from "react-redux"
 
 import GlobalNavigator from "./src/navigators/Global.js"
 
-import updateReader from "./src/utils/updateReader.js"
 import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch } from "./src/utils/syncUserData.js"
 
@@ -40,7 +39,6 @@ export default class App extends React.Component {
         Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
         Ionicons: require("native-base/Fonts/Ionicons.ttf"),
       }),
-      updateReader(),
     ])
     
     await updateDataStructure()  // needs to be after the persistStore call above
@@ -53,8 +51,9 @@ export default class App extends React.Component {
   }
 
   render() {
+    const { isReady } = this.state
 
-    if (!this.state.isReady) {
+    if(!isReady) {
       return <Expo.AppLoading />
     }
 

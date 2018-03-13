@@ -153,5 +153,6 @@
   "highlights": {
     "onlyShowColor": null
   },
+  "readerStatus": "ready",
   "errorMessage": "There is something wrong"
 }
