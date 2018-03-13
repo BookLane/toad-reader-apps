@@ -48,7 +48,8 @@ export default class App extends React.Component {
     this.setState({ isReady: true })
 
     // no need to wait for the following, but preload anyway
-    Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
+    // Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
+    // the above line was causing a crash in development mode
   }
 
   render() {
