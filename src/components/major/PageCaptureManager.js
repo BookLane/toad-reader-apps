@@ -93,7 +93,8 @@ class PageCaptureManager extends React.Component {
 
     if(book.downloadStatus != 2 || !spines) return null
 
-    findSpineToDo() || findSpineToDo(true)
+    // findSpineToDo() || findSpineToDo(true)
+    findSpineToDo()
 
     if(!spineIdRef) return null
 
