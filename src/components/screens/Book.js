@@ -344,7 +344,9 @@ class Book extends React.Component {
     if(readerStatus !== 'ready') {
       return (
         <Container>
-          <FullScreenSpin />
+          <FullScreenSpin
+            text={i18n("Downloading updated reader...")}
+          />
         </Container>
       )
     }

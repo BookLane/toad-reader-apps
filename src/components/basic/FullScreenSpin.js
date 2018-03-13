@@ -1,5 +1,5 @@
 import React from "react"
-import { View } from "native-base"
+import { View, Text } from "native-base"
 import { StyleSheet } from "react-native"
 
 import Spin from "./Spin"
@@ -13,6 +13,11 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(255, 255, 255, .8)',
   },
+  textContainer: {
+    padding: "10%",
+    paddingTop: 0,
+    alignItems: "center",
+  },
   spacer: {
     flex: 1,
   },
@@ -20,7 +25,7 @@ const styles = StyleSheet.create({
 
 class FullScreenSpin extends React.Component {
   render() {
-    const { style } = this.props
+    const { style, text } = this.props
     
     return (
       <View style={[
@@ -28,6 +33,11 @@ class FullScreenSpin extends React.Component {
         style,
       ]}>
         <View style={styles.spacer} />
+        {text &&
+          <View style={styles.textContainer}>
+            <Text>{text}</Text>
+          </View>
+        }
         <Spin />
         <View style={styles.spacer} />
       </View>

@@ -3,6 +3,7 @@ import { StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, View } from "native-base"
+import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
@@ -67,6 +68,7 @@ class Login extends React.Component {
       `)
 
     } else {
+      this.askedForLoginInfoAtLeastOnce = true
       this.setState({ loading: false })
     }
     
@@ -137,7 +139,12 @@ class Login extends React.Component {
           ref={this.setWebViewEl}
           onMessage={this.onMessageEvent}
         />
-        {(loading || leaving) && <FullScreenSpin style={{ backgroundColor: 'white' }} />}
+        {(loading || leaving) &&
+          <FullScreenSpin
+            text={this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") : i18n("Loading login portal...")}
+            style={{ backgroundColor: 'white' }}
+          />
+        }
       </Container>
     )
   }

@@ -190,7 +190,10 @@ class Library extends React.Component {
             onLoad={this.logOurUrlOnLoad}
             onError={this.logOurUrlOnError}
           />
-          <FullScreenSpin style={{ backgroundColor: 'white' }} />
+          <FullScreenSpin
+            text={i18n("Logging out...")}
+            style={{ backgroundColor: 'white' }}
+          />
         </Container>
       )
     }
