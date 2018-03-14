@@ -3,10 +3,12 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Linking, Platform } from "react-native"
 import { StyleSheet } from "react-native"
+import i18n from "../../utils/i18n.js"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
-import Highlighter from "./Highlighter";
+import Highlighter from "./Highlighter"
+import BookPageMessage from "../basic/BookPageMessage"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
@@ -49,11 +51,12 @@ class BookPage extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { showSettings } = this.props
+    const { showSettings, capturingSnapshots } = this.props
     const { selectionInfo, noteInEdit } = this.state
 
     return (
       nextProps.showSettings !== showSettings
+      || nextProps.capturingSnapshots !== capturingSnapshots
       || nextState.selectionInfo !== selectionInfo
       || nextState.noteInEdit !== noteInEdit
     )
@@ -176,7 +179,7 @@ class BookPage extends React.Component {
 //   }
 
   render() {
-    const { bookId, showSettings, requestHideSettings, latest_location } = this.props
+    const { bookId, showSettings, requestHideSettings, latest_location, capturingSnapshots } = this.props
     const { selectionInfo, noteInEdit } = this.state
 
     return (
@@ -202,6 +205,12 @@ class BookPage extends React.Component {
             noteInEdit={noteInEdit}
             updateNoteInEdit={this.updateNoteInEdit}
             setSelectionText={this.setSelectionText}
+          />
+        }
+        {capturingSnapshots &&
+          <BookPageMessage
+            text={i18n("Capturing page thumbnails...")}
+            moreInfoText={i18n("We are creating thumbnail images for this book in the background. This may temporarily make page turning a bit less fluid.")}
           />
         }
       </View>

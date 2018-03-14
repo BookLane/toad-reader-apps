@@ -59,7 +59,7 @@ class PageCaptureManager extends React.Component {
   }
 
   getPageCaptureProps = (nextProps, nextState) => {
-    const { bookId, books, displaySettings } = nextProps || this.props
+    const { bookId, setCapturingSnapshots, books, displaySettings } = nextProps || this.props
     const { skipList } = nextState || this.state
 
     if(!bookId || !books || !books[bookId] || !displaySettings) return null
@@ -96,11 +96,16 @@ class PageCaptureManager extends React.Component {
     // findSpineToDo() || findSpineToDo(true)
     findSpineToDo()
 
-    if(!spineIdRef) return null
+    if(!spineIdRef) {
+      setCapturingSnapshots(false)
+      return null
+    }
 
     // set up no response timeout
     this.captureAllottedTime = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
     this.setupTimeout({ uriAsKey })
+
+    setCapturingSnapshots(true)
 
     return {
       bookId,

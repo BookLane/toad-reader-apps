@@ -122,6 +122,7 @@ class Book extends React.Component {
       snapshotZoomed: true,
       onZoomCompletion: null,
       statusBarHeight: StatusBar.currentHeight || 0,
+      capturingSnapshots: false,
     }
 
     this.getFreshUserData()
@@ -201,6 +202,8 @@ class Book extends React.Component {
   }
 
   updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
+
+  setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
 
   goToHref = ({ href }) => {
     this.setState({
@@ -332,7 +335,7 @@ class Book extends React.Component {
 
     const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
     const { bookId } = navigation.state.params
-    const { bookLoaded, mode, showOptions, showSettings, zoomToInfo,
+    const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
       snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
@@ -388,6 +391,7 @@ class Book extends React.Component {
             requestHideSettings={this.requestHideSettings}
             indicateLoaded={this.indicateLoaded}
             hrefToGoTo={hrefToGoTo}
+            capturingSnapshots={capturingSnapshots}
           />
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
@@ -418,6 +422,7 @@ class Book extends React.Component {
 
         <PageCaptureManager
           bookId={bookId}
+          setCapturingSnapshots={this.setCapturingSnapshots}
         />
 
       </Container>
