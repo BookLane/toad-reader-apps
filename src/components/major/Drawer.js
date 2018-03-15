@@ -125,7 +125,7 @@ class Drawer extends React.Component {
                 </Left>
                 <Body>
                   <Text>{i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName })}</Text>
-                  {hasMultipleAccountsForSingleIdp &&
+                  {!!hasMultipleAccountsForSingleIdp &&
                     <Text>{accounts[id].email}</Text>
                   }
                 </Body>

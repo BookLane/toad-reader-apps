@@ -193,12 +193,12 @@ class BookPage extends React.Component {
           initialDisplaySettings={getDisplaySettingsObj(this.props)}
           // setView={this.setView}
         />
-        {showSettings && 
+        {!!showSettings && 
           <DisplaySettings
             requestHide={requestHideSettings}
           />
         }
-        {selectionInfo &&
+        {!!selectionInfo &&
           <Highlighter
             bookId={bookId}
             selectionInfo={selectionInfo}
@@ -207,7 +207,7 @@ class BookPage extends React.Component {
             setSelectionText={this.setSelectionText}
           />
         }
-        {capturingSnapshots &&
+        {!!capturingSnapshots &&
           <BookPageMessage
             text={i18n("Capturing page thumbnails...")}
             moreInfoText={i18n("We are creating thumbnail images for this book in the background. This may temporarily make page turning a bit less fluid.")}

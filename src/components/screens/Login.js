@@ -139,7 +139,7 @@ class Login extends React.Component {
           ref={this.setWebViewEl}
           onMessage={this.onMessageEvent}
         />
-        {(loading || leaving) &&
+        {!!(loading || leaving) &&
           <FullScreenSpin
             text={this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") : i18n("Loading login portal...")}
             style={{ backgroundColor: 'white' }}

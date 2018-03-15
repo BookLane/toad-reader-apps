@@ -129,7 +129,7 @@ class Highlighter extends React.PureComponent {
           isEditingNote={isEditingNote}
           endEditingNote={this.endEditingNote}
         />
-        {highlight && 
+        {!!highlight && 
           <HighlighterNotes
             note={isEditingNote ? noteInEdit : highlight.note}
             updateNoteInEdit={updateNoteInEdit}

@@ -146,7 +146,7 @@ class HighlighterLabel extends React.PureComponent {
         >
           {highlight ? selectionInfo.text : i18n("Highlight the selection")}
         </Text>
-        {highlight && !isEditingNote &&
+        {!!(highlight && !isEditingNote) &&
           <TouchableComponent
             onPress={this.toggleHighlight1}
           >
@@ -188,14 +188,14 @@ class HighlighterLabel extends React.PureComponent {
       <View style={styles.container}>
         {highlightButton}
         <View style={styles.emptySpace} />
-        {highlight && !isEditingNote &&
+        {!!(highlight && !isEditingNote) &&
           <HighlighterShareIcon
             bookId={bookId}
             selectionInfo={selectionInfo}
             highlight={highlight}
           />
         }
-        {isEditingNote &&
+        {!!isEditingNote &&
           <Button primary
             style={styles.doneButton}
             onPress={endEditingNote}

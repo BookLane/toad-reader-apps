@@ -226,7 +226,7 @@ class Library extends React.Component {
               )
           )
         }
-        {showOptions && 
+        {!!showOptions && 
           <Options
             requestHide={this.hideOptions}
             headerText={i18n("Sort by...")}

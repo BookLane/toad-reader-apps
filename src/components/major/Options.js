@@ -51,7 +51,7 @@ class Options extends React.PureComponent {
           </View>
         </TouchableWithoutFeedback>
         <Card style={styles.options}>
-          {headerText && 
+          {!!headerText && 
             <CardItem header>
               <Text
                 style={styles.header}
@@ -69,7 +69,7 @@ class Options extends React.PureComponent {
               }}
             >
               <Text>{option.text}</Text>
-              {option.selected &&
+              {!!option.selected &&
                 <Icon
                   name="checkmark"
                   style={styles.icon}

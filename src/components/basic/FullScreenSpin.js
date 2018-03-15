@@ -33,7 +33,7 @@ class FullScreenSpin extends React.Component {
         style,
       ]}>
         <View style={styles.spacer} />
-        {text &&
+        {!!text &&
           <View style={styles.textContainer}>
             <Text>{text}</Text>
           </View>
