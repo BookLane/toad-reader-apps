@@ -33,12 +33,38 @@
     }
   },
   "fetchingBooks": false,
+  "bookDownloadQueue": [
+    {
+      "bookId": 65,
+      "zipUrl": "https://demo.toadreader.com/epub_content/book_65/book.epub",
+      "localBaseUri": "???/books/65",
+      "cookie": "some_auth_cookie: 1234;"
+    },
+    {
+      "bookId": 66,
+      "zipUrl": "https://demo.toadreader.com/epub_content/book_66/book.epub",
+      "localBaseUri": "???/books/66",
+      "cookie": "some_auth_cookie: 1234;"
+    }
+  ],
   "books": {
     "65": {
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
       "author": "John Piper",
       "epubSizeInMB": 3,
       "totalCharacterCount": 938004,
+      "coverFilename": "cover.png",
+      "accounts": {
+        "1:-1": {}
+      },
+      "downloadStatus": 1,
+      "downloadProgress": 67
+    },
+    "66": {
+      "title": "God is the Gospel",
+      "author": "John Piper",
+      "epubSizeInMB": 5,
+      "totalCharacterCount": 231004,
       "coverFilename": "cover.png",
       "accounts": {
         "1:-1": {}

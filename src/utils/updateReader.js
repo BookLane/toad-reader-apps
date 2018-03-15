@@ -37,6 +37,7 @@ export const updateReader = async ({ setReaderStatus }) => {
     await fetchZipAndAssets({
       zipUrl,
       localBaseUri,
+      forceFreshDownload: true,
     })
   
     await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)

@@ -1,5 +1,6 @@
 import Expo, { FileSystem } from "expo"
 import i18n from "./i18n.js"
+import { AsyncStorage } from "react-native"
 import { ActionSheet, Toast } from "native-base"
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox.js"
@@ -12,6 +13,7 @@ const removeEpub = async ({ books, bookId, setDownloadStatus, clearTocAndSpines,
   setDownloadStatus({ bookId, downloadStatus: 0 })
   clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
+  AsyncStorage.removeItem(`assetDownloads:${getBooksDir()}${bookId}/`)
   await FileSystem.deleteAsync(`${getBooksDir()}${bookId}`, { idempotent: true })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
   
