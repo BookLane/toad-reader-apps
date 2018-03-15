@@ -71,12 +71,12 @@ class Cover extends React.Component {
           },
         ]}
       >
-        {(!coverFilename || imageError) &&
+        {!!(!coverFilename || imageError) &&
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{title}</Text>
           </View>
         }
-        {coverFilename &&
+        {!!coverFilename &&
           <Image
             source={{ uri }}
             style={styles.image}
