@@ -5,7 +5,7 @@
     "slug": "biblemesh-ereader",
     "privacy": "unlisted",
     "sdkVersion": "25.0.0",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "orientation": "default",
     "primaryColor": "#dfe7f1",
     "icon": "./assets/icons/biblemesh_reader_logo.png",
@@ -23,40 +23,26 @@
       "config": "rn-cli.config.js"
     },
     "assetBundlePatterns": [
-      "node_modules/native-base/Fonts/Roboto.ttf",
+      "node_modules/native-base/Fonts/Roboto.ttf",  
       "node_modules/native-base/Fonts/Roboto_medium.ttf",
       "node_modules/native-base/Fonts/Ionicons.ttf",
       "assets/images/**"
     ],
     "splash": {
       "backgroundColor": "#FFFFFF",
-      "image": "./assets/icons/splash-phone.png"
+      "resizeMode": "cover",
+      "image": "./assets/icons/splash-tablet.png"
     },
     "ios": {
       "bundleIdentifier": "com.biblemesh.ereader",
-      "buildNumber": "2.0.0",
+      "buildNumber": "2.0.1",
       "icon": "./assets/icons/biblemesh_reader_logo_ios.png",
       "loadJSInBackgroundExperimental": true,
-      "splash": {
-        "backgroundColor": "#FFFFFF",
-        "image": "./assets/icons/splash-phone.png",
-        "tabletImage": "./assets/icons/splash-tablet.png"
-      },
       "supportsTablet": true
     },
     "android": {
       "package": "com.biblemesh.read",
-      "versionCode": 25,
-      "splash": {
-        "backgroundColor": "#FFFFFF",
-        "resizeMode": "contain",
-        "ldpi": "./assets/icons/splash-tablet.png",
-        "mdpi": "./assets/icons/splash-tablet.png",
-        "hdpi": "./assets/icons/splash-tablet.png",
-        "xhdpi": "./assets/icons/splash-phone.png",
-        "xxhdpi": "./assets/icons/splash-phone.png",
-        "xxxhdpi": "./assets/icons/splash-phone.png"
-      }
+      "versionCode": 26
     },
     "extra": {
       "READER_VERSION_TIMESTAMP": "1520325374",
