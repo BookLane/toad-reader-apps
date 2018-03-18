@@ -1,5 +1,5 @@
 import { FileSystem } from "expo"
-import { AsyncStorage } from "react-native"
+import { AsyncStorage, Platform } from "react-native"
 import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 
@@ -89,80 +89,56 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
 
   console.log(`Downloading zip assets for ${zipUrl}...`)
 
-  await new Promise(resolve => {
+  let upToDateAssetDownloads = [ ...assetDownloads ]
+  const saveAssetList = async assetDownload => {
+    upToDateAssetDownloads = upToDateAssetDownloads.filter(upToDateAssetDownload => upToDateAssetDownload !== assetDownload)
+    await AsyncStorage.setItem(assetDownloadsKey, JSON.stringify(upToDateAssetDownloads))
+  }
+  
+  await saveAssetList()
 
-    let numberLeftToDownload = assetDownloads.length
+  const downloadBook = async assetDownload => {
+    const progressCallback = async info => {
+      // TODO: use this to calculate download progress
 
-    const markAssetDone = index => {
-      assetDownloads[index] = 'done'
-      if(--numberLeftToDownload === 0) {
-        AsyncStorage.removeItem(assetDownloadsKey)
-        resolve()
-      } else {
-        AsyncStorage.setItem(assetDownloadsKey, JSON.stringify(assetDownloads))
-      }
     }
 
-    const doneDownloadingAsset = index => {
-      console.log(`Done downloading zip asset from ${assetDownloads[index].url}`)
-      markAssetDone(index)
-    }
-  
-    const catchOnDownloadingAsset = (index, err) => {
-      // make sure it was because it was paused
-      if(err.message !== "Canceled") {
-        console.log(`ERROR downloading zip asset from ${assetDownloads[index].url}`, err)
-        markAssetDone(index)
-      }
-    }
-  
-    const downloadResumables = assetDownloads.map((assetDownload, index) => {
-      if(assetDownloads[index] === 'done') {
-        numberLeftToDownload--
-        return null
-      }
+    // create the downloadResumable
+    const downloadResumable = new FileSystem.DownloadResumable(
+      assetDownload.url,
+      assetDownload.fileUri,
+      assetDownload.options,
+      progressCallback,
+    )
 
-      const downloadResumable = new FileSystem.DownloadResumable(
-        assetDownload.url,
-        assetDownload.fileUri,
-        assetDownload.options,
-        (a,b) => { console.log('a,b', a, b) }, // TODO: use this to calculate download progress
-        assetDownload.resumeData || null
-      )
-  
-      console.log(`Downloading zip asset from ${assetDownload.url}...`)
-      downloadResumable.downloadAsync()
-        .then(() => doneDownloadingAsset(index))
-        .catch(err => catchOnDownloadingAsset(index, err))
-  
-      return downloadResumable
-    })
-  
-    const runDownloadSegment = () => {
-      if(numberLeftToDownload === 0) return
-
-      downloadResumables.map((downloadResumable, index) => {
-        if(assetDownloads[index] === 'done') return true
-  
-        console.log(`Running download segment on zip asset from ${assetDownloads[index].url}...`)
-        downloadResumable.pauseAsync()
-        assetDownloads[index].resumeData = downloadResumable.savable().resumeData
-        downloadResumable.resumeAsync()
-          .then(() => doneDownloadingAsset(index))
-          .catch(err => catchOnDownloadingAsset(index, err))
-      })
-
-      AsyncStorage.setItem(assetDownloadsKey, JSON.stringify(assetDownloads))
-        
-      setTimeout(runDownloadSegment, maxDownloadSegment)
+    // start the download
+    try {
+      await downloadResumable.downloadAsync()
+    } catch(err) {
+      console.log(`ERROR downloading zip asset from ${assetDownload.url}`, err)
     }
 
-    if(numberLeftToDownload === 0) {
-      resolve()
-    } else {
-      runDownloadSegment()
+    // remove it from the list of assets to get
+    await saveAssetList(assetDownload)
+
+    // done with this asset download
+  }
+
+  if(Platform.OS === 'android') {
+    // download them one at a time
+    for(index in assetDownloads) {
+      await downloadBook(assetDownloads[index])
     }
-  })
+
+  } else {
+    // download them all at once
+    await Promise.all(assetDownloads.map(async assetDownload => {
+      await downloadBook(assetDownload)
+    }))
+  }
+
+  await AsyncStorage.removeItem(assetDownloadsKey)
+
   
   if(checkWasCancelled && checkWasCancelled()) {
     await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
