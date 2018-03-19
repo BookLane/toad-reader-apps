@@ -79,34 +79,65 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
     zip.forEach((relativePath, file) => {
       if(file.dir) return
 
-      if(relativePath.match(/\.(jpeg|jpg|png|git|mp4|mp3|webm|otf|ttf|fnt|eot|woff|woff2)$/i)) {
-
-        // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
-        // necessary in the future.
-        // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
-
-
-        assetDownloads.push({
-          url: `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
-          fileUri: `${localBaseUri}${relativePath}`,
-          options: {
-            headers: {
-              Cookie: cookie,
-            },
-          },
-        })
-
-        return
-      }
-
       writePromises.push(
         new Promise(resolve => {
-          file.async('string').then(content => {
-            FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content).then(resolve)
-          })
+
+          if(relativePath.match(/\.(jpeg|jpg|png|gif|mp4|mp3|webm|otf|ttf|fnt|eot|woff|woff2)$/i)) {
+
+            // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
+            // necessary in the future.
+            // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
+
+            const fileTypeMap = {
+              jpeg: 'image/jpeg',
+              jpg: 'image/jpeg',
+              png: 'image/png',
+              gif: 'image/gif',
+              mp4: 'video/mp4',
+              mp3: 'audio/mpeg',
+              webm: 'video/webm',
+              otf: 'font/opentype',
+              ttf: 'application/x-font-truetype',
+              fnt: 'image/jpeg',
+              eot: 'application/vnd.ms-fontobject',
+              woff: 'application/font-woff',
+              woff2: 'application/font-woff2',
+            }
+
+            const catchFunc = () => {
+              console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Trying to re-download...`)
+              assetDownloads.push({
+                url: `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
+                fileUri: `${localBaseUri}${relativePath}`,
+                options: {
+                  headers: {
+                    Cookie: cookie,
+                  },
+                },
+              })
+              resolve()
+            }
+
+            file.async('base64')
+              .then(base64 => {
+                const mimeType = fileTypeMap[relativePath.split('.').pop()]
+                const b64uri = `data:${mimeType};base64,${base64}`
+                console.log(`Trying data URL save for ${relativePath} with mime-type of ${mimeType}`)
+                FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
+                  .then(resolve)
+                  .catch(catchFunc)
+              })
+              .catch(catchFunc)
+
+          } else {
+            // it is a text file
+            file.async('string').then(content => {
+              FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content).then(resolve)
+            })
+          }
+
         })
       )
-      
     })
 
     await Promise.all(writePromises)
@@ -117,64 +148,68 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
     
   }
 
-  console.log(`Downloading zip assets for ${zipUrl}...`)
+  if(assetDownloads.length > 0) {
 
-  let upToDateAssetDownloads = [ ...assetDownloads ]
-  const saveAssetList = async assetDownload => {
-    upToDateAssetDownloads = upToDateAssetDownloads.filter(upToDateAssetDownload => upToDateAssetDownload !== assetDownload)
-    await AsyncStorage.setItem(assetDownloadsKey, JSON.stringify(upToDateAssetDownloads))
-  }
-  
-  await saveAssetList()
+    console.log(`Downloading zip assets for ${zipUrl}...`)
 
-  if(isCanceled) return
-  
-  const downloadZip = async assetDownload => {
-    const progressCallback = async info => {
-      // TODO: use this to calculate download progress
-
+    let upToDateAssetDownloads = [ ...assetDownloads ]
+    const saveAssetList = async assetDownload => {
+      upToDateAssetDownloads = upToDateAssetDownloads.filter(upToDateAssetDownload => upToDateAssetDownload !== assetDownload)
+      await AsyncStorage.setItem(assetDownloadsKey, JSON.stringify(upToDateAssetDownloads))
     }
-
-    // create the downloadResumable
-    const downloadResumable = new FileSystem.DownloadResumable(
-      assetDownload.url,
-      assetDownload.fileUri,
-      assetDownload.options,
-      progressCallback,
-    )
-
-    // start the download
-    try {
-      await downloadResumable.downloadAsync()
-    } catch(err) {
-      console.log(`ERROR downloading zip asset from ${assetDownload.url}`, err)
-    }
+    
+    await saveAssetList()
 
     if(isCanceled) return
     
-    // remove it from the list of assets to get
-    await saveAssetList(assetDownload)
+    const downloadZip = async assetDownload => {
+      const progressCallback = async info => {
+        // TODO: use this to calculate download progress
 
-    // done with this asset download
-  }
+      }
 
-  if(Platform.OS === 'android') {
-    // download them one at a time
-    for(index in assetDownloads) {
-      await downloadZip(assetDownloads[index])
+      // create the downloadResumable
+      const downloadResumable = new FileSystem.DownloadResumable(
+        assetDownload.url,
+        assetDownload.fileUri,
+        assetDownload.options,
+        progressCallback,
+      )
+
+      // start the download
+      try {
+        await downloadResumable.downloadAsync()
+      } catch(err) {
+        console.log(`ERROR downloading zip asset from ${assetDownload.url}`, err)
+      }
+
+      if(isCanceled) return
+      
+      // remove it from the list of assets to get
+      await saveAssetList(assetDownload)
+
+      // done with this asset download
+    }
+
+    if(Platform.OS === 'android') {
+      // download them one at a time
+      for(index in assetDownloads) {
+        await downloadZip(assetDownloads[index])
+        if(isCanceled) return
+      }
+
+    } else {
+      // download them all at once
+      await Promise.all(assetDownloads.map(async assetDownload => {
+        if(isCanceled) return  // skip all remaining if canceled
+        await downloadZip(assetDownload)
+      }))
       if(isCanceled) return
     }
 
-  } else {
-    // download them all at once
-    await Promise.all(assetDownloads.map(async assetDownload => {
-      if(isCanceled) return  // skip all remaining if canceled
-      await downloadZip(assetDownload)
-    }))
-    if(isCanceled) return
-  }
+    await AsyncStorage.removeItem(assetDownloadsKey)
 
-  await AsyncStorage.removeItem(assetDownloadsKey)
+  }
 
   console.log(`Done downloading ${zipUrl} and assets.`)
   return true
