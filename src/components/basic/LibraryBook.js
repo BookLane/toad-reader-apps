@@ -3,12 +3,10 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
 
-import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
-import parseEpub from "../../utils/parseEpub.js"
 import { debounce, getBooksDir } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, setTocAndSpines, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
+import { setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
 
 class LibraryBook extends React.Component {
 
@@ -18,7 +16,7 @@ class LibraryBook extends React.Component {
   }
 
   onPress = async () => {
-    const { bookId, navigation, setDownloadStatus, setTocAndSpines, idps, accounts, books } = this.props
+    const { bookId, navigation, setDownloadStatus, pushToBookDownloadQueue, idps, accounts, books } = this.props
     const downloadStatus = this.getDownloadStatus(bookId)
     const accountId = Object.keys(books[bookId].accounts)[0]
 
@@ -27,15 +25,7 @@ class LibraryBook extends React.Component {
       
     } else if(downloadStatus == 0) {
       setDownloadStatus({ bookId, downloadStatus: 1 })
-      await fetchZipAndAssets({
-        zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
-        localBaseUri: `${getBooksDir()}${bookId}/`,
-        cookie: accounts[accountId].cookie,
-        checkWasCancelled: () => (this.getDownloadStatus(bookId) != 1),
-      })
-      const { toc, spines } = await parseEpub({ bookId })
-      setTocAndSpines({ bookId, toc, spines })
-      setDownloadStatus({ bookId, downloadStatus: 2 })
+      pushToBookDownloadQueue({ bookId })
     }
   }
   
@@ -69,7 +59,7 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
-  setTocAndSpines,
+  pushToBookDownloadQueue,
   clearTocAndSpines,
   clearUserDataExceptProgress,
 }, dispatch)

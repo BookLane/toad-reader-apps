@@ -15,6 +15,7 @@ import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
 import AppHeader from "../basic/AppHeader.js";
+import BookDownloader from "../major/BookDownloader.js"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus,
          removeAccount, updateAccount, setReaderStatus } from "../../redux/actions.js"
@@ -245,6 +246,7 @@ class Library extends React.Component {
           />
         }
 
+        <BookDownloader />
         {/* TODO: Add modal for error message */}
       </Container>
     )

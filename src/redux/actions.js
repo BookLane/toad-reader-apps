@@ -35,6 +35,16 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
+export const pushToBookDownloadQueue = ({ bookId }) => ({
+  type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
+  bookId,
+})
+
+export const removeFromBookDownloadQueue = ({ bookId }) => ({
+  type: "REMOVE_FROM_BOOK_DOWNLOAD_QUEUE",
+  bookId,
+})
+
 export const setTocAndSpines = ({ bookId, toc, spines }) => ({
   type: "SET_TOC_AND_SPINES",
   bookId,

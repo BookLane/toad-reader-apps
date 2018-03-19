@@ -2,6 +2,7 @@ import { combineReducers } from "redux"
 import reduceReducers from "reduce-reducers"
 
 import accounts from "./reducers/accounts.js"
+import bookDownloadQueue from "./reducers/bookDownloadQueue.js"
 import books from "./reducers/books.js"
 import currentBookId from "./reducers/currentBookId.js"
 import displaySettings from "./reducers/displaySettings.js"
@@ -17,6 +18,7 @@ import setSort from "./reducers/setSort.js"
 
 const slicedReducers = combineReducers({
   accounts,
+  bookDownloadQueue,
   books,
   currentBookId,
   displaySettings,

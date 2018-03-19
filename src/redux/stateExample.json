@@ -33,20 +33,7 @@
     }
   },
   "fetchingBooks": false,
-  "bookDownloadQueue": [
-    {
-      "bookId": 65,
-      "zipUrl": "https://demo.toadreader.com/epub_content/book_65/book.epub",
-      "localBaseUri": "???/books/65",
-      "cookie": "some_auth_cookie: 1234;"
-    },
-    {
-      "bookId": 66,
-      "zipUrl": "https://demo.toadreader.com/epub_content/book_66/book.epub",
-      "localBaseUri": "???/books/66",
-      "cookie": "some_auth_cookie: 1234;"
-    }
-  ],
+  "bookDownloadQueue": [65, 66],
   "books": {
     "65": {
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
