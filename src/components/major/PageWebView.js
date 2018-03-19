@@ -31,6 +31,45 @@ const styles = StyleSheet.create({
   },
 })
 
+// see https://stackoverflow.com/questions/2725156/complete-list-of-html-tag-attributes-which-have-a-url-value
+const urlTagAttrMapping = {
+  a: ['href'],
+  applet: ['archive','codebase'],
+  area: ['href'],
+  audio: ['src'],
+  base: ['href'],
+  blockquote: ['cite'],
+  body: ['background'],
+  button: ['formaction'],
+  command: ['icon'],
+  del: ['cite'],
+  embed: ['src'],
+  form: ['action'],
+  frame: ['longdesc','src'],
+  head: ['profile'],
+  html: ['manifest'],
+  iframe: ['longdesc','src'],
+  image: ['href'],
+  img: ['longdesc','src','usemap'],
+  input: ['src','usemap','formaction'],
+  ins: ['cite'],
+  link: ['href'],
+  object: ['archive','classid','codebase','data','usemap'],
+  q: ['cite'],
+  script: ['src'],
+  source: ['src'],
+  track: ['src'],
+  video: ['poster','src'],
+}
+// not worrying about these at present, but may need to in the future
+// const multiUrlAttrMapping = {
+//   img: ['srcset'],
+//   source: ['srcset'],
+//   object: ['archive'],
+//   // applet: ['archive'],  // these are comma-separated and not something we can handle
+//   meta: ['content'],
+// }
+
 const getHighlightsObj = props => (props.userDataByBookId[props.bookId] || {}).highlights || []
 const getLatestLocation = props => (props.userDataByBookId[props.bookId] || {}).latest_location
 
@@ -109,7 +148,19 @@ class PageWebView extends React.Component {
         FileSystem.readAsStringAsync(`${uri}`)
           .then(async fileText => {
             if(Platform.OS === 'android') {
-              const fileTextPieces = fileText.split(/(<img\s(?:[^"'>]|".*?"|'.*?')*?src=["']?)([^"'\s]*)/g)
+              // According to https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
+              // single quotes can be in URLs. If so, the code below will not work properly.
+              const urlRegEx = new RegExp(
+                `(${
+                  Object.keys(urlTagAttrMapping).map(tag => (
+                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}=["']?`).join('|')
+                  ))
+                })([^"'\\s>]*)` +
+                `|(url\\(["'\\s]*)([^\\)"'\\s]*)` +
+                `|(@import\\s+["'])([^"']*)`,
+                "g"
+              )
+              const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
               await Promise.all(
                 fileTextPieces.map((htmlOrUrl, index) => (
                   new Promise(resolve => {
