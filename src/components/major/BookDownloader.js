@@ -26,11 +26,22 @@ class BookDownloader extends React.Component {
     this.unmounted = true
   }
 
+  downloadWasCanceled = bookId => {
+    const { books={} } = this.props
+    const { downloadStatus } = books[bookId] || {}
+
+    if(downloadStatus === 0) {
+      this.setState({ currentDownloadBookId: null })
+      return true
+    }
+
+    return false
+  }
+
   downloadABook = async (nextProps, nextState) => {
     const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue,
             setDownloadStatus, setTocAndSpines } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
- console.log('bookDownloadQueue', bookDownloadQueue)
 
     if(currentDownloadBookId) return
     if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return
@@ -53,7 +64,9 @@ class BookDownloader extends React.Component {
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
     })
+    if(this.downloadWasCanceled(bookId)) return  // check this after each await
     const { toc, spines } = await parseEpub({ bookId })
+    if(this.downloadWasCanceled(bookId)) return
     setTocAndSpines({ bookId, toc, spines })
     setDownloadStatus({ bookId, downloadStatus: 2 })
     removeFromBookDownloadQueue({ bookId })

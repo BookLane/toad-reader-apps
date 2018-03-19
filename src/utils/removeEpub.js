@@ -4,18 +4,22 @@ import { AsyncStorage } from "react-native"
 import { ActionSheet, Toast } from "native-base"
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox.js"
+import { cancelFetch } from "./zipDownloader.js"
 
 const {
   REMOVE_ICON_COLOR,
 } = Expo.Constants.manifest.extra
 
 const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
+  const localBaseUri = `${getBooksDir()}${bookId}/`
+
   removeFromBookDownloadQueue({ bookId })
+  cancelFetch({ localBaseUri })
   setDownloadStatus({ bookId, downloadStatus: 0 })
   clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
-  AsyncStorage.removeItem(`assetDownloads:${getBooksDir()}${bookId}/`)
-  await FileSystem.deleteAsync(`${getBooksDir()}${bookId}`, { idempotent: true })
+  AsyncStorage.removeItem(`assetDownloads:${localBaseUri}`)
+  await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
   
   if(removeCover) {

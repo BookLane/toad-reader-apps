@@ -4,13 +4,33 @@ import JSZipUtils from "jszip-utils"
 import JSZip from "jszip"
 
 const maxDownloadSegment = 7000  // ms
+const cancelDownloadFunctions = {}
+
+export const cancelFetch = async ({ localBaseUri }) => {
+  const cancelFunc = cancelDownloadFunctions[localBaseUri]
+  if(cancelFunc) {
+    delete cancelDownloadFunctions[localBaseUri]
+    await cancelFunc()
+  }
+}
 
 export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWasCancelled, forceFreshDownload }) => {
 
+  let isCanceled = false
   const assetDownloadsKey = `assetDownloads:${localBaseUri}`
+
+  // cancel previous attempt to download to this location and set up the new cancel function
+  await cancelFetch({ localBaseUri })
+  cancelDownloadFunctions[localBaseUri] = async () => {
+    isCanceled = true
+    AsyncStorage.removeItem(assetDownloadsKey)
+    await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
+  }
 
   // assetDownloads will be set if it has already retrieved the zip and written the text files, but not finished the assets
   let assetDownloads = forceFreshDownload ? null : JSON.parse(await AsyncStorage.getItem(assetDownloadsKey) || "null")
+
+  if(isCanceled) return  // after each await, check if we are still going
   
   if(!assetDownloads) {
 
@@ -27,11 +47,17 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
       })
     })
 
+    if(isCanceled) return
+
     // clear out directory, if exists
     await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
 
+    if(isCanceled) return
+
     // unzip
     const zip = await JSZip.loadAsync(zipData)
+
+    if(isCanceled) return
 
     // create all necessary dirs
     const dirs = []
@@ -44,7 +70,9 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
       }
     })
     await Promise.all(distinctDirs.map(dir => FileSystem.makeDirectoryAsync(dir, { intermediates: true })))
-  
+
+    if(isCanceled) return
+    
     // write unzipped files 
     const writePromises = []
     assetDownloads = []
@@ -83,6 +111,8 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
 
     await Promise.all(writePromises)
 
+    if(isCanceled) return
+
     console.log(`Done downloading zip from ${zipUrl}`)
     
   }
@@ -97,6 +127,8 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
   
   await saveAssetList()
 
+  if(isCanceled) return
+  
   const downloadZip = async assetDownload => {
     const progressCallback = async info => {
       // TODO: use this to calculate download progress
@@ -118,6 +150,8 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
       console.log(`ERROR downloading zip asset from ${assetDownload.url}`, err)
     }
 
+    if(isCanceled) return
+    
     // remove it from the list of assets to get
     await saveAssetList(assetDownload)
 
@@ -128,22 +162,20 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
     // download them one at a time
     for(index in assetDownloads) {
       await downloadZip(assetDownloads[index])
+      if(isCanceled) return
     }
 
   } else {
     // download them all at once
     await Promise.all(assetDownloads.map(async assetDownload => {
+      if(isCanceled) return  // skip all remaining if canceled
       await downloadZip(assetDownload)
     }))
+    if(isCanceled) return
   }
 
   await AsyncStorage.removeItem(assetDownloadsKey)
 
-  
-  if(checkWasCancelled && checkWasCancelled()) {
-    await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
-    return
-  }
-
   console.log(`Done downloading ${zipUrl} and assets.`)
+  return true
 }

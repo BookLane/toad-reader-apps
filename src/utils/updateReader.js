@@ -34,12 +34,17 @@ export const updateReader = async ({ setReaderStatus }) => {
     const zipUrl = `https://s3-us-west-2.amazonaws.com/biblemesh-readium/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
     const localBaseUri = `${FileSystem.documentDirectory}reader/`
   
-    await fetchZipAndAssets({
+    const success = await fetchZipAndAssets({
       zipUrl,
       localBaseUri,
       forceFreshDownload: true,
     })
   
+    if(!success) {
+      // TODO: show error message
+      return
+    }
+
     await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
   
     setReaderStatus({ readerStatus: "ready" })
