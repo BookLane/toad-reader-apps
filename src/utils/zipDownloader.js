@@ -97,7 +97,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
   
   await saveAssetList()
 
-  const downloadBook = async assetDownload => {
+  const downloadZip = async assetDownload => {
     const progressCallback = async info => {
       // TODO: use this to calculate download progress
 
@@ -127,13 +127,13 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
   if(Platform.OS === 'android') {
     // download them one at a time
     for(index in assetDownloads) {
-      await downloadBook(assetDownloads[index])
+      await downloadZip(assetDownloads[index])
     }
 
   } else {
     // download them all at once
     await Promise.all(assetDownloads.map(async assetDownload => {
-      await downloadBook(assetDownload)
+      await downloadZip(assetDownload)
     }))
   }
 
