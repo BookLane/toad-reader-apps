@@ -107,7 +107,28 @@ class PageWebView extends React.Component {
       case 'getFileAsText':
         const { uri } = data.payload
         FileSystem.readAsStringAsync(`${uri}`)
-          .then(fileText => {
+          .then(async fileText => {
+            if(Platform.OS === 'android') {
+              const fileTextPieces = fileText.split(/(<img\s(?:[^"'>]|".*?"|'.*?')*?src=["']?)([^"'\s]*)/g)
+              await Promise.all(
+                fileTextPieces.map((htmlOrUrl, index) => (
+                  new Promise(resolve => {
+                    if(index % 3 !== 2) {
+                      // this is in between the matches
+                      resolve()
+                      return
+                    }
+                    FileSystem.readAsStringAsync(`${uri.replace(/[^\/]*$/, '')}${htmlOrUrl}-dataURL.txt`)
+                      .then(imgDataURL => {
+                        fileTextPieces[index] = imgDataURL
+                        resolve()
+                      })
+                      .catch(resolve)
+                  })
+                ))
+              )
+              fileText = fileTextPieces.join("")
+            }
             postMessage(this.webView, 'fileAsText', {
               uri,
               fileText,
