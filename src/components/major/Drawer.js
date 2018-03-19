@@ -8,7 +8,7 @@ import i18n from "../../utils/i18n.js"
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 import { debounce } from "../../utils/toolbox.js"
 
-import { setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
 const {
   REQUEST_OPTIONS,
@@ -201,6 +201,7 @@ const mapStateToProps = (state) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  removeFromBookDownloadQueue,
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,

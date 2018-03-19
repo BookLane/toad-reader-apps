@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native"
 import { debounce, getBooksDir } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 
-import { setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
+import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
 
 class LibraryBook extends React.Component {
 
@@ -58,6 +58,7 @@ const mapStateToProps = (state) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  removeFromBookDownloadQueue,
   setDownloadStatus,
   pushToBookDownloadQueue,
   clearTocAndSpines,

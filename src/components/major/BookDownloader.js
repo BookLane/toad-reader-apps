@@ -30,6 +30,7 @@ class BookDownloader extends React.Component {
     const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue,
             setDownloadStatus, setTocAndSpines } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
+ console.log('bookDownloadQueue', bookDownloadQueue)
 
     if(currentDownloadBookId) return
     if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return
