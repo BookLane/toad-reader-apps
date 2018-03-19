@@ -65,10 +65,14 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
 
   if(isCanceled) return
   
+  console.log(`Writing files from ${zipUrl}...`)
+  
   // write unzipped files 
   const writePromises = []
   zip.forEach((relativePath, file) => {
     if(file.dir) return
+
+    relativePath = relativePath.replace(/ /g, '%20')
 
     writePromises.push(
       new Promise(resolve => {
@@ -99,11 +103,11 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
             .then(base64 => {
               const mimeType = fileTypeMap[relativePath.split('.').pop()]
               const b64uri = `data:${mimeType};base64,${base64}`
-              console.log(`Trying data URL save for ${relativePath} with mime-type of ${mimeType}`)
+              // console.log(`Trying data URL save for ${relativePath} with mime-type of ${mimeType}`)
               FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
                 .then(resolve)
                 .catch(() => {
-                  console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file.`)
+                  // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file.`)
                   FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri).then(resolve)
                 })
             })
@@ -123,4 +127,5 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, checkWas
 
   console.log(`Done downloading zip from ${zipUrl}`)
   
+  return true // indicates success
 }
