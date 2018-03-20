@@ -145,7 +145,7 @@ class PageWebView extends React.Component {
 
       case 'getFileAsText':
         const { uri } = data.payload
-        FileSystem.readAsStringAsync(`${uri}`)
+        FileSystem.readAsStringAsync(`${uri.replace(/#.*$/, '')}`)
           .then(async fileText => {
             if(Platform.OS === 'android') {
               // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
@@ -178,7 +178,18 @@ class PageWebView extends React.Component {
                       resolve()
                       return
                     }
-                    FileSystem.readAsStringAsync(`${uri.replace(/[^\/]*$/, '')}${htmlOrUrl.replace(/\\'/g, "'").replace(/\s/g, '%20')}-dataURL.txt`)
+                    FileSystem.readAsStringAsync(
+                      `${
+                        uri
+                          .replace(/#.*$/, '')
+                          .replace(/[^\/]*$/, '')
+                      }${
+                        htmlOrUrl
+                          .replace(/#.*$/, '')
+                          .replace(/\\'/g, "'")
+                          .replace(/\s/g, '%20')
+                      }-dataURL.txt`
+                    )
                       .then(imgDataURL => {
                         fileTextPieces[index] = imgDataURL
                         resolve()

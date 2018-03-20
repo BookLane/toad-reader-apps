@@ -6,7 +6,7 @@ import { parseString } from "xml2js"
 import { getBooksDir } from "./toolbox.js"
 
 const getXmlAsObj = async url => {
-  const xml = await FileSystem.readAsStringAsync(url)
+  const xml = await FileSystem.readAsStringAsync(url.replace(/#.*$/, ''))
   return await new Promise(
     (resolve, reject) => parseString(xml, (err, result) => {
       if(err) {
