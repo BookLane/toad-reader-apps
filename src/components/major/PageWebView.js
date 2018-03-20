@@ -201,8 +201,9 @@ class PageWebView extends React.Component {
               fileText = fileTextPieces.join("")
             }
 
-            // fix a syntax error that causes the epub not to display
-            fileText = fileText.replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')
+            fileText = fileText
+              .replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')  // fix a syntax error that causes the epub not to display
+              .replace(/\u2029/g, '')  // this character causes the page not to load
 
             postMessage(this.webView, 'fileAsText', {
               uri,
