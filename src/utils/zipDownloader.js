@@ -130,8 +130,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
                       .then(resolve)
                       .catch(reject)
                   })
-              })
-              .catch(reject)
+              }, reject)
 
           } else {
             // it is a text file
@@ -140,8 +139,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
                 FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content)
                   .then(resolve)
                   .catch(reject)
-              })
-              .catch(reject)
+              }, reject)
           }
 
         })
