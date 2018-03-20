@@ -2,7 +2,7 @@ import { FileSystem } from "expo"
 import JSZip from "jszip"
 import { fetchWithProgress } from './toolbox.js'
 
-const fileTypeMap = {
+export const binaryExtensionToMimeTypeMap = {
   aac: 'audio/aac',
   aif: 'audio/aiff',
   aifc: 'audio/aiff',
@@ -102,26 +102,26 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
     console.log(`Writing files from ${zipUrl}...`)
     
     // write unzipped files 
-    const writePromises = []
+    const writeFunctions = []
     zip.forEach((relativePath, file) => {
       if(file.dir) return
 
       relativePath = relativePath.replace(/ /g, '%20')
 
-      writePromises.push(
-        new Promise((resolve, reject) => {
+      writeFunctions.push(
+        (resolve, reject) => {
 
-          const mimeType = fileTypeMap[relativePath.split('.').pop()]
+          const binaryMimeType = binaryExtensionToMimeTypeMap[relativePath.split('.').pop()]
 
-          if(mimeType) {
+          if(binaryMimeType) {
 
             // TODO: For now, I need to do backflips to get this to work. Hopefully not in the future...
             // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
 
             file.async('base64')
               .then(base64 => {
-                const b64uri = `data:${mimeType};base64,${base64}`
-                // console.log(`Trying data URL save for ${relativePath} with mime-type of ${mimeType}`)
+                const b64uri = `data:${binaryMimeType};base64,${base64}`
+                // console.log(`Trying data URL save for ${relativePath} with mime-type of ${binaryMimeType}`)
                 FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
                   .then(resolve)
                   .catch(() => {
@@ -142,12 +142,19 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
               }, reject)
           }
 
-        })
+        }
       )
     })
 
-    await Promise.all(writePromises)
-
+    const writeSegmentSize = 10
+    for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
+      await Promise.all(
+        writeFunctions
+          .slice(i, i+writeSegmentSize)
+          .map(writeFunction => new Promise(writeFunction))
+      )
+    }
+    
     if(await isCanceled()) return
     
     console.log(`Done downloading zip from ${zipUrl}`)

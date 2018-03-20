@@ -6,6 +6,7 @@ import { FileSystem } from "expo"
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"
+import { binaryExtensionToMimeTypeMap } from "../../utils/zipDownloader.js"
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -173,7 +174,8 @@ class PageWebView extends React.Component {
               await Promise.all(
                 fileTextPieces.map((htmlOrUrl, index) => (
                   new Promise(resolve => {
-                    if(index % 3 !== 2) {
+                    const binaryMimeType = binaryExtensionToMimeTypeMap[htmlOrUrl.replace(/#.*$/, '').split('.').pop()]
+                    if(index % 3 !== 2 || !binaryMimeType) {
                       // this is in between the matches
                       resolve()
                       return
