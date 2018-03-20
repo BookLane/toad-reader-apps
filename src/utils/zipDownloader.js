@@ -102,7 +102,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
                 FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
                   .then(resolve)
                   .catch(() => {
-                    // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file.`)
+                    // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
                     FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
                       .then(resolve)
                       .catch(reject)

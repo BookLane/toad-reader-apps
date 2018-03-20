@@ -49,7 +49,7 @@ const urlTagAttrMapping = {
   head: ['profile'],
   html: ['manifest'],
   iframe: ['longdesc','src'],
-  image: ['href'],
+  image: ['href','xlink:href'],
   img: ['longdesc','src','usemap'],
   input: ['src','usemap','formaction'],
   ins: ['cite'],
@@ -154,7 +154,7 @@ class PageWebView extends React.Component {
                 `(${
                   Object.keys(urlTagAttrMapping).map(tag => (
                     urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}=["']?`).join('|')
-                  ))
+                  )).join('|')
                 })([^"'\\s>]*)` +
                 `|(url\\(["'\\s]*)([^\\)"'\\s]*)` +
                 `|(@import\\s+["'])([^"']*)`,
