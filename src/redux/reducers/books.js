@@ -58,8 +58,9 @@ export default function(state = initialState, action) {
             },
           },
         }
+        return newState
       }
-      return newState
+      return state
 
     case "SET_DOWNLOADED_STATUS":
       if(newState[action.bookId]) {
@@ -71,8 +72,9 @@ export default function(state = initialState, action) {
           ...newState[action.bookId],
           downloadStatus: action.downloadStatus,
         }
+        return newState
       }
-      return newState
+      return state
 
     case "SET_TOC_AND_SPINES":
       if(newState[action.bookId]) {
@@ -81,8 +83,9 @@ export default function(state = initialState, action) {
           toc: action.toc,
           spines: action.spines,
         }
+        return newState
       }
-      return newState
+      return state
 
     case "CLEAR_TOC_AND_SPINES":
       if(newState[action.bookId]) {
@@ -91,8 +94,9 @@ export default function(state = initialState, action) {
         }
         delete newState[action.bookId].toc
         delete newState[action.bookId].spines
+        return newState
       }
-      return newState
+      return state
 
     case "ADD_SPINE_PAGE_CFIS":
       const objToInsert = { [action.key]: action.pageCfis }
@@ -112,8 +116,9 @@ export default function(state = initialState, action) {
               : spine
           ))
         }
+        return newState
       }
-      return newState
+      return state
 
     case "CLEAR_ALL_SPINE_PAGE_CFIS":
       if(newState[action.bookId]) {
@@ -125,8 +130,9 @@ export default function(state = initialState, action) {
             return newSpine
           }),
         }
+        return newState
       }
-      return newState
+      return state
 
   }
 
