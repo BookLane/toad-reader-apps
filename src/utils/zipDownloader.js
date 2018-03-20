@@ -2,6 +2,26 @@ import { FileSystem } from "expo"
 import JSZip from "jszip"
 import { fetchWithProgress } from './toolbox.js'
 
+const fileTypeMap = {
+  eot: 'application/vnd.ms-fontobject',
+  fnt: 'image/jpeg',
+  gif: 'image/gif',
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpeg',
+  mp4: 'video/mp4',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/m4a',
+  ogg: 'application/ogg',
+  otf: 'font/opentype',
+  png: 'image/png',
+  smil: 'application/smil',
+  ttf: 'application/x-font-truetype',
+  wav: 'audio/wav',
+  webm: 'video/webm',
+  woff: 'application/font-woff',
+  woff2: 'application/font-woff2',
+}
+
 const cancelDownloadByLocalBaseUri = {}
 const abortFunctionsByLocalBaseUri = {}
 
@@ -72,31 +92,15 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
       writePromises.push(
         new Promise((resolve, reject) => {
 
-          if(relativePath.match(/\.(jpeg|jpg|png|gif|mp4|mp3|webm|otf|ttf|fnt|eot|woff|woff2)$/i)) {
+          const mimeType = fileTypeMap[relativePath.split('.').pop()]
 
-            // TODO: For now, I need to re-download all non-text resources. Hopefully, this will not be
-            // necessary in the future.
+          if(mimeType) {
+
+            // TODO: For now, I need to do backflips to get this to work. Hopefully not in the future...
             // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
-
-            const fileTypeMap = {
-              jpeg: 'image/jpeg',
-              jpg: 'image/jpeg',
-              png: 'image/png',
-              gif: 'image/gif',
-              mp4: 'video/mp4',
-              mp3: 'audio/mpeg',
-              webm: 'video/webm',
-              otf: 'font/opentype',
-              ttf: 'application/x-font-truetype',
-              fnt: 'image/jpeg',
-              eot: 'application/vnd.ms-fontobject',
-              woff: 'application/font-woff',
-              woff2: 'application/font-woff2',
-            }
 
             file.async('base64')
               .then(base64 => {
-                const mimeType = fileTypeMap[relativePath.split('.').pop()]
                 const b64uri = `data:${mimeType};base64,${base64}`
                 // console.log(`Trying data URL save for ${relativePath} with mime-type of ${mimeType}`)
                 FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
