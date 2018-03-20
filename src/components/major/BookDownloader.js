@@ -59,14 +59,20 @@ class BookDownloader extends React.Component {
     console.log(`Download book with bookId ${bookId}...`)
 
     setDownloadStatus({ bookId, downloadStatus: 1 })
+    let throttleLastRan = 0
+    let throttleTimeout
     await fetchZipAndAssets({
       zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       progressCallback: perc => {
-        setDownloadProgress({
-          bookId,
-          downloadProgress: parseInt(perc * 100, 10),
-        })
+        const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
+        clearTimeout(throttleTimeout)
+        throttleTimeout = setTimeout(() => {
+          setDownloadProgress({
+            bookId,
+            downloadProgress: parseInt(perc * 100, 10),
+          })
+        }, throttleWaitTime)
       }
     })
     if(this.downloadWasCanceled(bookId)) return  // check this after each await

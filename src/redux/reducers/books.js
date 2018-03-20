@@ -61,26 +61,12 @@ export default function(state = initialState, action) {
       }
       return newState
 
-    case "SET_DOWNLOADED_PROGRESS":
-      if(newState[action.bookId]) {
-        if(newState[action.bookId].downloadProgress === action.downloadProgress) {
-          // no change
-          return state
-        }
-        newState[action.bookId] = {
-          ...newState[action.bookId],
-          downloadProgress: action.downloadProgress,
-        }
-      }
-      return newState
-
     case "SET_DOWNLOADED_STATUS":
       if(newState[action.bookId]) {
         if(action.downloadStatus == 0) {
           delete newState[action.bookId].toc
           delete newState[action.bookId].spines
         }
-        delete newState[action.bookId].downloadProgress
         newState[action.bookId] = {
           ...newState[action.bookId],
           downloadStatus: action.downloadStatus,

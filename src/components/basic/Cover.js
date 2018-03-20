@@ -1,5 +1,7 @@
 import React from "react"
 import { FileSystem } from "expo"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { View, Text } from "native-base"
 import { Image, StyleSheet } from "react-native"
 
@@ -55,8 +57,9 @@ class Cover extends React.Component {
   }
   
   render() {
-    const { bookId, bookInfo, bookWidth } = this.props
-    const { title, coverFilename, downloadProgress, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { bookId, bookInfo, bookWidth, downloadProgressByBookId } = this.props
+    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const downloadProgress = downloadProgressByBookId[bookId]
     const { imageError, imageQueryStringIndex } = this.state
 
     const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
@@ -97,4 +100,11 @@ class Cover extends React.Component {
   }
 }
 
-export default Cover
+const mapStateToProps = (state) => ({
+  downloadProgressByBookId: state.downloadProgressByBookId,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(Cover)
