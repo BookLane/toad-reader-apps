@@ -70,7 +70,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
       relativePath = relativePath.replace(/ /g, '%20')
 
       writePromises.push(
-        new Promise(resolve => {
+        new Promise((resolve, reject) => {
 
           if(relativePath.match(/\.(jpeg|jpg|png|gif|mp4|mp3|webm|otf|ttf|fnt|eot|woff|woff2)$/i)) {
 
@@ -103,15 +103,22 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
                   .then(resolve)
                   .catch(() => {
                     // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file.`)
-                    FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri).then(resolve)
+                    FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
+                      .then(resolve)
+                      .catch(reject)
                   })
               })
+              .catch(reject)
 
           } else {
             // it is a text file
-            file.async('string').then(content => {
-              FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content).then(resolve)
-            })
+            file.async('string')
+              .then(content => {
+                FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content)
+                  .then(resolve)
+                  .catch(reject)
+              })
+              .catch(reject)
           }
 
         })
@@ -127,7 +134,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
     return true // indicates success
 
   } catch(err) {
-    console.log(`ERROR downloading zip from ${zipUrl}`)
+    console.log(`ERROR downloading zip from ${zipUrl}`, err && err.message)
     await isCanceled(true)
   }
 }
