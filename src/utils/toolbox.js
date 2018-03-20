@@ -176,3 +176,43 @@ export const debounce = (func, ...params) => {
     setTimeout(() => lastDebounce = undefined, 1500)
   }
 }
+
+export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback }) => (
+  new Promise((resolve, reject) => {
+    const xhr = new window.XMLHttpRequest()
+
+    xhr.open('GET', url, true)
+
+    // recent browsers
+    if("responseType" in xhr) {
+      xhr.responseType = "arraybuffer"
+    }
+
+    // older browser
+    if(xhr.overrideMimeType) {
+      xhr.overrideMimeType("text/plain; charset=x-user-defined")
+    }
+
+    if(progressCallback) {
+      xhr.onprogress = evt => {
+        progressCallback(evt.loaded / evt.total)
+      }
+    }
+
+    xhr.onreadystatechange = evt => {
+      if(xhr.readyState === 4) {
+        if(xhr.status === 200 || xhr.status === 0) {
+          resolve(xhr.response || xhr.responseText)
+        } else {
+          reject(`Ajax error for ${url} : ${xhr.status} ${xhr.statusText}`)
+        }
+      }
+    }
+
+    xhr.send()
+
+    if(abortFunctionCallback) {
+      abortFunctionCallback(xhr.abort.bind(xhr))
+    }
+  })
+)

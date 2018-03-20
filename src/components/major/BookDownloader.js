@@ -39,7 +39,7 @@ class BookDownloader extends React.Component {
   }
 
   downloadABook = async (nextProps, nextState) => {
-    const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue,
+    const { idps, bookDownloadQueue, books, removeFromBookDownloadQueue,
             setDownloadStatus, setTocAndSpines } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
@@ -62,7 +62,6 @@ class BookDownloader extends React.Component {
     await fetchZipAndAssets({
       zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
-      cookie: accounts[accountId].cookie,
     })
     if(this.downloadWasCanceled(bookId)) return  // check this after each await
     const { toc, spines } = await parseEpub({ bookId })
@@ -82,7 +81,6 @@ class BookDownloader extends React.Component {
 
 const mapStateToProps = (state) => ({
   idps: state.idps,
-  accounts: state.accounts,
   bookDownloadQueue: state.bookDownloadQueue,
   books: state.books,
 })

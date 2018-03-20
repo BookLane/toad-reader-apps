@@ -1,8 +1,6 @@
 // See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
 
 import { FileSystem } from "expo"
-import JSZipUtils from "jszip-utils"
-import JSZip from "jszip"
 import { parseString } from "xml2js"
 
 import { getBooksDir } from "./toolbox.js"

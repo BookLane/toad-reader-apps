@@ -37,7 +37,6 @@ export const updateReader = async ({ setReaderStatus }) => {
     const success = await fetchZipAndAssets({
       zipUrl,
       localBaseUri,
-      forceFreshDownload: true,
     })
   
     if(!success) {
