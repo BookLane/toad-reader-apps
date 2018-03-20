@@ -148,16 +148,25 @@ class PageWebView extends React.Component {
         FileSystem.readAsStringAsync(`${uri}`)
           .then(async fileText => {
             if(Platform.OS === 'android') {
-              // According to https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
-              // single quotes can be in URLs. If so, the code below will not work properly.
+              // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
+              const anyCharButDoubleQuoteGroup = `([^"]*)`
+              const anyCharButSingleQuoteGroup = `((?:\\\\'|[^'])*)`
               const urlRegEx = new RegExp(
                 `(${
                   Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}=["']?`).join('|')
+                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*"`).join('|')
                   )).join('|')
-                })([^"'\\s>]*)` +
-                `|(url\\(["'\\s]*)([^\\)"'\\s]*)` +
-                `|(@import\\s+["'])([^"']*)`,
+                })${anyCharButDoubleQuoteGroup}` +
+                `|(${
+                  Object.keys(urlTagAttrMapping).map(tag => (
+                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*'`).join('|')
+                  )).join('|')
+                })${anyCharButSingleQuoteGroup}` +
+                `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +
+                `|(url\\(\\s*')${anyCharButSingleQuoteGroup}` +
+                `|(url\\(\\s*)([^\\)\\s]*)` +
+                `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
+                `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
                 "g"
               )
               const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
@@ -169,7 +178,7 @@ class PageWebView extends React.Component {
                       resolve()
                       return
                     }
-                    FileSystem.readAsStringAsync(`${uri.replace(/[^\/]*$/, '')}${htmlOrUrl}-dataURL.txt`)
+                    FileSystem.readAsStringAsync(`${uri.replace(/[^\/]*$/, '')}${htmlOrUrl.replace(/\\'/g, "'").replace(/\s/g, '%20')}-dataURL.txt`)
                       .then(imgDataURL => {
                         fileTextPieces[index] = imgDataURL
                         resolve()
