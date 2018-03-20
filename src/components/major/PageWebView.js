@@ -167,7 +167,7 @@ class PageWebView extends React.Component {
                 `|(url\\(\\s*)([^\\)\\s]*)` +
                 `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
                 `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
-                "g"
+                "gi"
               )
               const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
               await Promise.all(
@@ -189,6 +189,10 @@ class PageWebView extends React.Component {
               )
               fileText = fileTextPieces.join("")
             }
+
+            // fix a syntax error that causes the epub not to display
+            fileText = fileText.replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')
+
             postMessage(this.webView, 'fileAsText', {
               uri,
               fileText,
