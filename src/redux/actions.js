@@ -29,6 +29,12 @@ export const updateBookAccount = ({ bookId, accountId, accountInfo }) => ({
   accountInfo,
 })
 
+export const setDownloadProgress = ({ bookId, downloadProgress }) => ({
+  type: "SET_DOWNLOADED_PROGRESS",
+  bookId,
+  downloadProgress,
+})
+
 export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   type: "SET_DOWNLOADED_STATUS",
   bookId,

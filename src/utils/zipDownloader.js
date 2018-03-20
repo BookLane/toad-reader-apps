@@ -15,7 +15,7 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback }) => {
 
   // set up the cancel function
   const isCanceled = async force => {
@@ -35,7 +35,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri }) => {
 
     // get the zip file
     const zipData = await fetchWithProgress(zipUrl, {
-      progressCallback: perc => console.log(perc),
+      progressCallback,
       abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
     })
 

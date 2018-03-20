@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
 class FullScreenSpin extends React.Component {
   render() {
-    const { style, text } = this.props
+    const { style, text, percentage } = this.props
     
     return (
       <View style={[
@@ -38,7 +38,9 @@ class FullScreenSpin extends React.Component {
             <Text>{text}</Text>
           </View>
         }
-        <Spin />
+        <Spin
+          percentage={percentage}
+        />
         <View style={styles.spacer} />
       </View>
     )

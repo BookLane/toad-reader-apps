@@ -56,7 +56,7 @@ class Cover extends React.Component {
   
   render() {
     const { bookId, bookInfo, bookWidth } = this.props
-    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+    const { title, coverFilename, downloadProgress, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
     const { imageError, imageQueryStringIndex } = this.state
 
     const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
@@ -84,7 +84,11 @@ class Cover extends React.Component {
             onError={this.imageOnError}
           />
         }
-        {downloadStatus == 1 && <FullScreenSpin />}
+        {downloadStatus == 1 &&
+          <FullScreenSpin
+            percentage={downloadProgress}
+          />
+        }
         {downloadStatus == 2 && <CoverCheck />}
         {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
         {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
