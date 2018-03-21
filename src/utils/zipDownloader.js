@@ -118,7 +118,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
           const doResolve = () => {
             numAssetsDone++
-            progressCallback(zipDownloadPortionOfProgress + ((1 - zipDownloadPortionOfProgress) * (numAssetsDone / numAssets)))
+            progressCallback && progressCallback(zipDownloadPortionOfProgress + ((1 - zipDownloadPortionOfProgress) * (numAssetsDone / numAssets)))
             resolve()
           }
 
