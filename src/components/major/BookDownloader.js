@@ -39,7 +39,7 @@ class BookDownloader extends React.Component {
   }
 
   downloadABook = async (nextProps, nextState) => {
-    const { idps, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
+    const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
             setDownloadStatus, setTocAndSpines } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
@@ -64,6 +64,7 @@ class BookDownloader extends React.Component {
     await fetchZipAndAssets({
       zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
+      cookie: accounts[accountId].cookie,
       progressCallback: perc => {
         const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
         clearTimeout(throttleTimeout)
@@ -93,6 +94,7 @@ class BookDownloader extends React.Component {
 
 const mapStateToProps = (state) => ({
   idps: state.idps,
+  accounts: state.accounts,
   bookDownloadQueue: state.bookDownloadQueue,
   books: state.books,
 })

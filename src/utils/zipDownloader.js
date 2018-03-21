@@ -54,7 +54,7 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback }) => {
 
   // set up the cancel function
   const isCanceled = async force => {
@@ -100,7 +100,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
     if(await isCanceled()) return
     
     console.log(`Writing files from ${zipUrl}...`)
-    
+
     // write unzipped files 
     const writeFunctions = []
     zip.forEach((relativePath, file) => {
@@ -118,19 +118,38 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, progressCallback
             // TODO: For now, I need to do backflips to get this to work. Hopefully not in the future...
             // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
 
-            file.async('base64')
-              .then(base64 => {
-                const b64uri = `data:${binaryMimeType};base64,${base64}`
-                // console.log(`Trying data URL save for ${relativePath} with mime-type of ${binaryMimeType}`)
-                FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
-                  .then(resolve)
-                  .catch(() => {
-                    // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
-                    FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
+            file.async('arraybuffer')
+              .then(arrayBuffer => {
+                if(arrayBuffer.byteLength < 1000000) {
+                  file.async('base64')
+                  .then(base64 => {
+                    const b64uri = `data:${binaryMimeType};base64,${base64}`
+                    // console.log(`Trying data URL save for ${relativePath} with mime-type of ${binaryMimeType}`)
+                    FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
                       .then(resolve)
-                      .catch(reject)
-                  })
-              }, reject)
+                      .catch(() => {
+                        // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
+                        FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
+                          .then(resolve)
+                          .catch(reject)
+                      })
+                  }, reject)
+                
+                } else {
+                  console.log(`Redownload ${relativePath} because it is too big to save as data URL...`);
+                  // it will crash the app from overload of memory; redownload it instead
+                  (new FileSystem.DownloadResumable(
+                    `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
+                    `${localBaseUri}${relativePath}`,
+                    {
+                      headers: {
+                        Cookie: cookie,
+                      },
+                    }
+                  )).downloadAsync().then(resolve)
+                }
+              })
+          
 
           } else {
             // it is a text file
