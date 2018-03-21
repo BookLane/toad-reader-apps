@@ -25,7 +25,7 @@ class Spin extends React.Component {
     if(percentage) {
       return (
         <View style={styles.container}>
-          <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} />
+          <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} animated={false} />
         </View>
       )
     }
