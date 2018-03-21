@@ -65,13 +65,13 @@ class BookDownloader extends React.Component {
       zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
-      progressCallback: perc => {
+      progressCallback: progress => {
         const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
         clearTimeout(throttleTimeout)
         throttleTimeout = setTimeout(() => {
           setDownloadProgress({
             bookId,
-            downloadProgress: parseInt(perc * 100, 10),
+            downloadProgress: parseInt(progress * 100, 10),
           })
         }, throttleWaitTime)
       }
