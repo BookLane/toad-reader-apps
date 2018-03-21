@@ -72,9 +72,11 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
     console.log(`Downloading zip from ${zipUrl}...`)
 
+    const zipDownloadPortionOfProgress = .75
+
     // get the zip file
     const zipData = await fetchWithProgress(zipUrl, {
-      progressCallback,
+      progressCallback: progressCallback ? progress => progressCallback(progress * zipDownloadPortionOfProgress) : null,
       abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
     })
 
@@ -102,14 +104,23 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     console.log(`Writing files from ${zipUrl}...`)
 
     // write unzipped files 
+    let numAssets = 0
+    let numAssetsDone = 0
     const writeFunctions = []
     zip.forEach((relativePath, file) => {
       if(file.dir) return
-
+      
+      numAssets++
       relativePath = relativePath.replace(/ /g, '%20')
 
       writeFunctions.push(
         (resolve, reject) => {
+
+          const doResolve = () => {
+            numAssetsDone++
+            progressCallback(zipDownloadPortionOfProgress + ((1 - zipDownloadPortionOfProgress) * (numAssetsDone / numAssets)))
+            resolve()
+          }
 
           const binaryMimeType = binaryExtensionToMimeTypeMap[relativePath.split('.').pop()]
 
@@ -126,11 +137,11 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                     const b64uri = `data:${binaryMimeType};base64,${base64}`
                     // console.log(`Trying data URL save for ${relativePath} with mime-type of ${binaryMimeType}`)
                     FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
-                      .then(resolve)
+                      .then(doResolve)
                       .catch(() => {
                         // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
                         FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
-                          .then(resolve)
+                          .then(doResolve)
                           .catch(reject)
                       })
                   }, reject)
@@ -146,7 +157,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                         Cookie: cookie,
                       },
                     }
-                  )).downloadAsync().then(resolve)
+                  )).downloadAsync().then(doResolve)
                 }
               })
           
@@ -156,7 +167,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
             file.async('string')
               .then(content => {
                 FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}`, content)
-                  .then(resolve)
+                  .then(doResolve)
                   .catch(reject)
               }, reject)
           }
