@@ -77,7 +77,17 @@ export default async ({ bookId }) => {
 
   const tocLabelsByHref = {}
   const opfRelativeUriPieces = opfRelativeUri.split('/')
-  if(opfRelativeUriPieces.length > 1) opfRelativeUriPieces.pop()
+  opfRelativeUriPieces.pop()
+  const opfDir = opfRelativeUriPieces.join('/') + (opfRelativeUriPieces.length > 0 ? '/' : '')
+
+  const setLabelsByHref = ({ href, label }) => {
+    tocLabelsByHref[href] = label
+
+    const hrefWithoutHash = href.replace(/#.*$/, '')
+    if(hrefWithoutHash !== href && tocLabelsByHref[hrefWithoutHash] === undefined) {
+      tocLabelsByHref[hrefWithoutHash] = label
+    }
+  }
 
   if(opfObj.package.$.version.match(/^3(\.|$)/)) {
     // it is an epub 3
@@ -89,7 +99,7 @@ export default async ({ bookId }) => {
 
       ;(opfObj.package.manifest[0].item || []).some(item => {
         if(((item.$ && item.$.properties) || "").split(" ").includes('nav')) {
-          navRelativeUri = `${opfRelativeUriPieces.join('/')}/${item.$.href}`
+          navRelativeUri = `${opfDir}${item.$.href}`
           return true
         }
       })
@@ -97,7 +107,7 @@ export default async ({ bookId }) => {
       if(!navRelativeUri) {
         (opfObj.package.spine[0].itemref || []).some(itemref => {
           if(((itemref.$ && itemref.$.properties) || "").split(" ").includes('nav') && opfManifestItems[itemref.$.idref]) {
-            navRelativeUri = `${opfRelativeUriPieces.join('/')}/${opfManifestItems[itemref.$.idref].$.href}`
+            navRelativeUri = `${opfDir}${opfManifestItems[itemref.$.idref].$.href}`
             return true
           }
         })
@@ -121,7 +131,7 @@ export default async ({ bookId }) => {
             
             if(!label || !href) return null
 
-            tocLabelsByHref[href] = label
+            setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
@@ -153,7 +163,7 @@ export default async ({ bookId }) => {
     
     try {
       
-      const navRelativeUri = `${opfRelativeUriPieces.join('/')}/${opfManifestItems[opfObj.package.spine[0].$.toc].$.href}`
+      const navRelativeUri = `${opfDir}${opfManifestItems[opfObj.package.spine[0].$.toc].$.href}`
       const navObj = await getXmlAsObj(`${localBaseUri}${navRelativeUri}`)
   
       const getEpub2TocObjInfo = cont => (
@@ -173,6 +183,8 @@ export default async ({ bookId }) => {
             if(!label || !href) return null
 
             tocLabelsByHref[href] = label
+
+            setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
