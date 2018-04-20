@@ -12,16 +12,39 @@ import { addSpinePageCfis } from "../../redux/actions.js"
 
 class PageCapture extends React.Component {
 
+  state = {
+    shiftStyle: undefined,
+  }
+
   componentDidMount() {
     this.getPageInfo()
   }
 
+  componentWillReceiveProps(nextProps) {
+    if(getSnapshotURI(nextProps) !== getSnapshotURI(this.props)) {
+      this.setState({ shiftStyle: undefined })
+    }
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    return getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
+    const { shiftStyle } = this.state
+    
+    return (
+      getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
+      || nextState.shiftStyle !== shiftStyle
+    )
   }
 
   componentDidUpdate() {
-    this.getPageInfo()
+    const { shiftStyle } = this.state
+
+    if(shiftStyle === undefined) {
+      this.getPageInfo()
+    }
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true
   }
 
   getPageInfo = () => {
@@ -43,60 +66,60 @@ class PageCapture extends React.Component {
 
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
-        this.numPages = data.payload.numPages
-        this.pageCfis = []
+        const numPages = data.payload.pageCfis.length
 
         reportInfoOrCapture(this.props)
-
-        return true
-
-      case 'pageChanged':
-
-        if(spineIdRef !== data.payload.newSpineIdRef) return // just in case
-
-        // record cfi
-        this.pageCfis.push(data.payload.newCfi)
 
         const { pageWidth, pageHeight } = getPageSize({ width, height })
+        const pageIndexInSpine = 0
+        
+        await new Promise(resolve => {
+          const shiftAndSnap = () => {
+            if(pageIndexInSpine >= numPages) return resolve()
 
-        const uri = getSnapshotURI({
-          ...this.props,
-          pageIndexInSpine: this.pageCfis.length-1,
+            this.setState({
+              shiftStyle: {
+                transform: [
+                  {
+                    translateX: pageIndexInSpine * width * -1,
+                  },
+                ],
+                width: numPages * width,
+              }              
+            }, async () => {
+
+              const uri = getSnapshotURI({
+                ...this.props,
+                pageIndexInSpine,
+              })
+
+              await takeSnapshot({
+                view: this.view,
+                uri,
+                width: pageWidth,
+                height: pageHeight,
+              })
+
+              reportInfoOrCapture(this.props)
+              pageIndexInSpine++
+              !this.unmounted && shiftAndSnap()
+            })
+          }
+
+          shiftAndSnap()
         })
 
-        // takeSnapshot, if none exists
-        await takeSnapshot({
-          view: this.view,
-          uri,
-          width: pageWidth,
-          height: pageHeight,
+        addSpinePageCfis({
+          bookId,
+          idref: spineIdRef,
+          key: [getPageCfisKey({ displaySettings, width, height })],
+          pageCfis: data.payload.pageCfis,
         })
-
-        reportInfoOrCapture(this.props)
-
-        if(this.pageCfis.length < this.numPages) {
-          // go to next page if there is another
-          postMessage(this.webView, 'goToPage', {
-            spineIdRef,
-            pageIndexInSpine: this.pageCfis.length,
-          })
-
-        } else {
-          // record spine pageCfis in redux when complete
-  
-          addSpinePageCfis({
-            bookId,
-            idref: spineIdRef,
-            key: [getPageCfisKey({ displaySettings, width, height })],
-            pageCfis: this.pageCfis,
-          })
-          
-          reportFinished(this.props)
-          
-        }
+        
+        reportFinished(this.props)
 
         return true
-        
+
     }
   }
 
@@ -106,6 +129,7 @@ class PageCapture extends React.Component {
 
   render() {
     const { bookId, width, height, spineIdRef } = this.props
+    const { shiftStyle } = this.state
 
     return (
       <PageWebView
@@ -122,6 +146,7 @@ class PageCapture extends React.Component {
         onMessage={this.onMessageEvent}
         initialLocation={JSON.stringify({ idref: spineIdRef })}
         initialDisplaySettings={getDisplaySettingsObj(this.props)}
+        shiftStyle={shiftStyle}
       />
     )
   }
