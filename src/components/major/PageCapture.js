@@ -1,4 +1,5 @@
 import React from "react"
+import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -72,6 +73,7 @@ class PageCapture extends React.Component {
 
         const { pageWidth, pageHeight } = getPageSize({ width, height })
         const pageIndexInSpine = 0
+        const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
         
         await new Promise(resolve => {
           const shiftAndSnap = () => {
@@ -81,7 +83,7 @@ class PageCapture extends React.Component {
               shiftStyle: {
                 transform: [
                   {
-                    translateX: pageIndexInSpine * width * -1,
+                    translateX: pageIndexInSpine * (width - platformOffset) * -1 + platformOffset,
                   },
                 ],
                 width: numPages * width,
