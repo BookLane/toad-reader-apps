@@ -49,9 +49,13 @@ class PageCaptureManager extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    const { pageCapturePaused } = this.props
     const { pageCaptureProps } = this.state
 
-    return nextState.pageCaptureProps !== pageCaptureProps
+    return (
+      nextState.pageCaptureProps !== pageCaptureProps
+      || nextProps.pageCapturePaused !== pageCapturePaused
+    )
   }
 
   componentWillUnmount() {
@@ -205,7 +209,7 @@ class PageCaptureManager extends React.Component {
   }
 
   render() {
-    const { books, displaySettings, readerStatus } = this.props
+    const { books, displaySettings, readerStatus, pageCapturePaused } = this.props
     const { pageCaptureProps, skipList } = this.state
 
     if(readerStatus !== 'ready') {
@@ -220,9 +224,10 @@ class PageCaptureManager extends React.Component {
 
     return (
       <PageCapture
-        {...pageCaptureProps} 
+        {...pageCaptureProps}
         reportInfoOrCapture={this.reportInfoOrCapture}
         reportFinished={this.reportFinished}
+        pageCapturePaused={pageCapturePaused}
       />
     )
   }

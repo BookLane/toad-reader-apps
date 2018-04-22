@@ -24,22 +24,30 @@ class PageCapture extends React.Component {
   componentWillReceiveProps(nextProps) {
     if(getSnapshotURI(nextProps) !== getSnapshotURI(this.props)) {
       this.setState({ shiftStyle: undefined })
+      delete this.pageInfoBeingRetrieved
+      delete this.postPauseFunc
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    const { pageCapturePaused } = this.props
     const { shiftStyle } = this.state
     
     return (
       getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
       || nextState.shiftStyle !== shiftStyle
+      || (!nextProps.pageCapturePaused && pageCapturePaused)
     )
   }
 
   componentDidUpdate() {
-    const { shiftStyle } = this.state
+    const { pageCapturePaused } = this.props
 
-    if(shiftStyle === undefined) {
+    if(!pageCapturePaused && this.postPauseFunc) {
+      this.postPauseFunc()
+      delete this.postPauseFunc
+
+    } else {
       this.getPageInfo()
     }
   }
@@ -51,10 +59,16 @@ class PageCapture extends React.Component {
   getPageInfo = () => {
     const { spineIdRef } = this.props
 
+    if(this.pageInfoBeingRetrieved || !this.webView) return
+
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
     })
+
+    this.pageInfoBeingRetrieved = true
   }
+
+  getPageCapturePaused = () => this.props.pageCapturePaused
 
   onMessageEvent = async (webView, data) => {
     const { bookId, spineIdRef, width, height, displaySettings,
@@ -77,8 +91,13 @@ class PageCapture extends React.Component {
         
         await new Promise(resolve => {
           const shiftAndSnap = () => {
-            if(pageIndexInSpine >= numPages) return resolve()
+            if(pageIndexInSpine >= numPages || this.unmounted) return resolve()
 
+            if(this.getPageCapturePaused()) {
+              this.postPauseFunc = shiftAndSnap
+              return
+            }
+            
             this.setState({
               shiftStyle: {
                 transform: [
@@ -89,6 +108,11 @@ class PageCapture extends React.Component {
                 width: numPages * width,
               }              
             }, async () => {
+
+              if(this.getPageCapturePaused()) {
+                this.postPauseFunc = shiftAndSnap
+                return
+              }
 
               const uri = getSnapshotURI({
                 ...this.props,
@@ -104,12 +128,14 @@ class PageCapture extends React.Component {
 
               reportInfoOrCapture(this.props)
               pageIndexInSpine++
-              !this.unmounted && shiftAndSnap()
+              shiftAndSnap()
             })
           }
 
           shiftAndSnap()
         })
+
+        if(this.unmounted) return
 
         addSpinePageCfis({
           bookId,
@@ -130,8 +156,10 @@ class PageCapture extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, width, height, spineIdRef } = this.props
+    const { bookId, width, height, spineIdRef, pageCapturePaused } = this.props
     const { shiftStyle } = this.state
+
+    if(pageCapturePaused) return null
 
     return (
       <PageWebView
