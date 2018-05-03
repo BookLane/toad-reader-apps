@@ -97,16 +97,21 @@ export const cancelFetch = async ({ localBaseUri }) => {
 export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback }) => {
 
   // set up the cancel function
+  let cancelComplete = false
   const isCanceled = async force => {
-    if(force || cancelDownloadByLocalBaseUri[localBaseUri]) {
-      console.log(`Download canceled for ${zipUrl}`)
-      delete cancelDownloadByLocalBaseUri[localBaseUri]
-      runAbort({ localBaseUri })
-      await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
+    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete) {
+      if(!cancelComplete) {
+        console.log(`Download canceled for ${zipUrl}`)
+        delete cancelDownloadByLocalBaseUri[localBaseUri]
+        runAbort({ localBaseUri })
+        await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
+        cancelComplete = true
+      }
       return true
     }
   }
   await isCanceled(true)  // cancel previous attempt, if relevant
+  cancelComplete = false
 
   try {
 
@@ -254,6 +259,11 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       // I need to swap in the data URLs to the text files now
       for(let j=0; j<textFilePaths.length; j++) {
         await new Promise(resolveFileWrite => {
+          const handleCatch = async err => {
+            console.log(`ERROR working with data url swap for ${textFilePaths[j].replace(/#.*$/, '')}`, err && err.message)
+            await isCanceled(true)
+            resolveFileWrite()
+          }          
           FileSystem.readAsStringAsync(`${textFilePaths[j].replace(/#.*$/, '')}`)
             .then(async fileText => {
               // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
@@ -308,9 +318,15 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                 ))
               )
               fileText = fileTextPieces.join("")
-              FileSystem.writeAsStringAsync(textFilePaths[j], fileText).then(resolveFileWrite)
+              FileSystem.writeAsStringAsync(textFilePaths[j], fileText)
+                .then(resolveFileWrite)
+                .catch(handleCatch)
             })
+            .catch(handleCatch)
         })
+
+        if(await isCanceled()) return
+
         progressCallback &&
           progressCallback(
             progressPortions.download
@@ -325,9 +341,6 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     // delete the data URIs
 
     // download big files at the same time?
-
-    // gracefully handle failure
-      // (unhandled promise rejection on book cancel)
 
     if(await isCanceled()) return
     
