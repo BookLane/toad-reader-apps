@@ -133,20 +133,16 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       progressCallback: progressCallback ? progress => progressCallback(progress * progressPortions.download) : null,
       abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
     })
-console.log(11111)
-
-    // progressCallback && progressCallback(progressPortions.download + progressPortions.unzip + (numAssetsDone / numAssets)))
 
     if(await isCanceled()) return   // after each await, check if we are still going
 
-console.log(2222)
+    progressCallback && progressCallback(progressPortions.download + progressPortions.unzip)
+
     // unzip
     const zip = await JSZip.loadAsync(zipData)
 
-console.log(3333)
     if(await isCanceled()) return
 
-console.log(4444)
     // create all necessary dirs
     const dirs = []
     zip.forEach(relativePath => dirs.push(`${localBaseUri}${relativePath}`.replace(/\/[^\/]+$/, '')))
@@ -158,10 +154,10 @@ console.log(4444)
       }
     })
     await Promise.all(distinctDirs.map(dir => FileSystem.makeDirectoryAsync(dir, { intermediates: true })))
-console.log(55555)
 
+    progressCallback && progressCallback(progressPortions.download + progressPortions.unzip + progressPortions.dirs)
+    
     if(await isCanceled()) return
-console.log(66666)
 
     console.log(`Writing files from ${zipUrl}...`)
 
@@ -242,7 +238,6 @@ console.log(66666)
         }
       )
     })
-console.log(77777)
 
     const writeSegmentSize = 10
     for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
@@ -334,6 +329,7 @@ console.log(77777)
     // download big files at the same time?
 
     // gracefully handle failure
+      // (unhandled promise rejection on book cancel)
 
     if(await isCanceled()) return
     
