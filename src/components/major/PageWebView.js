@@ -32,45 +32,6 @@ const styles = StyleSheet.create({
   },
 })
 
-// see https://stackoverflow.com/questions/2725156/complete-list-of-html-tag-attributes-which-have-a-url-value
-const urlTagAttrMapping = {
-  a: ['href'],
-  applet: ['archive','codebase'],
-  area: ['href'],
-  audio: ['src'],
-  base: ['href'],
-  blockquote: ['cite'],
-  body: ['background'],
-  button: ['formaction'],
-  command: ['icon'],
-  del: ['cite'],
-  embed: ['src'],
-  form: ['action'],
-  frame: ['longdesc','src'],
-  head: ['profile'],
-  html: ['manifest'],
-  iframe: ['longdesc','src'],
-  image: ['href','xlink:href'],
-  img: ['longdesc','src','usemap'],
-  input: ['src','usemap','formaction'],
-  ins: ['cite'],
-  link: ['href'],
-  object: ['archive','classid','codebase','data','usemap'],
-  q: ['cite'],
-  script: ['src'],
-  source: ['src'],
-  track: ['src'],
-  video: ['poster','src'],
-}
-// not worrying about these at present, but may need to in the future
-// const multiUrlAttrMapping = {
-//   img: ['srcset'],
-//   source: ['srcset'],
-//   object: ['archive'],
-//   // applet: ['archive'],  // these are comma-separated and not something we can handle
-//   meta: ['content'],
-// }
-
 const getHighlightsObj = props => (props.userDataByBookId[props.bookId] || {}).highlights || []
 const getLatestLocation = props => (props.userDataByBookId[props.bookId] || {}).latest_location
 
@@ -151,62 +112,65 @@ class PageWebView extends React.Component {
 
       case 'getFileAsText':
         const { uri } = data.payload
+console.log('uri', uri)
         FileSystem.readAsStringAsync(`${uri.replace(/#.*$/, '')}`)
           .then(async fileText => {
-            if(Platform.OS === 'android') {
-              // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
-              const anyCharButDoubleQuoteGroup = `([^"]*)`
-              const anyCharButSingleQuoteGroup = `((?:\\\\'|[^'])*)`
-              const urlRegEx = new RegExp(
-                `(${
-                  Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*"`).join('|')
-                  )).join('|')
-                })${anyCharButDoubleQuoteGroup}` +
-                `|(${
-                  Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*'`).join('|')
-                  )).join('|')
-                })${anyCharButSingleQuoteGroup}` +
-                `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +
-                `|(url\\(\\s*')${anyCharButSingleQuoteGroup}` +
-                `|(url\\(\\s*)([^\\)\\s]*)` +
-                `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
-                `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
-                "gi"
-              )
-              const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
-              await Promise.all(
-                fileTextPieces.map((htmlOrUrl, index) => (
-                  new Promise(resolve => {
-                    const binaryMimeType = binaryExtensionToMimeTypeMap[htmlOrUrl.replace(/#.*$/, '').split('.').pop()]
-                    if(index % 3 !== 2 || !binaryMimeType) {
-                      // this is in between the matches
-                      resolve()
-                      return
-                    }
-                    FileSystem.readAsStringAsync(
-                      `${
-                        uri
-                          .replace(/#.*$/, '')
-                          .replace(/[^\/]*$/, '')
-                      }${
-                        htmlOrUrl
-                          .replace(/#.*$/, '')
-                          .replace(/\\'/g, "'")
-                          .replace(/\s/g, '%20')
-                      }-dataURL.txt`
-                    )
-                      .then(imgDataURL => {
-                        fileTextPieces[index] = imgDataURL
-                        resolve()
-                      })
-                      .catch(resolve)
-                  })
-                ))
-              )
-              fileText = fileTextPieces.join("")
-            }
+//             if(Platform.OS === 'android') {
+// let d = Date.now()
+//               // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
+//               const anyCharButDoubleQuoteGroup = `([^"]*)`
+//               const anyCharButSingleQuoteGroup = `((?:\\\\'|[^'])*)`
+//               const urlRegEx = new RegExp(
+//                 `(${
+//                   Object.keys(urlTagAttrMapping).map(tag => (
+//                     urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*"`).join('|')
+//                   )).join('|')
+//                 })${anyCharButDoubleQuoteGroup}` +
+//                 `|(${
+//                   Object.keys(urlTagAttrMapping).map(tag => (
+//                     urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*'`).join('|')
+//                   )).join('|')
+//                 })${anyCharButSingleQuoteGroup}` +
+//                 `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +
+//                 `|(url\\(\\s*')${anyCharButSingleQuoteGroup}` +
+//                 `|(url\\(\\s*)([^\\)\\s]*)` +
+//                 `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
+//                 `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
+//                 "gi"
+//               )
+//               const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
+//               await Promise.all(
+//                 fileTextPieces.map((htmlOrUrl, index) => (
+//                   new Promise(resolve => {
+//                     const binaryMimeType = binaryExtensionToMimeTypeMap[htmlOrUrl.replace(/#.*$/, '').split('.').pop()]
+//                     if(index % 3 !== 2 || !binaryMimeType) {
+//                       // this is in between the matches
+//                       resolve()
+//                       return
+//                     }
+//                     FileSystem.readAsStringAsync(
+//                       `${
+//                         uri
+//                           .replace(/#.*$/, '')
+//                           .replace(/[^\/]*$/, '')
+//                       }${
+//                         htmlOrUrl
+//                           .replace(/#.*$/, '')
+//                           .replace(/\\'/g, "'")
+//                           .replace(/\s/g, '%20')
+//                       }-dataURL.txt`
+//                     )
+//                       .then(imgDataURL => {
+//                         fileTextPieces[index] = imgDataURL
+//                         resolve()
+//                       })
+//                       .catch(resolve)
+//                   })
+//                 ))
+//               )
+//               fileText = fileTextPieces.join("")
+// console.log(Date.now() - d)
+//             }
 
             fileText = fileText
               .replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')  // fix a syntax error that causes the epub not to display
