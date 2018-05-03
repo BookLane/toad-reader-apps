@@ -112,66 +112,8 @@ class PageWebView extends React.Component {
 
       case 'getFileAsText':
         const { uri } = data.payload
-console.log('uri', uri)
         FileSystem.readAsStringAsync(`${uri.replace(/#.*$/, '')}`)
           .then(async fileText => {
-//             if(Platform.OS === 'android') {
-// let d = Date.now()
-//               // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
-//               const anyCharButDoubleQuoteGroup = `([^"]*)`
-//               const anyCharButSingleQuoteGroup = `((?:\\\\'|[^'])*)`
-//               const urlRegEx = new RegExp(
-//                 `(${
-//                   Object.keys(urlTagAttrMapping).map(tag => (
-//                     urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*"`).join('|')
-//                   )).join('|')
-//                 })${anyCharButDoubleQuoteGroup}` +
-//                 `|(${
-//                   Object.keys(urlTagAttrMapping).map(tag => (
-//                     urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*'`).join('|')
-//                   )).join('|')
-//                 })${anyCharButSingleQuoteGroup}` +
-//                 `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +
-//                 `|(url\\(\\s*')${anyCharButSingleQuoteGroup}` +
-//                 `|(url\\(\\s*)([^\\)\\s]*)` +
-//                 `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
-//                 `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
-//                 "gi"
-//               )
-//               const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
-//               await Promise.all(
-//                 fileTextPieces.map((htmlOrUrl, index) => (
-//                   new Promise(resolve => {
-//                     const binaryMimeType = binaryExtensionToMimeTypeMap[htmlOrUrl.replace(/#.*$/, '').split('.').pop()]
-//                     if(index % 3 !== 2 || !binaryMimeType) {
-//                       // this is in between the matches
-//                       resolve()
-//                       return
-//                     }
-//                     FileSystem.readAsStringAsync(
-//                       `${
-//                         uri
-//                           .replace(/#.*$/, '')
-//                           .replace(/[^\/]*$/, '')
-//                       }${
-//                         htmlOrUrl
-//                           .replace(/#.*$/, '')
-//                           .replace(/\\'/g, "'")
-//                           .replace(/\s/g, '%20')
-//                       }-dataURL.txt`
-//                     )
-//                       .then(imgDataURL => {
-//                         fileTextPieces[index] = imgDataURL
-//                         resolve()
-//                       })
-//                       .catch(resolve)
-//                   })
-//                 ))
-//               )
-//               fileText = fileTextPieces.join("")
-// console.log(Date.now() - d)
-//             }
-
             fileText = fileText
               .replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')  // fix a syntax error that causes the epub not to display
               .replace(/\u2029/g, '')  // this character causes the page not to load
