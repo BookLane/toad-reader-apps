@@ -322,8 +322,6 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       }
     }
 
-    // change % to include last part
-    
     // delete the data URIs
 
     // download big files at the same time?
