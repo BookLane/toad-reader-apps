@@ -170,7 +170,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     let numAssets = 0
     let numAssetsDone = 0
     const writeFunctions = []
-    const hasDataURLs = false
+    const dataURLs = []
     const textFilePaths = []
     zip.forEach((relativePath, file) => {
       if(file.dir) return
@@ -205,8 +205,9 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                       .then(doResolve)
                       .catch(() => {
                         // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
-                        hasDataURLs = true
-                        FileSystem.writeAsStringAsync(`${localBaseUri}${relativePath}-dataURL.txt`, b64uri)
+                        const dataURLPath = `${localBaseUri}${relativePath}-dataURL.txt`
+                        dataURLs.push(dataURLPath)
+                        FileSystem.writeAsStringAsync(dataURLPath, b64uri)
                           .then(doResolve)
                           .catch(reject)
                       })
@@ -255,7 +256,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     
     if(await isCanceled()) return
 
-    if(hasDataURLs) {
+    if(dataURLs.length > 0) {
       // I need to swap in the data URLs to the text files now
       for(let j=0; j<textFilePaths.length; j++) {
         await new Promise(resolveFileWrite => {
@@ -339,8 +340,9 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     }
 
     // delete the data URIs
-
-    // download big files at the same time?
+    await Promise.all(dataURLs.map(dataURL => (
+      FileSystem.deleteAsync(dataURL, { idempotent: true })
+    )))
 
     if(await isCanceled()) return
     
