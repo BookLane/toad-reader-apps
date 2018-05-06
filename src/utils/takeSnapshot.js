@@ -1,5 +1,9 @@
 import { FileSystem, takeSnapshotAsync } from "expo"
 
+// NOTE: I have tried to speed this up in the following ways but they were not faster.
+// (1) Taking a single snap shot to the spine and then splitting it up
+// (2) scaling the view down (using a transform)
+
 export default async ({ view, uri, width, height, force }) => {
 
   const uriFileInfo = force || await FileSystem.getInfoAsync(uri)
