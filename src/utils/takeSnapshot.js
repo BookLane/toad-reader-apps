@@ -27,6 +27,7 @@ export default async ({ view, uri, width, height, force }) => {
   if(fileInfo.size < 2500) {
     // May have captured a blank page. Try again.
     console.log('Taking snapshot again as first snapshot appears blank.', fileInfo.size, uri)
+    await FileSystem.deleteAsync(initFileURI, { idempotent: true })
     initFileURI = await getSnapshot()
     const newFileInfo = await FileSystem.getInfoAsync(initFileURI)
     console.log('New snapshot size: ', newFileInfo.size)
