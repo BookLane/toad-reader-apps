@@ -3,3 +3,4 @@ node_modules/**/*
 npm-debug.*
 assets/*
 tenants/*
+/app.json
