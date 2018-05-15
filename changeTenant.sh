@@ -6,38 +6,28 @@ TENANT_ITEMS=("app.json" "assets")
 THIS_SCRIPT=$0
 TENANT_TO_SWITCH_TO=$1
 
-# find the empty tenant dir (this is the current tenant)
-for i in tenants/* ; do
-  if [ ! "$(ls -A $i)" ]; then
-    if [ $CURRENT_TENANT ]; then
-      echo "ERROR: multiple empty tenant directories!"
-      exit 1
-    fi
-    CURRENT_TENANT=$(basename $i)
-  fi
-done
-
-# if there is no empty tenant dir, then we do not know who the current tenant is
-if [ ! $CURRENT_TENANT ]; then
-  echo "ERROR: no empty tenant directory!"
-  exit 1
-fi
-
 if [ ! -d "tenants/$TENANT_TO_SWITCH_TO" ]; then
   echo "This tenant does not exist."
-  echo "Would you like to create this tenant from a copy of the current tenant ($CURRENT_TENANT)? [y/n]"
+  echo "If you would like to create this tenant from a copy of an existing tenant, enter the existing tenant and hit ENTER. Otherwise, just hit ENTER."
 
-  read DO_CREATE_TENANT
+  read CREATE_FROM_THIS_TENANT
 
-  if [ "$DO_CREATE_TENANT" = "y" ]; then
+  if [ "$CREATE_FROM_THIS_TENANT" = "" ]; then
+    # they chose not to create the tenant
+    echo ""
+
+  elif [ -d "tenants/$CREATE_FROM_THIS_TENANT" ]; then
     mkdir "tenants/$TENANT_TO_SWITCH_TO" || exit 1;
     for TENANT_ITEM in "${TENANT_ITEMS[@]}" ; do
-      cp -R ./$TENANT_ITEM "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" || exit 1;
+      cp -R "tenants/$CREATE_FROM_THIS_TENANT/$TENANT_ITEM" "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" || exit 1;
     done
 
     echo "The tenant $TENANT_TO_SWITCH_TO has been created."
 
     eval "$THIS_SCRIPT $TENANT_TO_SWITCH_TO"
+
+  else 
+    echo "Invalid existing tenant."
   fi
 
 elif [ ! "$(ls -A tenants/$TENANT_TO_SWITCH_TO)" ]; then
@@ -58,14 +48,14 @@ else
 
     ##### everything checks out, now we make the switch #####
 
-    # move current tenant items to the empty dir
+    # delete current tenant items
     for TENANT_ITEM in "${TENANT_ITEMS[@]}" ; do
-      mv ./$TENANT_ITEM "tenants/$CURRENT_TENANT/$TENANT_ITEM" || exit 1;
+      rm -R ./$TENANT_ITEM || exit 1;
     done
 
-    # move current tenant items to the empty dir
+    # copy tenant items to the base dir
     for TENANT_ITEM in "${TENANT_ITEMS[@]}" ; do
-      mv "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" ./$TENANT_ITEM || exit 1;
+      cp -R "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" ./$TENANT_ITEM || exit 1;
     done
 
     echo "Changed tenant to $TENANT_TO_SWITCH_TO."
