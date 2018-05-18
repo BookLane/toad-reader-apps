@@ -235,6 +235,29 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
             textFilePaths.push(textFilePath)
             file.async('string')
               .then(content => {
+
+                // fix some problematic characters / syntax.
+                content = content
+
+                  // xhtml self-closing tag syntax causes issues because the file gets loaded to the iframe via document.write, forcing the doctype to html and not xhtml
+                  .replace(/<([a-z]*)(\s(?:[^"'>]|"[^"]*"|'[^']*')*)\/\s*>/gi, (match, tag, tagContents) => {
+                    if(
+                      ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"]
+                        .includes(tag.toLowerCase())
+                    ) {
+                      // it is a void tag that can have the slash before the end
+                      return match
+                    }
+                    return `<${tag}${tagContents}></${tag}>`
+                  })
+
+                  // The following character causes the page not to load. I replace it with space to prevent messing up the cfi's.
+                  .replace(/\u2029/g, ' ')
+
+                  // The following character causes the contents of the head tag to be placed in the body tag (yes, I know it is crazy--but it is true).  I replace it with space to prevent messing up the cfi's.
+                  .replace(/\uFEFF/g, ' ')
+  
+
                 FileSystem.writeAsStringAsync(textFilePath, content)
                   .then(doResolve)
                   .catch(reject)
@@ -273,12 +296,12 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
               const urlRegEx = new RegExp(
                 `(${
                   Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*"`).join('|')
+                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|"[^"]*"|'[^']*')*?${attr}\\s*=\\s*"`).join('|')
                   )).join('|')
                 })${anyCharButDoubleQuoteGroup}` +
                 `|(${
                   Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|".*?"|'.*?')*?${attr}\\s*=\\s*'`).join('|')
+                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|"[^"]*"|'[^']*')*?${attr}\\s*=\\s*'`).join('|')
                   )).join('|')
                 })${anyCharButSingleQuoteGroup}` +
                 `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +

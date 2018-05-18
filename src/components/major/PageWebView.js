@@ -114,10 +114,6 @@ class PageWebView extends React.Component {
         const { uri } = data.payload
         FileSystem.readAsStringAsync(`${uri.replace(/#.*$/, '')}`)
           .then(async fileText => {
-            fileText = fileText
-              .replace(/(<script\s(?:[^"'>]|".*?"|'.*?')*)\/\s*>/gi, '$1></script>')  // fix a syntax error that causes the epub not to display
-              .replace(/\u2029/g, '')  // this character causes the page not to load
-
             postMessage(this.webView, 'fileAsText', {
               uri,
               fileText,
