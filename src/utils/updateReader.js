@@ -3,10 +3,9 @@ import { FileSystem } from "expo"
 
 import { fetchZipAndAssets } from "./zipDownloader.js"
 
-// the READER_VERSION_TIMESTAMP needs to be updated any time any reader files are updated
-const {
-  READER_VERSION_TIMESTAMP,
-} = Expo.Constants.manifest.extra
+// This constant is better here than in app.json since it needs to accord with the 
+// current version of the reader apps, not specific tenants.
+const READER_VERSION_TIMESTAMP = 1526630128
 
 export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   
