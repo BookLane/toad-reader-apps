@@ -5,7 +5,7 @@ import { fetchZipAndAssets } from "./zipDownloader.js"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const READER_VERSION_TIMESTAMP = 1526630128
+const READER_VERSION_TIMESTAMP = "1526630128"
 
 export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   
