@@ -30,9 +30,6 @@ if [ ! -d "tenants/$TENANT_TO_SWITCH_TO" ]; then
     echo "Invalid existing tenant."
   fi
 
-elif [ ! "$(ls -A tenants/$TENANT_TO_SWITCH_TO)" ]; then
-  echo "This tenant appears to already be selected."
-
 else
 
   for TENANT_ITEM in "${TENANT_ITEMS[@]}" ; do
