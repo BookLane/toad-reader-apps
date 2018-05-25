@@ -24,10 +24,11 @@ let numFilesCreated = 0
 let defaultTranslationObj = {}
 
 // go through all files in src and extract calls to i18n(), building out the default json
-findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src/components/basic', '.js$')
-// findInFiles.find(`i18n\\([^)"']*("[^)]*"|'[^)]*')\\)`, 'src/components/basic', '.js$')
+findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
   .then(function(results) {
     for(let path in results) {
+      if(['src/utils/i18n.js'].includes(path)) continue
+
       const res = results[path]
       res.matches.forEach(match => {
         const parts = match.match(/^i18n\([\s\n]*("[^"]*"|'[^']*'|[\w_$]*)(?:\n|.)*?(?:,[\s\n]*("[^"]*"|'[^']*'|[\w_$]*)[\s\n]*)?\)$/)
@@ -41,11 +42,19 @@ findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src/components/basic
         const engText = parts[1].replace(/^["'](.*)["']$/, '$1')
 
         if(parts[2] === undefined) {
-          defaultTranslationObj[engText] = "TRANSLATE NEEDED"
+          if(typeof defaultTranslationObj[engText] === 'object') {
+            defaultTranslationObj[engText][""] = "TRANSLATE NEEDED"
+          } else {
+            defaultTranslationObj[engText] = "TRANSLATE NEEDED"
+          }
 
         } else {
-          const desc = parts[1].replace(/^["'](.*)["']$/, '$1')
-          if(!defaultTranslationObj[engText]) {
+          const desc = parts[2].replace(/^["'](.*)["']$/, '$1')
+          if(typeof defaultTranslationObj[engText] === 'string') {
+            defaultTranslationObj[engText] = {
+              "": defaultTranslationObj[engText],
+            }
+          } else if(typeof defaultTranslationObj[engText] !== 'object') {
             defaultTranslationObj[engText] = {}
           }
           defaultTranslationObj[engText][desc] = "TRANSLATE NEEDED"
