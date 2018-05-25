@@ -16,6 +16,7 @@
 */
 
 const findInFiles = require('find-in-files')
+const fs = require('fs')
 
 console.log('')
 console.log('Preparing to create translations needed files...')
@@ -25,7 +26,7 @@ let defaultTranslationObj = {}
 
 // go through all files in src and extract calls to i18n(), building out the default json
 findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
-  .then(function(results) {
+  .then(results => {
     for(let path in results) {
       if(['src/utils/i18n.js'].includes(path)) continue
 
@@ -36,7 +37,7 @@ findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
         if(!parts) {
           // report bad i18n in the code and exit
           console.log(`Bad i18n form in ${path}: ${match}`)
-          exit
+          process.exit()
         }
 
         const engText = parts[1].replace(/^["'](.*)["']$/, '$1')
@@ -61,23 +62,55 @@ findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
         }
 
       })
-        // (?:\s|\n)
-        // console.log(
-        //     'found "' + res.matches[0] + '" ' + res.count
-        //     + ' times in "' + result + '"'
-        // );
     }
 
     console.log(defaultTranslationObj)
 
     // for each translation file (except English)
-      // import the json (use the [lang]-incomplete.json file if exists, otherwise [lang].json)
-      // fill in the default json where language variables are missing
-      // if any language variables need translation
-        // save to [lang]-incomplete.json
+    fs.readdir('./src/utils/translations', (err, files) => {
+      if(!err) {
+        files.forEach((file, index) => {
+          if(['current.json'].includes(file)) return
+          if(files.includes(file.replace(/\.json$/, '-incomplete.json'))) return
 
+          // import the json (use the [lang]-incomplete.json file if exists, otherwise [lang].json)
+          const translationObj = JSON.parse(fs.readFileSync(`./src/utils/translations/${file}`, 'utf8'))
+          const newTranslationObj = JSON.parse(JSON.stringify(defaultTranslationObj))
+          
+          // fill in the default json where language variables are missing
+          for(let engText in translationObj) {
+            if(typeof translationObj[engText] === 'object') {
+              if(typeof newTranslationObj[engText] === 'object') {
+                for(let desc in translationObj[engText]) {
+                  if(newTranslationObj[engText][desc]) {
+                    newTranslationObj[engText][desc] = translationObj[engText][desc]
+                  }
+                }
+              } else if(translationObj[engText][""]) {
+                newTranslationObj[engText] = translationObj[engText][""]
+              }
 
-    console.log(`Created ${numFilesCreated} translation file(s).`)
-    console.log('')
+            } else {
+              if(typeof newTranslationObj[engText] === 'object') {
+                if(newTranslationObj[engText][""]) {
+                  newTranslationObj[engText][""] = translationObj[engText]
+                }
+              } else if(newTranslationObj[engText]) {
+                newTranslationObj[engText] = translationObj[engText]
+              }
+            }
+          }
+
+          console.log(file, newTranslationObj)
+          // if any language variables need translation
+            // save to [lang]-incomplete.json
+        })
+      } 
+
+      console.log(`Created ${numFilesCreated} translation file(s).`)
+      console.log('')
+
+      process.exit()
+    })
 
   })
