@@ -19,8 +19,7 @@
 
 */
 
-// import translations from "./translations/he.js"
-const translations = {}  // for English
+import translations from "./translations/current.js"
 
 const i18n = (str, swaps={}, desc) => 
   (
