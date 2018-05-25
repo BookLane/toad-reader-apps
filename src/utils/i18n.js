@@ -19,7 +19,7 @@
 
 */
 
-import translations from "./translations/current.js"
+import translations from "./translations/current.json"
 
 const i18n = (str, swaps={}, desc) => 
   (
