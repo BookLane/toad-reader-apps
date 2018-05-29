@@ -4,4 +4,4 @@ npm-debug.*
 assets/*
 tenants/*
 /app.json
-/src/utils/translations/current.js
+/src/utils/translations/current.json
