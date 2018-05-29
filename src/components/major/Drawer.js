@@ -10,10 +10,6 @@ import { debounce } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
-const {
-  REQUEST_OPTIONS,
-} = Expo.Constants.manifest.extra
-
 const styles = StyleSheet.create({
   image: {
     width: '100%',

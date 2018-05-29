@@ -137,6 +137,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     const zipData = await fetchWithProgress(zipUrl, {
       progressCallback: progressCallback ? progress => progressCallback(progress * progressPortions.download) : null,
       abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
+      cookie,
     })
 
     if(await isCanceled()) return   // after each await, check if we are still going
@@ -219,12 +220,14 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                   (new FileSystem.DownloadResumable(
                     `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
                     `${localBaseUri}${relativePath}`,
-                    {
+                    getReqOptionsWithAdditions({
                       headers: {
-                        Cookie: cookie,
+                        "x-cookie-override": cookie,
                       },
-                    }
-                  )).downloadAsync().then(doResolve)
+                    }),
+                  )).downloadAsync()
+                    .then(doResolve)
+                    .catch(() => {})  // TODO: handle the error here!
                 }
               })
           
@@ -374,6 +377,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     return true // indicates success
 
   } catch(err) {
+    // TODO: do not show as if the book was successful!
     console.log(`ERROR downloading zip from ${zipUrl}`, err && err.message)
     await isCanceled(true)
   }

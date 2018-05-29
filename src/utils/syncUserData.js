@@ -1,6 +1,6 @@
 import { NetInfo, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded } from './toolbox.js'
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions } from "./toolbox.js"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
 // Then, whenever I patch, I filter down to objects which are newer than the last successful patch.
@@ -117,13 +117,14 @@ export const patch = info => setTimeout(() => {
 
             currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = true
 
-            fetch(path, {
+            fetch(path, getReqOptionsWithAdditions({
               method: 'PATCH',
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+                "x-cookie-override": accounts[accountId].cookie,
               },
               body: JSON_to_URLEncoded(bookUserData),
-            })
+            }))
               .then(response => {
 
                 currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = false
@@ -145,6 +146,7 @@ export const patch = info => setTimeout(() => {
                       needToLogInAgain: true
                     },
                   })
+                  // TODO: need to rerun the patch after relogin
     
                 } else if(response.status === 412) {
                   console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, domain: ${idp.domain}).`)
@@ -168,6 +170,7 @@ export const patch = info => setTimeout(() => {
               
                 currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = false
 
+                // TODO: does this work right?
                 reportResponseError({
                   message: `Fetch error when trying to patch to ${path}`,
                   error,
@@ -185,7 +188,7 @@ export const patch = info => setTimeout(() => {
 export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, books, userDataByBookId, updateAccount, setUserData } = setAndGetLatestInfo(info)
+  const { idps, accounts, books, userDataByBookId, updateAccount, setUserData } = setAndGetLatestInfo(info)
   
   if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData) return
   if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return
@@ -201,7 +204,11 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
     currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`] = true
     
-    fetch(path)
+    fetch(path, getReqOptionsWithAdditions({
+      headers: {
+        "x-cookie-override": accounts[accountId].cookie,
+      },
+    }))
       .then(response => {
 
         currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`] = false
@@ -253,6 +260,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
               needToLogInAgain: true
             },
           })
+          // TODO: after relogin, reload the user data
 
         } else {
           reportResponseError({

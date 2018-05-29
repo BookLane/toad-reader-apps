@@ -9,7 +9,8 @@
   ** English is written inline with i18n wrapper around it.
   ** Language is chosen simply via the import line below.
   ** Translations get their own file in the translations directory.
-  ** TODO: Write a script to build base translation files.
+  ** Use `node ./scripts/makeTranslationFiles.js` to create translation files whenever I change language in the code
+     or add a new language by creating a translations/LANGUAGE_CODE.json file.
 
   Usage examples:
     i18n("Library")

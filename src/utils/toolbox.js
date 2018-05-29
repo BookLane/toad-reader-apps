@@ -5,6 +5,7 @@ import nativeBasePlatformVariables from 'native-base/src/theme/variables/platfor
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
+  REQUEST_OPTIONS,
 } = Expo.Constants.manifest.extra
 
 const cachedSizes = {}
@@ -177,11 +178,22 @@ export const debounce = (func, ...params) => {
   }
 }
 
-export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback }) => (
+export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback, cookie }) => (
   new Promise((resolve, reject) => {
     const xhr = new window.XMLHttpRequest()
 
     xhr.open('GET', url, true)
+
+    // set headers
+    const reqHeaders = (getReqOptionsWithAdditions({
+      headers: {
+        "x-cookie-override": cookie,
+      },
+    }) || {}).headers
+
+    for(let reqHeaderKey in reqHeaders) {
+      xhr.setRequestHeader(reqHeaderKey, reqHeaders[reqHeaderKey])
+    }
 
     // recent browsers
     if("responseType" in xhr) {
@@ -203,8 +215,13 @@ export const fetchWithProgress = async (url, { progressCallback, abortFunctionCa
       if(xhr.readyState === 4) {
         if(xhr.status === 200 || xhr.status === 0) {
           resolve(xhr.response || xhr.responseText)
+        } else if(xhr.status === 403) {
+          // TODO: force a relogin
+          console.log('relogin')
         } else {
           reject(`Ajax error for ${url} : ${xhr.status} ${xhr.statusText}`)
+          // TODO: make sure this results in an unsuccessful book/resource download
+          // TODO: make sure this is where it goes for no internet connection
         }
       }
     }
@@ -216,3 +233,21 @@ export const fetchWithProgress = async (url, { progressCallback, abortFunctionCa
     }
   })
 )
+
+export const getReqOptionsWithAdditions = additions => {
+  const reqOptions = JSON.parse(JSON.stringify(REQUEST_OPTIONS || {}))
+
+  const mergeInObj = (obj1, obj2) => {
+    for(let key in obj2) {
+      if(typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+        mergeInObj(obj1[key], obj2[key])
+      } else {
+        obj1[key] = obj2[key]
+      }
+    }
+  }
+
+  mergeInObj(reqOptions, additions)
+
+  return reqOptions
+}

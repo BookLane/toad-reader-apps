@@ -7,11 +7,9 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { addAccount } from "../../redux/actions.js"
+import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
 
-const {
-  REQUEST_OPTIONS,
-} = Expo.Constants.manifest.extra
+import { addAccount } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   fullscreen: {
@@ -39,7 +37,8 @@ class Login extends React.Component {
   }
 
   onError = () => {
-    alert('error')
+    // TODO: do something to make this graceful
+    // Give them an error message with setErrorMessage?
   }
 
   onNavigationStateChange = async ({ url, loading }) => {
@@ -65,7 +64,9 @@ class Login extends React.Component {
               content: document.body.innerText,
             },
         }), "*");
+        document.cookie = "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       `)
+      // we clear the cookie because we want auth status to be completely controlled by the app.
 
     } else {
       this.askedForLoginInfoAtLeastOnce = true
@@ -89,11 +90,11 @@ class Login extends React.Component {
 
       if(!userData || !userData.userInfo) {
         throw new Error('Unexpected data returned')
-        // TODO: something
+        // TODO: report the error and attempt relogin
       }
 
       const { userInfo, currentServerTime } = userData
-      
+
       addAccount({
         idpId,
         userId: userInfo.id,
@@ -126,10 +127,9 @@ class Login extends React.Component {
             styles.fullscreen,
             (leaving ? styles.hidden : null),
           ]}
-          source={{
+          source={getReqOptionsWithAdditions({
             uri: userSetupUrl,
-            ...REQUEST_OPTIONS,
-          }}
+          })}
           mixedContentMode="always"
           onError={this.onError}
           onNavigationStateChange={this.onNavigationStateChange}

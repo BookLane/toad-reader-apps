@@ -17,12 +17,13 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 import AppHeader from "../basic/AppHeader.js";
 import BookDownloader from "../major/BookDownloader.js"
 
+import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+
 import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus,
          removeAccount, updateAccount, setReaderStatus } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
-  REQUEST_OPTIONS,
 } = Expo.Constants.manifest.extra
 
 const styles = StyleSheet.create({
@@ -79,11 +80,26 @@ class Library extends React.Component {
         const [ idpId ] = accountId.split(':')
 
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
-        let response = await fetch(libraryUrl, REQUEST_OPTIONS)
+        let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
+          headers: {
+            "x-cookie-override": accounts[accountId].cookie,
+          },
+        }))
+        // TODO: what about no internet connection? I should catch this. I might also use NetInfo. 
+
         if(response.status != 200) {
-          throw new Error('Unable to fetch library')
-          // TODO: force a login
+          // they need to login again
+          // TODO: I should probably look for other possibilities like 3XX or 5XX errors
+          updateAccount({
+            accountId,
+            accountInfo: {
+              needToLogInAgain: true
+            },
+          })
+          // TODO: I probably need to refetch after?
+          return
         }
+
         const newBooks = await response.json()
 
         addBooks({
@@ -157,14 +173,14 @@ class Library extends React.Component {
   }
 
   logOurUrlOnError = () => {
-    // TODO: something
+    // TODO: I should probably delete the cookie from here (if I am not already) and inform them it only half-logged out.
   }
   
   render() {
-    const { library, books, fetchingBooks, navigation, setSort } = this.props
+    const { library, accounts, books, fetchingBooks, navigation, setSort } = this.props
     const { showOptions } = this.state
 
-    let { scope, logOutUrl } = navigation.state.params || {}
+    let { scope, logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
     scope = scope || "all"
 
     const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -183,10 +199,12 @@ class Library extends React.Component {
           <AppHeader hide={true} />
           <WebView
             style={styles.flex1}
-            source={{
+            source={getReqOptionsWithAdditions({
               uri: logOutUrl,
-              ...REQUEST_OPTIONS,
-            }}
+              headers: {
+                "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
+              },
+            })}
             onLoad={this.logOurUrlOnLoad}
             onError={this.logOurUrlOnError}
           />
