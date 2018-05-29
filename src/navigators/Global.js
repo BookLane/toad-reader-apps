@@ -8,6 +8,7 @@ import Book from "../components/screens/Book"
 import Highlights from "../components/screens/Highlights"
 import Accounts from "../components/screens/Accounts"
 import Login from "../components/screens/Login"
+import ErrorMessage from "../components/screens/ErrorMessage"
 
 const noHeader = {
   navigationOptions: ({navigation}) => ({
@@ -23,6 +24,7 @@ const GlobalNavigator = StackNavigator(
     Highlights: { screen: Highlights, ...noHeader },
     Accounts: { screen: Accounts, ...noHeader },
     Login: { screen: Login, ...noHeader },
+    ErrorMessage: { screen: ErrorMessage, ...noHeader },
   },
 )
 

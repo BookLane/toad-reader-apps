@@ -19,7 +19,7 @@ import BookDownloader from "../major/BookDownloader.js"
 
 import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
 
-import { addBooks, reSort, setSort, setFetchingBooks, setErrorMessage, setDownloadStatus,
+import { addBooks, reSort, setSort, setFetchingBooks, setDownloadStatus,
          removeAccount, updateAccount, setReaderStatus } from "../../redux/actions.js"
 
 const {
@@ -56,7 +56,7 @@ class Library extends React.Component {
   }
 
   async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, setErrorMessage, updateAccount, navigation } = nextProps || this.props
+    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, updateAccount, navigation } = nextProps || this.props
     const { refreshLibraryAccountId } = navigation.state.params || {}
 
     const account = Object.values(accounts)[0]
@@ -126,7 +126,9 @@ class Library extends React.Component {
         
       } catch(error) {
         console.log('error', error)
-        setErrorMessage({ message: error.message || error || "Unknown error." })
+        navigation.navigate("ErrorMessage", {
+          message: error.message || null,
+        })
       }
     }
     setFetchingBooks({ value: false })
@@ -265,7 +267,6 @@ class Library extends React.Component {
         }
 
         <BookDownloader />
-        {/* TODO: Add modal for error message */}
       </Container>
     )
   }
@@ -277,7 +278,6 @@ const mapStateToProps = (state) => ({
   books: state.books,
   library: state.library,
   fetchingBooks: state.fetchingBooks,
-  errorMessage: state.errorMessage,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -285,7 +285,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   reSort,
   setSort,
   setFetchingBooks,
-  setErrorMessage,
   setDownloadStatus,
   removeAccount,
   updateAccount,

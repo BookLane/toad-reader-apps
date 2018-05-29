@@ -7,7 +7,7 @@ import AppHeader from "../basic/AppHeader"
 
 import { debounce } from "../../utils/toolbox.js"
 
-import { setSort, toggleView, setErrorMessage } from "../../redux/actions.js"
+import { setSort, toggleView } from "../../redux/actions.js"
 
 class LibraryHeader extends React.Component {
 
@@ -86,7 +86,6 @@ const mapStateToProps = (state) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   toggleView,
   setSort,
-  setErrorMessage,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryHeader)

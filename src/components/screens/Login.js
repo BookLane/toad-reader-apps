@@ -38,7 +38,7 @@ class Login extends React.Component {
 
   onError = () => {
     // TODO: do something to make this graceful
-    // Give them an error message with setErrorMessage?
+    // Give them an error message with ErrorMessage?
   }
 
   onNavigationStateChange = async ({ url, loading }) => {

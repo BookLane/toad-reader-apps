@@ -110,11 +110,6 @@ export const setTheme = ({ theme }) => ({
   theme,
 })
 
-export const setErrorMessage = ({ message }) => ({
-  type: "SET_ERROR_MESSAGE",
-  message,
-})
-
 export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })

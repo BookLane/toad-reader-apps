@@ -7,7 +7,6 @@ import books from "./reducers/books.js"
 import currentBookId from "./reducers/currentBookId.js"
 import displaySettings from "./reducers/displaySettings.js"
 import downloadProgressByBookId from "./reducers/downloadProgressByBookId.js"
-import errorMessage from "./reducers/errorMessage.js"
 import fetchingBooks from "./reducers/fetchingBooks.js"
 import highlights from "./reducers/highlights.js"
 import idps from "./reducers/idps.js"
@@ -24,7 +23,6 @@ const slicedReducers = combineReducers({
   currentBookId,
   displaySettings,
   downloadProgressByBookId,
-  errorMessage,
   fetchingBooks,
   highlights,
   idps,
