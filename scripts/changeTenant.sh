@@ -55,12 +55,12 @@ else
       cp -R "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" ./$TENANT_ITEM || exit 1;
     done
 
-    # update src/utils/translations/current.js with the current language data
+    # update src/utils/translations/current.json with the current language data
     LANGUAGE_CODE=$(ruby -rjson -e 'j = JSON.parse(File.read("app.json")); puts j["expo"]["extra"]["LANGUAGE_CODE"]')
-    if [ ! "$(ls -A src/utils/translations/$LANGUAGE_CODE.js 2>/dev/null)" ]; then
+    if [ ! "$(ls -A src/utils/translations/$LANGUAGE_CODE.json 2>/dev/null)" ]; then
       LANGUAGE_CODE="en"
     fi
-    cp -R "src/utils/translations/$LANGUAGE_CODE.js" "src/utils/translations/current.js" || exit 1;
+    cp -R "src/utils/translations/$LANGUAGE_CODE.json" "src/utils/translations/current.json" || exit 1;
 
     echo "Changed tenant to $TENANT_TO_SWITCH_TO (language code: $LANGUAGE_CODE)."
   fi
