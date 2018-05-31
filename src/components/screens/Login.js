@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, WebView } from "react-native"
+import { StyleSheet, WebView, NetInfo } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, View } from "native-base"
@@ -34,11 +34,44 @@ class Login extends React.Component {
   state = {
     loading: true,
     leaving: false,
+    offline: false,
+    error: null,
   }
 
-  onError = () => {
-    // TODO: do something to make this graceful
-    // Give them an error message with ErrorMessage?
+  onError = err => {
+    const { navigation } = this.props
+
+    NetInfo.getConnectionInfo().then(connectionInfo => {
+      if(connectionInfo.type === 'none') {
+        // They are not connected to the internet
+
+        const reattemptLogin = () => {
+          NetInfo.removeEventListener('connectionChange', reattemptLogin)          
+          this.webView.reload()
+        }
+
+        NetInfo.addEventListener('connectionChange', reattemptLogin)
+
+        this.setState({
+          offline: true,
+          error: null,
+        })
+            
+      } else {
+        // There was an unknown error
+
+        navigation.navigate("ErrorMessage", {
+          message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
+        })
+
+        setTimeout(this.webView.reload, 15000)
+
+        this.setState({
+          offline: false,
+          error: i18n("Error. Trying again..."),
+        })
+      }
+    })
   }
 
   onNavigationStateChange = async ({ url, loading }) => {
@@ -70,7 +103,11 @@ class Login extends React.Component {
 
     } else {
       this.askedForLoginInfoAtLeastOnce = true
-      this.setState({ loading: false })
+      this.setState({
+        loading: false,
+        offline: false,
+        error: null,
+      })
     }
     
   }
@@ -116,9 +153,15 @@ class Login extends React.Component {
   render() {
     const { navigation, idps } = this.props
     const { idpId } = navigation.state.params
-    const { loading, leaving } = this.state
+    const { loading, leaving, offline, error } = this.state
 
     const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
+
+    const spinMessage = 
+      error ? error :
+      offline ? i18n("Waiting for an internet connection to log you in...") :
+      this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") :
+      i18n("Loading login portal...")
 
     return (
       <Container>
@@ -139,9 +182,9 @@ class Login extends React.Component {
           ref={this.setWebViewEl}
           onMessage={this.onMessageEvent}
         />
-        {!!(loading || leaving) &&
+        {!!(loading || offline || error || leaving) &&
           <FullScreenSpin
-            text={this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") : i18n("Loading login portal...")}
+            text={spinMessage}
             style={{ backgroundColor: 'white' }}
           />
         }

@@ -176,10 +176,6 @@ class Library extends React.Component {
       this.forceUpdate()
     }
   }
-
-  logOurUrlOnError = () => {
-    // TODO: I should probably delete the cookie from here (if I am not already) and inform them it only half-logged out.
-  }
   
   render() {
     const { library, accounts, books, fetchingBooks, navigation, setSort } = this.props
@@ -211,7 +207,7 @@ class Library extends React.Component {
               },
             })}
             onLoad={this.logOurUrlOnLoad}
-            onError={this.logOurUrlOnError}
+            onError={this.logOurUrlOnLoad}  // Even if it fails, log them out on the device at least
           />
           <FullScreenSpin
             text={i18n("Logging out...")}
