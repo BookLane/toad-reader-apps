@@ -1,4 +1,4 @@
-import { AsyncStorage } from "react-native"
+import { AsyncStorage, NetInfo } from "react-native"
 import { FileSystem } from "expo"
 
 import { fetchZipAndAssets } from "./zipDownloader.js"
@@ -29,38 +29,58 @@ export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   }
 }
 
-export const updateReader = async ({ setReaderStatus, navigation }) => {
+export const updateReader = ({ setReaderStatus, navigation }) => {
   
   // Until we know the status, we consider it missing
   setReaderStatus({ readerStatus: "missing" })
-    // TODO: first test for an active internet connection
   
-  if(await readerNeedsUpdate({ setReaderStatus })) {
-    console.log(`Download updated reader...`)
-    setReaderStatus({ readerStatus: "downloading" })
-    
-    const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl,
-      localBaseUri,
-    })
-  
-    if(!zipFetchInfo.success || zipFetchInfo.errorMessage) {
-      // The reader must download successfully without error.
-      console.log(`ERROR: Failed to download reader.`)
-      setReaderStatus({ readerStatus: "missing" })
+  const attemptToUpdateReader = async connectionChangeInfo => {
+    NetInfo.removeEventListener('connectionChange', attemptToUpdateReader)
 
-      navigation.navigate("ErrorMessage", {
-        message: i18n("The updated reader is not downloading properly. Please contact us if this issue persists."),
-      })
+    if(await readerNeedsUpdate({ setReaderStatus })) {
 
-      setTimeout(() => updateReader({ setReaderStatus, navigation }), 15000)
+      const connectionInfo = connectionChangeInfo || await NetInfo.getConnectionInfo()
+
+      if(connectionInfo.type === 'none') {
+        setReaderStatus({ readerStatus: "waiting for internet" })
+
+        navigation.navigate("ErrorMessage", {
+          title: i18n("Connection error"),
+          message: i18n("The app has been updated and requires an updated reader component to be downloaded. Thus, you must connect to the internet before you will be able to read."),
+        })
+
+        NetInfo.addEventListener('connectionChange', attemptToUpdateReader)
+
+        return
+      }
+
+      console.log(`Download updated reader...`)
+      setReaderStatus({ readerStatus: "downloading" })
       
-      return
-    }
-
-    await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
+      const zipFetchInfo = await fetchZipAndAssets({
+        zipUrl,
+        localBaseUri,
+      })
+    
+      if(!zipFetchInfo.success || zipFetchInfo.errorMessage) {
+        // The reader must download successfully without error.
+        console.log(`ERROR: Failed to download reader.`)
+        setReaderStatus({ readerStatus: "missing" })
   
-    setReaderStatus({ readerStatus: "ready" })
-    console.log(`Done downloading reader.`)
+        navigation.navigate("ErrorMessage", {
+          message: i18n("The updated reader is not downloading properly. Please contact us if this issue persists."),
+        })
+  
+        setTimeout(attemptToUpdateReader, 15000)
+        return
+      }
+  
+      await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
+    
+      setReaderStatus({ readerStatus: "ready" })
+      console.log(`Done downloading reader.`)
+    }
   }
+
+  attemptToUpdateReader()
 }
