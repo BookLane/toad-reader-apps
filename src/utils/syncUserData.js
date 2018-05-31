@@ -146,7 +146,11 @@ export const patch = info => setTimeout(() => {
                       needToLogInAgain: true
                     },
                   })
-                  // TODO: need to rerun the patch after relogin
+                  reportResponseError({
+                    message: `Patch failed due to no auth`,
+                    response,
+                    retry: patch,
+                  })
     
                 } else if(response.status === 412) {
                   console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, domain: ${idp.domain}).`)
