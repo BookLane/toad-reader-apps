@@ -17,9 +17,18 @@ const styles = StyleSheet.create({
 
 class ErrorMessage extends React.Component {
 
+  componentDidMount() {
+    const { navigation } = this.props
+    const { critical } = navigation.state.params || {}
+
+    if(critical) {
+      setTimeout(Expo.Util.reload, 5000)
+    }
+  }
+
   render() {
     const { navigation } = this.props
-    const { message } = navigation.state.params
+    const { message, critical } = navigation.state.params || {}
 
     return (
       <Container>
@@ -27,7 +36,11 @@ class ErrorMessage extends React.Component {
         <Content>
           <Body style={styles.body}>
             <View style={styles.view}>
-              <Text>{message || i18n("There was an unknown error. Please contact us if you continue to receive this message.")}</Text>
+              <Text>{message || (
+                critical
+                  ? i18n("There was a critical error. The app will reload in a few seconds. Please contact us if you continue to receive this message.")
+                  : i18n("There was an unknown error. Please contact us if you continue to receive this message.")
+              )}</Text>
             </View>
           </Body>
         </Content>

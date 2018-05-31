@@ -22,17 +22,19 @@ class ErrorMessageHeader extends React.PureComponent {
 
   render() {
     const { navigation } = this.props
-    const { title } = navigation.state.params
+    const { title, critical } = navigation.state.params || {}
     
     return (
       <AppHeader>
         <Left>
-          <Button
-            transparent
-            onPress={this.onBackPress}
-          >
-            <Icon name="arrow-back" />
-          </Button>
+          {!critical &&
+            <Button
+              transparent
+              onPress={this.onBackPress}
+            >
+              <Icon name="arrow-back" />
+            </Button>
+          }
         </Left>
         <Body>
           <Title style={styles.title}>{title || i18n("Error")}</Title>

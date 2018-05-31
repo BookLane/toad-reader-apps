@@ -76,7 +76,7 @@ class Login extends React.Component {
 
   onNavigationStateChange = async ({ url, loading }) => {
     const { navigation, idps } = this.props
-    const { idpId } = navigation.state.params
+    const { idpId } = navigation.state.params || {}
 
     if(loading || !this.initialStateChangeAlreadyHappened) {
       this.initialStateChangeAlreadyHappened = true
@@ -114,7 +114,7 @@ class Login extends React.Component {
 
   onMessageEvent = async event => {
     const { navigation, addAccount } = this.props
-    const { idpId } = navigation.state.params
+    const { idpId } = navigation.state.params || {}
     
     const data = JSON.parse(event.nativeEvent.data)
 
@@ -126,8 +126,10 @@ class Login extends React.Component {
       } catch(e) {}
 
       if(!userData || !userData.userInfo) {
-        throw new Error('Unexpected data returned')
-        // TODO: report the error and attempt relogin
+        navigation.navigate("ErrorMessage", {
+          critical: true,
+        })
+        return
       }
 
       const { userInfo, currentServerTime } = userData
@@ -152,7 +154,7 @@ class Login extends React.Component {
 
   render() {
     const { navigation, idps } = this.props
-    const { idpId } = navigation.state.params
+    const { idpId } = navigation.state.params || {}
     const { loading, leaving, offline, error } = this.state
 
     const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`

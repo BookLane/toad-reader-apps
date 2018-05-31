@@ -139,7 +139,7 @@ class Book extends React.Component {
 
   getFreshUserData = () => {
     const { navigation, books } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId } = navigation.state.params || {}
 
     Object.keys(books[bookId].accounts).forEach(accountId => {
       refreshUserData({
@@ -158,7 +158,7 @@ class Book extends React.Component {
 
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
     const { setLatestLocation, userDataByBookId, navigation } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId } = navigation.state.params || {}
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
@@ -312,7 +312,7 @@ class Book extends React.Component {
 
   removeFromDevice = () => {
     const { navigation, books } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId } = navigation.state.params || {}
 
     confirmRemoveEPub({
       ...this.props,
@@ -346,7 +346,7 @@ class Book extends React.Component {
   render() {
 
     const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
-    const { bookId } = navigation.state.params
+    const { bookId } = navigation.state.params || {}
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
       snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, pageCapturePaused } = this.state
 
