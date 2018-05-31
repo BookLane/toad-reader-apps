@@ -170,7 +170,7 @@ class Drawer extends React.Component {
             <ListItem icon
               button
               onPress={offline ? null : this.reLogin}
-              style={offline && styles.offline}
+              style={offline ? styles.offline : null}
             >
               <Left>
                 <Icon name="refresh" />
