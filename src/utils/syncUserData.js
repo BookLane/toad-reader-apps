@@ -174,7 +174,6 @@ export const patch = info => setTimeout(() => {
               
                 currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = false
 
-                // TODO: does this work right?
                 reportResponseError({
                   message: `Fetch error when trying to patch to ${path}`,
                   error,
