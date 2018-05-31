@@ -89,7 +89,8 @@ class Library extends React.Component {
             "x-cookie-override": accounts[accountId].cookie,
           },
         }))
-        // TODO: what about no internet connection? I should catch this. I might also use NetInfo. 
+        // I do not catch the no internet connection error because I only get here immediately after logging in,
+        // which requires the internet.
 
         if(response.status != 200) {
           // they need to login again
@@ -100,7 +101,6 @@ class Library extends React.Component {
               needToLogInAgain: true
             },
           })
-          // TODO: I probably need to refetch after?
           return
         }
 
