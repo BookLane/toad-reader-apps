@@ -29,33 +29,28 @@ export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   }
 }
 
-export const updateReader = ({ setReaderStatus, navigation }) => {
+export const updateReader = ({ setReaderStatus }) => {
   
-  // Until we know the status, we consider it missing
-  setReaderStatus({ readerStatus: "missing" })
+  // Until we know the status, we consider it downloading
+  setReaderStatus({ readerStatus: "downloading" })
   
   const attemptToUpdateReader = async connectionChangeInfo => {
     NetInfo.removeEventListener('connectionChange', attemptToUpdateReader)
 
     if(await readerNeedsUpdate({ setReaderStatus })) {
 
+      console.log(`Download updated reader...`)
+      setReaderStatus({ readerStatus: "downloading" })
+
       const connectionInfo = connectionChangeInfo || await NetInfo.getConnectionInfo()
 
       if(connectionInfo.type === 'none') {
         setReaderStatus({ readerStatus: "waiting for internet" })
 
-        navigation.navigate("ErrorMessage", {
-          title: i18n("Connection error"),
-          message: i18n("The app has been updated and requires an updated reader component to be downloaded. Thus, you must connect to the internet before you will be able to read."),
-        })
-
         NetInfo.addEventListener('connectionChange', attemptToUpdateReader)
 
         return
       }
-
-      console.log(`Download updated reader...`)
-      setReaderStatus({ readerStatus: "downloading" })
       
       const zipFetchInfo = await fetchZipAndAssets({
         zipUrl,
@@ -65,11 +60,7 @@ export const updateReader = ({ setReaderStatus, navigation }) => {
       if(!zipFetchInfo.success || zipFetchInfo.errorMessage) {
         // The reader must download successfully without error.
         console.log(`ERROR: Failed to download reader.`)
-        setReaderStatus({ readerStatus: "missing" })
-  
-        navigation.navigate("ErrorMessage", {
-          message: i18n("The updated reader is not downloading properly. Please contact us if this issue persists."),
-        })
+        setReaderStatus({ readerStatus: "error" })
   
         setTimeout(attemptToUpdateReader, 15000)
         return

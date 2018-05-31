@@ -54,9 +54,9 @@ class Library extends React.Component {
   }
 
   getUpToDateReader = async () => {
-    const { setReaderStatus, navigation } = this.props
+    const { setReaderStatus } = this.props
 
-    updateReader({ setReaderStatus, navigation })
+    updateReader({ setReaderStatus })
   }
 
   async fetchAll(nextProps) {
