@@ -1,7 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet } from "react-native"
+import { Image, StyleSheet, NetInfo } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
@@ -18,9 +18,25 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     backgroundColor: '#eeeef3',
   },
+  offline: {
+    opacity: .25,
+  }
 })
 
 class Drawer extends React.Component {
+
+  state = {
+    offline: false,
+  }
+
+  componentDidMount() {
+    NetInfo.getConnectionInfo().then(this.setOfflineStatus)
+    NetInfo.addEventListener('connectionChange', this.setOfflineStatus)
+  }
+
+  setOfflineStatus = connectionInfo => {
+    this.setState({ offline: connectionInfo.type === 'none' })
+  }
 
   showAll = () => {
     const { navigation } = this.props
@@ -83,6 +99,7 @@ class Drawer extends React.Component {
 
   render() {
     const { accounts, idps, books, navigation } = this.props
+    const { offline } = this.state
 
     const accountIdpIds = []
     const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
@@ -152,7 +169,8 @@ class Drawer extends React.Component {
             </ListItem> */}
             <ListItem icon
               button
-              onPress={this.reLogin}
+              onPress={offline ? null : this.reLogin}
+              style={offline && styles.offline}
             >
               <Left>
                 <Icon name="refresh" />
