@@ -2,6 +2,7 @@ import { AsyncStorage } from "react-native"
 import { FileSystem } from "expo"
 
 import { fetchZipAndAssets } from "./zipDownloader.js"
+import i18n from "./i18n.js"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
@@ -28,10 +29,11 @@ export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   }
 }
 
-export const updateReader = async ({ setReaderStatus }) => {
+export const updateReader = async ({ setReaderStatus, navigation }) => {
   
   // Until we know the status, we consider it missing
   setReaderStatus({ readerStatus: "missing" })
+    // TODO: first test for an active internet connection
   
   if(await readerNeedsUpdate({ setReaderStatus })) {
     console.log(`Download updated reader...`)
@@ -46,7 +48,14 @@ export const updateReader = async ({ setReaderStatus }) => {
       // The reader must download successfully without error.
       console.log(`ERROR: Failed to download reader.`)
       setReaderStatus({ readerStatus: "missing" })
-      return false
+
+      navigation.navigate("ErrorMessage", {
+        message: i18n("The updated reader is not downloading properly. Please contact us if this issue persists."),
+      })
+
+      setTimeout(() => updateReader({ setReaderStatus, navigation }), 15000)
+      
+      return
     }
 
     await AsyncStorage.setItem('readerVersionTimestamp', READER_VERSION_TIMESTAMP)
@@ -54,6 +63,4 @@ export const updateReader = async ({ setReaderStatus }) => {
     setReaderStatus({ readerStatus: "ready" })
     console.log(`Done downloading reader.`)
   }
-
-  return true
 }
