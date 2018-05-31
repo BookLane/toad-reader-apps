@@ -28,12 +28,12 @@ const getAccountInfo = ({ idps, accountId }) => {
 }
 
 const reportResponseError = ({ message, response, error, retry }) => {
-  console.error(message, error)
+  console.log(`ERROR: ${message}`, error)
   if(response) {
-    console.error(response.status)
-    console.error(response.statusText)
-    console.error(response.body)
-    console.error('Will rerun in 30 seconds.')
+    console.log(response.status)
+    console.log(response.statusText)
+    console.log(response.body)
+    console.log('Will rerun in 30 seconds.')
   }
   retry && setTimeout(() => retry(), 30000)
 }

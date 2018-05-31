@@ -41,7 +41,7 @@ const findNavToc = objOrArray => {
 }
 
 export default async ({ bookId }) => {
-  
+
   const localBaseUri = `${getBooksDir()}${bookId}/`
   let
     opfRelativeUri,
@@ -65,8 +65,7 @@ export default async ({ bookId }) => {
     
   } catch(e) {
 
-    console.log("This EPUB appears to be invalid.", e)
-
+    console.log("ERROR: Bad opf.", bookId, e)
     return {}
     
   }
@@ -154,8 +153,9 @@ export default async ({ bookId }) => {
 
     } catch(e) {
 
-      console.log("This EPUB 3's TOC appears to be invalid.", e)
-  
+      console.log("ERROR: Bad EPUB 3 toc.", bookId, e)
+      return {}
+
     }
         
   } else {
@@ -207,8 +207,9 @@ export default async ({ bookId }) => {
 
     } catch(e) {
 
-      console.log("This EPUB 2's TOC appears to be invalid.", e)
-  
+      console.log("ERROR: Bad EPUB 2 toc.", bookId, e)
+      return {}
+
     }
 
   }    
@@ -229,10 +230,11 @@ export default async ({ bookId }) => {
     
   } catch(e) {
 
-    console.log('Could not determine spines (This EPUB appears to be invalid).', e)
+    console.log("ERROR: Could not determine spines.", bookId, e)
+    return {}
 
   }
 
-  return { toc, spines }
+  return { toc, spines, success: true }
   
 }

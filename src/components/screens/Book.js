@@ -404,6 +404,7 @@ class Book extends React.Component {
             indicateLoaded={this.indicateLoaded}
             hrefToGoTo={hrefToGoTo}
             capturingSnapshots={capturingSnapshots}
+            navigation={navigation}
           />
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>

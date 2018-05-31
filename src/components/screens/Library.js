@@ -50,9 +50,23 @@ class Library extends React.Component {
   }
 
   componentWillMount() {
-    const { setReaderStatus } = this.props
+    this.getUpToDateReader()
+  }
 
-    updateReader({ setReaderStatus })
+  getUpToDateReader = async () => {
+    const { setReaderStatus, navigation } = this.props
+    // TODO: first test for an active internet connection
+
+    updateReader({ setReaderStatus }).then(success => {
+      if(!success) {
+        navigation.navigate("ErrorMessage", {
+          message: i18n("The updated reader is not downloading properly. Please contact us if this issue persists."),
+        })
+        // No need to cancel the following timeout on unmount since this is the base screen
+        // and never unmounts.
+        setTimeout(() => this.getUpToDateReader(), 15000)
+      }
+    })
   }
 
   async fetchAll(nextProps) {
@@ -125,7 +139,6 @@ class Library extends React.Component {
         }
         
       } catch(error) {
-        console.log('error', error)
         navigation.navigate("ErrorMessage", {
           message: error.message || null,
         })
@@ -266,7 +279,7 @@ class Library extends React.Component {
           />
         }
 
-        <BookDownloader />
+        <BookDownloader navigation={navigation} />
       </Container>
     )
   }

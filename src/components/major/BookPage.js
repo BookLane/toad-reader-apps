@@ -80,7 +80,7 @@ class BookPage extends React.Component {
   isEditingNote = () => this.state.noteInEdit != null
 
   onMessageEvent = async (webView, data) => {
-    const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings } = this.props
+    const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books, displaySettings, navigation } = this.props
 
     if(webView !== this.webView) return // just in case
     
@@ -121,8 +121,10 @@ class BookPage extends React.Component {
 
       case 'openURL':
         Linking.openURL(data.payload.url).catch(err => {
-          // TODO: report the error
-          console.error('Error in opening URL', err)
+          console.log('ERROR: Request to open URL failed.', err)
+          navigation.navigate("ErrorMessage", {
+            message: i18n("Your device is not allowing us to open this link."),
+          })
         })
         return true
 

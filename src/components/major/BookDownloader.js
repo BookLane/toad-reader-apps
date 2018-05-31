@@ -1,6 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import i18n from "../../utils/i18n.js"
 
 import { getBooksDir } from "../../utils/toolbox.js"
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
@@ -40,14 +41,14 @@ class BookDownloader extends React.Component {
 
   downloadABook = async (nextProps, nextState) => {
     const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
-            setDownloadStatus, setTocAndSpines } = nextProps || this.props
+            setDownloadStatus, setTocAndSpines, navigation } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
     if(currentDownloadBookId) return
     if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return
     
     const bookId = bookDownloadQueue[0]
-    const { downloadStatus } = books[bookId] || {}
+    const { downloadStatus, title } = books[bookId] || {}
     const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
 
     if(downloadStatus === 2 || !accountId) {
@@ -59,9 +60,15 @@ class BookDownloader extends React.Component {
     console.log(`Download book with bookId ${bookId}...`)
 
     setDownloadStatus({ bookId, downloadStatus: 1 })
+
+    const handleDownloadFail = () => {
+      setDownloadStatus({ bookId, downloadStatus: 0 })
+      removeFromBookDownloadQueue({ bookId })
+    }
+
     let throttleLastRan = 0
     let throttleTimeout
-    await fetchZipAndAssets({
+    const zipFetchInfo = await fetchZipAndAssets({
       zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
@@ -74,11 +81,32 @@ class BookDownloader extends React.Component {
             downloadProgress: parseInt(progress * 100, 10),
           })
         }, throttleWaitTime)
-      }
+      },
+      title,
+      requiresAuth: true,
     })
     if(this.downloadWasCanceled(bookId)) return  // check this after each await
-    const { toc, spines } = await parseEpub({ bookId })
+    if(zipFetchInfo.errorMessage) {
+      console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
+      navigation.navigate("ErrorMessage", {
+        message: zipFetchInfo.errorMessage,
+      })
+    }
+    if(!zipFetchInfo.success) {
+      handleDownloadFail()
+      return
+    }
+    const { toc, spines, success } = await parseEpub({ bookId })
     if(this.downloadWasCanceled(bookId)) return
+    if(!success) {
+      navigation.navigate("ErrorMessage", {
+        message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
+      })
+      handleDownloadFail()
+      return
+    }
+
+    // If we get to this point, the download and parsing was successful
     setTocAndSpines({ bookId, toc, spines })
     setDownloadStatus({ bookId, downloadStatus: 2 })
     removeFromBookDownloadQueue({ bookId })

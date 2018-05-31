@@ -178,7 +178,7 @@ export const debounce = (func, ...params) => {
   }
 }
 
-export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback, cookie }) => (
+export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback, cookie, requiresAuth }) => (
   new Promise((resolve, reject) => {
     const xhr = new window.XMLHttpRequest()
 
@@ -215,7 +215,7 @@ export const fetchWithProgress = async (url, { progressCallback, abortFunctionCa
       if(xhr.readyState === 4) {
         if(xhr.status === 200 || xhr.status === 0) {
           resolve(xhr.response || xhr.responseText)
-        } else if(xhr.status === 403) {
+        } else if(requiresAuth && xhr.status === 403) {
           // TODO: force a relogin
           console.log('relogin')
         } else {

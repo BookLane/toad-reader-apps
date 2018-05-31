@@ -1,7 +1,8 @@
 import { Platform } from "react-native"
 import { FileSystem } from "expo"
 import JSZip from "jszip"
-import { fetchWithProgress } from './toolbox.js'
+import { fetchWithProgress, getReqOptionsWithAdditions } from './toolbox.js'
+import i18n from "./i18n.js"
 
 export const binaryExtensionToMimeTypeMap = {
   aac: 'audio/aac',
@@ -94,9 +95,10 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, title="", requiresAuth=false }) => {
 
   // set up the cancel function
+  let errorMessage
   let cancelComplete = false
   const isCanceled = async force => {
     if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete) {
@@ -138,16 +140,17 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       progressCallback: progressCallback ? progress => progressCallback(progress * progressPortions.download) : null,
       abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
       cookie,
+      requiresAuth,
     })
 
-    if(await isCanceled()) return   // after each await, check if we are still going
+    if(await isCanceled()) return { success: false, errorMessage }   // after each await, check if we are still going
 
     progressCallback && progressCallback(progressPortions.download + progressPortions.unzip)
 
     // unzip
     const zip = await JSZip.loadAsync(zipData)
 
-    if(await isCanceled()) return
+    if(await isCanceled()) return { success: false, errorMessage }
 
     // create all necessary dirs
     const dirs = []
@@ -163,7 +166,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
     progressCallback && progressCallback(progressPortions.download + progressPortions.unzip + progressPortions.dirs)
     
-    if(await isCanceled()) return
+    if(await isCanceled()) return { success: false, errorMessage }
 
     console.log(`Writing files from ${zipUrl}...`)
 
@@ -227,7 +230,11 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                     }),
                   )).downloadAsync()
                     .then(doResolve)
-                    .catch(() => {})  // TODO: handle the error here!
+                    .catch(() => {
+                      console.log("ERROR: Unable to download EPUB asset", `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`)
+                      errorMessage = i18n("Some of the assets for the book entitled \"{{title}}\" failed to download. We recommend you remove this book and try to download it again.", { title })
+                      doResolve()
+                    })
                 }
               })
           
@@ -280,14 +287,15 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       )
     }
     
-    if(await isCanceled()) return
+    if(await isCanceled()) return { success: false, errorMessage }
 
     if(dataURLs.length > 0) {
       // I need to swap in the data URLs to the text files now
       for(let j=0; j<textFilePaths.length; j++) {
         await new Promise(resolveFileWrite => {
           const handleCatch = async err => {
-            console.log(`ERROR working with data url swap for ${textFilePaths[j].replace(/#.*$/, '')}`, err && err.message)
+            console.log(`ERROR: data url swap failed for ${textFilePaths[j].replace(/#.*$/, '')}`, err && err.message)
+            errorMessage = i18n("Some of the assets for the book entitled \"{{title}}\" failed to load properly. Please contact us if this issue continues.", { title })
             await isCanceled(true)
             resolveFileWrite()
           }          
@@ -352,7 +360,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
             .catch(handleCatch)
         })
 
-        if(await isCanceled()) return
+        if(await isCanceled()) return { success: false, errorMessage }
 
         progressCallback &&
           progressCallback(
@@ -370,15 +378,21 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       FileSystem.deleteAsync(dataURL, { idempotent: true })
     )))
 
-    if(await isCanceled()) return
+    if(await isCanceled()) return { success: false, errorMessage }
     
     console.log(`Done downloading zip from ${zipUrl}`)
     
-    return true // indicates success
+    return { success: true, errorMessage }
 
   } catch(err) {
-    // TODO: do not show as if the book was successful!
-    console.log(`ERROR downloading zip from ${zipUrl}`, err && err.message)
+
+    if(await isCanceled()) return { success: false, errorMessage }
+
+    console.log(`ERROR: Failed to download zip from ${zipUrl}`, err && err.message)
+    errorMessage = errorMessage || i18n("This book entitled \"{{title}}\" failed to download.", { title })
+
     await isCanceled(true)
+
+    return { success: false, errorMessage }
   }
 }
