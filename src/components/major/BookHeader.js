@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform, Dimensions } from "react-native"
+import { StyleSheet, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
@@ -7,9 +7,27 @@ import AppHeader from "../basic/AppHeader"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
 
+const leftIconsWidth = 50
+const rightIconsWidth = 135
+
 const styles = StyleSheet.create({
-  title: {
-    ...(Platform.OS === 'ios' && isPhoneSize() ? { marginLeft: -50, left: -20 } : {}),
+  body: {
+    ...(
+      Platform.OS === 'ios' && isPhoneSize() ?
+        {
+          alignItems: 'flex-start',
+          left: (leftIconsWidth - rightIconsWidth) / 2,
+        }
+        : {}
+    ),
+    ...(
+      Platform.OS === 'android' && isPhoneSize() ?
+        {
+          marginLeft: -20,
+          marginRight: -20,
+        }
+        : {}
+    ),
   },
 })
 
@@ -22,9 +40,11 @@ class BookHeader extends React.PureComponent {
   }
 
   render() {
-    const { title, subtitle, navigation, mode, showDisplaySettings,
-            toggleBookView, toggleShowOptions } = this.props
-    
+    let { title, subtitle, navigation, mode, showDisplaySettings,
+            toggleBookView, toggleShowOptions, width } = this.props
+
+    width -= (leftIconsWidth + rightIconsWidth)
+            
     return (
       <AppHeader
         hide={mode === 'page'}
@@ -37,10 +57,21 @@ class BookHeader extends React.PureComponent {
             <Icon name="home" />
           </Button>
         </Left>
-        <Body>
-          <Title style={styles.title}>{title}</Title>
+        <Body style={[
+          styles.body,
+          (
+            isPhoneSize()
+              ? {
+                width,
+                minWidth: width,
+                maxWidth: width,
+              }
+              : {}
+          ),
+        ]}>
+          <Title>{title}</Title>
           {subtitle
-            ? <Subtitle style={styles.title}>{subtitle}</Subtitle>
+            ? <Subtitle>{subtitle}</Subtitle>
             : null
           }
         </Body>

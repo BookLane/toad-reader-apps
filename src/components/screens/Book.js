@@ -357,6 +357,8 @@ class Book extends React.Component {
 
     const { title } = (books && books[bookId]) || {}
 
+    const { width } = Dimensions.get('window')
+    
     if(readerStatus !== 'ready') {
       return (
         <Container>
@@ -377,6 +379,7 @@ class Book extends React.Component {
           toggleBookView={this.toggleBookView}
           toggleShowOptions={this.toggleShowOptions}
           showDisplaySettings={this.showDisplaySettings}
+          width={width}  // By sending this as a prop, I force a rerender
         />
         {mode === 'page' && <KeepAwake />}
         <View style={styles.pages}>
