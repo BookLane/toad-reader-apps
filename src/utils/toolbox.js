@@ -178,7 +178,7 @@ export const debounce = (func, ...params) => {
   }
 }
 
-export const fetchWithProgress = async (url, { progressCallback, abortFunctionCallback, cookie, requiresAuth }) => (
+export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback, cookie }) => (
   new Promise((resolve, reject) => {
     const xhr = new window.XMLHttpRequest()
 
@@ -213,15 +213,12 @@ export const fetchWithProgress = async (url, { progressCallback, abortFunctionCa
 
     xhr.onreadystatechange = evt => {
       if(xhr.readyState === 4) {
-        if(xhr.status === 200 || xhr.status === 0) {
+        if(xhr.status === 200) {
           resolve(xhr.response || xhr.responseText)
-        } else if(requiresAuth && xhr.status === 403) {
-          // TODO: force a relogin
-          console.log('relogin')
         } else {
-          reject(`Ajax error for ${url} : ${xhr.status} ${xhr.statusText}`)
-          // TODO: make sure this results in an unsuccessful book/resource download
-          // TODO: make sure this is where it goes for no internet connection
+          // It also goes here with status of 0 for no internet connection
+          // and status of 403 for no auth.
+          reject(xhr.status)
         }
       }
     }

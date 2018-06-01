@@ -95,7 +95,7 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, title="", requiresAuth=false }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, title="" }) => {
 
   // set up the cancel function
   let errorMessage
@@ -136,12 +136,32 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       }
 
     // get the zip file
-    const zipData = await fetchWithProgress(zipUrl, {
-      progressCallback: progressCallback ? progress => progressCallback(progress * progressPortions.download) : null,
-      abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
-      cookie,
-      requiresAuth,
-    })
+    let zipData
+    try {
+      zipData = await fetchWithProgress(zipUrl, {
+        progressCallback: progressCallback ? progress => progressCallback(progress * progressPortions.download) : null,
+        abortFunctionCallback: abort => abortFunctionsByLocalBaseUri[localBaseUri] = abort,
+        cookie,
+      })
+    } catch(err) {
+      if(err === 0) {
+        console.log(`Could not download zip from ${zipUrl} due to no internet connection.`)
+        return {
+          success: false,
+          errorTitle: i18n("Connection error"),
+          errorMessage: i18n("You are not connected to the internet. Please check your connection and try again."),
+        }
+
+      } else if(err === 403) {
+        console.log(`Could not download zip from ${zipUrl} due to no auth.`)
+        return {
+          success: false,
+          noAuth: true,
+        }
+      }
+      
+      throw new Error('Invalid response to zip fetch.')
+    }
 
     if(await isCanceled()) return { success: false, errorMessage }   // after each await, check if we are still going
 

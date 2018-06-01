@@ -7,7 +7,7 @@ import { getBooksDir } from "../../utils/toolbox.js"
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
 import parseEpub from "../../utils/parseEpub.js"
 
-import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines } from "../../redux/actions.js";
+import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions.js";
 
 class BookDownloader extends React.Component {
 
@@ -41,7 +41,7 @@ class BookDownloader extends React.Component {
 
   downloadABook = async (nextProps, nextState) => {
     const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
-            setDownloadStatus, setTocAndSpines, navigation } = nextProps || this.props
+            setDownloadStatus, setTocAndSpines, updateAccount, navigation } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
     if(currentDownloadBookId) return
@@ -89,7 +89,17 @@ class BookDownloader extends React.Component {
     if(zipFetchInfo.errorMessage) {
       console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
       navigation.navigate("ErrorMessage", {
+        title: zipFetchInfo.errorTitle,
         message: zipFetchInfo.errorMessage,
+      })
+    }
+    if(zipFetchInfo.noAuth) {
+      // have them login again
+      updateAccount({
+        accountId,
+        accountInfo: {
+          needToLogInAgain: true
+        },
       })
     }
     if(!zipFetchInfo.success) {
@@ -132,6 +142,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadProgress,
   setTocAndSpines,
   setDownloadStatus,
+  updateAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookDownloader)
