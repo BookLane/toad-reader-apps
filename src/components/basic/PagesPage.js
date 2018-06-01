@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, Dimensions, View } from "react-native"
+import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, View } from "react-native"
 
 import PagesBookmark from "./PagesBookmark"
 
