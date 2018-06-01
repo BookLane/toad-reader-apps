@@ -146,6 +146,7 @@ export const patch = info => setTimeout(() => {
                       needToLogInAgain: true
                     },
                   })
+                  // It would be better to have the retry a callback after they login, but this will due for now.
                   reportResponseError({
                     message: `Patch failed due to no auth`,
                     response,
@@ -263,7 +264,12 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
               needToLogInAgain: true
             },
           })
-          // TODO: after relogin, reload the user data
+          // It would be better to have the retry a callback after they login, but this will due for now.
+          reportResponseError({
+            message: `User data fetch failed due to no auth.`,
+            response,
+            retry: () => refreshUserData({ accountId, bookId }),
+          })
 
         } else {
           reportResponseError({
