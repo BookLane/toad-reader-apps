@@ -37,7 +37,8 @@ export default function(state = initialState, action) {
     case "SET_LATEST_LOCATION":
       const latest_location = latestLocationToStr(action.latestLocation)
 
-      if(latest_location === userDataForThisBook.latest_location) {
+      // The typeof condition is an attempt to avoid an occasional error with an unknown cause.
+      if(latest_location === userDataForThisBook.latest_location || typeof userDataForThisBook !== 'object') {
         return state
       }
 
