@@ -29,14 +29,14 @@ const langsNotGettingNewFile = []
 let defaultTranslationObj = {}
 
 // go through all files in src and extract calls to i18n(), building out the default json
-findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
+findInFiles.find(`i18n\\((?:\\\\.|[^)"']|"(?:\\\\.|[^"])*"|'(?:\\\\.|[^'])*')*\\)`, 'src', '.js$')
   .then(results => {
     for(let path in results) {
       if(['src/utils/i18n.js'].includes(path)) continue
 
       const res = results[path]
       res.matches.forEach(match => {
-        const parts = match.match(/^i18n\([\s\n]*("[^"]*"|'[^']*'|[\w_$]*)(?:\n|.)*?(?:,[\s\n]*("[^"]*"|'[^']*'|[\w_$]*)[\s\n]*)?\)$/)
+        const parts = match.match(/^i18n\([\s\n]*("(?:\\.|[^"])*"|'(?:\\.|[^'])*'|[\w_$]*)(?:\n|.)*?(?:,[\s\n]*("(?:\\.|[^"])*"|'(?:\\.|[^'])*'|[\w_$]*)[\s\n]*)?\)$/)
 
         if(!parts) {
           // report bad i18n in the code and exit
@@ -44,7 +44,7 @@ findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
           process.exit()
         }
 
-        const engText = parts[1].replace(/^["'](.*)["']$/, '$1')
+        const engText = parts[1].replace(/^["'](.*)["']$/, '$1').replace(/\\(.)/g, '$1')
 
         if(parts[2] === undefined) {
           if(typeof defaultTranslationObj[engText] === 'object') {
@@ -54,7 +54,7 @@ findInFiles.find(`i18n\\((?:[^)"']*|"[^"]*"|'[^']*')*\\)`, 'src', '.js$')
           }
 
         } else {
-          const desc = parts[2].replace(/^["'](.*)["']$/, '$1')
+          const desc = parts[2].replace(/^["'](.*)["']$/, '$1').replace(/\\(.)/g, '$1')
           if(typeof defaultTranslationObj[engText] === 'string') {
             defaultTranslationObj[engText] = {
               "": defaultTranslationObj[engText],

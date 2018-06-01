@@ -409,7 +409,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     if(await isCanceled()) return { success: false, errorMessage }
 
     console.log(`ERROR: Failed to download zip from ${zipUrl}`, err && err.message)
-    errorMessage = errorMessage || i18n("This book entitled \"{{title}}\" failed to download.", { title })
+    errorMessage = errorMessage || i18n("The book entitled \"{{title}}\" failed to download.", { title })
 
     await isCanceled(true)
 
