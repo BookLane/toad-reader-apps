@@ -61,9 +61,10 @@ class BookDownloader extends React.Component {
 
     setDownloadStatus({ bookId, downloadStatus: 1 })
 
-    const handleDownloadFail = () => {
-      setDownloadStatus({ bookId, downloadStatus: 0 })
+    const markDownloadComplete = downloadStatus => {
+      setDownloadStatus({ bookId, downloadStatus })
       removeFromBookDownloadQueue({ bookId })
+      this.setState({ currentDownloadBookId: null })
     }
 
     let throttleLastRan = 0
@@ -103,7 +104,7 @@ class BookDownloader extends React.Component {
       })
     }
     if(!zipFetchInfo.success) {
-      handleDownloadFail()
+      markDownloadComplete(0)
       return
     }
     const { toc, spines, success } = await parseEpub({ bookId })
@@ -112,17 +113,14 @@ class BookDownloader extends React.Component {
       navigation.navigate("ErrorMessage", {
         message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
       })
-      handleDownloadFail()
+      markDownloadComplete(0)
       return
     }
 
     // If we get to this point, the download and parsing was successful
     setTocAndSpines({ bookId, toc, spines })
-    setDownloadStatus({ bookId, downloadStatus: 2 })
-    removeFromBookDownloadQueue({ bookId })
-
+    markDownloadComplete(2)
     console.log(`Done downloading book with bookId ${bookId}`)
-    this.setState({ currentDownloadBookId: null })
   }
 
   render() {
