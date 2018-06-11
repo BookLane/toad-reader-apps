@@ -174,7 +174,7 @@ class Book extends React.Component {
         const prior_latest_location = (userDataByBookId[bookId] || {}).latest_location
         const priorLatestLocation = latestLocationToObj(prior_latest_location || "{}")
 
-        if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi !== cfi) {
+        if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi != cfi) {
           this.setState({
             zoomToInfo: null,
             onZoomCompletion: null,

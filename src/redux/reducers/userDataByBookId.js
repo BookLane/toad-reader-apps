@@ -35,6 +35,11 @@ export default function(state = initialState, action) {
       return newState
 
     case "SET_LATEST_LOCATION":
+    // In the case there is no latest location data, do not update
+      if(typeof action.latestLocation !== 'object' || action.latestLocation.spineIdRef == null) {
+        return state
+      }
+
       const latest_location = latestLocationToStr(action.latestLocation)
 
       // The typeof condition is an attempt to avoid an occasional error with an unknown cause.

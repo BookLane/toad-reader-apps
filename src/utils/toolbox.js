@@ -120,7 +120,7 @@ export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
   try {
     
-    if(!spineIdRef || !cfi) {
+    if(latest_location) {
       const latestLocation = latestLocationToObj(latest_location)
       spineIdRef = latestLocation.spineIdRef
       cfi = latestLocation.cfi
