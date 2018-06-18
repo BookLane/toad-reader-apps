@@ -4,7 +4,7 @@ const {
 
 const initialState = IDPS || {
   "1": {
-    idpName: "ToadReader",
+    idpName: "Toad Reader",
     domain: "demo.toadreader.com",
     idpExpire: null,
   },
