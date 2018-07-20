@@ -2,8 +2,9 @@
   "idps": {
     "1": {
       "idpName": "Toad Reader",
-      "domain": "demo.toadreader.com",
-      "idpExpire": null
+      "domain": "books.toadreader.com",
+      "idpExpire": null,
+      "noCloudSave": true
     },
     "3": {
       "idpName": "BibleMesh",

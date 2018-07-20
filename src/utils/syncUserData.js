@@ -44,7 +44,7 @@ export const patch = info => setTimeout(() => {
   const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount } = setAndGetLatestInfo(info)
 
   if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount) return
-
+  
   NetInfo.getConnectionInfo().then(connectionInfo => {
     if(connectionInfo.type === 'none') return
 
@@ -55,7 +55,7 @@ export const patch = info => setTimeout(() => {
       const newUserData = {}
       let somethingToPatch = false
 
-      if(!idp || !userId) return
+      if(!idp || !userId || idp.noCloudSave) return
 
       // filter down the userData object to only new items
       for(let bookId in userDataByBookId) {
@@ -199,6 +199,9 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
   if(!books[bookId].accounts[accountId]) return
 
   const { idpId, idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
+
+  if(idp.noCloudSave) return
+
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
   NetInfo.getConnectionInfo().then(connectionInfo => {
