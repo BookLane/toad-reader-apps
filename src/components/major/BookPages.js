@@ -19,8 +19,7 @@ const {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    width: '105%'
+    flex: 1
   },
   headerBottomBorder: {
     position: 'absolute',

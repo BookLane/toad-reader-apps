@@ -10,13 +10,13 @@ const {
 
 const cachedSizes = {}
 
-export const getPageSize = ({ width, height }=Dimensions.get('window')) => {
+export const getPageSize = ({ width, height } = Dimensions.get('window')) => {
 
-  if(!cachedSizes[`${width}x${height}`]) {
-    const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
+  if (!cachedSizes[`${width}x${height}`]) {
+    const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * (width / height) + PAGES_HORIZONTAL_MARGIN
     const pagesPerRow = parseInt(width / maxWidth)
     const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
-    const pageHeight = pageWidth / ( width / height )
+    const pageHeight = pageWidth / (width / height)
 
     cachedSizes[`${width}x${height}`] = {
       pageWidth,
@@ -43,28 +43,28 @@ const contentCfiComparator = (cont1, cont2) => {
   cont2 = parseContentCfi(cont2);
 
   //compare cont arrays looking for differences
-  for(var i = 0; i < cont1.length; i++) {
-    if(cont1[i] > cont2[i]) {
+  for (var i = 0; i < cont1.length; i++) {
+    if (cont1[i] > cont2[i]) {
       return 1
-    } else if(cont1[i] < cont2[i]) {
+    } else if (cont1[i] < cont2[i]) {
       return -1
     }
   }
 
   //no differences found, so confirm that cont2 did not have values we didn't check
-  if(cont1.length < cont2.length) return -1
+  if (cont1.length < cont2.length) return -1
 
   //cont arrays are identical
   return 0
 }
 
 export const getPageIndexInSpine = ({ pageCfis, cfi }) => {
-  if(cfi == null) return 0
+  if (cfi == null) return 0
 
   let pageIndexInSpine = pageCfis.length - 1
 
   pageCfis.slice(1).some((pageCfi, idx) => {
-    if(contentCfiComparator(cfi, pageCfi) === -1) {
+    if (contentCfiComparator(cfi, pageCfi) === -1) {
       pageIndexInSpine = idx
       return true
     }
@@ -100,7 +100,7 @@ export const getDisplaySettingsObj = props => {
 
 export const getPageCfisKey = ({ displaySettings, width, height }) => {
   const { textSize, textSpacing } = displaySettings
-  if(!width) {
+  if (!width) {
     width = Dimensions.get('window').width
     height = Dimensions.get('window').height
   }
@@ -109,7 +109,7 @@ export const getPageCfisKey = ({ displaySettings, width, height }) => {
 }
 
 export const getSnapshotURI = params => {
-  let { bookId, spineIdRef, pageIndexInSpine=0, pageCfisKey } = params
+  let { bookId, spineIdRef, pageIndexInSpine = 0, pageCfisKey } = params
 
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
@@ -119,8 +119,8 @@ export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
 export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
   try {
-    
-    if(latest_location) {
+
+    if (latest_location) {
       const latestLocation = latestLocationToObj(latest_location)
       spineIdRef = latestLocation.spineIdRef
       cfi = latestLocation.cfi
@@ -129,7 +129,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
     const pageCfisKey = getPageCfisKey({ displaySettings })
     let pageCfis
     book.spines.some(spine => {
-      if(spine.idref === spineIdRef) {
+      if (spine.idref === spineIdRef) {
         pageCfis = spine.pageCfis[pageCfisKey]
         return true
       }
@@ -141,7 +141,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
       pageIndexInSpine,
     }
 
-  } catch(e) {
+  } catch (e) {
     return {}
   }
 }
@@ -159,9 +159,9 @@ export const getFullName = user => user ? `${user.firstname || ''} ${user.lastna
 
 export const JSON_to_URLEncoded = (element, key, list) => {
   var list = list || []
-  if(typeof(element)=='object') {
-    for(var idx in element)
-      JSON_to_URLEncoded(element[idx], key?key+'['+idx+']':idx, list)
+  if (typeof (element) == 'object') {
+    for (var idx in element)
+      JSON_to_URLEncoded(element[idx], key ? key + '[' + idx + ']' : idx, list)
   } else {
     list.push(key + '=' + encodeURIComponent(element))
   }
@@ -171,7 +171,7 @@ export const JSON_to_URLEncoded = (element, key, list) => {
 // The navigate function prevents a double tap from causing double navigation
 let lastDebounce
 export const debounce = (func, ...params) => {
-  if(lastDebounce !== JSON.stringify(params)) {
+  if (lastDebounce !== JSON.stringify(params)) {
     func(...params)
     lastDebounce = JSON.stringify(params)
     setTimeout(() => lastDebounce = undefined, 1500)
@@ -191,29 +191,29 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
       },
     }) || {}).headers
 
-    for(let reqHeaderKey in reqHeaders) {
+    for (let reqHeaderKey in reqHeaders) {
       xhr.setRequestHeader(reqHeaderKey, reqHeaders[reqHeaderKey])
     }
 
     // recent browsers
-    if("responseType" in xhr) {
+    if ("responseType" in xhr) {
       xhr.responseType = "arraybuffer"
     }
 
     // older browser
-    if(xhr.overrideMimeType) {
+    if (xhr.overrideMimeType) {
       xhr.overrideMimeType("text/plain; charset=x-user-defined")
     }
 
-    if(progressCallback) {
+    if (progressCallback) {
       xhr.onprogress = evt => {
         progressCallback(evt.loaded / evt.total)
       }
     }
 
     xhr.onreadystatechange = evt => {
-      if(xhr.readyState === 4) {
-        if(xhr.status === 200) {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
           resolve(xhr.response || xhr.responseText)
         } else {
           // It also goes here with status of 0 for no internet connection
@@ -225,7 +225,7 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
 
     xhr.send()
 
-    if(abortFunctionCallback) {
+    if (abortFunctionCallback) {
       abortFunctionCallback(xhr.abort.bind(xhr))
     }
   })
@@ -235,8 +235,8 @@ export const getReqOptionsWithAdditions = additions => {
   const reqOptions = JSON.parse(JSON.stringify(REQUEST_OPTIONS || {}))
 
   const mergeInObj = (obj1, obj2) => {
-    for(let key in obj2) {
-      if(typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+    for (let key in obj2) {
+      if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
         mergeInObj(obj1[key], obj2[key])
       } else {
         obj1[key] = obj2[key]
