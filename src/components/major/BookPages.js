@@ -19,7 +19,7 @@ const {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   headerBottomBorder: {
     position: 'absolute',
@@ -46,7 +46,7 @@ class BookPages extends React.Component {
       inputRange: [0, 5],
       outputRange: [0, 1],
     })
-    
+
     this.onScroll = Animated.event(
       [{ nativeEvent: { contentOffset: { y: this.animatedScrollPosition } } }],
       {
@@ -62,7 +62,7 @@ class BookPages extends React.Component {
 
     this.calcList(nextProps)
 
-    if(
+    if (
       nextProps.spineIdRef !== spineIdRef
       || nextProps.pageIndexInSpine !== pageIndexInSpine
       || this.scrollToLatestLocationNextTimeReceivingProps
@@ -85,7 +85,7 @@ class BookPages extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     const { pageWidth } = this.state
 
-    if(nextState.pageWidth !== pageWidth) {
+    if (nextState.pageWidth !== pageWidth) {
       this.calcList(nextProps, nextState)
     }
   }
@@ -94,13 +94,13 @@ class BookPages extends React.Component {
     const { spines, pageCfisKey } = nextProps || this.props
     const { pageWidth, pageHeight, pagesPerRow } = nextState || this.state
 
-    if(!spines) return
+    if (!spines) return
 
-    if(!this.list) {
+    if (!this.list) {
       this.list = []
       this.headerIndices = []
     }
-    
+
     // clear the lists, but keep the same array objects
     this.list.splice(0, this.list.length)
     this.headerIndices.splice(0, this.headerIndices.length)
@@ -108,9 +108,9 @@ class BookPages extends React.Component {
     const { height } = Dimensions.get('window')
     const listHeight = (height - getFooterHeight() - getToolbarHeight())
     let offset = 0
-    
+
     spines.forEach(spine => {
-      const { idref, label='', pageCfis } = spine
+      const { idref, label = '', pageCfis } = spine
       this.list.push({
         key: `H:${pageWidth}:${idref}`,  // H = header
         label,
@@ -121,13 +121,13 @@ class BookPages extends React.Component {
 
       const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
       const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
-      for(let i=(numPagesInSpine ? 0 : -1); i<numPagesInSpine; i+=pagesPerRow) {
+      for (let i = (numPagesInSpine ? 0 : -1); i < numPagesInSpine; i += pagesPerRow) {
         const numRowsInSpine = Math.min(numPagesInSpine - i, pagesPerRow)
         const pageIndicesInSpine = []
         const pageCfisInThisRow = []
-        for(let j=0; j<(numRowsInSpine || 1); j++) {
-          pageIndicesInSpine.push(i+j)
-          pageCfisInThisSpine && pageCfisInThisRow.push(pageCfisInThisSpine[i+j])
+        for (let j = 0; j < (numRowsInSpine || 1); j++) {
+          pageIndicesInSpine.push(i + j)
+          pageCfisInThisSpine && pageCfisInThisRow.push(pageCfisInThisSpine[i + j])
         }
         this.list.push({
           key: `P:${pageWidth}:${i}:${idref}`,  // P = pages
@@ -146,11 +146,11 @@ class BookPages extends React.Component {
     const { bookId, spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight } = nextProps || this.props
     const { pageWidth, pageHeight } = this.state
 
-    if(spineIdRef == null || pageIndexInSpine == null) return
-    if(!this.list) return
-    if(!this.flatListEl) return
+    if (spineIdRef == null || pageIndexInSpine == null) return
+    if (!this.list) return
+    if (!this.flatListEl) return
 
-    if(!spines) {
+    if (!spines) {
       this.scrollToLatestLocationNextTimeReceivingProps = true
       return
     }
@@ -163,13 +163,13 @@ class BookPages extends React.Component {
       const { key, pageIndicesInSpine } = item
 
       // if it is a header row, no match
-      if(key.substr(0,2) === 'H:') return false
-      
+      if (key.substr(0, 2) === 'H:') return false
+
       // if not the correct spine, no match
-      if(key.split(':').slice(3).join(':') !== spineIdRef) return false
+      if (key.split(':').slice(3).join(':') !== spineIdRef) return false
 
       // if page index not in this row, no match
-      if(!pageIndicesInSpine.includes(pageIndexInSpine)) return false
+      if (!pageIndicesInSpine.includes(pageIndexInSpine)) return false
 
       index = idx
       indexInRow = pageIndicesInSpine.indexOf(pageIndexInSpine)
@@ -186,13 +186,13 @@ class BookPages extends React.Component {
     // since this might not be immediately rendered (given the FlatList), let's calculate its position
     const thisItemOffset = this.getItemLayout(this.list, index).offset
     const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-    const middleYPos = height/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2
+    const middleYPos = height / 2 - (pageHeight + PAGES_VERTICAL_MARGIN) / 2
     const lastItemLayout = this.getItemLayout(this.list, this.list.length - 1)
     const scrolledToBottomYPos = height - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
     updateSnapshotCoords({
       x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
       // I am not sure why I need statusBarHeight in the next line, given that it is not shown, but I do
-      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos ) - statusBarHeight,
+      y: Math.max(Math.min(middleYPos, scrolledToTopYPos), scrolledToBottomYPos) - statusBarHeight,
     })
   }
 
@@ -205,8 +205,8 @@ class BookPages extends React.Component {
     const { pageWidth, pageHeight } = this.state
     const { key, label, pageIndicesInSpine, cfis } = item
 
-    if(key.substr(0,2) === 'H:') {
-      
+    if (key.substr(0, 2) === 'H:') {
+
       return <PagesSpineHeading>{label}</PagesSpineHeading>
 
     } else {
@@ -239,7 +239,7 @@ class BookPages extends React.Component {
 
     return {
       offset,  // the distance from the top of the first row to this row
-      length: key.substr(0,2) === 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_VERTICAL_MARGIN,  // the height of the row
+      length: key.substr(0, 2) === 'H:' ? PAGE_LIST_HEADER_ROW_HEIGHT : pageHeight + PAGES_VERTICAL_MARGIN,  // the height of the row
       index,
     }
   }
@@ -256,19 +256,19 @@ class BookPages extends React.Component {
   }
 
   scrollToPercentage = percent => {
-    this.flatListEl && this.flatListEl.scrollToOffset({ offset: (percent/100) * this.maxScroll, animated: false })
+    this.flatListEl && this.flatListEl.scrollToOffset({ offset: (percent / 100) * this.maxScroll, animated: false })
   }
 
   render() {
     const { pageHeight } = this.state
     const { animatedScrollPosition, opacity } = this
 
-    if(!this.list) return null
+    if (!this.list) return null
 
     const { height } = Dimensions.get('window')
 
     const estimatedRowsPerPage = parseInt(height / (pageHeight + PAGES_VERTICAL_MARGIN), 10) + 2
-    
+
     return (
       <View
         style={styles.container}
@@ -292,14 +292,14 @@ class BookPages extends React.Component {
           scrollEventThrottle={1}
           ref={this.setFlatListEl}
         />
-        <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} />
+        <Animated.View style={[styles.headerBottomBorder, { opacity }]} />
         {this.maxScroll
           ?
-            <BookProgress
-              animatedScrollPosition={animatedScrollPosition}
-              maxScroll={this.maxScroll}
-              scrollToPercentage={this.scrollToPercentage}
-            />
+          <BookProgress
+            animatedScrollPosition={animatedScrollPosition}
+            maxScroll={this.maxScroll}
+            scrollToPercentage={this.scrollToPercentage}
+          />
           : null
         }
       </View>
