@@ -121,7 +121,7 @@ export default function(state = initialState, action) {
       return state
 
     case "CLEAR_ALL_SPINE_PAGE_CFIS":
-      if(newState[action.bookId]) {
+      if(newState[action.bookId] && newState[action.bookId].spines) {
         newState[action.bookId] = {
           ...newState[action.bookId],
           spines: newState[action.bookId].spines.map(spine => {

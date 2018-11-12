@@ -10,6 +10,13 @@ const {
   REMOVE_ICON_COLOR,
 } = Expo.Constants.manifest.extra
 
+// This constant is better here than in app.json since it needs to accord with the 
+// current version of the reader apps, not specific tenants.
+const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2018-11-11"
+// The exact value of this constant does not so much matter. It just needs to uniquely
+// change each time there is a modification to the apps that may change the layout
+// flow of the epubs.
+
 const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
   const localBaseUri = `${getBooksDir()}${bookId}/`
 
@@ -29,8 +36,23 @@ const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownl
   console.log(`Done removing snapshots and contents for book ${bookId}.`)
 }
 
-export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCfis, success }) => {
-  
+export const removeSnapshotsIfANewUpdateRequiresIt = async ({ books, clearAllSpinePageCfis }) => {
+
+  const dateOfMostRecentChangeRequiringPageRecapture = await AsyncStorage.getItem('dateOfMostRecentChangeRequiringPageRecapture')
+
+  if(dateOfMostRecentChangeRequiringPageRecapture !== MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE) {
+    for(let bookId in books) {
+      await clearPageCfiInfoAndSnapshots({ bookId, clearAllSpinePageCfis })
+    }
+
+    console.log(`Done removing snapshots for all books.`)
+    await AsyncStorage.setItem('dateOfMostRecentChangeRequiringPageRecapture', MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE)
+  }
+
+}
+
+export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCfis }) => {
+
   clearAllSpinePageCfis({ bookId })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
 

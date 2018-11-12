@@ -18,9 +18,10 @@ import AppHeader from "../basic/AppHeader.js";
 import BookDownloader from "../major/BookDownloader.js"
 
 import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
 import { addBooks, reSort, setSort, setFetchingBooks, setDownloadStatus,
-         removeAccount, updateAccount, setReaderStatus } from "../../redux/actions.js"
+         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -50,7 +51,10 @@ class Library extends React.Component {
   }
 
   componentWillMount() {
+    const { books, clearAllSpinePageCfis } = this.props
+
     this.getUpToDateReader()
+    removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
   }
 
   getUpToDateReader = async () => {
@@ -288,6 +292,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   removeAccount,
   updateAccount,
   setReaderStatus,
+  clearAllSpinePageCfis,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)
