@@ -37,6 +37,7 @@ export const binaryExtensionToMimeTypeMap = {
   smil: 'application/smil',
   snd: 'audio/basic',
   ttf: 'application/x-font-truetype',
+  ttc: 'application/x-font-ttf',
   wav: 'audio/wav',
   webm: 'video/webm',
   woff: 'application/font-woff',
