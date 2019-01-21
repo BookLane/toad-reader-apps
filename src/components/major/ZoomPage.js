@@ -1,6 +1,6 @@
 import React from "react"
 import { Constants } from "expo"
-import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio, Platform } from "react-native"
+import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
 
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
 
