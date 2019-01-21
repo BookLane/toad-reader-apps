@@ -71,7 +71,7 @@ class Options extends React.PureComponent {
               <Text>{option.text}</Text>
               {!!option.selected &&
                 <Icon
-                  name="checkmark"
+                  name="md-checkmark"
                   style={styles.icon}
                 />
               }

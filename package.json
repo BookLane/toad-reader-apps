@@ -15,7 +15,7 @@
     "start": "expo start"
   },
   "dependencies": {
-    "@expo/vector-icons": "6.2.0",
+    "@expo/vector-icons": "9.0.0",
     "babel-plugin-transform-remove-console": "6.8.5",
     "expo": "32.0.1",
     "jszip": "3.1.5",
