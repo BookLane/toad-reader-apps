@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
@@ -10,7 +10,7 @@ import Cover from "../basic/Cover"
 
 const {
   LIBRARY_MAXIMUM_BOOK_COVER_WIDTH,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

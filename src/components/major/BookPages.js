@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { StyleSheet, Dimensions, View, FlatList, Animated } from "react-native"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
@@ -15,7 +15,7 @@ const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

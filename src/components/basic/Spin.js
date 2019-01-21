@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { StyleSheet } from "react-native"
 import { Spinner, View } from "native-base"
 
@@ -7,7 +7,7 @@ import { Circle } from 'react-native-progress'
 
 const {
   SPINNER_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

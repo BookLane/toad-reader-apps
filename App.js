@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo";
+import { Font, AppLoading } from "expo";
 import { Root } from "native-base"
 
 import { AsyncStorage } from "react-native"
@@ -34,7 +34,7 @@ export default class App extends React.Component {
   async componentWillMount() {
     await Promise.all([
       new Promise(resolve => persistStore(store, {storage: AsyncStorage}, resolve)),
-      Expo.Font.loadAsync({
+      Font.loadAsync({
         Roboto: require('native-base/Fonts/Roboto.ttf'),
         Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
         Ionicons: require("native-base/Fonts/Ionicons.ttf"),
@@ -46,7 +46,7 @@ export default class App extends React.Component {
     this.setState({ isReady: true })
 
     // no need to wait for the following, but preload anyway
-    // Expo.Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
+    // Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
     // the above line was causing a crash in development mode
   }
 
@@ -54,7 +54,7 @@ export default class App extends React.Component {
     const { isReady } = this.state
 
     if(!isReady) {
-      return <Expo.AppLoading />
+      return <AppLoading />
     }
 
     return (

@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -12,7 +12,7 @@ import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox.js"
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
   MAX_SPINE_CAPTURE_TIMEOUT,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 class PageCaptureManager extends React.Component {
 

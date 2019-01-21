@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -14,7 +14,7 @@ import { getFooterHeight } from '../../utils/toolbox.js'
 const {
   ANDROID_TOOLBAR_COLOR,
   PROGRESS_BAR_SIDE_SPACING,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   footer: {
