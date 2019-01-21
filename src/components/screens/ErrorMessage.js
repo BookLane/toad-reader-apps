@@ -22,7 +22,7 @@ class ErrorMessage extends React.Component {
     const { critical } = navigation.state.params || {}
 
     if(critical) {
-      setTimeout(Expo.Util.reload, 5000)
+      setTimeout(Expo.Updates.reload, 5000)
     }
   }
 
