@@ -247,6 +247,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                     getReqOptionsWithAdditions({
                       headers: {
                         "x-cookie-override": cookie,
+                        "x-platform": Platform.OS,
                       },
                     }),
                   )).downloadAsync()

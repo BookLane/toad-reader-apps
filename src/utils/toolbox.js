@@ -1,4 +1,4 @@
-import { Dimensions } from "react-native"
+import { Platform, Dimensions } from "react-native"
 import { FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
@@ -188,6 +188,7 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     const reqHeaders = (getReqOptionsWithAdditions({
       headers: {
         "x-cookie-override": cookie,
+        "x-platform": Platform.OS,
       },
     }) || {}).headers
 
