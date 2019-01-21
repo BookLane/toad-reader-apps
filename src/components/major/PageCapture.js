@@ -86,7 +86,7 @@ class PageCapture extends React.Component {
         reportInfoOrCapture(this.props)
 
         const { pageWidth, pageHeight } = getPageSize({ width, height })
-        const pageIndexInSpine = 0
+        let pageIndexInSpine = 0
         const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
         
         await new Promise(resolve => {
