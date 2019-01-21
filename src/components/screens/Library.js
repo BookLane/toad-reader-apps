@@ -1,9 +1,9 @@
 import React from "react"
+import { Constants, FileSystem } from "expo"
 import { Platform, StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
-import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
@@ -25,7 +25,7 @@ import { addBooks, reSort, setSort, setFetchingBooks, setDownloadStatus,
 
 const {
   APP_BACKGROUND_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   flex1: {

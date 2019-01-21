@@ -1,6 +1,6 @@
 import React from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions } from "react-native"
-import { KeepAwake } from "expo"
+import { Constants, KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
@@ -27,7 +27,7 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clea
 const {
   APP_BACKGROUND_COLOR,
   PAGE_ZOOM_MILLISECONDS,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const pageStyles = {
   position: 'absolute',

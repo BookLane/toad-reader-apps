@@ -1,6 +1,8 @@
+import { Constants } from "expo"
+
 const {
   IDPS,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const initialState = IDPS || {
   "1": {

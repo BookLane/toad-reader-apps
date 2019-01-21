@@ -1,4 +1,4 @@
-import Expo, { FileSystem } from "expo"
+import { Constants, FileSystem } from "expo"
 import i18n from "./i18n.js"
 import { AsyncStorage } from "react-native"
 import { ActionSheet, Toast } from "native-base"
@@ -8,7 +8,7 @@ import { cancelFetch } from "./zipDownloader.js"
 
 const {
   REMOVE_ICON_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.

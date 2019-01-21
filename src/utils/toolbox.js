@@ -1,12 +1,12 @@
 import { Platform, Dimensions } from "react-native"
-import { FileSystem } from "expo"
+import { Constants, FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
   REQUEST_OPTIONS,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const cachedSizes = {}
 
