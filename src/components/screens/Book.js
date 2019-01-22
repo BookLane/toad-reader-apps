@@ -180,6 +180,20 @@ class Book extends React.Component {
             onZoomCompletion: null,
             bookLoaded: false,
           })
+
+          // The indicateLoaded function is called by after a pageChanged postMessage.
+          // In the event that this never happens, we don't want to leave things stuck.
+          // Therefore, use a timeout to ensure this happens, and otherwise display an
+          // error message.
+          const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
+          setTimeout(() => {
+            if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
+              navigation.navigate("ErrorMessage", {
+                message: i18n("Sorry! There was an error flipping to that page."),
+              })
+              this.indicateLoaded()
+            }
+          }, 1500)
   
           setLatestLocation({
             bookId,
@@ -283,8 +297,12 @@ class Book extends React.Component {
 
   requestHideSettings = () => this.setState({ showSettings: false })
 
+  indicateLoadedCallCount = 0
+
   indicateLoaded = () => {
     const { mode } = this.state
+
+    this.indicateLoadedCallCount++
 
     this.setState({
       bookLoaded: true,
