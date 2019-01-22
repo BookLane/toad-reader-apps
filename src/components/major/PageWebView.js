@@ -188,6 +188,7 @@ class PageWebView extends React.Component {
             ref={this.setWebViewEl}
             allowUniversalAccessFromFileURLs={true}
             allowFileAccess={true}
+            originWhitelist={['*']}
             source={{
               uri: `${FileSystem.documentDirectory}reader/index.html`
                 + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
