@@ -19,23 +19,13 @@ export default async ({ view, uri, width, height, force }) => {
     await takeSnapshotAsync(view, {
       format: "jpg",
       quality: 0.8,
-      result: "file",
+      result: "base64",
       width,
       height,
     })
   )
   
-  let initFileURI = await getSnapshot()
-
-  const fileInfo = await FileSystem.getInfoAsync(initFileURI)
-  if(fileInfo.size < 2500) {
-    // May have captured a blank page. Try again.
-    console.log('Taking snapshot again as first snapshot appears blank.', fileInfo.size, uri)
-    await FileSystem.deleteAsync(initFileURI, { idempotent: true })
-    initFileURI = await getSnapshot()
-    const newFileInfo = await FileSystem.getInfoAsync(initFileURI)
-    console.log('New snapshot size: ', newFileInfo.size)
-  }
+  let snapshotBase64 = await getSnapshot()
 
   const dir = uri.replace(/[^/]+$/, '')
   
@@ -43,9 +33,8 @@ export default async ({ view, uri, width, height, force }) => {
     await FileSystem.makeDirectoryAsync(dir, { intermediates: true })
   } catch(e) {}
   
-  await FileSystem.moveAsync({
-    from: initFileURI,
-    to: uri,
+  await FileSystem.writeAsStringAsync(uri, snapshotBase64, {
+    encoding: FileSystem.EncodingTypes.Base64,
   })
 
   return true
