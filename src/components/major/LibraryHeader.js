@@ -62,7 +62,7 @@ class LibraryHeader extends React.Component {
             transparent
             onPress={this.toggleView}
           >
-            <Icon name={library.view == "covers" ? "list" : "apps"} />
+            <Icon name={library.view == "covers" ? "list" : "md-apps"} />
             {/* square */}
           </Button>
           <Button

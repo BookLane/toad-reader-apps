@@ -86,7 +86,7 @@ class BookHeader extends React.PureComponent {
             transparent
             onPress={toggleBookView}
           >
-            <Icon name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "apps"} />
+            <Icon name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
           </Button>
           <Button
             transparent
