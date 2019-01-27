@@ -6,7 +6,7 @@ import i18n from "./i18n.js"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const READER_VERSION_TIMESTAMP = "1542033028"
+const READER_VERSION_TIMESTAMP = "1548606020"
 
 const zipUrl = `https://s3-us-west-2.amazonaws.com/biblemesh-readium/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
 const localBaseUri = `${FileSystem.documentDirectory}reader/`

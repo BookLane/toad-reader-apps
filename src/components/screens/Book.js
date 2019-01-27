@@ -193,8 +193,8 @@ class Book extends React.Component {
               })
               this.indicateLoaded()
             }
-          }, 1500)
-  
+          }, 2500)
+
           setLatestLocation({
             bookId,
             latestLocation: {
