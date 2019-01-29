@@ -13,7 +13,8 @@ export default async ({ view, uri, width, height, force }) => {
     return true
   }
   
-  await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
+  // Following commented line no longer needed on iOS. Check android before deleting completely.
+  // await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
 
   const getSnapshot = async () => (
     await takeSnapshotAsync(view, {

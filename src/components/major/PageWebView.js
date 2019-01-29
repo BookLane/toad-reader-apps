@@ -68,12 +68,10 @@ class PageWebView extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { shiftStyle } = this.props
     const { width } = this.state
 
     return (
       nextState.width !== width
-      || nextProps.shiftStyle !== shiftStyle
     )
   }
 
@@ -145,7 +143,6 @@ class PageWebView extends React.Component {
   onError = e => console.log('webview error', e)
 
   render() {
-    const { shiftStyle } = this.props
     // I get these from state and not props because these are all initial values
     const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
 
@@ -179,7 +176,6 @@ class PageWebView extends React.Component {
                 minHeight: height,
               },
               style,
-              shiftStyle,
             ]}
             injectedJavaScript={`
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
