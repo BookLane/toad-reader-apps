@@ -213,7 +213,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       )
     })
 
-    const writeSegmentSize = 1
+    const writeSegmentSize = 10  // Note that the cancel check only happens every 10 files this way
     for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
       await Promise.all(
         writeFunctions
