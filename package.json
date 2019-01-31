@@ -28,7 +28,7 @@
     "react-intl": "2.4.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.1.tar.gz",
     "react-native-progress": "3.4.0",
-    "react-navigation": "1.0.0-beta.27",
+    "react-navigation": "1.5.2",
     "react-redux": "5.0.6",
     "reduce-reducers": "0.1.2",
     "redux": "3.7.2",

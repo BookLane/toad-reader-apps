@@ -48,6 +48,7 @@ class Library extends React.Component {
 
   state = {
     showOptions: false,
+    downloadPaused: false,
   }
 
   componentWillMount() {
@@ -55,6 +56,28 @@ class Library extends React.Component {
 
     this.getUpToDateReader()
     removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props
+
+    this.navigationDidFocusListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
+    this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
+
+    this.fetchAll()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { accounts } = this.props
+
+    if(nextProps.accounts !== accounts) {
+      this.fetchAll(nextProps)
+    }
+  }
+
+  componentWillUnmount() {
+    this.navigationWillBlurListener.remove()
+    this.navigationDidFocusListener.remove()
   }
 
   getUpToDateReader = async () => {
@@ -142,18 +165,6 @@ class Library extends React.Component {
     setFetchingBooks({ value: false })
   }
   
-  componentDidMount() {
-    this.fetchAll()
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { accounts } = this.props
-
-    if(nextProps.accounts !== accounts) {
-      this.fetchAll(nextProps)
-    }
-  }
-
   toggleShowOptions = () => {
     const { showOptions } = this.state
 
@@ -184,7 +195,7 @@ class Library extends React.Component {
   
   render() {
     const { library, accounts, books, fetchingBooks, navigation, setSort } = this.props
-    const { showOptions } = this.state
+    const { showOptions, downloadPaused } = this.state
 
     let { scope, logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
     scope = scope || "all"
@@ -271,7 +282,10 @@ class Library extends React.Component {
           />
         }
 
-        <BookDownloader navigation={navigation} />
+        <BookDownloader
+          downloadPaused={downloadPaused}
+          navigation={navigation}
+        />
       </Container>
     )
   }

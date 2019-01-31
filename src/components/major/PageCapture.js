@@ -24,18 +24,18 @@ class PageCapture extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { pageCapturePaused } = this.props
+    const { processingPaused } = this.props
     
     return (
       getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
-      || (!nextProps.pageCapturePaused && pageCapturePaused)
+      || (!nextProps.processingPaused && processingPaused)
     )
   }
 
   componentDidUpdate() {
-    const { pageCapturePaused } = this.props
+    const { processingPaused } = this.props
 
-    if(pageCapturePaused) return
+    if(processingPaused) return
 
     if(this.shiftAndSnap) {
       this.shiftAndSnap()
@@ -59,7 +59,7 @@ class PageCapture extends React.Component {
     const { spineIdRef } = this.props
 
     if(this.loadSpineAndGetPagesInfoAlreadyCalled || !this.webView) return
-    if(this.getPageCapturePaused()) return
+    if(this.getProcessingPaused()) return
 
     this.reset()
 
@@ -70,7 +70,7 @@ class PageCapture extends React.Component {
     this.loadSpineAndGetPagesInfoAlreadyCalled = true
   }
 
-  getPageCapturePaused = () => this.props.pageCapturePaused
+  getProcessingPaused = () => this.props.processingPaused
 
   onMessageEvent = async (webView, data) => {
     const { bookId, spineIdRef, width, height, displaySettings,
@@ -93,7 +93,7 @@ class PageCapture extends React.Component {
           this.shiftAndSnap = () => {
             reportInfoOrCapture(this.props)
 
-            if(this.getPageCapturePaused()) return
+            if(this.getProcessingPaused()) return
             if(this.pageIndexInSpine >= numPages) return resolve()
 
             this.inProcessOfShifting = true
@@ -137,7 +137,7 @@ class PageCapture extends React.Component {
 
         delete this.inProcessOfShifting
 
-        if(this.getPageCapturePaused()) return
+        if(this.getProcessingPaused()) return
 
         reportInfoOrCapture(this.props)
 
@@ -171,9 +171,9 @@ class PageCapture extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, width, height, spineIdRef, pageCapturePaused } = this.props
+    const { bookId, width, height, spineIdRef, processingPaused } = this.props
 
-    if(pageCapturePaused) return null
+    if(processingPaused) return null
 
     return (
       <PageWebView

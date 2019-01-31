@@ -57,13 +57,13 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, title="" }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused, title="" }) => {
 
   // set up the cancel function
   let errorMessage
   let cancelComplete = false
   const isCanceled = async force => {
-    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete) {
+    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || downloadIsPaused()) {
       if(!cancelComplete) {
         console.log(`Download canceled for ${zipUrl}`)
         delete cancelDownloadByLocalBaseUri[localBaseUri]
@@ -213,17 +213,16 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       )
     })
 
-    const writeSegmentSize = 10
+    const writeSegmentSize = 1
     for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
       await Promise.all(
         writeFunctions
           .slice(i, i+writeSegmentSize)
           .map(writeFunction => new Promise(writeFunction))
       )
+      if(await isCanceled()) return { success: false, errorMessage }
     }
     
-    if(await isCanceled()) return { success: false, errorMessage }
-
     console.log(`Done downloading zip from ${zipUrl}`)
     
     return { success: true, errorMessage }

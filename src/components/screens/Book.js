@@ -123,7 +123,7 @@ class Book extends React.Component {
       onZoomCompletion: null,
       statusBarHeight: StatusBar.currentHeight || 0,
       capturingSnapshots: false,
-      pageCapturePaused: true,
+      processingPaused: true,
     }
 
     this.getFreshUserData()
@@ -162,7 +162,7 @@ class Book extends React.Component {
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
-    this.pausePageCapture()
+    this.pauseProcessing()
 
     this.setState({
       mode: 'zooming',
@@ -210,7 +210,7 @@ class Book extends React.Component {
             zoomToInfo: null,
             onZoomCompletion: null,
             mode: 'page',
-          }, this.unpausePageCapture)
+          }, this.unpauseProcessing)
         }
 
         this.setStatusBarHidden(true)
@@ -223,7 +223,7 @@ class Book extends React.Component {
   setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
 
   goToHref = ({ href }) => {
-    this.pausePageCapture()
+    this.pauseProcessing()
 
     this.setState({
       mode: 'page',
@@ -251,7 +251,7 @@ class Book extends React.Component {
       y: height,
     }
     
-    this.pausePageCapture()
+    this.pauseProcessing()
 
     this.setState({
       mode: 'zooming',
@@ -262,7 +262,7 @@ class Book extends React.Component {
         this.setState({
           onZoomCompletion: null,
           mode: 'page',
-        }, this.unpausePageCapture)
+        }, this.unpauseProcessing)
 
         this.setStatusBarHidden(true)
       },
@@ -278,7 +278,7 @@ class Book extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   requestShowPages = () => {
-    this.pausePageCapture()
+    this.pauseProcessing()
     
     this.setState({
       mode: 'zooming',
@@ -288,7 +288,7 @@ class Book extends React.Component {
         this.setState({
           mode: 'pages',
           onZoomCompletion: null,
-        }, this.unpausePageCapture)
+        }, this.unpauseProcessing)
 
         this.setStatusBarHidden(false)
       },
@@ -307,7 +307,7 @@ class Book extends React.Component {
     this.setState({
       bookLoaded: true,
       mode: mode === 'zooming' ? 'page' : mode,
-    }, this.unpausePageCapture)
+    }, this.unpauseProcessing)
   }
 
   showDisplaySettings = () => {
@@ -358,15 +358,16 @@ class Book extends React.Component {
     },
   ]
 
-  pausePageCapture = () => this.setState({ pageCapturePaused: true })
-  unpausePageCapture = () => this.setState({ pageCapturePaused: false })
+  setPauseProcessing = processingPaused => this.setState({ processingPaused })
+  pauseProcessing = () => this.setPauseProcessing(true)
+  unpauseProcessing = () => this.setPauseProcessing(false)
 
   render() {
 
     const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
     const { bookId } = navigation.state.params || {}
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
-      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, pageCapturePaused } = this.state
+      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, processingPaused } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
@@ -457,7 +458,7 @@ class Book extends React.Component {
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={this.setCapturingSnapshots}
-          pageCapturePaused={pageCapturePaused}
+          processingPaused={processingPaused}
         />
 
       </Container>
