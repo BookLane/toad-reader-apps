@@ -1,7 +1,7 @@
 import { Platform } from "react-native"
 import { FileSystem } from "expo"
 import JSZip from "jszip"
-import { fetchWithProgress } from './toolbox.js'
+import { fetchWithProgress, encodeBase64 } from './toolbox.js'
 import i18n from "./i18n.js"
 
 export const binaryExtensionToMimeTypeMap = {
@@ -167,14 +167,22 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
           if(binaryMimeType) {
 
-            file.async('base64').then(base64 => {
-              FileSystem.writeAsStringAsync(uri, base64, {
-                encoding: FileSystem.EncodingTypes.Base64,
-              })
-                .then(doResolve)
-                .catch(reject)
+            let binarystring = ""
+            file.internalStream("binarystring")
+              .on("data", data => binarystring += data)
+              .on("error", reject)
+              .on("end", () => {
+                
+                const base64 = encodeBase64(binarystring)
 
-            }, reject)
+                FileSystem.writeAsStringAsync(uri, base64, {
+                  encoding: FileSystem.EncodingTypes.Base64,
+                })
+                  .then(doResolve)
+                  .catch(reject)
+
+              })
+              .resume()
 
           } else {
             // it is a text file
@@ -213,7 +221,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       )
     })
 
-    const writeSegmentSize = 10  // Note that the cancel check only happens every 10 files this way
+    const writeSegmentSize = 1  // Note that the cancel check only happens every 10 files this way
     for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
       await Promise.all(
         writeFunctions

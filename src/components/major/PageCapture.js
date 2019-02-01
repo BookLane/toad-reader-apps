@@ -117,6 +117,11 @@ class PageCapture extends React.Component {
 
         if(this.unmounted) return
 
+if(data.payload.pageCfis.some(cfi => !cfi)) {
+  alert('bad!')
+  console.log('bad cfi set', spineIdRef, data.payload.pageCfis)
+}
+        
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,

@@ -249,3 +249,30 @@ export const getReqOptionsWithAdditions = additions => {
 
   return reqOptions
 }
+
+const base64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+export const encodeBase64 = str => {
+  let output = '';
+
+  for (
+    let block = 0, charCode, i = 0, map = base64Chars;
+    str.charAt(i | 0) || (map = '=', i % 1);
+    output += map.charAt(63 & block >> 8 - i % 1 * 8)
+  ) {
+
+    charCode = str.charCodeAt(i += 3/4)
+
+    if (charCode > 0xFF) {
+      throw new Error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.")
+    }
+
+    block = block << 8 | charCode
+
+    // To prevent memory from blowing up, I need to index the string every once and a while.
+    // https://stackoverflow.com/questions/35354801/why-does-v8-run-out-of-memory-in-this-situation
+    if (i % 3000000 === 0) output[0]
+    
+  }
+
+  return output
+}
