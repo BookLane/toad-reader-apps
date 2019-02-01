@@ -89,6 +89,12 @@ class PageCapture extends React.Component {
         const numPages = data.payload.pageCfis.length
         const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
 
+        if(Platform.OS === 'android') {
+          // Delay to ensure render of the initial page in spine
+          // since this is not covered by the dup check in takeSnapshot.
+          await new Promise(resolve => setTimeout(resolve, 25))
+        }
+
         await new Promise(resolve => {
           this.shiftAndSnap = () => {
             reportInfoOrCapture(this.props)
@@ -102,12 +108,14 @@ class PageCapture extends React.Component {
             this.webView.injectJavaScript(`
               document.documentElement.style.transform = "translate(${shift}px)";
               document.documentElement.getBoundingClientRect();  // ensures paint is done before postMessage call
-              window.postMessage(JSON.stringify({
-                identifier: "docElShifted",
-                payload: {
-                  spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
-                },
-              }), "*");
+              requestAnimationFrame(() => {
+                window.postMessage(JSON.stringify({
+                  identifier: "docElShifted",
+                  payload: {
+                    spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
+                  },
+                }), "*");
+              })
             `)
 
           }

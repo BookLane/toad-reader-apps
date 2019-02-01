@@ -5,6 +5,9 @@ import { Platform } from "react-native"
 // (1) Taking a single snap shot to the spine and then splitting it up
 // (2) scaling the view down (using a transform)
 
+const START_OF_LENGTH = 1000
+let startOfLastSnapShotBase64
+
 export default async ({ view, uri, width, height, viewWidth, viewHeight, force }) => {
 
   const uriFileInfo = force || await FileSystem.getInfoAsync(uri)
@@ -36,6 +39,25 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
   )
   
   let snapshotBase64 = await getSnapshot()
+
+  if(Platform.OS === 'android') {
+
+    startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+
+    if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
+      await new Promise(resolve => setTimeout(resolve, 20))  // delay to allow for render of the shift
+
+      snapshotBase64 = await getSnapshot()
+      startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+
+      if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
+        console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
+      }
+    }
+
+    startOfLastSnapShotBase64 = startOfSnapshotBase64
+
+  }
 
   const dir = uri.replace(/[^/]+$/, '')
   
