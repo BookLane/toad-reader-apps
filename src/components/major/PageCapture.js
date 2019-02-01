@@ -157,6 +157,8 @@ if(data.payload.pageCfis.some(cfi => !cfi)) {
           uri,
           width: pageWidth,
           height: pageHeight,
+          viewWidth: width,
+          viewHeight: height,
         })
 
         if(this.unmounted) return
