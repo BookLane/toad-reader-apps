@@ -57,7 +57,7 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused, title="" }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused=()=>{}, title="" }) => {
 
   // set up the cancel function
   let errorMessage
