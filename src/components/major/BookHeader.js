@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     ...(
       Platform.OS === 'android' && isPhoneSize() ?
         {
-          marginLeft: -20,
+          marginLeft: -5,
           marginRight: -20,
         }
         : {}
