@@ -32,7 +32,7 @@ class LibraryHeader extends React.Component {
     let subtitle = ""
 
     if(scope == 'device') {
-      title = i18n("On device only")
+      title = i18n("On device")
     }
   
     if(accounts[scope]) {

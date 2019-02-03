@@ -41,7 +41,11 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: 0,
+  // Height needed instead of bottom due to bug in android standalone 
+  // build which doesn't take the absense of the status bar into the 
+  // height calculation.
+  // bottom: 0,
+  height: Dimensions.get('window').height - getToolbarHeight(),
   left: 0,
   right: 0,
   backgroundColor: APP_BACKGROUND_COLOR,
