@@ -75,7 +75,7 @@ const showZoomStyles = {
 }
 
 const hidePageStyles = {
-  left: '300%',
+  display: 'none',
 }
 
 const styles = StyleSheet.create({
@@ -182,7 +182,6 @@ class Book extends React.Component {
 
         if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi != cfi) {
           this.setState({
-            zoomToInfo: null,
             onZoomCompletion: null,
             bookLoaded: false,
           })
@@ -308,13 +307,14 @@ class Book extends React.Component {
   indicateLoadedCallCount = 0
 
   indicateLoaded = () => {
-    const { mode } = this.state
+    const { mode, zoomToInfo } = this.state
 
     this.indicateLoadedCallCount++
 
     this.setState({
       bookLoaded: true,
       mode: mode === 'zooming' ? 'page' : mode,
+      zoomToInfo: mode === 'zooming' ? null : zoomToInfo,
     }, this.unpauseProcessing)
   }
 
