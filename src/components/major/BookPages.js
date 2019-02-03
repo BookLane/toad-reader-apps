@@ -155,7 +155,7 @@ class BookPages extends React.Component {
       return
     }
 
-    const { height } = Dimensions.get('window')
+    const height = Dimensions.get('window').height - statusBarHeight
     let index = 0
     let indexInRow = 0
 
@@ -192,7 +192,7 @@ class BookPages extends React.Component {
     updateSnapshotCoords({
       x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
       // I am not sure why I need statusBarHeight in the next line, given that it is not shown, but I do
-      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos ) - statusBarHeight,
+      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
     })
   }
 

@@ -19,7 +19,7 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize, debounce } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize, debounce, isIPhoneX } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
@@ -27,11 +27,12 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clea
 const {
   APP_BACKGROUND_COLOR,
   PAGE_ZOOM_MILLISECONDS,
+  ANDROID_STATUS_BAR_COLOR,
 } = Constants.manifest.extra
 
 const pageStyles = {
   position: 'absolute',
-  top: 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
   bottom: 0,
   left: 0,
   right: 0,
@@ -41,11 +42,7 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  // Height needed instead of bottom due to bug in android standalone 
-  // build which doesn't take the absense of the status bar into the 
-  // height calculation.
-  // bottom: 0,
-  height: Dimensions.get('window').height - getToolbarHeight(),
+  bottom: 0,
   left: 0,
   right: 0,
   backgroundColor: APP_BACKGROUND_COLOR,
@@ -54,7 +51,7 @@ const pagesStyles = {
 
 const zoomStyles = {
   position: 'absolute',
-  top: 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
   bottom: 0,
   left: 0,
   right: 0,
@@ -125,7 +122,7 @@ class Book extends React.Component {
       snapshotCoords: null,
       snapshotZoomed: true,
       onZoomCompletion: null,
-      statusBarHeight: StatusBar.currentHeight || 0,
+      statusBarHeight: StatusBar.currentHeight || (isIPhoneX ? 24 : -10),
       capturingSnapshots: false,
       processingPaused: true,
     }
@@ -134,11 +131,11 @@ class Book extends React.Component {
   }
 
   componentDidMount() {
-    StatusBar.setHidden(true)
+    this.setStatusBarHidden(true)
   }
 
   componentWillUnmount() {
-    StatusBar.setHidden(false)
+    this.setStatusBarHidden(false)
   }
 
   getFreshUserData = () => {
@@ -157,6 +154,9 @@ class Book extends React.Component {
   setStatusBarHidden = setHidden => {
     if(Platform.OS === 'ios') {
       StatusBar.setHidden(setHidden)
+    } else if(Platform.OS === 'android') {
+      StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
+      // StatusBar.setBarStyle(setHidden ? 'dark-content' : 'light-content', true)
     }
   }
 
@@ -167,6 +167,8 @@ class Book extends React.Component {
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
     this.pauseProcessing()
+
+    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
       mode: 'zooming',
@@ -217,7 +219,6 @@ class Book extends React.Component {
           }, this.unpauseProcessing)
         }
 
-        this.setStatusBarHidden(true)
       },
     })
   }
@@ -234,7 +235,8 @@ class Book extends React.Component {
       snapshotZoomed: true,
       hrefToGoTo: href,
     })
-    this.setStatusBarHidden(true)
+    
+    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
   }
 
   toggleBookView = () => {
@@ -257,6 +259,8 @@ class Book extends React.Component {
     
     this.pauseProcessing()
 
+    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+
     this.setState({
       mode: 'zooming',
       snapshotCoords,
@@ -268,7 +272,6 @@ class Book extends React.Component {
           mode: 'page',
         }, this.unpauseProcessing)
 
-        this.setStatusBarHidden(true)
       },
     })
   }
@@ -284,6 +287,8 @@ class Book extends React.Component {
   requestShowPages = () => {
     this.pauseProcessing()
     
+    this.setStatusBarHidden(false)
+
     this.setState({
       mode: 'zooming',
       snapshotZoomed: false,
@@ -294,7 +299,6 @@ class Book extends React.Component {
           onZoomCompletion: null,
         }, this.unpauseProcessing)
 
-        this.setStatusBarHidden(false)
       },
     })
   }
