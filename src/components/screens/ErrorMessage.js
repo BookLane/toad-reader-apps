@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import { Constants, Updates } from "expo"
 import { StyleSheet, View } from "react-native"
 import { Container, Content, Body, Text } from "native-base"
 import i18n from "../../utils/i18n.js"

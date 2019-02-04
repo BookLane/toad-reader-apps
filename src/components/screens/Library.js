@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants, FileSystem } from "expo"
+import { Constants, Updates, FileSystem } from "expo"
 import { Platform, StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -54,6 +54,7 @@ class Library extends React.Component {
   componentWillMount() {
     const { books, clearAllSpinePageCfis } = this.props
 
+    Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
     removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
   }
@@ -86,6 +87,14 @@ class Library extends React.Component {
     updateReader({ setReaderStatus })
   }
 
+  onUpdateEvent = ({ type }) => {
+    if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+      this.JSUpdateReady = true
+    }
+  }
+
+  hasJSUpdate = () => !!this.JSUpdateReady
+
   async fetchAll(nextProps) {
     const { setFetchingBooks, accounts, idps, books, addBooks, reSort, updateAccount, navigation } = nextProps || this.props
     const { refreshLibraryAccountId } = navigation.state.params || {}
@@ -95,6 +104,7 @@ class Library extends React.Component {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
       navigation.navigate("Login", {
         idpId: Object.keys(idps)[0],
+        hasJSUpdate: this.hasJSUpdate,
       })
       return
     }
