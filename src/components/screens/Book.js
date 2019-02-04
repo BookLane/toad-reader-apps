@@ -19,7 +19,8 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize, debounce, isIPhoneX } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight,
+         getPageSize, debounce, isIPhoneX, setStatusBarHidden } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
@@ -27,7 +28,6 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clea
 const {
   APP_BACKGROUND_COLOR,
   PAGE_ZOOM_MILLISECONDS,
-  ANDROID_STATUS_BAR_COLOR,
 } = Constants.manifest.extra
 
 const pageStyles = {
@@ -131,11 +131,11 @@ class Book extends React.Component {
   }
 
   componentDidMount() {
-    this.setStatusBarHidden(true)
+    setStatusBarHidden(true)
   }
 
   componentWillUnmount() {
-    this.setStatusBarHidden(false)
+    setStatusBarHidden(false)
   }
 
   getFreshUserData = () => {
@@ -151,15 +151,6 @@ class Book extends React.Component {
     })
   }
 
-  setStatusBarHidden = setHidden => {
-    if(Platform.OS === 'ios') {
-      StatusBar.setHidden(setHidden)
-    } else if(Platform.OS === 'android') {
-      StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
-      // StatusBar.setBarStyle(setHidden ? 'dark-content' : 'light-content', true)
-    }
-  }
-
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
     const { setLatestLocation, userDataByBookId, navigation } = this.props
     const { bookId } = navigation.state.params || {}
@@ -168,7 +159,7 @@ class Book extends React.Component {
 
     this.pauseProcessing()
 
-    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
       mode: 'zooming',
@@ -235,7 +226,7 @@ class Book extends React.Component {
       hrefToGoTo: href,
     })
     
-    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
   }
 
   toggleBookView = () => {
@@ -258,7 +249,7 @@ class Book extends React.Component {
     
     this.pauseProcessing()
 
-    setTimeout(() => this.setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
       mode: 'zooming',
@@ -286,7 +277,7 @@ class Book extends React.Component {
   requestShowPages = () => {
     this.pauseProcessing()
     
-    this.setStatusBarHidden(false)
+    setStatusBarHidden(false)
 
     this.setState({
       mode: 'zooming',
@@ -325,7 +316,7 @@ class Book extends React.Component {
       snapshotZoomed: true,
     })
 
-    this.setStatusBarHidden(true)
+    setStatusBarHidden(true)
   }
 
   recommendBook = () => alert('Recommend this book')

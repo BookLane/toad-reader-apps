@@ -1,4 +1,4 @@
-import { Platform, Dimensions } from "react-native"
+import { Platform, Dimensions, StatusBar } from "react-native"
 import { Constants, FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
@@ -6,6 +6,7 @@ const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
   REQUEST_OPTIONS,
+  ANDROID_STATUS_BAR_COLOR,
 } = Constants.manifest.extra
 
 const cachedSizes = {}
@@ -276,3 +277,15 @@ export const encodeBase64 = str => {
 
   return output
 }
+
+let statusBarIsHidden = false
+export const setStatusBarHidden = setHidden => {
+  if(Platform.OS === 'ios') {
+    StatusBar.setHidden(setHidden)
+  } else if(Platform.OS === 'android') {
+    StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
+    // StatusBar.setBarStyle(setHidden ? 'dark-content' : 'light-content', true)
+  }
+  statusBarIsHidden = !!setHidden
+}
+export const isStatusBarHidden = () => statusBarIsHidden
