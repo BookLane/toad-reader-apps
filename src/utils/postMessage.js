@@ -12,6 +12,7 @@ const patchPostMessageFunction = function() {
   };
 
   window.postMessage = patchedPostMessage
+  window.postMessagePatched = true
 }
 
 export const patchPostMessageJsCode = '(' + String(patchPostMessageFunction) + ')();'
