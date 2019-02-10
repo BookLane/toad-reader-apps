@@ -1,10 +1,14 @@
 import { FileSystem, takeSnapshotAsync } from "expo"
+import { Platform } from "react-native"
 
 // NOTE: I have tried to speed this up in the following ways but they were not faster.
 // (1) Taking a single snap shot to the spine and then splitting it up
 // (2) scaling the view down (using a transform)
 
-export default async ({ view, uri, width, height, force }) => {
+const START_OF_LENGTH = 1000
+let startOfLastSnapShotBase64
+
+export default async ({ view, uri, width, height, viewWidth, viewHeight, force }) => {
 
   const uriFileInfo = force || await FileSystem.getInfoAsync(uri)
 
@@ -13,28 +17,46 @@ export default async ({ view, uri, width, height, force }) => {
     return true
   }
   
-  await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
+  // Following commented line no longer needed on iOS. Check android before deleting completely.
+  // await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
+
+  let quality = 0.8
+
+  if(Platform.OS === 'android') {
+    width = viewWidth
+    height = viewHeight
+    quality = 0.1
+  }
 
   const getSnapshot = async () => (
     await takeSnapshotAsync(view, {
       format: "jpg",
-      quality: 0.8,
-      result: "file",
+      quality,
+      result: "base64",
       width,
       height,
     })
   )
   
-  let initFileURI = await getSnapshot()
+  let snapshotBase64 = await getSnapshot()
 
-  const fileInfo = await FileSystem.getInfoAsync(initFileURI)
-  if(fileInfo.size < 2500) {
-    // May have captured a blank page. Try again.
-    console.log('Taking snapshot again as first snapshot appears blank.', fileInfo.size, uri)
-    await FileSystem.deleteAsync(initFileURI, { idempotent: true })
-    initFileURI = await getSnapshot()
-    const newFileInfo = await FileSystem.getInfoAsync(initFileURI)
-    console.log('New snapshot size: ', newFileInfo.size)
+  if(Platform.OS === 'android') {
+
+    startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+
+    if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
+      await new Promise(resolve => setTimeout(resolve, 20))  // delay to allow for render of the shift
+
+      snapshotBase64 = await getSnapshot()
+      startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+
+      if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
+        console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
+      }
+    }
+
+    startOfLastSnapShotBase64 = startOfSnapshotBase64
+
   }
 
   const dir = uri.replace(/[^/]+$/, '')
@@ -43,9 +65,8 @@ export default async ({ view, uri, width, height, force }) => {
     await FileSystem.makeDirectoryAsync(dir, { intermediates: true })
   } catch(e) {}
   
-  await FileSystem.moveAsync({
-    from: initFileURI,
-    to: uri,
+  await FileSystem.writeAsStringAsync(uri, snapshotBase64, {
+    encoding: FileSystem.EncodingTypes.Base64,
   })
 
   return true

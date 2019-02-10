@@ -1,9 +1,9 @@
 import React from "react"
-import { StyleSheet, WebView } from "react-native"
+import { Constants, Updates, FileSystem } from "expo"
+import { Platform, StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content, Text, View } from "native-base"
-import { FileSystem } from "expo"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
@@ -25,7 +25,7 @@ import { addBooks, reSort, setSort, setFetchingBooks, setDownloadStatus,
 
 const {
   APP_BACKGROUND_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   flex1: {
@@ -48,13 +48,37 @@ class Library extends React.Component {
 
   state = {
     showOptions: false,
+    downloadPaused: false,
   }
 
   componentWillMount() {
     const { books, clearAllSpinePageCfis } = this.props
 
+    Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
     removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props
+
+    this.navigationDidFocusListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
+    this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
+
+    this.fetchAll()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { accounts } = this.props
+
+    if(nextProps.accounts !== accounts) {
+      this.fetchAll(nextProps)
+    }
+  }
+
+  componentWillUnmount() {
+    this.navigationWillBlurListener.remove()
+    this.navigationDidFocusListener.remove()
   }
 
   getUpToDateReader = async () => {
@@ -62,6 +86,14 @@ class Library extends React.Component {
 
     updateReader({ setReaderStatus })
   }
+
+  onUpdateEvent = ({ type }) => {
+    if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+      this.JSUpdateReady = true
+    }
+  }
+
+  hasJSUpdate = () => !!this.JSUpdateReady
 
   async fetchAll(nextProps) {
     const { setFetchingBooks, accounts, idps, books, addBooks, reSort, updateAccount, navigation } = nextProps || this.props
@@ -72,6 +104,7 @@ class Library extends React.Component {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
       navigation.navigate("Login", {
         idpId: Object.keys(idps)[0],
+        hasJSUpdate: this.hasJSUpdate,
       })
       return
     }
@@ -91,6 +124,7 @@ class Library extends React.Component {
         let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
           headers: {
             "x-cookie-override": accounts[accountId].cookie,
+            "x-platform": Platform.OS,
           },
         }))
         // I do not catch the no internet connection error because I only get here immediately after logging in,
@@ -141,18 +175,6 @@ class Library extends React.Component {
     setFetchingBooks({ value: false })
   }
   
-  componentDidMount() {
-    this.fetchAll()
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { accounts } = this.props
-
-    if(nextProps.accounts !== accounts) {
-      this.fetchAll(nextProps)
-    }
-  }
-
   toggleShowOptions = () => {
     const { showOptions } = this.state
 
@@ -183,7 +205,7 @@ class Library extends React.Component {
   
   render() {
     const { library, accounts, books, fetchingBooks, navigation, setSort } = this.props
-    const { showOptions } = this.state
+    const { showOptions, downloadPaused } = this.state
 
     let { scope, logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
     scope = scope || "all"
@@ -208,6 +230,7 @@ class Library extends React.Component {
               uri: logOutUrl,
               headers: {
                 "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
+                "x-platform": Platform.OS,
               },
             })}
             onLoad={this.logOurUrlOnLoad}
@@ -269,7 +292,10 @@ class Library extends React.Component {
           />
         }
 
-        <BookDownloader navigation={navigation} />
+        <BookDownloader
+          downloadPaused={downloadPaused}
+          navigation={navigation}
+        />
       </Container>
     )
   }

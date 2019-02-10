@@ -31,7 +31,7 @@ class CoverCheck extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
-          <Icon name='checkmark' style={styles.checkmark} />
+          <Icon name='md-checkmark' style={styles.checkmark} />
         </Text>
       </View>
     )

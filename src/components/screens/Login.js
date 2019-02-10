@@ -1,4 +1,5 @@
 import React from "react"
+import { Updates } from "expo"
 import { StyleSheet, WebView, NetInfo } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -114,7 +115,7 @@ class Login extends React.Component {
 
   onMessageEvent = async event => {
     const { navigation, addAccount } = this.props
-    const { idpId } = navigation.state.params || {}
+    const { idpId, hasJSUpdate } = navigation.state.params || {}
     
     const data = JSON.parse(event.nativeEvent.data)
 
@@ -144,8 +145,12 @@ class Login extends React.Component {
           cookie: data.payload.cookie,
         },
       })
-      
-      navigation.goBack()
+
+      if(hasJSUpdate()) {
+        Updates.reloadFromCache()
+      } else {
+        navigation.goBack()
+      }
 
     }
   }

@@ -1,11 +1,12 @@
 import React from "react"
-import { Animated, Easing, StyleSheet, Dimensions, StatusBar, PixelRatio, Platform } from "react-native"
+import { Constants } from "expo"
+import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
 
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
 
 const {
   PAGE_ZOOM_MILLISECONDS,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   snapshotCont: {

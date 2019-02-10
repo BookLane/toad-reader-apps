@@ -1,6 +1,6 @@
 import React from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions } from "react-native"
-import { KeepAwake } from "expo"
+import { Constants, KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"
@@ -19,7 +19,8 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, getPageSize, debounce } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight,
+         getPageSize, debounce, isIPhoneX, setStatusBarHidden } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
@@ -27,11 +28,11 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clea
 const {
   APP_BACKGROUND_COLOR,
   PAGE_ZOOM_MILLISECONDS,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const pageStyles = {
   position: 'absolute',
-  top: 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
   bottom: 0,
   left: 0,
   right: 0,
@@ -50,7 +51,7 @@ const pagesStyles = {
 
 const zoomStyles = {
   position: 'absolute',
-  top: 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
   bottom: 0,
   left: 0,
   right: 0,
@@ -74,7 +75,7 @@ const showZoomStyles = {
 }
 
 const hidePageStyles = {
-  left: '300%',
+  display: 'none',
 }
 
 const styles = StyleSheet.create({
@@ -121,20 +122,20 @@ class Book extends React.Component {
       snapshotCoords: null,
       snapshotZoomed: true,
       onZoomCompletion: null,
-      statusBarHeight: StatusBar.currentHeight || 0,
+      statusBarHeight: StatusBar.currentHeight || (isIPhoneX ? 24 : -10),
       capturingSnapshots: false,
-      pageCapturePaused: true,
+      processingPaused: true,
     }
 
     this.getFreshUserData()
   }
 
   componentDidMount() {
-    StatusBar.setHidden(true)
+    setStatusBarHidden(true)
   }
 
   componentWillUnmount() {
-    StatusBar.setHidden(false)
+    setStatusBarHidden(false)
   }
 
   getFreshUserData = () => {
@@ -150,19 +151,15 @@ class Book extends React.Component {
     })
   }
 
-  setStatusBarHidden = setHidden => {
-    if(Platform.OS === 'ios') {
-      StatusBar.setHidden(setHidden)
-    }
-  }
-
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
     const { setLatestLocation, userDataByBookId, navigation } = this.props
     const { bookId } = navigation.state.params || {}
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
-    this.pausePageCapture()
+    this.pauseProcessing()
+
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
       mode: 'zooming',
@@ -176,11 +173,24 @@ class Book extends React.Component {
 
         if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi != cfi) {
           this.setState({
-            zoomToInfo: null,
             onZoomCompletion: null,
             bookLoaded: false,
           })
-  
+
+          // The indicateLoaded function is called by after a pageChanged postMessage.
+          // In the event that this never happens, we don't want to leave things stuck.
+          // Therefore, use a timeout to ensure this happens, and otherwise display an
+          // error message.
+          const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
+          setTimeout(() => {
+            if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
+              navigation.navigate("ErrorMessage", {
+                message: i18n("Sorry! There was an error flipping to that page."),
+              })
+              this.indicateLoaded()
+            }
+          }, 5000)
+
           setLatestLocation({
             bookId,
             latestLocation: {
@@ -196,10 +206,9 @@ class Book extends React.Component {
             zoomToInfo: null,
             onZoomCompletion: null,
             mode: 'page',
-          }, this.unpausePageCapture)
+          }, this.unpauseProcessing)
         }
 
-        this.setStatusBarHidden(true)
       },
     })
   }
@@ -209,14 +218,15 @@ class Book extends React.Component {
   setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
 
   goToHref = ({ href }) => {
-    this.pausePageCapture()
+    this.pauseProcessing()
 
     this.setState({
       mode: 'page',
       snapshotZoomed: true,
       hrefToGoTo: href,
     })
-    this.setStatusBarHidden(true)
+    
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
   }
 
   toggleBookView = () => {
@@ -237,7 +247,9 @@ class Book extends React.Component {
       y: height,
     }
     
-    this.pausePageCapture()
+    this.pauseProcessing()
+
+    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
       mode: 'zooming',
@@ -248,9 +260,8 @@ class Book extends React.Component {
         this.setState({
           onZoomCompletion: null,
           mode: 'page',
-        }, this.unpausePageCapture)
+        }, this.unpauseProcessing)
 
-        this.setStatusBarHidden(true)
       },
     })
   }
@@ -264,8 +275,10 @@ class Book extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   requestShowPages = () => {
-    this.pausePageCapture()
+    this.pauseProcessing()
     
+    setStatusBarHidden(false)
+
     this.setState({
       mode: 'zooming',
       snapshotZoomed: false,
@@ -274,22 +287,26 @@ class Book extends React.Component {
         this.setState({
           mode: 'pages',
           onZoomCompletion: null,
-        }, this.unpausePageCapture)
+        }, this.unpauseProcessing)
 
-        this.setStatusBarHidden(false)
       },
     })
   }
 
   requestHideSettings = () => this.setState({ showSettings: false })
 
+  indicateLoadedCallCount = 0
+
   indicateLoaded = () => {
-    const { mode } = this.state
+    const { mode, zoomToInfo } = this.state
+
+    this.indicateLoadedCallCount++
 
     this.setState({
       bookLoaded: true,
       mode: mode === 'zooming' ? 'page' : mode,
-    }, this.unpausePageCapture)
+      zoomToInfo: mode === 'zooming' ? null : zoomToInfo,
+    }, this.unpauseProcessing)
   }
 
   showDisplaySettings = () => {
@@ -299,7 +316,7 @@ class Book extends React.Component {
       snapshotZoomed: true,
     })
 
-    this.setStatusBarHidden(true)
+    setStatusBarHidden(true)
   }
 
   recommendBook = () => alert('Recommend this book')
@@ -340,15 +357,16 @@ class Book extends React.Component {
     },
   ]
 
-  pausePageCapture = () => this.setState({ pageCapturePaused: true })
-  unpausePageCapture = () => this.setState({ pageCapturePaused: false })
+  setPauseProcessing = processingPaused => this.setState({ processingPaused })
+  pauseProcessing = () => this.setPauseProcessing(true)
+  unpauseProcessing = () => this.setPauseProcessing(false)
 
   render() {
 
     const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
     const { bookId } = navigation.state.params || {}
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
-      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, pageCapturePaused } = this.state
+      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, processingPaused } = this.state
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
@@ -439,7 +457,7 @@ class Book extends React.Component {
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={this.setCapturingSnapshots}
-          pageCapturePaused={pageCapturePaused}
+          processingPaused={processingPaused}
         />
 
       </Container>

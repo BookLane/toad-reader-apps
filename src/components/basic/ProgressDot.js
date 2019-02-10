@@ -1,4 +1,5 @@
 import React from "react"
+import { Constants } from "expo"
 import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
 import { View } from "native-base"
 import i18n from "../../utils/i18n.js"
@@ -9,7 +10,7 @@ import { getFooterHeight } from "../../utils/toolbox.js"
 
 const {
   PROGRESS_BAR_SIDE_SPACING,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   dot: {

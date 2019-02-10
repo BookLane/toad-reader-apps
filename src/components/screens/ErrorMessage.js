@@ -1,4 +1,5 @@
 import React from "react"
+import { Constants, Updates } from "expo"
 import { StyleSheet, View } from "react-native"
 import { Container, Content, Body, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
@@ -22,7 +23,7 @@ class ErrorMessage extends React.Component {
     const { critical } = navigation.state.params || {}
 
     if(critical) {
-      setTimeout(Expo.Util.reload, 5000)
+      setTimeout(Updates.reload, 5000)
     }
   }
 

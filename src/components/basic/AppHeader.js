@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { Header } from "native-base"
 import { Platform, StyleSheet, View } from "react-native"
 
@@ -8,7 +8,7 @@ import { getToolbarHeight } from '../../utils/toolbox.js'
 const {
   ANDROID_TOOLBAR_COLOR,
   ANDROID_STATUS_BAR_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

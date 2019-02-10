@@ -1,12 +1,12 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
 
 const {
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   pages: {

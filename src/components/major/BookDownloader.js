@@ -27,6 +27,8 @@ class BookDownloader extends React.Component {
     this.unmounted = true
   }
 
+  downloadIsPaused = () => this.props.downloadPaused
+
   downloadWasCanceled = bookId => {
     const { books={} } = this.props
     const { downloadStatus } = books[bookId] || {}
@@ -40,13 +42,14 @@ class BookDownloader extends React.Component {
   }
 
   downloadABook = async (nextProps, nextState) => {
-    const { idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
+    const { downloadPaused, idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
             setDownloadStatus, setTocAndSpines, updateAccount, navigation } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
     if(currentDownloadBookId) return
     if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return
-    
+    if(downloadPaused) return
+
     const bookId = bookDownloadQueue[0]
     const { downloadStatus, title } = books[bookId] || {}
     const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
@@ -83,9 +86,19 @@ class BookDownloader extends React.Component {
           })
         }, throttleWaitTime)
       },
+      downloadIsPaused: this.downloadIsPaused,
       title,
       requiresAuth: true,
     })
+    if(this.downloadIsPaused()) {
+      console.log(`Download of book with bookId ${bookId} was deferred due to a book open.`)
+      setDownloadProgress({
+        bookId,
+        downloadProgress: 0,
+      })
+      this.setState({ currentDownloadBookId: null })
+      return
+    }
     if(this.downloadWasCanceled(bookId)) return  // check this after each await
     if(zipFetchInfo.errorMessage) {
       console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)

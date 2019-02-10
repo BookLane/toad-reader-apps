@@ -1,12 +1,13 @@
-import { Dimensions } from "react-native"
-import { FileSystem } from "expo"
+import { Platform, Dimensions, StatusBar } from "react-native"
+import { Constants, FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
   REQUEST_OPTIONS,
-} = Expo.Constants.manifest.extra
+  ANDROID_STATUS_BAR_COLOR,
+} = Constants.manifest.extra
 
 const cachedSizes = {}
 
@@ -188,6 +189,7 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     const reqHeaders = (getReqOptionsWithAdditions({
       headers: {
         "x-cookie-override": cookie,
+        "x-platform": Platform.OS,
       },
     }) || {}).headers
 
@@ -248,3 +250,42 @@ export const getReqOptionsWithAdditions = additions => {
 
   return reqOptions
 }
+
+const base64Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+export const encodeBase64 = str => {
+  let output = '';
+
+  for (
+    let block = 0, charCode, i = 0, map = base64Chars;
+    str.charAt(i | 0) || (map = '=', i % 1);
+    output += map.charAt(63 & block >> 8 - i % 1 * 8)
+  ) {
+
+    charCode = str.charCodeAt(i += 3/4)
+
+    if (charCode > 0xFF) {
+      throw new Error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.")
+    }
+
+    block = block << 8 | charCode
+
+    // To prevent memory from blowing up, I need to index the string every once and a while.
+    // https://stackoverflow.com/questions/35354801/why-does-v8-run-out-of-memory-in-this-situation
+    if (i % 3000000 === 0) output[0]
+    
+  }
+
+  return output
+}
+
+let statusBarIsHidden = false
+export const setStatusBarHidden = setHidden => {
+  if(Platform.OS === 'ios') {
+    StatusBar.setHidden(setHidden)
+  } else if(Platform.OS === 'android') {
+    StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
+    // StatusBar.setBarStyle(setHidden ? 'dark-content' : 'light-content', true)
+  }
+  statusBarIsHidden = !!setHidden
+}
+export const isStatusBarHidden = () => statusBarIsHidden

@@ -1,4 +1,5 @@
 import React from "react"
+import { Constants } from "expo"
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, View } from "react-native"
 
 import PagesBookmark from "./PagesBookmark"
@@ -9,7 +10,7 @@ const {
   CURRENT_PAGE_BORDER_COLOR,
   CURRENT_PAGE_BORDER_WIDTH,
   PAGES_HORIZONTAL_MARGIN,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {

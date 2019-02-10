@@ -1,5 +1,5 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { StyleSheet, Dimensions, View, FlatList, Animated } from "react-native"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
@@ -15,20 +15,20 @@ const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerBottomBorder: {
-    position: 'absolute',
-    top: PAGE_LIST_HEADER_ROW_HEIGHT - 1,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: '#ccccce',
-  }
+  // headerBottomBorder: {
+  //   position: 'absolute',
+  //   top: PAGE_LIST_HEADER_ROW_HEIGHT - 1,
+  //   left: 0,
+  //   right: 0,
+  //   height: 1,
+  //   backgroundColor: '#ccccce',
+  // }
 })
 
 class BookPages extends React.Component {
@@ -42,10 +42,10 @@ class BookPages extends React.Component {
 
     this.animatedScrollPosition = new Animated.Value(0)
 
-    this.opacity = this.animatedScrollPosition.interpolate({
-      inputRange: [0, 5],
-      outputRange: [0, 1],
-    })
+    // this.opacity = this.animatedScrollPosition.interpolate({
+    //   inputRange: [0, 5],
+    //   outputRange: [0, 1],
+    // })
     
     this.onScroll = Animated.event(
       [{ nativeEvent: { contentOffset: { y: this.animatedScrollPosition } } }],
@@ -98,12 +98,12 @@ class BookPages extends React.Component {
 
     if(!this.list) {
       this.list = []
-      this.headerIndices = []
+      // this.headerIndices = []
     }
     
     // clear the lists, but keep the same array objects
     this.list.splice(0, this.list.length)
-    this.headerIndices.splice(0, this.headerIndices.length)
+    // this.headerIndices.splice(0, this.headerIndices.length)
 
     const { height } = Dimensions.get('window')
     const listHeight = (height - getFooterHeight() - getToolbarHeight())
@@ -116,7 +116,7 @@ class BookPages extends React.Component {
         label,
         offset,
       })
-      this.headerIndices.push(this.list.length - 1)
+      // this.headerIndices.push(this.list.length - 1)
       offset += PAGE_LIST_HEADER_ROW_HEIGHT
 
       const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
@@ -155,7 +155,7 @@ class BookPages extends React.Component {
       return
     }
 
-    const { height } = Dimensions.get('window')
+    const height = Dimensions.get('window').height - statusBarHeight
     let index = 0
     let indexInRow = 0
 
@@ -192,7 +192,7 @@ class BookPages extends React.Component {
     updateSnapshotCoords({
       x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
       // I am not sure why I need statusBarHeight in the next line, given that it is not shown, but I do
-      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos ) - statusBarHeight,
+      y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
     })
   }
 
@@ -286,13 +286,13 @@ class BookPages extends React.Component {
           updateCellsBatchingPeriod={500}  // wait this # ms between render batches
           windowSize={11}  // i.e. 5 pages above and below rendered
           showsVerticalScrollIndicator={false}
-          stickyHeaderIndices={this.headerIndices}
+          //stickyHeaderIndices={this.headerIndices}
           getItemLayout={this.getItemLayout}
           onScroll={this.onScroll}
           scrollEventThrottle={1}
           ref={this.setFlatListEl}
         />
-        <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} />
+        {/* <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} /> */}
         {this.maxScroll
           ?
             <BookProgress

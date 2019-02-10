@@ -1,12 +1,12 @@
 import React from "react"
-import Expo from "expo"
+import { Constants } from "expo"
 import { View, Text } from "native-base"
 import { StyleSheet } from "react-native"
 
 const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_HORIZONTAL_MARGIN,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   heading: {

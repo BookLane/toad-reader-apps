@@ -115,7 +115,7 @@ export default function(state = initialState, action) {
       return newState
 
     case "CLEAR_USER_DATA_EXCEPT_PROGRESS":
-      const resetUserDataForThisBook = {}
+      let resetUserDataForThisBook = {}
 
       if(newState[action.bookId]) {
         if(newState[action.bookId].progress !== undefined) {

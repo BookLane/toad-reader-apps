@@ -1,7 +1,7 @@
 import { Platform } from "react-native"
 import { FileSystem } from "expo"
 import JSZip from "jszip"
-import { fetchWithProgress, getReqOptionsWithAdditions } from './toolbox.js'
+import { fetchWithProgress, encodeBase64 } from './toolbox.js'
 import i18n from "./i18n.js"
 
 export const binaryExtensionToMimeTypeMap = {
@@ -44,45 +44,6 @@ export const binaryExtensionToMimeTypeMap = {
   woff2: 'application/font-woff2',
 }
 
-// see https://stackoverflow.com/questions/2725156/complete-list-of-html-tag-attributes-which-have-a-url-value
-const urlTagAttrMapping = {
-  a: ['href'],
-  applet: ['archive','codebase'],
-  area: ['href'],
-  audio: ['src'],
-  base: ['href'],
-  blockquote: ['cite'],
-  body: ['background'],
-  button: ['formaction'],
-  command: ['icon'],
-  del: ['cite'],
-  embed: ['src'],
-  form: ['action'],
-  frame: ['longdesc','src'],
-  head: ['profile'],
-  html: ['manifest'],
-  iframe: ['longdesc','src'],
-  image: ['href','xlink:href'],
-  img: ['longdesc','src','usemap'],
-  input: ['src','usemap','formaction'],
-  ins: ['cite'],
-  link: ['href'],
-  object: ['archive','classid','codebase','data','usemap'],
-  q: ['cite'],
-  script: ['src'],
-  source: ['src'],
-  track: ['src'],
-  video: ['poster','src'],
-}
-// not worrying about these at present, but may need to in the future
-// const multiUrlAttrMapping = {
-//   img: ['srcset'],
-//   source: ['srcset'],
-//   object: ['archive'],
-//   // applet: ['archive'],  // these are comma-separated and not something we can handle
-//   meta: ['content'],
-// }
-
 const cancelDownloadByLocalBaseUri = {}
 const abortFunctionsByLocalBaseUri = {}
 
@@ -96,13 +57,13 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, title="" }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused=()=>{}, title="" }) => {
 
   // set up the cancel function
   let errorMessage
   let cancelComplete = false
   const isCanceled = async force => {
-    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete) {
+    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || downloadIsPaused()) {
       if(!cancelComplete) {
         console.log(`Download canceled for ${zipUrl}`)
         delete cancelDownloadByLocalBaseUri[localBaseUri]
@@ -120,21 +81,12 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
     console.log(`Downloading zip from ${zipUrl}...`)
 
-    const progressPortions = Platform.OS === 'android'
-      ? {
-        download: .35,
-        unzip: .1,
-        dirs: .05,
-        save: .2,
-        injectDataURLs: .3,
-      }
-      : {
-        download: .7,
-        unzip: .05,
-        dirs: .05,
-        save: .2,
-        injectDataURLs: 0,
-      }
+    const progressPortions = {
+      download: .7,
+      unzip: .05,
+      dirs: .05,
+      save: .2,
+    }
 
     // get the zip file
     let zipData
@@ -195,8 +147,6 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     let numAssets = 0
     let numAssetsDone = 0
     const writeFunctions = []
-    const dataURLs = []
-    const textFilePaths = []
     zip.forEach((relativePath, file) => {
       if(file.dir) return
       
@@ -212,194 +162,74 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
             resolve()
           }
 
+          const uri = `${localBaseUri}${relativePath}`
           const binaryMimeType = binaryExtensionToMimeTypeMap[relativePath.split('.').pop()]
 
           if(binaryMimeType) {
 
-            // TODO: For now, I need to do backflips to get this to work. Hopefully not in the future...
-            // https://forums.expo.io/t/using-expo-filesystem-to-save-images-to-disk-from-zip-file/2572/3
-
-            file.async('arraybuffer')
-              .then(arrayBuffer => {
-                if(arrayBuffer.byteLength < 1000000) {
-                  file.async('base64')
-                  .then(base64 => {
-                    const b64uri = `data:${binaryMimeType};base64,${base64}`
-                    // console.log(`Trying data URL save for ${relativePath} with mime-type of ${binaryMimeType}`)
-                    FileSystem.downloadAsync(b64uri, `${localBaseUri}${relativePath}`)
-                      .then(doResolve)
-                      .catch(() => {
-                        // console.log(`Data URL save did not work for ${localBaseUri}${relativePath}. Saving data URL as text file (length=${b64uri.length}.`)
-                        const dataURLPath = `${localBaseUri}${relativePath}-dataURL.txt`
-                        dataURLs.push(dataURLPath)
-                        FileSystem.writeAsStringAsync(dataURLPath, b64uri)
-                          .then(doResolve)
-                          .catch(reject)
-                      })
-                  }, reject)
+            let binarystring = ""
+            file.internalStream("binarystring")
+              .on("data", data => binarystring += data)
+              .on("error", reject)
+              .on("end", () => {
                 
-                } else {
-                  console.log(`Redownload ${relativePath} because it is too big to save as data URL...`);
-                  // it will crash the app from overload of memory; redownload it instead
-                  (new FileSystem.DownloadResumable(
-                    `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`,
-                    `${localBaseUri}${relativePath}`,
-                    getReqOptionsWithAdditions({
-                      headers: {
-                        "x-cookie-override": cookie,
-                      },
-                    }),
-                  )).downloadAsync()
-                    .then(doResolve)
-                    .catch(() => {
-                      console.log("ERROR: Unable to download EPUB asset", `${zipUrl.replace(/\/[^\/]*$/, '\/')}${relativePath}`)
-                      errorMessage = i18n("Some of the assets for the book entitled \"{{title}}\" failed to download. We recommend you remove this book and try to download it again.", { title })
-                      doResolve()
-                    })
-                }
+                const base64 = encodeBase64(binarystring)
+
+                FileSystem.writeAsStringAsync(uri, base64, {
+                  encoding: FileSystem.EncodingTypes.Base64,
+                })
+                  .then(doResolve)
+                  .catch(reject)
+
               })
-          
+              .resume()
 
           } else {
             // it is a text file
-            const textFilePath = `${localBaseUri}${relativePath}`
-            textFilePaths.push(textFilePath)
-            file.async('string')
-              .then(content => {
+            file.async('string').then(content => {
 
-                // fix some problematic characters / syntax.
-                content = content
+              // fix some problematic characters / syntax.
+              content = content
 
-                  // xhtml self-closing tag syntax causes issues because the file gets loaded to the iframe via document.write, forcing the doctype to html and not xhtml
-                  .replace(/<([a-z]*)(\s(?:[^"'>]|"[^"]*"|'[^']*')*)\/\s*>/gi, (match, tag, tagContents) => {
-                    if(
-                      ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"]
-                        .includes(tag.toLowerCase())
-                    ) {
-                      // it is a void tag that can have the slash before the end
-                      return match
-                    }
-                    return `<${tag}${tagContents}></${tag}>`
-                  })
+                // xhtml self-closing tag syntax causes issues because the file gets loaded to the iframe via document.write, forcing the doctype to html and not xhtml
+                .replace(/<([a-z]*)(\s(?:[^"'>]|"[^"]*"|'[^']*')*)\/\s*>/gi, (match, tag, tagContents) => {
+                  if(
+                    ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"]
+                      .includes(tag.toLowerCase())
+                  ) {
+                    // it is a void tag that can have the slash before the end
+                    return match
+                  }
+                  return `<${tag}${tagContents}></${tag}>`
+                })
 
-                  // The following character causes the page not to load. I replace it with space to prevent messing up the cfi's.
-                  .replace(/\u2029/g, ' ')
+                // The following character causes the page not to load. I replace it with space to prevent messing up the cfi's.
+                .replace(/\u2029/g, ' ')
 
-                  // The following character causes the contents of the head tag to be placed in the body tag (yes, I know it is crazy--but it is true).  I replace it with space to prevent messing up the cfi's.
-                  .replace(/\uFEFF/g, ' ')
-  
+                // The following character causes the contents of the head tag to be placed in the body tag (yes, I know it is crazy--but it is true).  I replace it with space to prevent messing up the cfi's.
+                .replace(/\uFEFF/g, ' ')
 
-                FileSystem.writeAsStringAsync(textFilePath, content)
-                  .then(doResolve)
-                  .catch(reject)
-              }, reject)
+
+              FileSystem.writeAsStringAsync(uri, content)
+                .then(doResolve)
+                .catch(reject)
+
+            }, reject)
           }
 
         }
       )
     })
 
-    const writeSegmentSize = 10
+    const writeSegmentSize = 1  // Note that the cancel check only happens every 10 files this way
     for(let i=0; i<writeFunctions.length; i+=writeSegmentSize) {
       await Promise.all(
         writeFunctions
           .slice(i, i+writeSegmentSize)
           .map(writeFunction => new Promise(writeFunction))
       )
+      if(await isCanceled()) return { success: false, errorMessage }
     }
-    
-    if(await isCanceled()) return { success: false, errorMessage }
-
-    if(dataURLs.length > 0) {
-      // I need to swap in the data URLs to the text files now
-      for(let j=0; j<textFilePaths.length; j++) {
-        await new Promise(resolveFileWrite => {
-          const handleCatch = async err => {
-            console.log(`ERROR: data url swap failed for ${textFilePaths[j].replace(/#.*$/, '')}`, err && err.message)
-            errorMessage = i18n("Some of the assets for the book entitled \"{{title}}\" failed to load properly. Please contact us if this issue continues.", { title })
-            await isCanceled(true)
-            resolveFileWrite()
-          }          
-          FileSystem.readAsStringAsync(`${textFilePaths[j].replace(/#.*$/, '')}`)
-            .then(async fileText => {
-              // See https://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
-              const anyCharButDoubleQuoteGroup = `([^"]*)`
-              const anyCharButSingleQuoteGroup = `((?:\\\\'|[^'])*)`
-              const urlRegEx = new RegExp(
-                `(${
-                  Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|"[^"]*"|'[^']*')*?${attr}\\s*=\\s*"`).join('|')
-                  )).join('|')
-                })${anyCharButDoubleQuoteGroup}` +
-                `|(${
-                  Object.keys(urlTagAttrMapping).map(tag => (
-                    urlTagAttrMapping[tag].map(attr => `<${tag}\\s(?:[^"'>]|"[^"]*"|'[^']*')*?${attr}\\s*=\\s*'`).join('|')
-                  )).join('|')
-                })${anyCharButSingleQuoteGroup}` +
-                `|(url\\(\\s*")${anyCharButDoubleQuoteGroup}` +
-                `|(url\\(\\s*')${anyCharButSingleQuoteGroup}` +
-                `|(url\\(\\s*)([^\\)\\s]*)` +
-                `|(@import\\s+")${anyCharButDoubleQuoteGroup}` +
-                `|(@import\\s+')${anyCharButSingleQuoteGroup}`,
-                "gi"
-              )
-              const fileTextPieces = fileText.split(urlRegEx).filter(fileTextPiece => fileTextPiece !== undefined)
-              await Promise.all(
-                fileTextPieces.map((htmlOrUrl, index) => (
-                  new Promise(resolve => {
-                    const binaryMimeType = binaryExtensionToMimeTypeMap[htmlOrUrl.replace(/#.*$/, '').split('.').pop()]
-                    if(index % 3 !== 2 || !binaryMimeType) {
-                      // this is in between the matches
-                      resolve()
-                      return
-                    }
-                    FileSystem.readAsStringAsync(
-                      `${
-                        textFilePaths[j]
-                          .replace(/#.*$/, '')
-                          .replace(/[^\/]*$/, '')
-                      }${
-                        htmlOrUrl
-                          .replace(/#.*$/, '')
-                          .replace(/\\'/g, "'")
-                          .replace(/\s/g, '%20')
-                      }-dataURL.txt`
-                    )
-                      .then(imgDataURL => {
-                        fileTextPieces[index] = imgDataURL
-                        resolve()
-                      })
-                      .catch(resolve)
-                  })
-                ))
-              )
-              fileText = fileTextPieces.join("")
-              FileSystem.writeAsStringAsync(textFilePaths[j], fileText)
-                .then(resolveFileWrite)
-                .catch(handleCatch)
-            })
-            .catch(handleCatch)
-        })
-
-        if(await isCanceled()) return { success: false, errorMessage }
-
-        progressCallback &&
-          progressCallback(
-            progressPortions.download
-            + progressPortions.unzip
-            + progressPortions.dirs
-            + progressPortions.save
-            + (progressPortions.injectDataURLs * (j / textFilePaths.length))
-          )
-      }
-    }
-
-    // delete the data URIs
-    await Promise.all(dataURLs.map(dataURL => (
-      FileSystem.deleteAsync(dataURL, { idempotent: true })
-    )))
-
-    if(await isCanceled()) return { success: false, errorMessage }
     
     console.log(`Done downloading zip from ${zipUrl}`)
     

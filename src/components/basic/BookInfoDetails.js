@@ -28,7 +28,7 @@ class BookInfoDetails extends React.Component {
     if(downloadStatus == 2) {
       return (
         <View style={styles.container}>
-          <Icon name='checkmark' style={styles.icon} />
+          <Icon name='md-checkmark' style={styles.icon} />
           <Text style={styles.details}>{i18n("On device")}</Text>
         </View>
       )

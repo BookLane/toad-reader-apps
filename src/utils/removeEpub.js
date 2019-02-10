@@ -1,4 +1,4 @@
-import Expo, { FileSystem } from "expo"
+import { Constants, FileSystem } from "expo"
 import i18n from "./i18n.js"
 import { AsyncStorage } from "react-native"
 import { ActionSheet, Toast } from "native-base"
@@ -8,11 +8,11 @@ import { cancelFetch } from "./zipDownloader.js"
 
 const {
   REMOVE_ICON_COLOR,
-} = Expo.Constants.manifest.extra
+} = Constants.manifest.extra
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2018-11-11"
+const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2019-02-02"
 // The exact value of this constant does not so much matter. It just needs to uniquely
 // change each time there is a modification to the apps that may change the layout
 // flow of the epubs.

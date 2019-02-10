@@ -149,7 +149,7 @@ class Drawer extends React.Component {
               onPress={this.showDeviceOnly}
             >
               <Left>
-                <Icon name="checkmark" />
+                <Icon name="md-checkmark" />
               </Left>
               <Body>
                 <Text>{i18n("On device only")}</Text>

@@ -129,6 +129,12 @@ class BookPage extends React.Component {
         return true
 
       case 'showPageListView':
+// alert('hi')
+// postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
+//   spineIdRef: this.props.spineIdRef,
+// })
+// alert('hi2')
+  
         requestShowPages()
         return true
 
