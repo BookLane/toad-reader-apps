@@ -135,6 +135,7 @@ class Book extends React.Component {
   }
 
   componentWillUnmount() {
+    clearTimeout(this.unpauseProcessingTimeout)
     setStatusBarHidden(false)
   }
 
@@ -156,8 +157,6 @@ class Book extends React.Component {
     const { bookId } = navigation.state.params || {}
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
-
-    this.pauseProcessing()
 
     setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
@@ -206,7 +205,7 @@ class Book extends React.Component {
             zoomToInfo: null,
             onZoomCompletion: null,
             mode: 'page',
-          }, this.unpauseProcessing)
+          }, this.temporarilyPauseProcessing)
         }
 
       },
@@ -247,8 +246,6 @@ class Book extends React.Component {
       y: height,
     }
     
-    this.pauseProcessing()
-
     setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
     this.setState({
@@ -260,7 +257,7 @@ class Book extends React.Component {
         this.setState({
           onZoomCompletion: null,
           mode: 'page',
-        }, this.unpauseProcessing)
+        }, this.temporarilyPauseProcessing)
 
       },
     })
@@ -287,13 +284,15 @@ class Book extends React.Component {
         this.setState({
           mode: 'pages',
           onZoomCompletion: null,
-        }, this.unpauseProcessing)
+        })
 
       },
     })
   }
 
-  requestHideSettings = () => this.setState({ showSettings: false })
+  requestHideSettings = () => {
+    this.setState({ showSettings: false }, this.temporarilyPauseProcessing)
+  }
 
   indicateLoadedCallCount = 0
 
@@ -306,10 +305,12 @@ class Book extends React.Component {
       bookLoaded: true,
       mode: mode === 'zooming' ? 'page' : mode,
       zoomToInfo: mode === 'zooming' ? null : zoomToInfo,
-    }, this.unpauseProcessing)
+    }, this.temporarilyPauseProcessing)
   }
 
   showDisplaySettings = () => {
+    this.pauseProcessing()
+
     this.setState({
       showSettings: true,
       mode: 'page',
@@ -357,7 +358,16 @@ class Book extends React.Component {
     },
   ]
 
-  setPauseProcessing = processingPaused => this.setState({ processingPaused })
+  setPauseProcessing = processingPaused => {
+    clearTimeout(this.unpauseProcessingTimeout)
+    this.setState({ processingPaused })
+  }
+
+  temporarilyPauseProcessing = () => {
+    this.setPauseProcessing(true)
+    this.unpauseProcessingTimeout = setTimeout(this.unpauseProcessing, 4000)
+  }
+
   pauseProcessing = () => this.setPauseProcessing(true)
   unpauseProcessing = () => this.setPauseProcessing(false)
 
@@ -425,6 +435,7 @@ class Book extends React.Component {
             indicateLoaded={this.indicateLoaded}
             hrefToGoTo={hrefToGoTo}
             capturingSnapshots={capturingSnapshots}
+            temporarilyPauseProcessing={this.temporarilyPauseProcessing}
             navigation={navigation}
           />
         </View>

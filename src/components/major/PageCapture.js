@@ -37,8 +37,8 @@ class PageCapture extends React.Component {
 
     if(processingPaused) return
 
-    if(this.shiftAndSnap) {
-      this.shiftAndSnap()
+    if(this.getCfisOrShiftAndSnap) {
+      this.getCfisOrShiftAndSnap()
     } else {
       this.getPageInfo()
     }
@@ -51,7 +51,7 @@ class PageCapture extends React.Component {
   reset = () => {
     delete this.loadSpineAndGetPagesInfoAlreadyCalled
     delete this.inProcessOfShifting
-    delete this.shiftAndSnap
+    delete this.getCfisOrShiftAndSnap
     this.pageIndexInSpine = 0
   }
 
@@ -67,6 +67,7 @@ class PageCapture extends React.Component {
       spineIdRef,
     })
 
+    this.pageCfis = []
     this.loadSpineAndGetPagesInfoAlreadyCalled = true
   }
 
@@ -81,12 +82,35 @@ class PageCapture extends React.Component {
     switch(data.identifier) {
 
       case 'pagesInfo': {
-
+    
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
         reportInfoOrCapture(this.props)
 
-        const numPages = data.payload.pageCfis.length
+        if(data.payload.startIndex !== this.pageCfis.length) {
+          navigation.navigate("ErrorMessage", {
+            message: i18n("Invalid book."),
+          })
+          reportFinished(this.props)
+        }
+
+        this.pageCfis = [
+          ...this.pageCfis,
+          ...data.payload.pageCfis,
+        ]
+
+        if(!data.payload.completed) {
+          this.getCfisOrShiftAndSnap = () => postMessage(this.webView, 'continueToGetPagesInfo', {
+            spineIdRef,
+            startIndex: this.pageCfis.length,
+            allottedMS: 100,
+            minimumPagesToFetch: 1,
+          })
+          if(!this.getProcessingPaused()) this.getCfisOrShiftAndSnap()
+          return
+        }
+
+        const numPages = this.pageCfis.length
         const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
 
         if(Platform.OS === 'android') {
@@ -96,7 +120,7 @@ class PageCapture extends React.Component {
         }
 
         await new Promise(resolve => {
-          this.shiftAndSnap = () => {
+          this.getCfisOrShiftAndSnap = () => {
             reportInfoOrCapture(this.props)
 
             if(this.getProcessingPaused()) return
@@ -120,24 +144,26 @@ class PageCapture extends React.Component {
 
           }
 
-          this.shiftAndSnap()
+          this.getCfisOrShiftAndSnap()
         })
 
         if(this.unmounted) return
 
-if(data.payload.pageCfis.some(cfi => !cfi)) {
-  alert('bad!')
-  console.log('bad cfi set', spineIdRef, data.payload.pageCfis)
-}
+// if(this.pageCfis.some(cfi => !cfi)) {
+//   alert('bad!')
+//   console.log('bad cfi set', spineIdRef, this.pageCfis)
+// }
         
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
           key: [getPageCfisKey({ displaySettings, width, height })],
-          pageCfis: data.payload.pageCfis.map((cfi, idx) => cfi || ''),
+          pageCfis: this.pageCfis.map((cfi, idx) => cfi || ''),
         })
         
         reportFinished(this.props)
+
+        this.pageCfis = []
 
         return true
 
@@ -172,7 +198,7 @@ if(data.payload.pageCfis.some(cfi => !cfi)) {
         if(this.unmounted) return
 
         this.pageIndexInSpine++
-        this.shiftAndSnap()
+        this.getCfisOrShiftAndSnap()
 
         return true
 

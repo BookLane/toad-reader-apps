@@ -28,7 +28,7 @@ class PageCaptureManager extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { books } = nextProps
+    const { books, processingPaused } = nextProps
     const { pageCaptureProps, skipList } = this.state
 
     // filter out books which have been removed
@@ -42,9 +42,14 @@ class PageCaptureManager extends React.Component {
       this.setState({ skipList: newSkipList })
     }
 
-    // set up new page to capture
     if(!pageCaptureProps || !books[pageCaptureProps.bookId] || books[pageCaptureProps.bookId].downloadStatus != 2) {
+      // set up new page to capture
       this.setState({ pageCaptureProps: this.getPageCaptureProps(nextProps) })
+
+    } else if(this.props.processingPaused && !processingPaused && this.currentPageCapturePropsUriAsKey) {
+      // reset timeout now that unpaused
+      this.setupTimeout({ uriAsKey: this.currentPageCapturePropsUriAsKey })
+    
     }
   }
 
@@ -164,10 +169,12 @@ class PageCaptureManager extends React.Component {
   }
 
   handleTimeout = ({ uriAsKey }) => {
+    const { processingPaused } = this.props
     const { pageCaptureProps, skipList } = this.state
 
     if(this.unmounted) return
     if(!pageCaptureProps) return
+    if(processingPaused) return
     if(this.currentPageCapturePropsUriAsKey !== uriAsKey) return
 
     this.clearTimeouts()
