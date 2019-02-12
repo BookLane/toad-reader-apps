@@ -10,6 +10,8 @@ import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
 
+import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+
 const styles = StyleSheet.create({
   cover: {
     marginBottom: 30,
@@ -45,15 +47,13 @@ class Cover extends React.Component {
     imageQueryStringIndex: 1,
   }
 
-  componentWillUnmount() {
-    this.unmounted = true
-  }
+  componentWillUnmount = unmountTimeouts
 
   imageOnError = () => {
     const { imageQueryStringIndex } = this.state
 
     this.setState({ imageError: true })
-    setTimeout(() => !this.unmounted && this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200)
+    setUpTimeout(() => this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200, this)
   }
   
   render() {

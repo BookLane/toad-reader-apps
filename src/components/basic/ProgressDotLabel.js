@@ -2,6 +2,7 @@ import React from "react"
 import { StyleSheet, Platform } from "react-native"
 import { Text } from "native-base"
 import i18n from "../../utils/i18n.js"
+import { setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
 const styles = StyleSheet.create({
   dotText: {
@@ -28,6 +29,8 @@ class ProgressDotLabel extends React.Component {
 
   componentWillUnmount() {
     const { animatedScrollPosition } = this.props
+    
+    unmountTimeouts.bind(this)()
 
     if(animatedScrollPosition) {
       animatedScrollPosition.removeListener(this.leftChangeListener)
@@ -38,11 +41,11 @@ class ProgressDotLabel extends React.Component {
 
     if(++this.timeoutCount % 10 !== 0) {
       // don't allow more than 10 updates to be grouped
-      clearTimeout(this.updateLabelTimeout)
+      clearOutTimeout(this.updateLabelTimeout, this)
     }
 
     // group updates that are within 1 frame
-    this.updateLabelTimeout = setTimeout(() => this.updateLabel({ scroll: value }), 16)
+    this.updateLabelTimeout = setUpTimeout(() => this.updateLabel({ scroll: value }), 16, this)
   }
 
   updateLabel = ({ scroll }) => {

@@ -17,9 +17,6 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
     return true
   }
   
-  // Following commented line no longer needed on iOS. Check android before deleting completely.
-  // await new Promise(resolve => setTimeout(resolve, 20))  // without this, I often get a blank image
-
   let quality = 0.8
 
   if(Platform.OS === 'android') {

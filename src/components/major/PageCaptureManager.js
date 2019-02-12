@@ -7,7 +7,7 @@ import { View } from "native-base"
 
 import PageCapture from "./PageCapture"
 
-import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSnapshotURI, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
@@ -48,7 +48,7 @@ class PageCaptureManager extends React.Component {
 
     } else if(this.props.processingPaused && !processingPaused && this.currentPageCapturePropsUriAsKey) {
       // reset timeout now that unpaused
-      this.setupTimeout({ uriAsKey: this.currentPageCapturePropsUriAsKey })
+      this.setUpStallTimeout({ uriAsKey: this.currentPageCapturePropsUriAsKey })
     
     }
   }
@@ -63,9 +63,7 @@ class PageCaptureManager extends React.Component {
     )
   }
 
-  componentWillUnmount() {
-    this.unmounted = true
-  }
+  componentWillUnmount = unmountTimeouts
 
   getPageCaptureProps = (nextProps, nextState) => {
     const { bookId, setCapturingSnapshots, books, displaySettings } = nextProps || this.props
@@ -112,7 +110,7 @@ class PageCaptureManager extends React.Component {
 
     // set up no response timeout
     this.captureAllottedTime = (skipList[uriAsKey] && skipList[uriAsKey].timeout) || INITIAL_SPINE_CAPTURE_TIMEOUT
-    this.setupTimeout({ uriAsKey })
+    this.setUpStallTimeout({ uriAsKey })
 
     setCapturingSnapshots(true)
 
@@ -132,15 +130,15 @@ class PageCaptureManager extends React.Component {
     return books[bookIdFromUri] && books[bookIdFromUri].downloadStatus == 2
   }
 
-  setupTimeout = ({ uriAsKey }) => {
-    clearTimeout(this.captureStallTimeout)
+  setUpStallTimeout = ({ uriAsKey }) => {
+    clearOutTimeout(this.captureStallTimeout, this)
 
-    this.captureStallTimeout = setTimeout(() => this.handleTimeout({ uriAsKey }), this.captureAllottedTime)
+    this.captureStallTimeout = setUpTimeout(() => this.handleTimeout({ uriAsKey }), this.captureAllottedTime, this)
     this.currentPageCapturePropsUriAsKey = uriAsKey
   }
 
   clearTimeouts = () => {
-    clearTimeout(this.captureStallTimeout)
+    clearOutTimeout(this.captureStallTimeout, this)
     delete this.currentPageCapturePropsUriAsKey
   }
 
@@ -148,7 +146,7 @@ class PageCaptureManager extends React.Component {
     const uriAsKey = getSnapshotURI(params) // { bookId, spineIdRef, width, height, displaySettings }
 
     if(this.currentPageCapturePropsUriAsKey === uriAsKey) {
-      this.setupTimeout({ uriAsKey })
+      this.setUpStallTimeout({ uriAsKey })
     }
   }
 
@@ -172,7 +170,6 @@ class PageCaptureManager extends React.Component {
     const { processingPaused } = this.props
     const { pageCaptureProps, skipList } = this.state
 
-    if(this.unmounted) return
     if(!pageCaptureProps) return
     if(processingPaused) return
     if(this.currentPageCapturePropsUriAsKey !== uriAsKey) return
@@ -196,9 +193,7 @@ class PageCaptureManager extends React.Component {
       })
     }
 
-    setTimeout(() => {
-      if(this.unmounted) return
-
+    setUpTimeout(() => {
       const skipList = { ...this.state.skipList }
 
       if(skipList[uriAsKey]) {  // make sure the book has not been remove
@@ -212,7 +207,7 @@ class PageCaptureManager extends React.Component {
         })
       }
       
-    }, timeout)
+    }, timeout, this)
   }
 
   render() {

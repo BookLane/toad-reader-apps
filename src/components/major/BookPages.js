@@ -7,7 +7,7 @@ import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
 import BookProgress from "./BookProgress"
 
-import { getPageSize, getFooterHeight, getToolbarHeight } from '../../utils/toolbox.js'
+import { getPageSize, getFooterHeight, getToolbarHeight, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -85,10 +85,14 @@ class BookPages extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     const { pageWidth } = this.state
 
+    unmountTimeouts.bind(this)()
+
     if(nextState.pageWidth !== pageWidth) {
       this.calcList(nextProps, nextState)
     }
   }
+
+  componentWillUnmount = unmountTimeouts
 
   calcList = (nextProps, nextState) => {
     const { spines, pageCfisKey } = nextProps || this.props
@@ -252,7 +256,7 @@ class BookPages extends React.Component {
 
     // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout
     // without this timeout, this.flatListEl is not set and sticky headers are not accounted for
-    setTimeout(this.scrollToLatestLocation, 300)
+    setUpTimeout(this.scrollToLatestLocation, 300, this)
   }
 
   scrollToPercentage = percent => {

@@ -4,7 +4,7 @@ import { Title, Left, Right, Icon, Button, Body } from "native-base"
 import AppHeader from "../basic/AppHeader"
 import i18n from "../../utils/i18n.js"
 
-import { isPhoneSize, isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox.js'
+import { isPhoneSize, isStatusBarHidden, setStatusBarHidden, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   title: {
@@ -16,8 +16,10 @@ class ErrorMessageHeader extends React.PureComponent {
 
   componentDidMount() {
     this.priorStatusBarHiddenValue = isStatusBarHidden()
-    setTimeout(() => setStatusBarHidden(false), 20)
+    setUpTimeout(() => setStatusBarHidden(false), 20, this)
   }
+
+  componentWillUnmount = unmountTimeouts
 
   onBackPress = () => {
     const { navigation } = this.props

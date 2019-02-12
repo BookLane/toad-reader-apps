@@ -19,8 +19,8 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight,
-         getPageSize, debounce, isIPhoneX, setStatusBarHidden } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts,
+         getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
@@ -134,8 +134,8 @@ class Book extends React.Component {
     setStatusBarHidden(true)
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.unpauseProcessingTimeout)
+  componentWillUnmount = () => {
+    unmountTimeouts.bind(this)()
     setStatusBarHidden(false)
   }
 
@@ -158,7 +158,7 @@ class Book extends React.Component {
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
-    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
 
     this.setState({
       mode: 'zooming',
@@ -181,14 +181,14 @@ class Book extends React.Component {
           // Therefore, use a timeout to ensure this happens, and otherwise display an
           // error message.
           const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
-          setTimeout(() => {
+          setUpTimeout(() => {
             if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
               navigation.navigate("ErrorMessage", {
                 message: i18n("Sorry! There was an error flipping to that page."),
               })
               this.indicateLoaded()
             }
-          }, 5000)
+          }, 5000, this)
 
           setLatestLocation({
             bookId,
@@ -225,7 +225,7 @@ class Book extends React.Component {
       hrefToGoTo: href,
     })
     
-    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
   }
 
   toggleBookView = () => {
@@ -246,7 +246,7 @@ class Book extends React.Component {
       y: height,
     }
     
-    setTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
 
     this.setState({
       mode: 'zooming',
@@ -359,13 +359,13 @@ class Book extends React.Component {
   ]
 
   setPauseProcessing = processingPaused => {
-    clearTimeout(this.unpauseProcessingTimeout)
+    clearOutTimeout(this.unpauseProcessingTimeout, this)
     this.setState({ processingPaused })
   }
 
   temporarilyPauseProcessing = () => {
     this.setPauseProcessing(true)
-    this.unpauseProcessingTimeout = setTimeout(this.unpauseProcessing, 4000)
+    this.unpauseProcessingTimeout = setUpTimeout(this.unpauseProcessing, 4000, this)
   }
 
   pauseProcessing = () => this.setPauseProcessing(true)

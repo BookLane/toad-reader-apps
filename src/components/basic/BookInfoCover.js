@@ -7,6 +7,8 @@ import { View } from "native-base"
 
 import FullScreenSpin from "./FullScreenSpin"
 
+import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+
 const styles = StyleSheet.create({
   container: {
     width: 100,
@@ -28,14 +30,12 @@ class BookInfoCover extends React.Component {
     imageQueryStringIndex: 1,
   }
 
-  componentWillUnmount() {
-    this.unmounted = true
-  }
-  
+  componentWillUnmount = unmountTimeouts
+
   imageOnError = () => {
     const { imageQueryStringIndex } = this.state
 
-    setTimeout(() => !this.unmounted && this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200)
+    setUpTimeout(() => this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200, this)
   }
   
   render() {

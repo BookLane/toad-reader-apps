@@ -7,7 +7,7 @@ import PageWebView from "./PageWebView"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox.js'
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
 import { addSpinePageCfis } from "../../redux/actions.js"
 
@@ -45,6 +45,7 @@ class PageCapture extends React.Component {
   }
 
   componentWillUnmount() {
+    unmountTimeouts.bind(this)()
     this.unmounted = true
   }
 
@@ -65,6 +66,8 @@ class PageCapture extends React.Component {
 
     postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
+      allottedMS: 100,
+      minimumPagesToFetch: 1,
     })
 
     this.pageCfis = []
@@ -116,7 +119,7 @@ class PageCapture extends React.Component {
         if(Platform.OS === 'android') {
           // Delay to ensure render of the initial page in spine
           // since this is not covered by the dup check in takeSnapshot.
-          await new Promise(resolve => setTimeout(resolve, 25))
+          await new Promise(resolve => setUpTimeout(resolve, 25, this))
         }
 
         await new Promise(resolve => {

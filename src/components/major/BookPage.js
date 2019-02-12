@@ -12,7 +12,7 @@ import BookPageMessage from "../basic/BookPageMessage"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getDisplaySettingsObj, getSpineAndPage } from "../../utils/toolbox.js"
+import { getDisplaySettingsObj, getSpineAndPage, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
 
@@ -61,6 +61,8 @@ class BookPage extends React.Component {
       || nextState.noteInEdit !== noteInEdit
     )
   }
+
+  componentWillUnmount = unmountTimeouts
 
   setDisplaySettings = nextProps => {
     postMessage(this.webView, 'setDisplaySettings', getDisplaySettingsObj(nextProps || this.props))
@@ -143,16 +145,16 @@ class BookPage extends React.Component {
         // without using a timeout, but was unable to. This is less
         // graceful, but it works.
         if(!this.isEditingNote()) {
-          this.doUnselectText = setTimeout(() => {
+          this.doUnselectText = setUpTimeout(() => {
             if(!this.isEditingNote()) {
               this.setState({ selectionInfo: data.payload })
             }
-          }, 200)
+          }, 200, this)
         }
         return true
 
       case 'textSelected':
-        clearTimeout(this.doUnselectText)
+        clearOutTimeout(this.doUnselectText, this)
         this.setState({ selectionInfo: data.payload })
         return true
     }

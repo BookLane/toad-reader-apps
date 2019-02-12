@@ -4,7 +4,7 @@ import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Imag
 
 import PagesBookmark from "./PagesBookmark"
 
-import { getSnapshotURI } from '../../utils/toolbox.js'
+import { getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
 const {
   CURRENT_PAGE_BORDER_COLOR,
@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
 
 class PagesPage extends React.PureComponent {
 
+  componentWillUnmount = unmountTimeouts
+
   goToPage = () => {
     const { bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage } = this.props
 
@@ -58,7 +60,7 @@ class PagesPage extends React.PureComponent {
       snapshotCoords: { x, y },
     }))
 
-    setTimeout(() => delete this.preventDoubleTap, 1000)
+    setUpTimeout(() => delete this.preventDoubleTap, 1000, this)
   }
 
   setView = ref => this.view = ref

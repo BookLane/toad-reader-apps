@@ -8,7 +8,7 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -39,6 +39,8 @@ class Login extends React.Component {
     error: null,
   }
 
+  componentWillUnmount = unmountTimeouts
+
   onError = err => {
     const { navigation } = this.props
 
@@ -65,7 +67,7 @@ class Login extends React.Component {
           message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
         })
 
-        setTimeout(this.webView.reload, 15000)
+        setUpTimeout(this.webView.reload, 15000, this)
 
         this.setState({
           offline: false,

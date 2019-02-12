@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import i18n from "../../utils/i18n.js"
 
-import { getBooksDir } from "../../utils/toolbox.js"
+import { getBooksDir, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
 import parseEpub from "../../utils/parseEpub.js"
 
@@ -23,9 +23,7 @@ class BookDownloader extends React.Component {
     this.downloadABook(nextProps, nextState)
   }
 
-  componentWillUnmount() {
-    this.unmounted = true
-  }
+  componentWillUnmount = unmountTimeouts
 
   downloadIsPaused = () => this.props.downloadPaused
 
@@ -78,13 +76,13 @@ class BookDownloader extends React.Component {
       cookie: accounts[accountId].cookie,
       progressCallback: progress => {
         const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
-        clearTimeout(throttleTimeout)
-        throttleTimeout = setTimeout(() => {
+        clearOutTimeout(throttleTimeout, this)
+        throttleTimeout = setUpTimeout(() => {
           setDownloadProgress({
             bookId,
             downloadProgress: parseInt(progress * 100, 10),
           })
-        }, throttleWaitTime)
+        }, throttleWaitTime, this)
       },
       downloadIsPaused: this.downloadIsPaused,
       title,
