@@ -39,7 +39,13 @@ class BookPage extends React.Component {
       this.setDisplaySettings(nextProps)
     }
 
-    if(nextProps.spineIdRef !== spineIdRef || nextProps.pageIndexInSpine !== pageIndexInSpine) {
+    if(
+      nextProps.spineIdRef !== spineIdRef
+      || (
+        nextProps.pageIndexInSpine !== pageIndexInSpine
+        && pageIndexInSpine !== -1  // this means that it previously did not have snapshots
+      )
+    ) {
       this.goToLatestLocation(nextProps)
       this.setState({
         spineIdRef: nextProps.spineIdRef,
