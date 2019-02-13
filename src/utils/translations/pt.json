@@ -54,5 +54,6 @@
 	"Done": "Concluido",
 	"On device": "No dispositivo",
 	"Downloading...": "Download em execução...",
-	"Tap to download": "Toque para baixar"
+	"Tap to download": "Toque para baixar",
+	"We will create thumbnail images in the background when you are reading.": "Iremos criar pequenas imagens ao fundo ao longo da leitura."
 }
