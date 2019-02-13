@@ -35,7 +35,7 @@ class CapturingThumbnailsInfoIcon extends React.PureComponent {
           onPress={this.showInfo}
         >
           <Icon
-            name="information-circle"
+            name="information-circle-outline"
             style={styles.info}
           />
         </TouchableOpacity>
