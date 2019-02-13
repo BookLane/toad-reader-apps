@@ -174,6 +174,9 @@ class Book extends React.Component {
           this.setState({
             onZoomCompletion: null,
             bookLoaded: false,
+            ...(cfi ? {} : {
+              mode: 'page',
+            }),
           })
 
           // The indicateLoaded function is called by after a pageChanged postMessage.
