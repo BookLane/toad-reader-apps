@@ -174,7 +174,7 @@ class Book extends React.Component {
           this.setState({
             onZoomCompletion: null,
             bookLoaded: false,
-            ...(cfi ? {} : {
+            ...(cfi || Platform.OS === 'android' ? {} : {
               mode: 'page',
             }),
           })
