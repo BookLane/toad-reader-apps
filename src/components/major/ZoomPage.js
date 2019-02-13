@@ -132,7 +132,7 @@ class ZoomPage extends React.Component {
   }
 
   render() {
-    const { snapshotCoords } = this.props
+    const { snapshotCoords, pageCfiKnown } = this.props
     const { translateX, translateY, scale, opacity } = this
 
     const uri = getSnapshotURI(this.props)
@@ -165,7 +165,7 @@ class ZoomPage extends React.Component {
         ]}
       >
         <Animated.Image
-          source={{ uri }}
+          source={{ uri: pageCfiKnown ? uri : undefined }}
           style={[
             styles.snapshot,
             zoomStyles2,

@@ -170,7 +170,7 @@ class Book extends React.Component {
         const prior_latest_location = (userDataByBookId[bookId] || {}).latest_location
         const priorLatestLocation = latestLocationToObj(prior_latest_location || "{}")
 
-        if(priorLatestLocation.spineIdRef !== spineIdRef || priorLatestLocation.cfi != cfi) {
+        if(priorLatestLocation.spineIdRef !== spineIdRef || (cfi && priorLatestLocation.cfi != cfi)) {
           this.setState({
             onZoomCompletion: null,
             bookLoaded: false,
@@ -381,7 +381,7 @@ class Book extends React.Component {
     const pageCfisKey = getPageCfisKey({ displaySettings })
 
     const latest_location = (userDataByBookId[bookId] || {}).latest_location
-    const { spineIdRef, pageIndexInSpine } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
+    const { spineIdRef, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
     const { title } = (books && books[bookId]) || {}
 
@@ -421,6 +421,7 @@ class Book extends React.Component {
             updateSnapshotCoords={this.updateSnapshotCoords}
             statusBarHeight={statusBarHeight}
             setFlatListEl={this.setFlatListEl}
+            capturingSnapshots={capturingSnapshots}
           />
         </View>
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
@@ -449,6 +450,7 @@ class Book extends React.Component {
             snapshotCoords={snapshotCoords}
             zoomed={snapshotZoomed}
             zoomingEnabled={mode === 'zooming'}
+            pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
           />
         </View>
         <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>

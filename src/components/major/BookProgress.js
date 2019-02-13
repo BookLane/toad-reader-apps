@@ -66,7 +66,7 @@ class BookProgress extends React.Component {
   }
 
   render() {
-    const { animatedScrollPosition, maxScroll } = this.props
+    const { animatedScrollPosition, maxScroll, capturingSnapshots } = this.props
 
     return (
       <Footer style={styles.footer}>
@@ -82,6 +82,7 @@ class BookProgress extends React.Component {
           size={30}
           animatedScrollPosition={animatedScrollPosition}
           maxScroll={maxScroll}
+          capturingSnapshots={capturingSnapshots}
         />
         {/* <ProgressDot
           left={PROGRESS_BAR_SIDE_SPACING + 100}

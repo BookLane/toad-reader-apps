@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 class ProgressDot extends React.Component {
 
   render() {
-    const { size, animatedScrollPosition, maxScroll } = this.props
+    const { size, animatedScrollPosition, maxScroll, capturingSnapshots } = this.props
 
     const { width } = Dimensions.get('window')
 
@@ -55,10 +55,12 @@ class ProgressDot extends React.Component {
           dotStyles,
         ]}
       >
-        <ProgressDotLabel
-          animatedScrollPosition={animatedScrollPosition}
-          maxScroll={maxScroll}
-        />
+        {!capturingSnapshots &&
+          <ProgressDotLabel
+            animatedScrollPosition={animatedScrollPosition}
+            maxScroll={maxScroll}
+          />
+        }
       </Animated.View>
     )
   }

@@ -128,10 +128,14 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
     }
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
-    let pageCfis
+    let pageCfis = []
+    let pageCfisKnown = false
     book.spines.some(spine => {
       if(spine.idref === spineIdRef) {
-        pageCfis = spine.pageCfis[pageCfisKey]
+        if(spine.pageCfis) {
+          pageCfis = spine.pageCfis[pageCfisKey]
+          pageCfisKnown = true
+        }
         return true
       }
     })
@@ -140,6 +144,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
     return {
       spineIdRef,
       pageIndexInSpine,
+      pageCfisKnown,
     }
 
   } catch(e) {

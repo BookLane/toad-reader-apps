@@ -225,8 +225,9 @@ class BookPages extends React.Component {
           bookId={bookId}
           spineIdRef={itemSpineIdRef}
           pageCfisKey={pageCfisKey}
-          pageIndexInSpine={itemPageIndexInSpine}
+          pageIndexInSpine={itemPageIndexInSpine === -1 ? 0 : itemPageIndexInSpine}
           cfi={cfis[i]}
+          indicateMultiplePages={itemPageIndexInSpine === -1}
           delayPageChangeScroll={this.delayPageChangeScroll}
           zoomToPage={zoomToPage}
           isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
@@ -264,6 +265,7 @@ class BookPages extends React.Component {
   }
 
   render() {
+    const { capturingSnapshots } = this.props
     const { pageHeight } = this.state
     const { animatedScrollPosition, opacity } = this
 
@@ -303,6 +305,7 @@ class BookPages extends React.Component {
               animatedScrollPosition={animatedScrollPosition}
               maxScroll={this.maxScroll}
               scrollToPercentage={this.scrollToPercentage}
+              capturingSnapshots={capturingSnapshots}
             />
           : null
         }

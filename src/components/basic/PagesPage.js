@@ -25,6 +25,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  shadowPage: {
+    backgroundColor: '#ffffff',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
   coverAll: {
     position: 'absolute',
     top: 0,
@@ -66,7 +72,7 @@ class PagesPage extends React.PureComponent {
   setView = ref => this.view = ref
 
   render() {
-    const { pageWidth, pageHeight, isCurrentPage } = this.props
+    const { pageWidth, pageHeight, isCurrentPage, indicateMultiplePages } = this.props
 
     const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
     const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
@@ -84,6 +90,22 @@ class PagesPage extends React.PureComponent {
         ]}
         ref={Platform.OS !== 'android' && this.setView}
       >
+        {(indicateMultiplePages ? [4,3,2,1] : []).map(offsetLevel => {
+          const shrinkPercentage = (pageWidth - offsetLevel*3) / pageWidth
+          return <View
+            style={[
+              styles.shadowPage,
+              {
+                width: pageWidth * shrinkPercentage,
+                height: pageHeight * shrinkPercentage,
+                left: offsetLevel * 14 + (pageWidth - pageWidth * shrinkPercentage),
+                top: (pageHeight - pageHeight * shrinkPercentage) / 2,
+                opacity: .5 - offsetLevel * .07,
+              },
+            ]}
+            key={offsetLevel}
+          />
+        })}
         <TouchableComponent
           onPress={this.goToPage}
           useForeground={true}
