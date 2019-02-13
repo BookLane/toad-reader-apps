@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 class ProgressDotLabel extends React.Component {
 
   state = {
-    label: i18n("{{percent}}%", { percent: 0 }),
+    label: '',
   }
 
   componentDidMount() {
