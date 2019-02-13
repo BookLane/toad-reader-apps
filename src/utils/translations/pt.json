@@ -42,8 +42,6 @@
 	"Spacing": "Espaçamento",
 	"Theme": "Tema",
 	"Your device is not allowing us to open this link.": "Seu dispositivo não está permitindo abrir este link.",
-	"Capturing page thumbnails...": "Capturando miniaturas das páginas...",
-	"We are creating thumbnail images for this book in the background. This may temporarily make page turning a bit less fluid.": "Criando imagens em miniature para este livro em segundo plano. Isto pode tornar o avanço de páginas mais lento.",
 	"The EPUB for the book entitled \"{{title}}\" appears to be invalid.": "O EPUB do livro \"{{title}}\" parece estar inválido.",
 	"{{percent}}%": "{{percent}}%",
 	"The app has been updated and requires an updated reader component to be downloaded. Thus, you must connect to the internet before you will be able to read.": "O aplicativo foi atualizado e é necessário fazer o download de um componente atualizado do leitor digital. Conecte-se à internet antes para que seja possível fazer a leitura.",

@@ -3,6 +3,7 @@ import { Constants } from "expo"
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, View } from "react-native"
 
 import PagesBookmark from "./PagesBookmark"
+import CapturingThumbnailsInfoIcon from "./CapturingThumbnailsInfoIcon"
 
 import { getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
@@ -15,6 +16,7 @@ const {
 const styles = StyleSheet.create({
   container: {
     marginRight: PAGES_HORIZONTAL_MARGIN,
+    flexDirection: 'row',
   },
   currentPage: {
     borderColor: CURRENT_PAGE_BORDER_COLOR,
@@ -83,10 +85,7 @@ class PagesPage extends React.PureComponent {
       <View
         style={[
           styles.container,
-          {
-            width: pageWidth,
-            height: pageHeight,
-          },
+          (indicateMultiplePages ? { flex: 1 } : {}),
         ]}
         ref={Platform.OS !== 'android' && this.setView}
       >
@@ -113,7 +112,13 @@ class PagesPage extends React.PureComponent {
           delayPressIn={0}
         >
           <View
-            style={styles.page}
+            style={[
+              styles.page,
+              {
+                width: pageWidth,
+                height: pageHeight,
+              },
+            ]}
             ref={Platform.OS === 'android' && this.setView}
           >
             <Image
@@ -130,6 +135,9 @@ class PagesPage extends React.PureComponent {
             />
           </View>
         </TouchableComponent>
+        {!!indicateMultiplePages &&
+          <CapturingThumbnailsInfoIcon />
+        }
       </View>
     )
   }
