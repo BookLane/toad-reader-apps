@@ -79,10 +79,16 @@ class BookPage extends React.Component {
 
     if(spineIdRef == null || pageIndexInSpine == null) return
 
-    postMessage(this.webView, 'goToPage', {
-      spineIdRef,
-      pageIndexInSpine,
-    })
+    this.doAfterLoaded = () => {
+      delete this.doAfterLoaded
+      postMessage(this.webView, 'goToPage', {
+        spineIdRef,
+        pageIndexInSpine: Math.max(pageIndexInSpine, 0),
+      })
+    }
+
+    // TODO: This will need to change as I do the "Do you want to go to the latest location" functionality.
+    if(this.loaded) this.doAfterLoaded()
   }
 
   isEditingNote = () => this.state.noteInEdit != null
@@ -123,6 +129,8 @@ class BookPage extends React.Component {
         )
 
         indicateLoaded()
+        this.loaded = true
+        this.doAfterLoaded && this.doAfterLoaded()
 
         // await this.doTakeSnapshot()
 
