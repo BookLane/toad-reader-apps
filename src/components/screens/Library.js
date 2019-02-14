@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants, Updates, FileSystem } from "expo"
+import { Constants, Updates, FileSystem, ScreenOrientation } from "expo"
 import { Platform, StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -57,6 +57,8 @@ class Library extends React.Component {
     Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
     removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+
+    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
   }
 
   componentDidMount() {
