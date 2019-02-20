@@ -55,6 +55,7 @@ export const updateReader = ({ setReaderStatus }) => {
       const zipFetchInfo = await fetchZipAndAssets({
         zipUrl,
         localBaseUri,
+        timeout: 30000,
       })
     
       if(!zipFetchInfo.success || zipFetchInfo.errorMessage) {

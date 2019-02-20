@@ -184,7 +184,7 @@ export const debounce = (func, ...params) => {
   }
 }
 
-export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback, cookie }) => (
+export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback, cookie, timeout }) => (
   new Promise((resolve, reject) => {
     const xhr = new window.XMLHttpRequest()
 
@@ -210,6 +210,10 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     // older browser
     if(xhr.overrideMimeType) {
       xhr.overrideMimeType("text/plain; charset=x-user-defined")
+    }
+
+    if(timeout) {
+      xhr.timeout = timeout
     }
 
     if(progressCallback) {
