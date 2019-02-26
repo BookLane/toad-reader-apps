@@ -8,7 +8,7 @@ import i18n from "./i18n.js"
 // current version of the reader apps, not specific tenants.
 const READER_VERSION_TIMESTAMP = "1550132459"
 
-const zipUrl = `https://s3-us-west-2.amazonaws.com/biblemesh-readium/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
+const zipUrl = `https://s3.amazonaws.com/cdn.toadreader.com/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
 const localBaseUri = `${FileSystem.documentDirectory}reader/`
 
 export const readerNeedsUpdate = async ({ setReaderStatus }) => {
