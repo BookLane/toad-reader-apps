@@ -36,7 +36,16 @@ export default function(state = initialState, action) {
           spines: (state[book.id] && state[book.id].spines) || undefined,
           accounts: {
             ...((state[book.id] && state[book.id].accounts) || {}),
-            [accountId]: {},
+            [accountId]: (
+              (book.link_href && book.link_label)
+                ? {
+                  link: {
+                    href: book.link_href,
+                    label: book.link_label,
+                  },
+                }
+                : {}
+            ),
           },
         }
       })

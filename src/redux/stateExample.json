@@ -46,7 +46,12 @@
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
       "accounts": {
-        "1:-1": {}
+        "1:-1": {
+          "link": {
+            "href": "https://www.desiringgod.org",
+            "label": "More resources from Desiring God"
+          }
+        }
       },
       "downloadStatus": 1
     },

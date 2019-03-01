@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, StatusBar, View, Platform, Dimensions } from "react-native"
+import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking } from "react-native"
 import { Constants, KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -19,7 +19,7 @@ import PageCaptureManager from "../major/PageCaptureManager"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts,
+import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts, getFirstBookLinkInfo,
          getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
@@ -112,6 +112,10 @@ class Book extends React.Component {
   constructor(props) {
     super(props)
 
+    const { navigation, books } = props
+    const { bookId } = navigation.state.params || {}
+    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+
     this.state = {
       bookLoaded: false,
       mode: 'page',
@@ -128,6 +132,30 @@ class Book extends React.Component {
     }
 
     this.getFreshUserData()
+
+    this.options = [
+      // {
+      //   text: i18n("Recommend this book"),
+      //   onPress: this.recommendBook,
+      // },
+      // {
+      //   text: i18n("My highlights and notes"),
+      //   onPress: this.goToHighlights,
+      // },
+      ...(
+        bookLinkInfo
+          ? [{
+            text: bookLinkInfo.label,
+            onPress: this.goToBookLink,
+          }]
+          : []
+      ),
+      {
+        text: i18n("Remove from device"),
+        onPress: this.removeFromDevice,
+      },
+    ]
+  
   }
 
   componentDidMount() {
@@ -346,20 +374,19 @@ class Book extends React.Component {
 
   setFlatListEl = ref => this.flatListEl = ref
 
-  options = [
-    // {
-    //   text: i18n("Recommend this book"),
-    //   onPress: this.recommendBook,
-    // },
-    // {
-    //   text: i18n("My highlights and notes"),
-    //   onPress: this.goToHighlights,
-    // },
-    {
-      text: i18n("Remove from device"),
-      onPress: this.removeFromDevice,
-    },
-  ]
+  goToBookLink = () => {
+    const { navigation, books } = this.props
+    const { bookId } = navigation.state.params || {}
+
+    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+
+    Linking.openURL(bookLinkInfo.href).catch(err => {
+      console.log('ERROR: Request to open URL failed.', err)
+      navigation.navigate("ErrorMessage", {
+        message: i18n("Your device is not allowing us to open this link."),
+      })
+    })
+  }
 
   setPauseProcessing = processingPaused => {
     clearOutTimeout(this.unpauseProcessingTimeout, this)

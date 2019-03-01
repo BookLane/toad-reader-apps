@@ -12,7 +12,8 @@ import BookPageMessage from "../basic/BookPageMessage"
 
 import { postMessage } from "../../utils/postMessage.js"
 import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getDisplaySettingsObj, getSpineAndPage, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+import { getDisplaySettingsObj, getSpineAndPage, setUpTimeout, clearOutTimeout,
+         unmountTimeouts, getFirstBookLinkInfo } from "../../utils/toolbox.js"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
 
@@ -202,8 +203,11 @@ class BookPage extends React.Component {
 //   }
 
   render() {
-    const { bookId, showSettings, requestHideSettings, latest_location, capturingSnapshots } = this.props
+    const { books, bookId, showSettings, requestHideSettings,
+            latest_location, capturingSnapshots } = this.props
     const { selectionInfo, noteInEdit } = this.state
+
+    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
     return (
       <View style={styles.container}>
@@ -228,6 +232,12 @@ class BookPage extends React.Component {
             noteInEdit={noteInEdit}
             updateNoteInEdit={this.updateNoteInEdit}
             setSelectionText={this.setSelectionText}
+          />
+        }
+        {!!bookLinkInfo &&
+          <BookPageMessage
+            text={bookLinkInfo.label}
+            externalHref={bookLinkInfo.href}
           />
         }
       </View>

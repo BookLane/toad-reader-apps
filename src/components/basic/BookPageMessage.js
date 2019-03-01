@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, Icon, Toast } from "native-base"
-import { StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, TouchableOpacity, Linking } from "react-native"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
@@ -25,22 +25,32 @@ class BookPageMessage extends React.Component {
   }
 
   showMoreInfo = () =>  {
-    const { text, moreInfoText } = this.props
+    const { text, moreInfoText, externalHref } = this.props
 
-    Toast.show({
-      text: moreInfoText,
-      buttonText: i18n("Okay"),
-      duration: 15000,
-    })
+    if(moreInfoText) {
+      Toast.show({
+        text: moreInfoText,
+        buttonText: i18n("Okay"),
+        duration: 15000,
+      })
+
+    } else if(externalHref) {
+      Linking.openURL(externalHref).catch(err => {
+        console.log('ERROR: Request to open URL failed.', err)
+        navigation.navigate("ErrorMessage", {
+          message: i18n("Your device is not allowing us to open this link."),
+        })
+      })
+    }
 
   }
 
   render() {
-    const { text, moreInfoText } = this.props
+    const { text, moreInfoText, externalHref } = this.props
 
     return (
       <View style={styles.container}>
-        {moreInfoText
+        {(moreInfoText || externalHref)
           ?
             <TouchableOpacity
               onPress={this.showMoreInfo}

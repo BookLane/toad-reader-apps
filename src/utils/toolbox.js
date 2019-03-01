@@ -338,3 +338,12 @@ export const unmountTimeouts = function() {
     delete this.__idForTimeouts
   }
 }
+
+export const getFirstBookLinkInfo = book => {
+  for(let accountId in book.accounts) {
+    const bookLinkInfo = book.accounts[accountId].link
+    if(bookLinkInfo) {
+      return bookLinkInfo
+    }
+  }
+}
