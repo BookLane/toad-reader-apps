@@ -11,7 +11,7 @@ import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUse
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    padding: Platform.OS === 'android' ? 25 : 15,
     flexDirection: 'row',
     maxWidth: '100%',
   },
