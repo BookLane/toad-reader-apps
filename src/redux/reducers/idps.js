@@ -5,7 +5,7 @@ const {
 } = Constants.manifest.extra
 
 const initialState = IDPS || {
-  "1": {
+  "21": {
     idpName: "Toad Reader",
     domain: "books.toadreader.com",
     idpExpire: null,

@@ -52,20 +52,22 @@ class Library extends React.Component {
   }
 
   componentWillMount() {
-    const { books, clearAllSpinePageCfis } = this.props
+    const { books, clearAllSpinePageCfis, reSort } = this.props
 
     Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
     removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
 
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+    reSort()
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    const { library, navigation, reSort } = this.props
 
-    this.navigationDidFocusListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
+    this.navigationWillBlurListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
     this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
+    this.navigationWillFocusListener = navigation.addListener("willFocus", reSort)
 
     this.fetchAll()
   }
@@ -81,6 +83,7 @@ class Library extends React.Component {
   componentWillUnmount() {
     this.navigationWillBlurListener.remove()
     this.navigationDidFocusListener.remove()
+    this.navigationWillFocusListener.remove()
   }
 
   getUpToDateReader = async () => {
@@ -280,6 +283,11 @@ class Library extends React.Component {
             requestHide={this.hideOptions}
             headerText={i18n("Sort by...")}
             options={[
+              {
+                text: i18n("Recent"),
+                selected: library.sort == 'recent',
+                onPress: () => setSort({ sort: 'recent' }),
+              },
               {
                 text: i18n("Title"),
                 selected: library.sort == 'title',

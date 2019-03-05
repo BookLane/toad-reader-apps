@@ -1,6 +1,6 @@
 const initialState = {
   sort: "recent",
-  view: "title",  // TODO: should be "recent" once that is supported
+  view: "covers",
   bookList: [],
 }
 
