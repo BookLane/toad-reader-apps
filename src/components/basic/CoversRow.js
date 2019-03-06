@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: LIBRARY_COVERS_BOTTOM_PADDING,
   },
+  coversFirstRow: {
+    paddingTop: LIBRARY_COVERS_VERTICAL_MARGIN,
+  },
 })
 
 class CoversRow extends React.PureComponent {
@@ -28,13 +31,7 @@ class CoversRow extends React.PureComponent {
     return (
       <View style={[
         styles.covers,
-        (
-          isFirstRow
-            ? {
-              paddingTop: LIBRARY_COVERS_VERTICAL_MARGIN,
-            }
-            : {}
-        ),
+        isFirstRow ? styles.coversFirstRow : {},
       ]}>
         {children}
       </View>

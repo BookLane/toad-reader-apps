@@ -3,7 +3,7 @@ import { Constants, Updates, FileSystem, ScreenOrientation } from "expo"
 import { Platform, StyleSheet, WebView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Content, Text, View } from "native-base"
+import { Container, Text, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   content: {
     zIndex: 1,
     backgroundColor: APP_BACKGROUND_COLOR,
+    flex: 1,
   },
 })
 
@@ -273,12 +274,12 @@ class Library extends React.Component {
                 <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
               )
               : (
-                <Content style={styles.content}>
+                <View style={styles.content}>
                   <LibraryViewer
                     bookList={bookList}
                     navigation={navigation}
                   />
-                </Content>
+                </View>
               )
           )
         }

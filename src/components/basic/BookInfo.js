@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: LIBRARY_LIST_MARGIN,
   },
+  containerFirstRow: {
+    marginTop: LIBRARY_LIST_MARGIN,
+  },
   cover: {
     width: 100,
     marginRight: 10,
@@ -35,11 +38,14 @@ const styles = StyleSheet.create({
 class BookInfo extends React.Component {
 
   render() {
-    const { bookId, bookInfo } = this.props
+    const { bookId, bookInfo, isFirstRow } = this.props
     const { title, author } = bookInfo
 
     return (
-      <View style={styles.container}>
+      <View style={[
+        styles.container,
+        isFirstRow ? styles.containerFirstRow : {},
+      ]}>
         <View style={styles.cover}>
           <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
         </View>

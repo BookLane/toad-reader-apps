@@ -15,6 +15,7 @@ const {
 const styles = StyleSheet.create({
   container: {
     padding: LIBRARY_LIST_MARGIN,
+    paddingTop: 0,
     paddingBottom: 0,
   },
 })
@@ -30,7 +31,11 @@ class LibraryList extends React.PureComponent {
         bookId={bookId}
         navigation={navigation}
       >
-        <BookInfo bookId={bookId} bookInfo={books[bookId]} />
+        <BookInfo
+          bookId={bookId}
+          bookInfo={books[bookId]}
+          isFirstRow={index === 0}
+        />
       </LibraryBook>
     )
   }
