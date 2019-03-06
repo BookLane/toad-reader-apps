@@ -209,7 +209,7 @@ class Library extends React.Component {
   }
   
   render() {
-    const { library, accounts, books, fetchingBooks, navigation, setSort } = this.props
+    const { library, accounts, idps, books, fetchingBooks, navigation, setSort } = this.props
     const { showOptions, downloadPaused } = this.state
 
     let { scope, logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
@@ -242,7 +242,11 @@ class Library extends React.Component {
             onError={this.logOurUrlOnLoad}  // Even if it fails, log them out on the device at least
           />
           <FullScreenSpin
-            text={i18n("Logging out...")}
+            text={
+              Object.values(idps).every(idp => idp.noCloudSave)
+                ? i18n("Finding books...")
+                : i18n("Logging out...")
+            }
             style={{ backgroundColor: 'white' }}
           />
         </Container>

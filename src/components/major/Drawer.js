@@ -190,17 +190,19 @@ class Drawer extends React.Component {
                 <Text>{i18n("Remove all books")}</Text>
               </Body>
             </ListItem>
-            <ListItem icon
-              button
-              onPress={this.confirmLogOut}
-            >
-              <Left>
-                <Icon name="log-out" />
-              </Left>
-              <Body>
-                <Text>{i18n("Log out")}</Text> 
-              </Body>
-            </ListItem>
+            {Object.values(idps).some(idp => !idp.noCloudSave) &&
+              <ListItem icon
+                button
+                onPress={this.confirmLogOut}
+              >
+                <Left>
+                  <Icon name="log-out" />
+                </Left>
+                <Body>
+                  <Text>{i18n("Log out")}</Text> 
+                </Body>
+              </ListItem>
+            }
           </List>
         </Content>
       </Container>
