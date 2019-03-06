@@ -114,6 +114,11 @@ export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })
 
+export const changeLibraryScope = ({ scope }) => ({
+  type: "CHANGE_LIBRARY_SCOPE",
+  scope,
+})
+
 export const setLatestLocation = ({ bookId, latestLocation, patchInfo }) => ({
   type: "SET_LATEST_LOCATION",
   bookId,

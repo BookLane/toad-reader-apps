@@ -163,7 +163,8 @@
       68,
       65
     ],
-    "view": "covers"
+    "view": "covers",
+    "scope": "device"
   },
   "currentBookId": null,
   "displaySettings": {

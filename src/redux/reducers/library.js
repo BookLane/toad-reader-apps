@@ -18,6 +18,10 @@ export default function(state = initialState, action) {
       newState.view = viewOptions[(viewOptions.indexOf(newState.view) + 1) % viewOptions.length]
       return newState
 
+    case "CHANGE_LIBRARY_SCOPE":
+      newState.scope = action.scope || "all"
+      return newState
+
     case "REMOVE_ACCOUNT":
       newState.bookList = []
       return newState

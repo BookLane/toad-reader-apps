@@ -8,7 +8,8 @@ import i18n from "../../utils/i18n.js"
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 import { debounce } from "../../utils/toolbox.js"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
+         clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   image: {
@@ -38,16 +39,24 @@ class Drawer extends React.Component {
     this.setState({ offline: connectionInfo.type === 'none' })
   }
 
-  showAll = () => {
+  goToLibrary = () => {
     const { navigation } = this.props
 
-    debounce(navigation.navigate, "Library", { scope: "all" })
+    debounce(navigation.navigate, "Library")
+  }
+
+  showAll = () => {
+    const { changeLibraryScope } = this.props
+
+    changeLibraryScope({ scope: "all" })
+    this.goToLibrary()
   }
 
   showDeviceOnly = () => {
-    const { navigation } = this.props
+    const { changeLibraryScope } = this.props
 
-    debounce(navigation.navigate, "Library", { scope: "device" })
+    changeLibraryScope({ scope: "device" })
+    this.goToLibrary()
   }
 
   goToAccounts = () => {
@@ -131,7 +140,10 @@ class Drawer extends React.Component {
               <ListItem icon
                 key={id}
                 button
-                onPress={() => debounce(navigation.navigate, "Library", { scope: id })}
+                onPress={() => {
+                  changeLibraryScope({ scope: id })
+                  this.goToLibrary()
+                }}
               >
                 <Left>
                   <Icon name="book" />
@@ -221,6 +233,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
+  changeLibraryScope,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Drawer)

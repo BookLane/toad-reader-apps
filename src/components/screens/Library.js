@@ -212,8 +212,8 @@ class Library extends React.Component {
     const { library, accounts, idps, books, fetchingBooks, navigation, setSort } = this.props
     const { showOptions, downloadPaused } = this.state
 
-    let { scope, logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
-    scope = scope || "all"
+    let { logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
+    const scope = library.scope || "all"
 
     const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
     const bookList = scope == 'all'

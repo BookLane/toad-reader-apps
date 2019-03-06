@@ -26,7 +26,8 @@ class LibraryHeader extends React.Component {
   }
 
   render() {
-    const { scope, idps, accounts, library, toggleShowOptions } = this.props
+    const { idps, accounts, library, toggleShowOptions } = this.props
+    const scope = library.scope || "all"
 
     let title = i18n("Library")
     let subtitle = ""
