@@ -1,4 +1,5 @@
 import React from "react"
+import { Constants } from "expo"
 import { View } from "native-base"
 import { StyleSheet } from "react-native"
 
@@ -7,11 +8,15 @@ import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
 import BookInfoDetails from "./BookInfoDetails"
 
+const {
+  LIBRARY_LIST_MARGIN,
+} = Constants.manifest.extra
+
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: LIBRARY_LIST_MARGIN,
   },
   cover: {
     width: 100,
