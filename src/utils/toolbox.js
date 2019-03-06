@@ -5,29 +5,59 @@ import nativeBasePlatformVariables from 'native-base/src/theme/variables/platfor
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
+  LIBRARY_COVERS_HORIZONTAL_MARGIN,
+  LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
 } = Constants.manifest.extra
 
 const cachedSizes = {}
 
-export const getPageSize = ({ width, height }=Dimensions.get('window')) => {
+const getSizes = ({
+  type,
+  width,
+  height,
+  maxSize,
+  horizontalMargin,
+}) => {
 
-  if(!cachedSizes[`${width}x${height}`]) {
-    const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
-    const pagesPerRow = parseInt(width / maxWidth)
-    const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
-    const pageHeight = pageWidth / ( width / height )
+  const cacheKey = `${type}:${width}x${height},${maxSize},${horizontalMargin}`
 
-    cachedSizes[`${width}x${height}`] = {
-      pageWidth,
-      pageHeight,
-      pagesPerRow,
+  if(!cachedSizes[cacheKey]) {
+    const maxWidth = height < width ? maxSize : maxSize * ( width / height )
+    const itemsPerRow = parseInt(width / maxWidth)
+    const itemWidth = (width - ((itemsPerRow + 1) * horizontalMargin)) / itemsPerRow
+    const itemHeight = itemWidth / ( width / height )
+
+    cachedSizes[cacheKey] = {
+      [`${type}Width`]: itemWidth,
+      [`${type}Height`]: itemHeight,
+      [`${type}sPerRow`]: itemsPerRow,
     }
   }
 
-  return cachedSizes[`${width}x${height}`]
+  return cachedSizes[cacheKey]
 }
+
+export const getPageSize = ({ width, height }=Dimensions.get('window')) => (
+  getSizes({
+    width,
+    height,
+    type: 'page',
+    maxSize: PAGE_LIST_MAXIMUM_PAGE_SIZE,
+    horizontalMargin: PAGES_HORIZONTAL_MARGIN,
+  })
+)
+
+export const getCoverSize = ({ width }=Dimensions.get('window')) => (
+  getSizes({
+    width,
+    height: width/.75,
+    type: 'cover',
+    maxSize: LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
+    horizontalMargin: LIBRARY_COVERS_HORIZONTAL_MARGIN,
+  })
+)
 
 // copied from readium-js/readium-shared-js/plugins/highlights
 const parseContentCfi = cont => (

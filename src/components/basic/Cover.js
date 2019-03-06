@@ -1,4 +1,5 @@
 import React from "react"
+import { Constants } from "expo"
 import { FileSystem } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -12,10 +13,15 @@ import CoverCheck from "./CoverCheck"
 
 import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
+const {
+  LIBRARY_COVERS_HORIZONTAL_MARGIN,
+  LIBRARY_COVERS_VERTICAL_MARGIN,
+} = Constants.manifest.extra
+
 const styles = StyleSheet.create({
   cover: {
-    marginBottom: 30,
-    marginRight: 10,
+    marginRight: LIBRARY_COVERS_HORIZONTAL_MARGIN,
+    marginBottom: LIBRARY_COVERS_VERTICAL_MARGIN,
   },
   titleContainer: {
     position: 'absolute',
@@ -57,7 +63,7 @@ class Cover extends React.Component {
   }
   
   render() {
-    const { bookId, bookInfo, bookWidth, downloadProgressByBookId } = this.props
+    const { bookId, bookInfo, bookWidth, bookHeight, downloadProgressByBookId } = this.props
     const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
     const downloadProgress = downloadProgressByBookId[bookId]
     const { imageError, imageQueryStringIndex } = this.state
@@ -70,7 +76,7 @@ class Cover extends React.Component {
           styles.cover,
           {
             width: bookWidth,
-            paddingTop: bookWidth/.75,
+            paddingTop: bookHeight,
           },
         ]}
       >
