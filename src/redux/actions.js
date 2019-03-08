@@ -22,6 +22,12 @@ export const addBooks = ({ books, accountId }) => ({
   accountId,
 })
 
+export const setCoverFilename = ({ bookId, coverFilename }) => ({
+  type: "SET_COVER_FILENAME",
+  bookId,
+  coverFilename,
+})
+
 export const updateBookAccount = ({ bookId, accountId, accountInfo }) => ({
   type: "UPDATE_BOOK_ACCOUNT",
   bookId,

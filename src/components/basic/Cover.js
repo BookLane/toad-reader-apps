@@ -50,25 +50,19 @@ class Cover extends React.Component {
 
   state = {
     imageError: false,
-    imageQueryStringIndex: 1,
   }
 
   componentWillUnmount = unmountTimeouts
 
-  imageOnError = () => {
-    const { imageQueryStringIndex } = this.state
-
-    this.setState({ imageError: true })
-    setUpTimeout(() => this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200, this)
-  }
+  imageOnError = () => this.setState({ imageError: true })
   
   render() {
     const { bookId, bookInfo, bookWidth, bookHeight, downloadProgressByBookId } = this.props
     const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
     const downloadProgress = downloadProgressByBookId[bookId]
-    const { imageError, imageQueryStringIndex } = this.state
+    const { imageError } = this.state
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
+    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
 
     return (
       <View

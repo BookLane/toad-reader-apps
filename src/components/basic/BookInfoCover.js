@@ -26,25 +26,14 @@ const styles = StyleSheet.create({
 
 class BookInfoCover extends React.Component {
 
-  state = {
-    imageQueryStringIndex: 1,
-  }
-
   componentWillUnmount = unmountTimeouts
 
-  imageOnError = () => {
-    const { imageQueryStringIndex } = this.state
-
-    setUpTimeout(() => this.setState({ imageQueryStringIndex: imageQueryStringIndex+1 }), 200, this)
-  }
-  
   render() {
     const { bookId, bookInfo, downloadProgressByBookId } = this.props
     const { coverFilename, downloadStatus } = bookInfo
     const downloadProgress = downloadProgressByBookId[bookId]
-    const { imageQueryStringIndex } = this.state
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}?${imageQueryStringIndex}`
+    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
 
     return (
       <View style={styles.container}>
@@ -52,7 +41,6 @@ class BookInfoCover extends React.Component {
           source={{ uri }}
           style={styles.image}
           resizeMode='cover'
-          onError={this.imageOnError}
         />
         {downloadStatus == 1 &&
           <FullScreenSpin

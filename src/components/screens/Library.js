@@ -20,7 +20,7 @@ import BookDownloader from "../major/BookDownloader.js"
 import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
-import { addBooks, reSort, setSort, setFetchingBooks, setDownloadStatus,
+import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis } from "../../redux/actions.js"
 
 const {
@@ -102,7 +102,8 @@ class Library extends React.Component {
   hasJSUpdate = () => !!this.JSUpdateReady
 
   async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, books, addBooks, reSort, updateAccount, navigation } = nextProps || this.props
+    const { setFetchingBooks, accounts, idps, books, addBooks, setCoverFilename,
+            reSort, updateAccount, navigation } = nextProps || this.props
     const { refreshLibraryAccountId } = navigation.state.params || {}
 
     const account = Object.values(accounts)[0]
@@ -163,7 +164,12 @@ class Library extends React.Component {
               `https://${idps[idpId].domain}/${book.coverHref}`,
               `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
               { skipIfExists: true }
-            )
+            ).then(() => {
+              setCoverFilename({
+                bookId: book.id,
+                coverFilename: book.coverHref.split('/').pop(),
+              })
+            })
           }
         })
         
@@ -326,6 +332,7 @@ const mapStateToProps = (state) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
+  setCoverFilename,
   reSort,
   setSort,
   setFetchingBooks,
