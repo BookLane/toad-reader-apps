@@ -15,6 +15,8 @@ export default async (remoteUri, localUri, { skipIfExists }={}) => {
     await FileSystem.makeDirectoryAsync(localDir, { intermediates: true })
   } catch(e) {}
 
-  await FileSystem.downloadAsync(remoteUri, localUri)
+  const { status } = await FileSystem.downloadAsync(remoteUri, localUri)
+
+  return status >= 200 && status < 300
 
 }

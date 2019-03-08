@@ -30,12 +30,13 @@ export default function(state = initialState, action) {
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
           totalCharacterCount: book.totalCharacterCount,
+          coverHref: book.coverHref,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           toc: (state[book.id] && state[book.id].toc) || undefined,
           spines: (state[book.id] && state[book.id].spines) || undefined,
           accounts: {
             ...((state[book.id] && state[book.id].accounts) || {}),
-            [accountId]: (
+            [action.accountId]: (
               (book.link_href && book.link_label)
                 ? {
                   link: {

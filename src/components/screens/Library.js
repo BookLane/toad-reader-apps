@@ -17,7 +17,7 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 import AppHeader from "../basic/AppHeader.js";
 import BookDownloader from "../major/BookDownloader.js"
 
-import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
@@ -85,6 +85,8 @@ class Library extends React.Component {
     this.navigationWillBlurListener.remove()
     this.navigationDidFocusListener.remove()
     this.navigationWillFocusListener.remove()
+
+    unmountTimeouts.bind(this)()
   }
 
   getUpToDateReader = async () => {
@@ -102,7 +104,7 @@ class Library extends React.Component {
   hasJSUpdate = () => !!this.JSUpdateReady
 
   async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, books, addBooks, setCoverFilename,
+    const { setFetchingBooks, accounts, idps, books, addBooks,
             reSort, updateAccount, navigation } = nextProps || this.props
     const { refreshLibraryAccountId } = navigation.state.params || {}
 
@@ -121,11 +123,15 @@ class Library extends React.Component {
     for(accountId in accounts) {
       try {
 
+        const [ idpId ] = accountId.split(':')
+
         // no need to get the library listing if we already have it
-        if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) continue
+        if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
+          setUpTimeout(() => this.getCovers({ idpId }), 0, this)
+          continue
+        }
 
         // update books
-        const [ idpId ] = accountId.split(':')
 
         const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
@@ -157,22 +163,8 @@ class Library extends React.Component {
         })
         reSort()
 
-        // get covers
-        newBooks.forEach(book => {
-          if(book.coverHref) {
-            downloadAsync(
-              `https://${idps[idpId].domain}/${book.coverHref}`,
-              `${FileSystem.documentDirectory}covers/${book.id}/${book.coverHref.split('/').pop()}`,
-              { skipIfExists: true }
-            ).then(() => {
-              setCoverFilename({
-                bookId: book.id,
-                coverFilename: book.coverHref.split('/').pop(),
-              })
-            })
-          }
-        })
-        
+        setUpTimeout(() => this.getCovers({ idpId }), 0, this)
+
         if(refreshLibraryAccountId) {
           navigation.state.params = {}
           this.forceUpdate()
@@ -185,6 +177,35 @@ class Library extends React.Component {
       }
     }
     setFetchingBooks({ value: false })
+  }
+
+  getCovers = ({ idpId }) => {
+    const { idps={}, books={}, setCoverFilename } = this.props
+
+    for(let bookId in books) {
+      const book = books[bookId]
+
+      if(book.coverHref && !book.coverFilename) {
+        const idp = idps[idpId]
+
+        if(idp) {
+          const coverFilename = book.coverHref.split('/').pop()
+
+          downloadAsync(
+            `https://${idp.domain}/${book.coverHref}`,
+            `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
+          ).then(successful => {
+            if(successful) {
+              setCoverFilename({
+                bookId,
+                coverFilename,
+              })
+            }
+          })
+        }
+        
+      }
+    }
   }
   
   toggleShowOptions = () => {
