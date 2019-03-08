@@ -22,6 +22,24 @@ const styles = StyleSheet.create({
 
 class LibraryList extends React.PureComponent {
 
+  componentDidMount() {
+    const { navigation } = this.props
+
+    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+  }
+
+  componentWillUnmount() {
+    this.navigationWillFocusListener.remove()
+  }
+
+  scrollToTopIfSortIsRecent = () => {
+    const { library } = this.props
+
+    if(library.sort == 'recent') {
+      this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0 })
+    }
+  }
+
   renderItem = ({ item: { key: bookId }, index }) => {
     const { navigation, books } = this.props
   
@@ -40,6 +58,10 @@ class LibraryList extends React.PureComponent {
     )
   }
 
+  setFlatListEl = ref => {
+    this.flatListEl = ref
+  }
+
   render() {
 
     const { bookList=[] } = this.props
@@ -50,6 +72,7 @@ class LibraryList extends React.PureComponent {
           data={bookList.map(bookId => ({ key: bookId }))}
           renderItem={this.renderItem}
           showsVerticalScrollIndicator={false}
+          ref={this.setFlatListEl}
         />
 
       </View>
@@ -59,6 +82,7 @@ class LibraryList extends React.PureComponent {
 
 const mapStateToProps = (state) => ({
   books: state.books,
+  library: state.library,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

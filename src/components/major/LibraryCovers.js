@@ -44,6 +44,12 @@ class LibraryCovers extends React.Component {
     this.calcList()
   }
 
+  componentDidMount() {
+    const { navigation } = this.props
+
+    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+  }
+
   componentWillReceiveProps(nextProps) {
     this.calcList(nextProps)
   }
@@ -53,6 +59,18 @@ class LibraryCovers extends React.Component {
 
     if(nextState.coverWidth !== coverWidth) {
       this.calcList(nextProps, nextState)
+    }
+  }
+
+  componentWillUnmount() {
+    this.navigationWillFocusListener.remove()
+  }
+
+  scrollToTopIfSortIsRecent = () => {
+    const { library } = this.props
+
+    if(library.sort == 'recent') {
+      this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0 })
     }
   }
 
@@ -204,6 +222,10 @@ class LibraryCovers extends React.Component {
 
   }
 
+  setFlatListEl = ref => {
+    this.flatListEl = ref
+  }
+
   render() {
     const { bookList=[] } = this.props
     const { coverHeight } = this.state
@@ -226,6 +248,7 @@ class LibraryCovers extends React.Component {
           windowSize={11}  // i.e. 5 rows above and below rendered
           showsVerticalScrollIndicator={false}
           getItemLayout={this.getItemLayout}
+          ref={this.setFlatListEl}
         />
 
       </View>
