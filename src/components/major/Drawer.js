@@ -245,7 +245,7 @@ class Drawer extends React.Component {
                   <Text>{i18n("Remove all books")}</Text>
                 </Body>
               </ListItem>
-              {Object.values(idps).some(idp => !idp.noCloudSave) &&
+              {Object.values(idps).some(idp => !idp.idpNoAuth) &&
                 <ListItem icon
                   button
                   onPress={this.confirmLogOut}

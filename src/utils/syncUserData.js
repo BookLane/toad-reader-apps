@@ -55,7 +55,7 @@ export const patch = info => setTimeout(() => {
       const newUserData = {}
       let somethingToPatch = false
 
-      if(!idp || !userId || idp.noCloudSave) return
+      if(!idp || !userId || idp.idpNoAuth) return
 
       // filter down the userData object to only new items
       for(let bookId in userDataByBookId) {
@@ -201,7 +201,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
   const { idpId, idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
 
-  if(idp.noCloudSave) return
+  if(idp.idpNoAuth) return
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 

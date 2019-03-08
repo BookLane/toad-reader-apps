@@ -169,11 +169,11 @@ class Login extends React.Component {
     const spinMessage = 
       error ? error :
       offline ? (
-        idps[idpId].noCloudSave
+        idps[idpId].idpNoAuth
           ? i18n("Waiting for an internet connection to get your book list...")
           : i18n("Waiting for an internet connection to log you in...")
       ) :
-      idps[idpId].noCloudSave ? i18n("Finding books...") :
+      idps[idpId].idpNoAuth ? i18n("Finding books...") :
       this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") :
       i18n("Loading login portal...")
 

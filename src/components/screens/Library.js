@@ -271,7 +271,7 @@ class Library extends React.Component {
           />
           <FullScreenSpin
             text={
-              Object.values(idps).every(idp => idp.noCloudSave)
+              Object.values(idps).every(idp => idp.idpNoAuth)
                 ? i18n("Finding books...")
                 : i18n("Logging out...")
             }

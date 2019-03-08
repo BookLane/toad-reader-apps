@@ -4,7 +4,7 @@
       "idpName": "Toad Reader",
       "domain": "books.toadreader.com",
       "idpExpire": null,
-      "noCloudSave": true
+      "idpNoAuth": true
     },
     "3": {
       "idpName": "BibleMesh",
