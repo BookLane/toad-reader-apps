@@ -47,11 +47,12 @@ class LibraryCovers extends React.Component {
   componentDidMount() {
     const { navigation } = this.props
 
-    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecentOrChanged)
   }
 
   componentWillReceiveProps(nextProps) {
     this.calcList(nextProps)
+    this.scrollToTopIfSortIsRecentOrChanged(nextProps)
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -66,11 +67,20 @@ class LibraryCovers extends React.Component {
     this.navigationWillFocusListener.remove()
   }
 
-  scrollToTopIfSortIsRecent = () => {
-    const { library } = this.props
+  scrollToTopIfSortIsRecentOrChanged = nextProps => {
+    const { library={} } = this.props
 
-    if(library.sort == 'recent') {
-      this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0 })
+    if(
+      library.sort == 'recent'
+      || (
+        library.sort
+        && nextProps
+        && nextProps.library
+        && nextProps.library.sort
+        && library.sort != nextProps.library.sort
+      )
+    ) {
+      this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0, animated: false })
     }
   }
 
