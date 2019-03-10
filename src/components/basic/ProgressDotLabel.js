@@ -51,7 +51,7 @@ class ProgressDotLabel extends React.Component {
   updateLabel = ({ scroll }) => {
     const { maxScroll } = this.props
 
-    const scrollPercentage = maxScroll ? Math.round((scroll / maxScroll) * 100) : 0
+    const scrollPercentage = maxScroll ? Math.min(Math.round((scroll / maxScroll) * 100), 100) : 0
     const label = i18n("{{percent}}%", { percent: scrollPercentage })
     
     this.setState({ label })
