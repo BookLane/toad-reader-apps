@@ -25,32 +25,42 @@ class LibraryList extends React.PureComponent {
   componentDidMount() {
     const { navigation } = this.props
 
-    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecentOrChanged)
+    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.scrollToTopIfSortIsRecentOrChanged(nextProps)
+    this.scrollToTopIfSortOrScopeChanged(nextProps)
   }
 
   componentWillUnmount() {
     this.navigationWillFocusListener.remove()
   }
 
-  scrollToTopIfSortIsRecentOrChanged = nextProps => {
+  scrollToTopIfSortIsRecent = ({ action }) => {
+    const { library={} } = this.props
+
+    if(action.type === 'Navigation/BACK' && library.sort == 'recent') {
+      this.scrollToTop()
+    }
+  }
+
+  scrollToTopIfSortOrScopeChanged = nextProps => {
     const { library={} } = this.props
 
     if(
-      library.sort == 'recent'
-      || (
-        library.sort
-        && nextProps
-        && nextProps.library
-        && nextProps.library.sort
-        && library.sort != nextProps.library.sort
-      )
+      nextProps.library
+      && ['sort', 'scope'].some(key => (
+        library[key]
+        && nextProps.library[key]
+        && library[key] != nextProps.library[key]
+      ))
     ) {
-      this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0, animated: false })
+      this.scrollToTop()
     }
+  }
+
+  scrollToTop = () => {
+    this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0, animated: false })
   }
 
   renderItem = ({ item: { key: bookId }, index }) => {
