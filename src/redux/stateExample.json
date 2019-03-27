@@ -9,7 +9,9 @@
     "3": {
       "idpName": "BibleMesh",
       "domain": "read.biblemesh.com",
-      "idpExpire": null
+      "idpExpire": null,
+      "idpXapiOn": 1,
+      "idpXapiConsentText": "This information is used to improve your reading experience."
     },
     "4": {
       "idpName": "Zondervan",
@@ -165,6 +167,35 @@
     ],
     "view": "covers",
     "scope": "device"
+  },
+  "currentReadingRecord": {
+    "bookId": 66,
+    "spineIdRef": "chapter5",
+    "startTime": 1506091622203
+  },
+  "readingRecordsByAccountId": {
+    "1:-1": [
+      {
+        "bookId": 68,
+        "spineIdRef": "chapter2",
+        "startTime": 1506078483229,
+        "endTime": 1506079493599
+      },
+      {
+        "bookId": 66,
+        "spineIdRef": "chapter3",
+        "startTime": 1506079493599,
+        "endTime": 1506079623103
+      }
+    ],
+    "2:3": [
+      {
+        "bookId": 68,
+        "spineIdRef": "chapter2",
+        "startTime": 1506078483229,
+        "endTime": 1506079493599
+      }
+    ]
   },
   "currentBookId": null,
   "displaySettings": {

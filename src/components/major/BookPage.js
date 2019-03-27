@@ -15,7 +15,8 @@ import takeSnapshot from "../../utils/takeSnapshot.js"
 import { getDisplaySettingsObj, getSpineAndPage, setUpTimeout, clearOutTimeout,
          unmountTimeouts, getFirstBookLinkInfo } from "../../utils/toolbox.js"
 
-import { setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
+import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
+         startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {
@@ -96,7 +97,9 @@ class BookPage extends React.Component {
 
   onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books,
-            displaySettings, temporarilyPauseProcessing, navigation } = this.props
+            displaySettings, temporarilyPauseProcessing, navigation,
+            startRecordReading, endRecordReading } = this.props
+    const { spineIdRef: prevSpineIdRef } = this.state
 
     if(webView !== this.webView) return // just in case
     
@@ -128,6 +131,16 @@ class BookPage extends React.Component {
             })
           }
         )
+
+        if(spineIdRef !== prevSpineIdRef) {
+          endRecordReading({
+            reportReadingsInfo: this.props,
+          })
+          startRecordReading({
+            bookId,
+            spineIdRef,
+          })
+        }
 
         indicateLoaded()
         this.loaded = true
@@ -255,6 +268,9 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
   updateBookAccount,
   setUserData,
+  startRecordReading,
+  endRecordReading,
+  flushReadingRecords,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookPage)

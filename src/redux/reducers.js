@@ -13,8 +13,11 @@ import idps from "./reducers/idps.js"
 import library from "./reducers/library.js"
 import readerStatus from "./reducers/readerStatus.js"
 import userDataByBookId from "./reducers/userDataByBookId.js"
+import currentReadingRecord from "./reducers/currentReadingRecord.js"
+import readingRecordsByAccountId from "./reducers/readingRecordsByAccountId.js"
 
 import setSort from "./reducers/setSort.js"
+import endRecordReading from "./reducers/endRecordReading.js"
 
 const slicedReducers = combineReducers({
   accounts,
@@ -29,6 +32,8 @@ const slicedReducers = combineReducers({
   library,
   readerStatus,
   userDataByBookId,
+  currentReadingRecord,
+  readingRecordsByAccountId,
 })
 
 const allReducers = reduceReducers(
@@ -36,6 +41,7 @@ const allReducers = reduceReducers(
 
   // the following reducers receive the entire store
   setSort,
+  endRecordReading,
 )
 
 export default allReducers

@@ -1,16 +1,22 @@
 import { Platform, NetInfo, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions } from "./toolbox.js"
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions, isConnected } from "./toolbox.js"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
 // Then, whenever I patch, I filter down to objects which are newer than the last successful patch.
 
 let latestInfo = {}
+const currentlyReportingReadingsByAccountId = {}
 const currentlyPatchingBookAccountCombo = {}
 const currentlyRefreshingBookAccountCombo = {}
 
 const setAndGetLatestInfo = info => {
-  if(info) latestInfo = info
+  if(info) {
+    latestInfo = {
+      ...latestInfo,
+      ...info,
+    }
+  }
   return latestInfo
 }
 
@@ -45,7 +51,7 @@ export const patch = info => setTimeout(() => {
 
   if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount) return
   
-  NetInfo.getConnectionInfo().then(connectionInfo => {
+  isConnected().then(connectionInfo => {
     if(connectionInfo.type === 'none') return
 
     Object.keys(accounts).forEach(accountId => {
@@ -59,7 +65,7 @@ export const patch = info => setTimeout(() => {
 
       // filter down the userData object to only new items
       for(let bookId in userDataByBookId) {
-        if(!books[bookId]) continue;   // should not ever happen
+        if(!books[bookId]) continue   // should not ever happen
         if(!books[bookId].accounts[accountId]) continue
 
         const bookUserData = userDataByBookId[bookId]
@@ -147,7 +153,7 @@ export const patch = info => setTimeout(() => {
                       needToLogInAgain: true
                     },
                   })
-                  // It would be better to have the retry a callback after they login, but this will due for now.
+                  // It would be better to have the retry a callback after they login, but this will do for now.
                   reportResponseError({
                     message: `Patch failed due to no auth`,
                     response,
@@ -190,6 +196,89 @@ export const patch = info => setTimeout(() => {
   })
 })
 
+export const reportReadings = info => setTimeout(() => {
+  // the setTimeout ensures this is async
+
+  const { idps, accounts, books, readingRecordsByAccountId, flushReadingRecords } = setAndGetLatestInfo(info)
+
+  if(!idps || !accounts || !books || !readingRecordsByAccountId || !flushReadingRecords) return
+  if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
+  
+  isConnected().then(connectionInfo => {
+    if(connectionInfo.type === 'none') return
+
+    Object.keys(readingRecordsByAccountId).forEach(accountId => {
+
+      if(currentlyReportingReadingsByAccountId[accountId]) return
+
+      const { idpId, idp, userId } = getAccountInfo({ idps, accountId })
+      const readingRecords = readingRecordsByAccountId[accountId]
+      const path = `https://${idp.domain}/reportReading`
+
+      currentlyReportingReadingsByAccountId[accountId] = true
+
+      console.log(`Sending to ${path}`, readingRecords);
+
+      fetch(path, getReqOptionsWithAdditions({
+        method: 'POST',
+        headers: {
+          "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+          "x-cookie-override": accounts[accountId].cookie,
+          "x-platform": Platform.OS,
+        },
+        body: JSON_to_URLEncoded({ readingRecords }),
+      }))
+        .then(response => {
+
+          currentlyReportingReadingsByAccountId[accountId] = false
+
+          if(response.status < 400) {
+            console.log(`reportReading successful (userId: ${userId}, domain: ${idp.domain}).`)
+
+            // remove these reading records from readingRecordsByAccountId in the state
+            flushReadingRecords({
+              accountId,
+              numberOfRecords: readingRecords.length,
+            })
+
+            // Save it to latestInfo too, for calls to reportReadings from inside this
+            // file prior to getting fresh state from an external call. Take into account
+            // that additional reading records could have been added while this was reporting
+            // to the server.
+            latestInfo.readingRecordsByAccountId[accountId] =
+              latestInfo.readingRecordsByAccountId[accountId].slice(readingRecords.length)
+
+            // run again in case something has changed since the reading records were sent
+            reportReadings()
+
+          } else if(response.status === 403) {
+            // they need to login, but let this get handled by patch
+
+          } else {
+            reportResponseError({
+              message: `reportReading error to ${path}`,
+              response,
+              retry: reportReadings,
+            })
+          }
+
+        })
+        .catch(error => {
+        
+          currentlyReportingReadingsByAccountId[accountId] = false
+
+          reportResponseError({
+            message: `Fetch error when trying to reportReading to ${path}`,
+            error,
+            retry: reportReadings,
+          })
+        
+        })
+
+    })
+  })
+})
+
 export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() => {
   // the setTimeout ensures this is async
 
@@ -205,7 +294,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
-  NetInfo.getConnectionInfo().then(connectionInfo => {
+  isConnected().then(connectionInfo => {
     if(connectionInfo.type === 'none') return
 
     const path = `https://${idp.domain}/users/${userId}/books/${bookId}.json`
@@ -269,7 +358,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
               needToLogInAgain: true
             },
           })
-          // It would be better to have the retry a callback after they login, but this will due for now.
+          // It would be better to have the retry a callback after they login, but this will do for now.
           reportResponseError({
             message: `User data fetch failed due to no auth.`,
             response,
@@ -299,5 +388,8 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
   })
 })
 
+console.log('Setting up event listeners for patch and reportReadings...')
 NetInfo.addEventListener('connectionChange', () => patch())
 AppState.addEventListener('change', () => patch())
+NetInfo.addEventListener('connectionChange', () => reportReadings())
+AppState.addEventListener('change', () => reportReadings())

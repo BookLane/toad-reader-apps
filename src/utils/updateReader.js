@@ -1,6 +1,7 @@
 import { AsyncStorage, NetInfo } from "react-native"
 import { FileSystem } from "expo"
 
+import { isConnected } from "./toolbox.js"
 import { fetchZipAndAssets } from "./zipDownloader.js"
 import i18n from "./i18n.js"
 
@@ -42,7 +43,7 @@ export const updateReader = ({ setReaderStatus }) => {
       console.log(`Download updated reader...`)
       setReaderStatus({ readerStatus: "downloading" })
 
-      const connectionInfo = connectionChangeInfo || await NetInfo.getConnectionInfo()
+      const connectionInfo = connectionChangeInfo || await isConnected()
 
       if(connectionInfo.type === 'none') {
         setReaderStatus({ readerStatus: "waiting for internet" })

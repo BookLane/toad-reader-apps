@@ -8,7 +8,7 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts, isConnected } from "../../utils/toolbox.js"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -44,9 +44,11 @@ class Login extends React.Component {
   onError = err => {
     const { navigation } = this.props
 
-    NetInfo.getConnectionInfo().then(connectionInfo => {
+    isConnected().then(connectionInfo => {
       if(connectionInfo.type === 'none') {
         // They are not connected to the internet
+
+        NetInfo.removeEventListener('connectionChange', reattemptLogin)          
 
         const reattemptLogin = () => {
           NetInfo.removeEventListener('connectionChange', reattemptLogin)          

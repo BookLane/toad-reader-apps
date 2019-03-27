@@ -1,4 +1,4 @@
-import { Platform, Dimensions, StatusBar } from "react-native"
+import { Platform, Dimensions, StatusBar, NetInfo } from "react-native"
 import { Constants, FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 
@@ -377,3 +377,22 @@ export const getFirstBookLinkInfo = book => {
     }
   }
 }
+
+let netInfoIsConnectedFetch
+let isConnectedResolveFunctions = []
+
+export const isConnected = () => new Promise(resolve => {
+  isConnectedResolveFunctions.push(resolve)
+  
+  if(!netInfoIsConnectedFetch) {
+    const doResolves = isConnected => {
+      netInfoIsConnectedFetch = undefined
+      isConnectedResolveFunctions.forEach(func => func(isConnected))
+      isConnectedResolveFunctions = []
+    }
+
+    netInfoIsConnectedFetch = NetInfo.isConnected.fetch()
+      .then(doResolves)
+      .catch(() => doResolves(false))
+  }
+})

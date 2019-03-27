@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking } from "react-native"
+import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } from "react-native"
 import { Constants, KeepAwake } from "expo"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -23,7 +23,8 @@ import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight,
          getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
-         setLatestLocation, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
+         setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
+         endRecordReading, flushReadingRecords } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
@@ -129,6 +130,7 @@ class Book extends React.Component {
       statusBarHeight: StatusBar.currentHeight || (isIPhoneX ? 24 : -10),
       capturingSnapshots: false,
       processingPaused: true,
+      currentAppState: 'active',
     }
 
     this.getFreshUserData()
@@ -159,12 +161,57 @@ class Book extends React.Component {
   }
 
   componentDidMount() {
+    const { navigation, startRecordReading } = this.props
+    const { bookId } = navigation.state.params || {}
+    const { spineIdRef } = this.getLatestLocationObj()
+
     setStatusBarHidden(true)
+    AppState.addEventListener('change', this.handleAppStateChange)
+
+    startRecordReading({
+      bookId,
+      spineIdRef,
+    })
   }
 
   componentWillUnmount = () => {
+    const { endRecordReading } = this.props
+    const { mode } = this.state
+
+    if(mode === 'page') {
+      endRecordReading({
+        reportReadingsInfo: this.props,
+      })
+    }
+
+    AppState.removeEventListener('change', this.handleAppStateChange)
     unmountTimeouts.bind(this)()
     setStatusBarHidden(false)
+  }
+
+  handleAppStateChange = nextAppState => {
+    const { navigation, startRecordReading, endRecordReading } = this.props
+    const { bookId } = navigation.state.params || {}
+    const { currentAppState, mode } = this.state
+    const { spineIdRef } = this.getLatestLocationObj()
+
+    if(mode === 'page') {
+      if(currentAppState === 'active' && nextAppState !== 'active') {
+        endRecordReading({
+          reportReadingsInfo: this.props,
+        })
+  
+      } else if(currentAppState !== 'active' && nextAppState === 'active') {
+        startRecordReading({
+          bookId,
+          spineIdRef,
+        })
+      }
+    }
+
+    this.setState({
+      currentAppState: nextAppState,
+    })
   }
 
   getFreshUserData = () => {
@@ -180,8 +227,16 @@ class Book extends React.Component {
     })
   }
 
+  getLatestLocationObj = () => {
+    const { userDataByBookId, navigation } = this.props
+    const { bookId } = navigation.state.params || {}
+
+    const latest_location = (userDataByBookId[bookId] || {}).latest_location
+    return latestLocationToObj(latest_location || "{}")
+  }
+
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
-    const { setLatestLocation, userDataByBookId, navigation } = this.props
+    const { setLatestLocation, navigation, startRecordReading } = this.props
     const { bookId } = navigation.state.params || {}
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
@@ -195,8 +250,7 @@ class Book extends React.Component {
       snapshotZoomed: true,
       onZoomCompletion: () => {
 
-        const prior_latest_location = (userDataByBookId[bookId] || {}).latest_location
-        const priorLatestLocation = latestLocationToObj(prior_latest_location || "{}")
+        const priorLatestLocation = this.getLatestLocationObj()
 
         if(priorLatestLocation.spineIdRef !== spineIdRef || (cfi && priorLatestLocation.cfi != cfi)) {
           this.setState({
@@ -241,6 +295,11 @@ class Book extends React.Component {
 
       },
     })
+
+    startRecordReading({
+      bookId,
+      spineIdRef,
+    })
   }
 
   updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
@@ -248,6 +307,10 @@ class Book extends React.Component {
   setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
 
   goToHref = ({ href }) => {
+    const { navigation, startRecordReading } = this.props
+    const { bookId } = navigation.state.params || {}
+    const { spineIdRef } = this.getLatestLocationObj()
+
     this.pauseProcessing()
 
     this.setState({
@@ -257,6 +320,16 @@ class Book extends React.Component {
     })
     
     setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
+
+    startRecordReading({
+      bookId,
+      spineIdRef,
+      // Starts a reading record with current spineIdRef, not necessarily that
+      // of the href. If it turns out they are one an the same, this function
+      // call was needed. If the href brings them to a new spine, then this 
+      // reading record will be stopped once that loads and the new one will
+      // be initiated.
+    })
   }
 
   toggleBookView = () => {
@@ -269,6 +342,10 @@ class Book extends React.Component {
   }
 
   backToReading = () => {
+    const { navigation, startRecordReading } = this.props
+    const { bookId } = navigation.state.params || {}
+    const { spineIdRef } = this.getLatestLocationObj()
+
     const { width, height } = Dimensions.get('window')
     const { pageWidth } = getPageSize({ width, height })
 
@@ -292,6 +369,12 @@ class Book extends React.Component {
 
       },
     })
+
+    startRecordReading({
+      bookId,
+      spineIdRef,
+    })
+
   }
 
   toggleShowOptions = () => {
@@ -303,8 +386,14 @@ class Book extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   requestShowPages = () => {
+    const { endRecordReading } = this.props
+
     this.pauseProcessing()
-    
+
+    endRecordReading({
+      reportReadingsInfo: this.props,
+    })
+
     setStatusBarHidden(false)
 
     this.setState({
@@ -340,6 +429,10 @@ class Book extends React.Component {
   }
 
   showDisplaySettings = () => {
+    const { navigation, startRecordReading } = this.props
+    const { bookId } = navigation.state.params || {}
+    const { spineIdRef } = this.getLatestLocationObj()
+
     this.pauseProcessing()
 
     this.setState({
@@ -349,6 +442,11 @@ class Book extends React.Component {
     })
 
     setStatusBarHidden(true)
+
+    startRecordReading({
+      bookId,
+      spineIdRef,
+    })
   }
 
   recommendBook = () => alert('Recommend this book')
@@ -526,6 +624,9 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
   updateBookAccount,
   setUserData,
+  startRecordReading,
+  endRecordReading,
+  flushReadingRecords,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

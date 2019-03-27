@@ -7,7 +7,7 @@ import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, 
 import i18n from "../../utils/i18n.js"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
-import { debounce } from "../../utils/toolbox.js"
+import { debounce, isConnected } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions.js"
@@ -59,8 +59,12 @@ class Drawer extends React.Component {
   }
 
   componentDidMount() {
-    NetInfo.getConnectionInfo().then(this.setOfflineStatus)
+    isConnected().then(this.setOfflineStatus)
     NetInfo.addEventListener('connectionChange', this.setOfflineStatus)
+  }
+
+  componentWillUnmount() {
+    NetInfo.removeEventListener('connectionChange', this.setOfflineStatus)
   }
 
   setOfflineStatus = connectionInfo => {

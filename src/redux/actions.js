@@ -161,3 +161,24 @@ export const setReaderStatus = ({ readerStatus }) => ({
   type: "SET_READER_STATUS",
   readerStatus,
 })
+
+export const startRecordReading = ({ bookId, spineIdRef }) => ({
+  type: "START_RECORD_READING",
+  bookId,
+  spineIdRef,
+})
+
+export const endRecordReading = ({ reportReadingsInfo }) => ({
+  type: "END_RECORD_READING",
+  reportReadingsInfo,
+})
+
+export const flushReadingRecords = ({ accountId, numberOfRecords }) => ({
+  type: "FLUSH_READING_RECORDS",
+  accountId,
+  numberOfRecords,
+})
+
+export const autoUpdateCoreIdps = () => ({
+  type: "AUTO_UPDATE_CORE_IDPS",
+})

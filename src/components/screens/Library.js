@@ -21,7 +21,7 @@ import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../..
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
-         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis } from "../../redux/actions.js"
+         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -53,7 +53,7 @@ class Library extends React.Component {
   }
 
   componentWillMount() {
-    const { books, clearAllSpinePageCfis, reSort } = this.props
+    const { books, clearAllSpinePageCfis, reSort, autoUpdateCoreIdps } = this.props
 
     Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
@@ -61,6 +61,8 @@ class Library extends React.Component {
 
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
     reSort()
+
+    autoUpdateCoreIdps()
   }
 
   componentDidMount() {
@@ -362,6 +364,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
   setReaderStatus,
   clearAllSpinePageCfis,
+  autoUpdateCoreIdps,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

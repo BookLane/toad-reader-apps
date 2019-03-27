@@ -11,13 +11,19 @@ import { Provider } from "react-redux"
 import GlobalNavigator from "./src/navigators/Global.js"
 
 import updateDataStructure from "./src/utils/updateDataStructure.js"
-import { patch } from "./src/utils/syncUserData.js"
+import { patch, reportReadings } from "./src/utils/syncUserData.js"
 
 const patchMiddleware = store => next => action => {
   const result = next(action)
   if(action.patchInfo) {
     patch({
       ...action.patchInfo,
+      ...store.getState(),
+    })
+  }
+  if(action.reportReadingsInfo) {
+    reportReadings({
+      ...action.reportReadingsInfo,
       ...store.getState(),
     })
   }
