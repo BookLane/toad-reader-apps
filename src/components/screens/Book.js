@@ -20,11 +20,11 @@ import PageCaptureManager from "../major/PageCaptureManager"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
 import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts, getFirstBookLinkInfo,
-         getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout } from "../../utils/toolbox.js"
+         getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout, showXapiConsent } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords } from "../../redux/actions.js";
+         endRecordReading, flushReadingRecords, setXapiConsentShown } from "../../redux/actions.js";
 
 const {
   APP_BACKGROUND_COLOR,
@@ -172,6 +172,8 @@ class Book extends React.Component {
       bookId,
       spineIdRef,
     })
+
+    showXapiConsent(this.props)
   }
 
   componentWillUnmount = () => {
@@ -627,6 +629,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   startRecordReading,
   endRecordReading,
   flushReadingRecords,
+  setXapiConsentShown,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

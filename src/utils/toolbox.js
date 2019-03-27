@@ -1,6 +1,8 @@
 import { Platform, Dimensions, StatusBar, NetInfo } from "react-native"
 import { Constants, FileSystem } from "expo"
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
+import { Toast } from "native-base"
+import i18n from "./i18n.js"
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
@@ -396,3 +398,25 @@ export const isConnected = () => new Promise(resolve => {
       .catch(() => doResolves(false))
   }
 })
+
+export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
+
+  let text = i18n("Note: By using this app, you consent to us recording usage data for the purpose of better improving our services.")
+
+  if(Object.values(idps).some(idpInfo => {
+    if(!idpInfo.xapiConsentShown) {
+      text = idpInfo.idpXapiConsentText || text
+      return true
+    }
+  })) {
+
+    Toast.show({
+      text,
+      buttonText: i18n("Okay"),
+      duration: 0,
+      onClose: setXapiConsentShown,
+    })
+
+  }
+
+}

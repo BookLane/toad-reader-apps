@@ -11,7 +11,8 @@
       "domain": "read.biblemesh.com",
       "idpExpire": null,
       "idpXapiOn": 1,
-      "idpXapiConsentText": "This information is used to improve your reading experience."
+      "idpXapiConsentText": "This information is used to improve your reading experience.",
+      "xapiConsentShown": true
     },
     "4": {
       "idpName": "Zondervan",
