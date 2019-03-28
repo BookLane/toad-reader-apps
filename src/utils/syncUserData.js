@@ -215,6 +215,18 @@ export const reportReadings = info => setTimeout(() => {
       const readingRecords = readingRecordsByAccountId[accountId]
       const path = `https://${idp.domain}/reportReading`
 
+      const flush = () => {
+        flushReadingRecords({
+          accountId,
+          numberOfRecords: readingRecords.length,
+        })
+      }
+
+      if(!idp.idpXapiOn) {
+        flush()
+        return
+      }
+
       currentlyReportingReadingsByAccountId[accountId] = true
 
       console.log(`Sending to ${path}`, readingRecords);
@@ -236,10 +248,7 @@ export const reportReadings = info => setTimeout(() => {
             console.log(`reportReading successful (userId: ${userId}, domain: ${idp.domain}).`)
 
             // remove these reading records from readingRecordsByAccountId in the state
-            flushReadingRecords({
-              accountId,
-              numberOfRecords: readingRecords.length,
-            })
+            flush()
 
             // Save it to latestInfo too, for calls to reportReadings from inside this
             // file prior to getting fresh state from an external call. Take into account
