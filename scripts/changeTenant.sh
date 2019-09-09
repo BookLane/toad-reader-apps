@@ -47,7 +47,7 @@ else
 
     # delete current tenant items
     for TENANT_ITEM in "${TENANT_ITEMS[@]}" ; do
-      rm -R ./$TENANT_ITEM || exit 1;
+      rm -Rf ./$TENANT_ITEM || exit 1;
     done
 
     # copy tenant items to the base dir
