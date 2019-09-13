@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, View } from "react-native"
 
 import PagesBookmark from "./PagesBookmark"

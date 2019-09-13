@@ -1,5 +1,6 @@
 import { Platform, Dimensions, StatusBar, NetInfo } from "react-native"
-import { Constants, FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
 import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
 import { Toast } from "native-base"
 import i18n from "./i18n.js"

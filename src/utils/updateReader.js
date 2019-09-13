@@ -1,5 +1,5 @@
 import { AsyncStorage, NetInfo } from "react-native"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 
 import { isConnected } from "./toolbox.js"
 import { fetchZipAndAssets } from "./zipDownloader.js"

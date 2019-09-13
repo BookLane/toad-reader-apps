@@ -1,5 +1,5 @@
 import React from "react"
-import { StackNavigator } from "react-navigation"
+import { createStackNavigator } from "react-navigation"
 import { StyleSheet } from "react-native"
 
 import HomeNavigator from "./Home.js"
@@ -16,7 +16,7 @@ const noHeader = {
   }),
 }
 
-const GlobalNavigator = StackNavigator(
+const GlobalNavigator = createStackNavigator(
   {
     Home: { screen: HomeNavigator, ...noHeader },
     Chooser: { screen: Chooser, ...noHeader },

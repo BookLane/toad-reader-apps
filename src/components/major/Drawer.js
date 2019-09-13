@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, NetInfo, Linking, Dimensions, StatusBar, TouchableOpacity } from "react-native"

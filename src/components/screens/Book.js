@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } from "react-native"
-import { Constants, KeepAwake } from "expo"
+import KeepAwake from 'expo-keep-awake'
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Content } from "native-base"

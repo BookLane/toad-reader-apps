@@ -1,7 +1,7 @@
 const initialState = []
 
 export default function(state = initialState, action) {
-  const newState = [...state]
+  const newState = Object.values(state)
   const { bookId } = action
 
   switch (action.type) {

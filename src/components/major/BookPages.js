@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { StyleSheet, Dimensions, View, FlatList, Animated } from "react-native"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"

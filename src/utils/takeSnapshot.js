@@ -1,4 +1,5 @@
-import { FileSystem, takeSnapshotAsync } from "expo"
+import { takeSnapshotAsync } from "expo"
+import * as FileSystem from 'expo-file-system'
 import { Platform } from "react-native"
 
 // NOTE: I have tried to speed this up in the following ways but they were not faster.

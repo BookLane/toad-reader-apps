@@ -1,4 +1,5 @@
-import { Constants, FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
 import i18n from "./i18n.js"
 import { AsyncStorage } from "react-native"
 import { ActionSheet, Toast } from "native-base"

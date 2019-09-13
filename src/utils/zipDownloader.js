@@ -1,5 +1,4 @@
-import { Platform } from "react-native"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 import JSZip from "jszip"
 import { fetchWithProgress, encodeBase64 } from './toolbox.js'
 import i18n from "./i18n.js"

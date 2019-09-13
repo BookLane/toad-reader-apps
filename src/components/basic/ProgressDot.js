@@ -1,8 +1,7 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
-import { View } from "native-base"
-import i18n from "../../utils/i18n.js"
+// import i18n from "../../utils/i18n.js"
 
 import ProgressDotLabel from "./ProgressDotLabel"
 

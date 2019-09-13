@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
 
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'

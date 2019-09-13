@@ -1,5 +1,5 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { View, Text } from "native-base"
 import { StyleSheet } from "react-native"
 

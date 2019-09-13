@@ -2,7 +2,7 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, WebView, Dimensions, Platform } from "react-native"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 
 import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
 import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"

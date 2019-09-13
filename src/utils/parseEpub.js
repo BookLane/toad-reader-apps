@@ -1,6 +1,6 @@
 // See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
 
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 import { parseString } from "xml2js"
 
 import { getBooksDir } from "./toolbox.js"

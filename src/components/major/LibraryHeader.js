@@ -15,7 +15,7 @@ class LibraryHeader extends React.Component {
     const { navigation, hideOptions } = this.props
 
     hideOptions()
-    debounce(navigation.navigate, "DrawerOpen")
+    debounce(navigation.openDrawer)
   }
 
   toggleView = () => {

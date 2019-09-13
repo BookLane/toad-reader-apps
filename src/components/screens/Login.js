@@ -121,7 +121,8 @@ class Login extends React.Component {
     const { navigation, addAccount } = this.props
     const { idpId, hasJSUpdate } = navigation.state.params || {}
     
-    const data = JSON.parse(event.nativeEvent.data)
+    // I have no idea why (after updating expo and other dependances) I need to double decode this.
+    const data = JSON.parse(decodeURIComponent(decodeURIComponent(event.nativeEvent.data)))
 
     if(data.identifier === 'sendCookieAndContent') {
 

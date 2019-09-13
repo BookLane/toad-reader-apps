@@ -1,6 +1,6 @@
 import React from "react"
-import { Constants } from "expo"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Text } from "native-base"
