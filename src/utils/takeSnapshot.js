@@ -1,4 +1,4 @@
-import { takeSnapshotAsync } from "expo"
+import { captureRef } from 'react-native-view-shot'
 import * as FileSystem from 'expo-file-system'
 import { Platform } from "react-native"
 
@@ -27,7 +27,7 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
   }
 
   const getSnapshot = async () => (
-    await takeSnapshotAsync(view, {
+    await captureRef(view, {
       format: "jpg",
       quality,
       result: "base64",
@@ -64,7 +64,7 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
   } catch(e) {}
   
   await FileSystem.writeAsStringAsync(uri, snapshotBase64, {
-    encoding: FileSystem.EncodingTypes.Base64,
+    encoding: FileSystem.EncodingType.Base64,
   })
 
   return true

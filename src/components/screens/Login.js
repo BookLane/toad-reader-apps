@@ -1,6 +1,7 @@
 import React from "react"
 import { Updates } from "expo"
-import { StyleSheet, WebView, NetInfo } from "react-native"
+import { StyleSheet, NetInfo } from "react-native"
+import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, View } from "native-base"
@@ -95,13 +96,13 @@ class Login extends React.Component {
       this.setState({ leaving: true })
 
       this.webView.injectJavaScript(`
-        window.postMessage(JSON.stringify({
+        window.ReactNativeWebView.postMessage(JSON.stringify({
             identifier: "sendCookieAndContent",
             payload: {
               cookie: document.cookie,
               content: document.body.innerText,
             },
-        }), "*");
+        }));
         document.cookie = "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       `)
       // we clear the cookie because we want auth status to be completely controlled by the app.
@@ -121,8 +122,7 @@ class Login extends React.Component {
     const { navigation, addAccount } = this.props
     const { idpId, hasJSUpdate } = navigation.state.params || {}
     
-    // I have no idea why (after updating expo and other dependances) I need to double decode this.
-    const data = JSON.parse(decodeURIComponent(decodeURIComponent(event.nativeEvent.data)))
+    const data = JSON.parse(event.nativeEvent.data)
 
     if(data.identifier === 'sendCookieAndContent') {
 
@@ -194,7 +194,7 @@ class Login extends React.Component {
           onError={this.onError}
           onNavigationStateChange={this.onNavigationStateChange}
           injectedJavaScript={`
-            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"))
+            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
           `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
           ref={this.setWebViewEl}
           onMessage={this.onMessageEvent}

@@ -2,7 +2,8 @@ import React from "react"
 import { Updates, ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import { Platform, StyleSheet, WebView } from "react-native"
+import { Platform, StyleSheet } from "react-native"
+import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Container, Text, View } from "native-base"

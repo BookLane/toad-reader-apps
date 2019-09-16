@@ -176,7 +176,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                 const base64 = encodeBase64(binarystring)
 
                 FileSystem.writeAsStringAsync(uri, base64, {
-                  encoding: FileSystem.EncodingTypes.Base64,
+                  encoding: FileSystem.EncodingType.Base64,
                 })
                   .then(doResolve)
                   .catch(reject)

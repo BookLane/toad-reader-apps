@@ -136,12 +136,12 @@ class PageCapture extends React.Component {
               document.documentElement.style.transform = "translate(${shift}px)";
               document.documentElement.getBoundingClientRect();  // ensures paint is done before postMessage call
               requestAnimationFrame(() => {
-                window.postMessage(JSON.stringify({
+                window.ReactNativeWebView.postMessage(JSON.stringify({
                   identifier: "docElShifted",
                   payload: {
                     spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
                   },
-                }), "*");
+                }));
               })
             `)
 

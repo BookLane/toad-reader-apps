@@ -1,6 +1,5 @@
 import React from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } from "react-native"
-import KeepAwake from 'expo-keep-awake'
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -17,6 +16,7 @@ import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 import FullScreenSpin from '../basic/FullScreenSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
+import CustomKeepAwake from "../basic/CustomKeepAwake"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
@@ -540,7 +540,7 @@ class Book extends React.Component {
           showDisplaySettings={this.showDisplaySettings}
           width={width}  // By sending this as a prop, I force a rerender
         />
-        {mode === 'page' && <KeepAwake />}
+        {mode === 'page' && <CustomKeepAwake />}
         <View style={styles.pages}>
           <BookPages
             bookId={bookId}

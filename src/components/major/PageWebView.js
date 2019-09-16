@@ -1,12 +1,12 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { StyleSheet, View, WebView, Dimensions, Platform } from "react-native"
+import { StyleSheet, View, Dimensions, Platform } from "react-native"
+import { WebView } from 'react-native-webview'
 import * as FileSystem from 'expo-file-system'
 
-import { postMessage, patchPostMessageJsCode } from "../../utils/postMessage.js"
+import { postMessage } from "../../utils/postMessage.js"
 import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"
-import { binaryExtensionToMimeTypeMap } from "../../utils/zipDownloader.js"
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -179,7 +179,6 @@ class PageWebView extends React.Component {
             ]}
             injectedJavaScript={`
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
-              ${patchPostMessageJsCode}
             `}
             ref={this.setWebViewEl}
             allowUniversalAccessFromFileURLs={true}

@@ -3,11 +3,11 @@ import * as FileSystem from 'expo-file-system'
 
 import { isConnected } from "./toolbox.js"
 import { fetchZipAndAssets } from "./zipDownloader.js"
-import i18n from "./i18n.js"
+// import i18n from "./i18n.js"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const READER_VERSION_TIMESTAMP = "1555566961"
+const READER_VERSION_TIMESTAMP = "1568637246"
 
 const zipUrl = `https://s3.amazonaws.com/cdn.toadreader.com/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
 const localBaseUri = `${FileSystem.documentDirectory}reader/`
