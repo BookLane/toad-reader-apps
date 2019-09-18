@@ -20,7 +20,7 @@ import CustomKeepAwake from "../basic/CustomKeepAwake"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
 import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts, getFirstBookLinkInfo,
-         getPageSize, debounce, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout, showXapiConsent } from "../../utils/toolbox.js"
+         getPageSize, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout, showXapiConsent } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,

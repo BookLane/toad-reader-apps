@@ -33,7 +33,7 @@ class LibraryList extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    this.navigationWillFocusListener.remove()
+    // this.navigationWillFocusListener.remove()
   }
 
   scrollToTopIfSortIsRecent = ({ action }) => {

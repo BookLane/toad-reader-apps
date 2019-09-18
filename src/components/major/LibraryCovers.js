@@ -64,7 +64,7 @@ class LibraryCovers extends React.Component {
   }
 
   componentWillUnmount() {
-    this.navigationWillFocusListener.remove()
+    // this.navigationWillFocusListener.remove()
   }
 
   scrollToTopIfSortIsRecent = ({ action }) => {

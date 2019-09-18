@@ -92,9 +92,9 @@ class Library extends React.Component {
   }
 
   componentWillUnmount() {
-    this.navigationWillBlurListener.remove()
-    this.navigationDidFocusListener.remove()
-    this.navigationWillFocusListener.remove()
+    // this.navigationWillBlurListener.remove()
+    // this.navigationDidFocusListener.remove()
+    // this.navigationWillFocusListener.remove()
 
     unmountTimeouts.bind(this)()
   }

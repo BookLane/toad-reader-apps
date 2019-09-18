@@ -207,15 +207,15 @@ export const JSON_to_URLEncoded = (element, key, list) => {
   return list.join('&')
 }
 
-// The navigate function prevents a double tap from causing double navigation
-let lastDebounce
-export const debounce = (func, ...params) => {
-  if(lastDebounce !== JSON.stringify(params)) {
-    func(...params)
-    lastDebounce = JSON.stringify(params)
-    setTimeout(() => lastDebounce = undefined, 1500)
-  }
-}
+// This was used with react-navigation where a double tap caused double navigation. I'm not sure if it is still needed.
+// let lastDebounce
+// export const debounce = (func, ...params) => {
+//   if(lastDebounce !== JSON.stringify(params)) {
+//     func(...params)
+//     lastDebounce = JSON.stringify(params)
+//     setTimeout(() => lastDebounce = undefined, 1500)
+//   }
+// }
 
 export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback, cookie, timeout }) => (
   new Promise((resolve, reject) => {
