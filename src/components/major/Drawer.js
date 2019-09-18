@@ -2,12 +2,14 @@ import React from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+// import { Route, Link } from "../routers/react-router"
+import { withRouter } from "react-router"
 import { Image, StyleSheet, NetInfo, Linking, Dimensions, StatusBar, TouchableOpacity } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
-import { debounce, isConnected } from "../../utils/toolbox.js"
+import { isConnected } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions.js"
@@ -60,11 +62,11 @@ class Drawer extends React.Component {
 
   componentDidMount() {
     isConnected().then(this.setOfflineStatus)
-    NetInfo.addEventListener('connectionChange', this.setOfflineStatus)
+    // NetInfo.addEventListener('connectionChange', this.setOfflineStatus)
   }
 
   componentWillUnmount() {
-    NetInfo.removeEventListener('connectionChange', this.setOfflineStatus)
+    // NetInfo.removeEventListener('connectionChange', this.setOfflineStatus)
   }
 
   setOfflineStatus = connectionInfo => {
@@ -72,9 +74,9 @@ class Drawer extends React.Component {
   }
 
   goToLibrary = () => {
-    const { navigation } = this.props
+    const { history } = this.props
 
-    debounce(navigation.navigate, "Library")
+    history.goBack()
   }
 
   showAll = () => {
@@ -91,14 +93,8 @@ class Drawer extends React.Component {
     this.goToLibrary()
   }
 
-  goToAccounts = () => {
-    const { navigation } = this.props
-
-    debounce(navigation.navigate, "Accounts")
-  }
-
   confirmLogOut = () => {
-    const { accounts, idps, navigation } = this.props
+    const { accounts, idps, history } = this.props
 
     const accountId = Object.keys(accounts)[0] || ""
     const idpId = accountId.split(':')[0]
@@ -106,7 +102,7 @@ class Drawer extends React.Component {
     if(!idpId || !idps[idpId]) return
 
     confirmRemoveAccountEPubs(this.props, () => {
-      debounce(navigation.navigate, "Library", {
+      history.push("/", {
         logOutUrl: `https://${idps[idpId].domain}/logout`,
         logOutAccountId: accountId,
       })
@@ -114,7 +110,7 @@ class Drawer extends React.Component {
   }
 
   reLogin = async () => {
-    const { accounts, idps, navigation } = this.props
+    const { accounts, idps, history } = this.props
 
     const accountId = Object.keys(accounts)[0] || ""
     const idpId = accountId.split(':')[0]
@@ -128,7 +124,7 @@ class Drawer extends React.Component {
     // listing. In other words, I basically need to call the next line and run the whole
     // login process again, but hidden.
 
-    debounce(navigation.navigate, "Library", {
+    history.push("/", {
       logOutUrl: `https://${idps[idpId].domain}/logout/callback?noredirect=1`,
       refreshLibraryAccountId: accountId,
     })
@@ -139,16 +135,18 @@ class Drawer extends React.Component {
   }
 
   goToToadReaderMarketingSite = () => {
+    const { history } = this.props
+    
     Linking.openURL("https://toadreader.com").catch(err => {
       console.log('ERROR: Request to open URL failed.', err)
-      navigation.navigate("ErrorMessage", {
+      history.push("/error", {
         message: i18n("Your device is not allowing us to open this link."),
       })
     })
   }
 
   render() {
-    const { accounts, idps, books, navigation } = this.props
+    const { accounts, idps } = this.props
     const { offline } = this.state
 
     const accountIdpIds = []
@@ -215,17 +213,20 @@ class Drawer extends React.Component {
               <Separator bordered
                 style={styles.separator}
               />
-              {/* <ListItem icon
-                button
-                onPress={this.goToAccounts}
-              >
-                <Left>
-                  <Icon name="person" />
-                </Left>
-                <Body>
-                  <Text>{i18n("Accounts")}</Text> 
-                </Body>
-              </ListItem> */}
+              
+              {/* <Link to={`${match.url}/accounts`}>
+                <ListItem icon
+                  button
+                >
+                  <Left>
+                    <Icon name="person" />
+                  </Left>
+                  <Body>
+                    <Text>{i18n("Accounts")}</Text> 
+                  </Body>
+                </ListItem>
+              </Link> */}
+
               <ListItem icon
                 button
                 onPress={offline ? null : this.reLogin}
@@ -285,7 +286,7 @@ class Drawer extends React.Component {
 const mapStateToProps = (state) => ({
   accounts: state.accounts,
   idps: state.idps,
-  books: state.books,
+  // books: state.books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -296,4 +297,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   changeLibraryScope,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Drawer)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Drawer))

@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
 class LibraryList extends React.PureComponent {
 
   componentDidMount() {
-    const { navigation } = this.props
+    // const { navigation } = this.props
 
-    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+    // this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -64,13 +64,12 @@ class LibraryList extends React.PureComponent {
   }
 
   renderItem = ({ item: { key: bookId }, index }) => {
-    const { navigation, books } = this.props
+    const { books } = this.props
   
     return (
       <LibraryBook
         key={bookId}
         bookId={bookId}
-        navigation={navigation}
       >
         <BookInfo
           bookId={bookId}

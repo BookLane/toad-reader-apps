@@ -4,6 +4,7 @@ import { StyleSheet, NetInfo } from "react-native"
 import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { withRouter } from "react-router"
 import { Container, View } from "native-base"
 import i18n from "../../utils/i18n.js"
 
@@ -43,7 +44,7 @@ class Login extends React.Component {
   componentWillUnmount = unmountTimeouts
 
   onError = err => {
-    const { navigation } = this.props
+    const { history } = this.props
 
     isConnected().then(connectionInfo => {
       if(connectionInfo.type === 'none') {
@@ -66,7 +67,7 @@ class Login extends React.Component {
       } else {
         // There was an unknown error
 
-        navigation.navigate("ErrorMessage", {
+        history.push("/error", {
           message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
         })
 
@@ -81,8 +82,8 @@ class Login extends React.Component {
   }
 
   onNavigationStateChange = async ({ url, loading }) => {
-    const { navigation, idps } = this.props
-    const { idpId } = navigation.state.params || {}
+    const { location, idps } = this.props
+    const { idpId } = location.state || {}
 
     if(loading || !this.initialStateChangeAlreadyHappened) {
       this.initialStateChangeAlreadyHappened = true
@@ -119,8 +120,8 @@ class Login extends React.Component {
   }
 
   onMessageEvent = async event => {
-    const { navigation, addAccount } = this.props
-    const { idpId, hasJSUpdate } = navigation.state.params || {}
+    const { location, history, addAccount } = this.props
+    const { idpId, hasJSUpdate } = location.state || {}
     
     const data = JSON.parse(event.nativeEvent.data)
 
@@ -132,7 +133,7 @@ class Login extends React.Component {
       } catch(e) {}
 
       if(!userData || !userData.userInfo) {
-        navigation.navigate("ErrorMessage", {
+        history.push("/error", {
           critical: true,
         })
         return
@@ -154,7 +155,7 @@ class Login extends React.Component {
       if(hasJSUpdate()) {
         Updates.reloadFromCache()
       } else {
-        navigation.goBack()
+        history.goBack()
       }
 
     }
@@ -163,8 +164,8 @@ class Login extends React.Component {
   setWebViewEl = webViewEl => this.webView = webViewEl
 
   render() {
-    const { navigation, idps } = this.props
-    const { idpId } = navigation.state.params || {}
+    const { location, idps } = this.props
+    const { idpId } = location.state || {}
     const { loading, leaving, offline, error } = this.state
 
     const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
@@ -218,4 +219,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addAccount,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Login)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Login))

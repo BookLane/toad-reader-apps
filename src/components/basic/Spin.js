@@ -3,7 +3,7 @@ import Constants from 'expo-constants'
 import { StyleSheet } from "react-native"
 import { Spinner, View } from "native-base"
 
-import { Circle } from 'react-native-progress'
+// import { Circle } from 'react-native-progress'
 
 const {
   SPINNER_COLOR,
@@ -25,7 +25,7 @@ class Spin extends React.Component {
     if(percentage) {
       return (
         <View style={styles.container}>
-          <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} animated={false} />
+          {/* <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} animated={false} /> */}
         </View>
       )
     }

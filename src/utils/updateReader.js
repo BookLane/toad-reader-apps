@@ -16,6 +16,8 @@ export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   
   console.log(`Check reader...`)
 
+  return false
+
   const versionTimestampOfCurrentReader = await AsyncStorage.getItem('readerVersionTimestamp')
   const readerIndexInfo = await FileSystem.getInfoAsync(`${localBaseUri}/index.html`)
 
@@ -36,7 +38,7 @@ export const updateReader = ({ setReaderStatus }) => {
   setReaderStatus({ readerStatus: "downloading" })
   
   const attemptToUpdateReader = async connectionChangeInfo => {
-    NetInfo.removeEventListener('connectionChange', attemptToUpdateReader)
+    // NetInfo.removeEventListener('connectionChange', attemptToUpdateReader)
 
     if(await readerNeedsUpdate({ setReaderStatus })) {
 
@@ -48,7 +50,7 @@ export const updateReader = ({ setReaderStatus }) => {
       if(connectionInfo.type === 'none') {
         setReaderStatus({ readerStatus: "waiting for internet" })
 
-        NetInfo.addEventListener('connectionChange', attemptToUpdateReader)
+        // NetInfo.addEventListener('connectionChange', attemptToUpdateReader)
 
         return
       }

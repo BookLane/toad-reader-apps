@@ -1,6 +1,7 @@
 import React from "react"
 import { View, Text, Icon, Toast } from "native-base"
 import { StyleSheet, TouchableOpacity, Linking } from "react-native"
+import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
@@ -25,7 +26,7 @@ class BookPageMessage extends React.Component {
   }
 
   showMoreInfo = () =>  {
-    const { text, moreInfoText, externalHref } = this.props
+    const { moreInfoText, externalHref, history } = this.props
 
     if(moreInfoText) {
       Toast.show({
@@ -37,7 +38,7 @@ class BookPageMessage extends React.Component {
     } else if(externalHref) {
       Linking.openURL(externalHref).catch(err => {
         console.log('ERROR: Request to open URL failed.', err)
-        navigation.navigate("ErrorMessage", {
+        history.push("/error", {
           message: i18n("Your device is not allowing us to open this link."),
         })
       })
@@ -65,4 +66,4 @@ class BookPageMessage extends React.Component {
   }
 }
 
-export default BookPageMessage
+export default withRouter(BookPageMessage)

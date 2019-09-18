@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system'
 
 export default async (remoteUri, localUri, { skipIfExists }={}) => {
+  return true
     
   if(skipIfExists) {
     const localUriInfo = await FileSystem.getInfoAsync(localUri)

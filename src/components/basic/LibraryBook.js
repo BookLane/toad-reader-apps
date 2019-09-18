@@ -2,8 +2,9 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity } from "react-native"
+import { withRouter } from "react-router"
 
-import { debounce, getBooksDir } from "../../utils/toolbox.js"
+// import { debounce, getBooksDir } from "../../utils/toolbox.js"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import i18n from "../../utils/i18n.js"
 
@@ -17,7 +18,7 @@ class LibraryBook extends React.Component {
   }
 
   onPress = async () => {
-    const { bookId, navigation, setDownloadStatus, pushToBookDownloadQueue, idps, accounts, books, readerStatus } = this.props
+    const { bookId, setDownloadStatus, pushToBookDownloadQueue, books, readerStatus, history } = this.props
     const downloadStatus = this.getDownloadStatus(bookId)
     const accountId = Object.keys(books[bookId].accounts)[0]
 
@@ -25,21 +26,21 @@ class LibraryBook extends React.Component {
       switch(readerStatus) {
         case 'ready':
         case 'downloading':
-          debounce(navigation.navigate, "Book", { bookId })
+          history.push(`/book/${bookId}`)
           break;
         case 'waiting for internet':
-          debounce(navigation.navigate, "ErrorMessage", {
+          history.push("/error", {
             title: i18n("Connection error"),
             message: i18n("The app has been updated and requires an updated reader component to be downloaded. Thus, you must connect to the internet before you will be able to read."),
           })
           break;
         case 'error':
-          debounce(navigation.navigate, "ErrorMessage", {
+          history.push("/error", {
             message: i18n("There has been an update to the reader component that is not downloading properly. Please contact us if this issue persists."),
           })
           break;
         default:
-          debounce(navigation.navigate, "ErrorMessage")
+          history.push("/error")
       }
       
     } else if(downloadStatus == 0) {
@@ -85,4 +86,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   clearUserDataExceptProgress,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(LibraryBook)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(LibraryBook))

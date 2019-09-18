@@ -12,7 +12,6 @@ import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import Options from "../major/Options"
-import DisplaySettings from "../major/DisplaySettings"
 import BackFunction from '../basic/BackFunction'
 import FullScreenSpin from '../basic/FullScreenSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -114,8 +113,8 @@ class Book extends React.Component {
   constructor(props) {
     super(props)
 
-    const { navigation, books } = props
-    const { bookId } = navigation.state.params || {}
+    const { location, books } = props
+    const { bookId } = location.state || {}
     const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
     this.state = {
@@ -162,8 +161,8 @@ class Book extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation, startRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, startRecordReading } = this.props
+    const { bookId } = location.state || {}
     const { spineIdRef } = this.getLatestLocationObj()
 
     setStatusBarHidden(true)
@@ -193,8 +192,8 @@ class Book extends React.Component {
   }
 
   handleAppStateChange = nextAppState => {
-    const { navigation, startRecordReading, endRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, startRecordReading, endRecordReading } = this.props
+    const { bookId } = location.state || {}
     const { currentAppState, mode } = this.state
     const { spineIdRef } = this.getLatestLocationObj()
 
@@ -218,8 +217,8 @@ class Book extends React.Component {
   }
 
   getFreshUserData = () => {
-    const { navigation, books } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, books } = this.props
+    const { bookId } = location.state || {}
 
     Object.keys(books[bookId].accounts).forEach(accountId => {
       refreshUserData({
@@ -231,16 +230,16 @@ class Book extends React.Component {
   }
 
   getLatestLocationObj = () => {
-    const { userDataByBookId, navigation } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { userDataByBookId, location } = this.props
+    const { bookId } = location.state || {}
 
     const latest_location = (userDataByBookId[bookId] || {}).latest_location
     return latestLocationToObj(latest_location || "{}")
   }
 
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
-    const { setLatestLocation, navigation, startRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { setLatestLocation, history, startRecordReading } = this.props
+    const { bookId } = location.state || {}
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
@@ -271,7 +270,7 @@ class Book extends React.Component {
           const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
           setUpTimeout(() => {
             if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
-              navigation.navigate("ErrorMessage", {
+              history.push("/error", {
                 message: i18n("Sorry! There was an error flipping to that page."),
               })
               this.indicateLoaded()
@@ -310,8 +309,8 @@ class Book extends React.Component {
   setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
 
   goToHref = ({ href }) => {
-    const { navigation, startRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, startRecordReading } = this.props
+    const { bookId } = location.state || {}
     const { spineIdRef } = this.getLatestLocationObj()
 
     this.pauseProcessing()
@@ -345,8 +344,8 @@ class Book extends React.Component {
   }
 
   backToReading = () => {
-    const { navigation, startRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, startRecordReading } = this.props
+    const { bookId } = location.state || {}
     const { spineIdRef } = this.getLatestLocationObj()
 
     const { width, height } = Dimensions.get('window')
@@ -432,8 +431,8 @@ class Book extends React.Component {
   }
 
   showDisplaySettings = () => {
-    const { navigation, startRecordReading } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, startRecordReading } = this.props
+    const { bookId } = location.state || {}
     const { spineIdRef } = this.getLatestLocationObj()
 
     this.pauseProcessing()
@@ -455,20 +454,20 @@ class Book extends React.Component {
   recommendBook = () => alert('Recommend this book')
 
   goToHighlights = () => {
-    const { navigation } = this.props
+    const { history, match } = this.props
 
-    debounce(navigation.navigate, "Highlights")
+    history.push(`${match.url}/highlights`)
   }
 
   removeFromDevice = () => {
-    const { navigation, books } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, books } = this.props
+    const { bookId } = location.state || {}
 
     confirmRemoveEPub({
       ...this.props,
       bookId,
       done: () => {
-        navigation.goBack(navigation.state.params.pageKey)
+        history.go(-2)
       }
     })
   }
@@ -476,14 +475,14 @@ class Book extends React.Component {
   setFlatListEl = ref => this.flatListEl = ref
 
   goToBookLink = () => {
-    const { navigation, books } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, books } = this.props
+    const { bookId } = location.state || {}
 
     const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
     Linking.openURL(bookLinkInfo.href).catch(err => {
       console.log('ERROR: Request to open URL failed.', err)
-      navigation.navigate("ErrorMessage", {
+      history.push("/error", {
         message: i18n("Your device is not allowing us to open this link."),
       })
     })
@@ -504,8 +503,8 @@ class Book extends React.Component {
 
   render() {
 
-    const { navigation, books, userDataByBookId, displaySettings, readerStatus } = this.props
-    const { bookId } = navigation.state.params || {}
+    const { location, books, userDataByBookId, displaySettings, readerStatus } = this.props
+    const { bookId } = location.state || {}
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
       snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, processingPaused } = this.state
 
@@ -533,7 +532,6 @@ class Book extends React.Component {
         {mode !== 'page' && <BackFunction func={this.backToReading} />}
         <BookHeader
           title={title}
-          navigation={navigation}
           mode={mode}
           toggleBookView={this.toggleBookView}
           toggleShowOptions={this.toggleShowOptions}
@@ -568,7 +566,6 @@ class Book extends React.Component {
             hrefToGoTo={hrefToGoTo}
             capturingSnapshots={capturingSnapshots}
             temporarilyPauseProcessing={this.temporarilyPauseProcessing}
-            navigation={navigation}
           />
         </View>
         <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>

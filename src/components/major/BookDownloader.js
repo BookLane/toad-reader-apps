@@ -1,6 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
 import { getBooksDir, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
@@ -41,7 +42,7 @@ class BookDownloader extends React.Component {
 
   downloadABook = async (nextProps, nextState) => {
     const { downloadPaused, idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
-            setDownloadStatus, setTocAndSpines, updateAccount, navigation } = nextProps || this.props
+            setDownloadStatus, setTocAndSpines, updateAccount, history } = nextProps || this.props
     const { currentDownloadBookId } = nextState || this.state
 
     if(currentDownloadBookId) return
@@ -100,7 +101,7 @@ class BookDownloader extends React.Component {
     if(this.downloadWasCanceled(bookId)) return  // check this after each await
     if(zipFetchInfo.errorMessage) {
       console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
-      navigation.navigate("ErrorMessage", {
+      history.push("/error", {
         title: zipFetchInfo.errorTitle,
         message: zipFetchInfo.errorMessage,
       })
@@ -121,7 +122,7 @@ class BookDownloader extends React.Component {
     const { toc, spines, success } = await parseEpub({ bookId })
     if(this.downloadWasCanceled(bookId)) return
     if(!success) {
-      navigation.navigate("ErrorMessage", {
+      history.push("/error", {
         message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
       })
       markDownloadComplete(0)
@@ -154,4 +155,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookDownloader)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookDownloader))

@@ -45,9 +45,9 @@ class LibraryCovers extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    // const { navigation } = this.props
 
-    this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+    // this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -155,7 +155,7 @@ class LibraryCovers extends React.Component {
   }
 
   renderItem = ({ item, index }) => {
-    const { navigation, books } = this.props
+    const { books } = this.props
     const { coverWidth, coverHeight, coversPerRow } = this.state
 
     const { bookIds, highlightedBookId, row1BookIds, row2BookIds } = item
@@ -164,7 +164,6 @@ class LibraryCovers extends React.Component {
       <LibraryBook
         key={bookId}
         bookId={bookId}
-        navigation={navigation}
       >
         <Cover
           bookId={bookId}

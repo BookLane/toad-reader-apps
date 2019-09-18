@@ -1,7 +1,6 @@
 import React from "react"
 import { StyleSheet, Platform } from "react-native"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
+import { withRouter } from "react-router"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
 import AppHeader from "../basic/AppHeader"
 
@@ -34,13 +33,13 @@ const styles = StyleSheet.create({
 class BookHeader extends React.PureComponent {
 
   onBackPress = () => {
-    const { navigation } = this.props
+    const { history } = this.props
     
-    navigation.goBack(navigation.state.params.pageKey)
+    history.go(-2)
   }
 
   render() {
-    let { title, subtitle, navigation, mode, showDisplaySettings,
+    let { title, subtitle, mode, showDisplaySettings,
             toggleBookView, toggleShowOptions, width } = this.props
 
     width -= (leftIconsWidth + rightIconsWidth)
@@ -100,4 +99,4 @@ class BookHeader extends React.PureComponent {
   }
 }
 
-export default BookHeader
+export default withRouter(BookHeader)

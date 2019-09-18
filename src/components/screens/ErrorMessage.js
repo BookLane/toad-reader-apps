@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
 class ErrorMessage extends React.Component {
 
   componentDidMount() {
-    const { navigation } = this.props
-    const { critical } = navigation.state.params || {}
+    const { location } = this.props
+    const { critical } = location.state || {}
 
     if(critical) {
       setUpTimeout(Updates.reload, 5000, this)
@@ -31,12 +31,12 @@ class ErrorMessage extends React.Component {
   componentWillUnmount = unmountTimeouts
 
   render() {
-    const { navigation } = this.props
-    const { message, critical } = navigation.state.params || {}
+    const { location } = this.props
+    const { message, critical } = location.state || {}
 
     return (
       <Container>
-        <ErrorMessageHeader navigation={navigation} />
+        <ErrorMessageHeader />
         <Content>
           <Body style={styles.body}>
             <View style={styles.view}>

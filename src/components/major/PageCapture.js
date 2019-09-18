@@ -2,6 +2,7 @@ import React from "react"
 import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { withRouter } from "react-router"
 
 import PageWebView from "./PageWebView"
 
@@ -77,7 +78,7 @@ class PageCapture extends React.Component {
   getProcessingPaused = () => this.props.processingPaused
 
   onMessageEvent = async (webView, data) => {
-    const { bookId, spineIdRef, width, height, displaySettings,
+    const { bookId, spineIdRef, width, height, displaySettings, history,
       reportInfoOrCapture, reportFinished, addSpinePageCfis } = this.props
 
     if(webView !== this.webView || this.unmounted) return // just in case
@@ -91,7 +92,7 @@ class PageCapture extends React.Component {
         reportInfoOrCapture(this.props)
 
         if(data.payload.startIndex !== this.pageCfis.length) {
-          navigation.navigate("ErrorMessage", {
+          history.push("/error", {
             message: i18n("Invalid book."),
           })
           reportFinished(this.props)
@@ -246,4 +247,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addSpinePageCfis,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(PageCapture)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(PageCapture))

@@ -1,8 +1,8 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Linking, Platform } from "react-native"
-import { StyleSheet } from "react-native"
+import { View, Linking, Platform, StyleSheet } from "react-native"
+import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
 import PageWebView from "./PageWebView"
@@ -97,7 +97,7 @@ class BookPage extends React.Component {
 
   onMessageEvent = async (webView, data) => {
     const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books,
-            displaySettings, temporarilyPauseProcessing, navigation,
+            displaySettings, temporarilyPauseProcessing, history,
             startRecordReading, endRecordReading } = this.props
     const { spineIdRef: prevSpineIdRef } = this.state
 
@@ -153,7 +153,7 @@ class BookPage extends React.Component {
       case 'openURL':
         Linking.openURL(data.payload.url).catch(err => {
           console.log('ERROR: Request to open URL failed.', err)
-          navigation.navigate("ErrorMessage", {
+          history.push("/error", {
             message: i18n("Your device is not allowing us to open this link."),
           })
         })
@@ -273,4 +273,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   flushReadingRecords,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookPage)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookPage))

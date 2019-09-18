@@ -2,15 +2,20 @@ import React from "react"
 import { Updates, ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import { Platform, StyleSheet } from "react-native"
+import { Platform, StyleSheet, View, Text } from "react-native"
+import { Switch, Route } from "../routers/react-router"
+import { withRouter } from "react-router"
 import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Text, View } from "native-base"
+import SideMenu from "react-native-side-menu"
+import { Container } from "native-base"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
 
+import Book from "./Book"
+import Drawer from "../major/Drawer"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
@@ -60,7 +65,7 @@ class Library extends React.Component {
 
     Updates.addListener(this.onUpdateEvent)
     this.getUpToDateReader()
-    removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+    // removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
 
     ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
     reSort()
@@ -69,11 +74,11 @@ class Library extends React.Component {
   }
 
   componentDidMount() {
-    const { library, navigation, reSort } = this.props
+    const { library, reSort } = this.props
 
-    this.navigationWillBlurListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
-    this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
-    this.navigationWillFocusListener = navigation.addListener("willFocus", reSort)
+    // this.navigationWillBlurListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
+    // this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
+    // this.navigationWillFocusListener = navigation.addListener("willFocus", reSort)
 
     this.fetchAll()
   }
@@ -110,16 +115,17 @@ class Library extends React.Component {
 
   async fetchAll(nextProps) {
     const { setFetchingBooks, accounts, idps, books, addBooks,
-            reSort, updateAccount, navigation } = nextProps || this.props
-    const { refreshLibraryAccountId } = navigation.state.params || {}
+            reSort, updateAccount, history, location } = nextProps || this.props
+    const { refreshLibraryAccountId } = location.state || {}
 
     const account = Object.values(accounts)[0]
     if(!account || account.needToLogInAgain) {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
-      navigation.navigate("Login", {
-        idpId: Object.keys(idps)[0],
-        hasJSUpdate: this.hasJSUpdate,
-      })
+      // SET LOGIN IN STATE
+      // history.push(`${match.url}/login`, {
+      //   idpId: Object.keys(idps)[0],
+      //   hasJSUpdate: this.hasJSUpdate,
+      // })
       return
     }
 
@@ -171,12 +177,12 @@ class Library extends React.Component {
         setUpTimeout(() => this.getCovers({ idpId }), 0, this)
 
         if(refreshLibraryAccountId) {
-          navigation.state.params = {}
+          location.state = {}
           this.forceUpdate()
         }
         
       } catch(error) {
-        navigation.navigate("ErrorMessage", {
+        history.push("/error", {
           message: error.message || null,
         })
       }
@@ -222,8 +228,8 @@ class Library extends React.Component {
   hideOptions = () => this.setState({ showOptions: false })
 
   logOurUrlOnLoad = () => {
-    const { navigation, removeAccount, updateAccount } = this.props
-    const { logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
+    const { location, removeAccount, updateAccount } = this.props
+    const { logOutAccountId, refreshLibraryAccountId } = location.state || {}
 
     if(refreshLibraryAccountId) {
       updateAccount({
@@ -236,16 +242,24 @@ class Library extends React.Component {
 
     if(logOutAccountId) {
       removeAccount({ accountId: logOutAccountId })
-      navigation.state.params = {}
+      location.state = {}
       this.forceUpdate()
+    }
+  }
+
+  sideMenuOnChange = isOpen => {
+    const { history, location } = this.props
+
+    if(!isOpen && location.pathname === '/drawer') {
+      history.goBack()
     }
   }
   
   render() {
-    const { library, accounts, idps, books, fetchingBooks, navigation, setSort } = this.props
+    const { library, accounts, idps, books, fetchingBooks, setSort, location } = this.props
     const { showOptions, downloadPaused } = this.state
 
-    let { logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
+    let { logOutUrl, logOutAccountId, refreshLibraryAccountId } = location.state || {}
     const scope = library.scope || "all"
 
     const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -287,63 +301,72 @@ class Library extends React.Component {
     }
 
     return (
-      <Container>
-        <LibraryHeader
-          scope={scope}
-          navigation={navigation}
-          toggleShowOptions={this.toggleShowOptions}
-          hideOptions={this.hideOptions}
-        />
-        {fetchingBooks && bookList.length == 0
-          ? (
-            <View style={styles.spinnerContainer}>
-              <Spin />
-            </View>
-          )
-          : (
-            bookList.length == 0
-              ? (
-                <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-              )
-              : (
-                <View style={styles.content}>
-                  <LibraryViewer
-                    bookList={bookList}
-                    navigation={navigation}
-                  />
-                </View>
-              )
-          )
-        }
-        {!!showOptions && 
-          <Options
-            requestHide={this.hideOptions}
-            headerText={i18n("Sort by...")}
-            options={[
-              {
-                text: i18n("Recent"),
-                selected: library.sort == 'recent',
-                onPress: () => setSort({ sort: 'recent' }),
-              },
-              {
-                text: i18n("Title"),
-                selected: library.sort == 'title',
-                onPress: () => setSort({ sort: 'title' }),
-              },
-              {
-                text: i18n("Author"),
-                selected: library.sort == 'author',
-                onPress: () => setSort({ sort: 'author' }),
-              },
-            ]}
+      <SideMenu
+        menu={<Drawer />}
+        openMenuOffset={280}
+        isOpen={location.pathname === '/drawer'}
+        onChange={this.sideMenuOnChange}
+      >
+        <Container>
+          <LibraryHeader
+            scope={scope}
+            toggleShowOptions={this.toggleShowOptions}
+            hideOptions={this.hideOptions}
           />
-        }
+          {fetchingBooks && bookList.length == 0
+            ? (
+              <View style={styles.spinnerContainer}>
+                <Spin />
+              </View>
+            )
+            : (
+              bookList.length == 0
+                ? (
+                  <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                )
+                : (
+                  <View style={styles.content}>
+                    <LibraryViewer
+                      bookList={bookList}
+                    />
+                  </View>
+                )
+            )
+          }
+          {!!showOptions && 
+            <Options
+              requestHide={this.hideOptions}
+              headerText={i18n("Sort by...")}
+              options={[
+                {
+                  text: i18n("Recent"),
+                  selected: library.sort == 'recent',
+                  onPress: () => setSort({ sort: 'recent' }),
+                },
+                {
+                  text: i18n("Title"),
+                  selected: library.sort == 'title',
+                  onPress: () => setSort({ sort: 'title' }),
+                },
+                {
+                  text: i18n("Author"),
+                  selected: library.sort == 'author',
+                  onPress: () => setSort({ sort: 'author' }),
+                },
+              ]}
+            />
+          }
 
-        <BookDownloader
-          downloadPaused={downloadPaused}
-          navigation={navigation}
-        />
-      </Container>
+          <BookDownloader
+            downloadPaused={downloadPaused}
+          />
+        </Container>
+
+        <Switch>
+          <Route path="/book/:id" component={Book} />
+        </Switch>
+
+      </SideMenu>
     )
   }
 }
@@ -370,4 +393,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   autoUpdateCoreIdps,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Library)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Library))

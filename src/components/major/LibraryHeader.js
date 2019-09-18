@@ -1,6 +1,7 @@
 import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { Link } from "../routers/react-router"
 import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-base"
 import i18n from "../../utils/i18n.js"
 import AppHeader from "../basic/AppHeader"
@@ -11,13 +12,6 @@ import { setSort, toggleView } from "../../redux/actions.js"
 
 class LibraryHeader extends React.Component {
 
-  openDrawer = () => {
-    const { navigation, hideOptions } = this.props
-
-    hideOptions()
-    debounce(navigation.openDrawer)
-  }
-
   toggleView = () => {
     const { toggleView, hideOptions } = this.props
 
@@ -26,7 +20,7 @@ class LibraryHeader extends React.Component {
   }
 
   render() {
-    const { idps, accounts, library, toggleShowOptions } = this.props
+    const { idps, accounts, library, toggleShowOptions, hideOptions } = this.props
     const scope = library.scope || "all"
 
     let title = i18n("Library")
@@ -44,12 +38,14 @@ class LibraryHeader extends React.Component {
     return (
       <AppHeader>
         <Left>
-          <Button
-            transparent
-            onPress={this.openDrawer}
-          >
-            <Icon name="menu" />
-          </Button>
+          <Link to="/drawer">
+            <Button
+              transparent
+              onPress={hideOptions}
+            >
+              <Icon name="menu" />
+            </Button>
+          </Link>
         </Left>
         <Body>
           <Title>{title}</Title>

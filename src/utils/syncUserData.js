@@ -398,7 +398,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 })
 
 console.log('Setting up event listeners for patch and reportReadings...')
-NetInfo.addEventListener('connectionChange', () => patch())
+// NetInfo.addEventListener('connectionChange', () => patch())
 AppState.addEventListener('change', () => patch())
-NetInfo.addEventListener('connectionChange', () => reportReadings())
+// NetInfo.addEventListener('connectionChange', () => reportReadings())
 AppState.addEventListener('change', () => reportReadings())

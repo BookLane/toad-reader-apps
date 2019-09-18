@@ -4,13 +4,8 @@ import AppHeader from "../basic/AppHeader"
 
 class Accounts extends React.Component {
 
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
   render() {
+    const { history } = this.props
 
     return (
       <Container>
@@ -18,7 +13,7 @@ class Accounts extends React.Component {
           <Left>
             <Button
               transparent
-              onPress={this.goBack}
+              onPress={history.goBack}
             >
               <Icon name="arrow-back" />
             </Button>

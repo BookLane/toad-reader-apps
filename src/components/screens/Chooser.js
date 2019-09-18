@@ -1,5 +1,6 @@
 import React from "react"
 import { StyleSheet } from "react-native"
+import { withRouter } from "react-router"
 import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
 
 const styles = StyleSheet.create({
@@ -9,13 +10,9 @@ const styles = StyleSheet.create({
 
 class Chooser extends React.Component {
 
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
   render() {
+    const { history } = this.props
+
     return (
       <Container>
         <Content padder>
@@ -28,7 +25,7 @@ class Chooser extends React.Component {
           </Card>
           <Button full rounded dark
             style={{ marginTop: 10 }}
-            onPress={this.goBack}
+            onPress={history.goBack}
           >
             <Text>Back</Text>
           </Button>
@@ -38,4 +35,4 @@ class Chooser extends React.Component {
   }
 }
 
-export default Chooser
+export default withRouter(Chooser)

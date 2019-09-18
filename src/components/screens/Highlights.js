@@ -4,21 +4,16 @@ import AppHeader from "../basic/AppHeader"
 
 class Highlights extends React.Component {
 
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
   render() {
-    const { navigation } = this.props
+    const { location } = this.props
+
     return (
       <Container>
         <AppHeader>
           <Left>
             <Button
               transparent
-              onPress={this.goBack}
+              onPress={location.goBack}
             >
               <Icon name="arrow-back" />
             </Button>

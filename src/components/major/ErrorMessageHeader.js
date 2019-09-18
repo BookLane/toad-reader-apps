@@ -1,8 +1,10 @@
 import React from "react"
 import { StyleSheet, Platform } from "react-native"
 import { Title, Left, Right, Icon, Button, Body } from "native-base"
-import AppHeader from "../basic/AppHeader"
+import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
+
+import AppHeader from "../basic/AppHeader"
 
 import { isPhoneSize, isStatusBarHidden, setStatusBarHidden, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
 
@@ -22,16 +24,16 @@ class ErrorMessageHeader extends React.PureComponent {
   componentWillUnmount = unmountTimeouts
 
   onBackPress = () => {
-    const { navigation } = this.props
+    const { history } = this.props
     
     setStatusBarHidden(this.priorStatusBarHiddenValue)
 
-    navigation.goBack()
+    history.goBack()
   }
 
   render() {
-    const { navigation } = this.props
-    const { title, critical } = navigation.state.params || {}
+    const { location } = this.props
+    const { title, critical } = location.state || {}
     
     return (
       <AppHeader>
@@ -54,4 +56,4 @@ class ErrorMessageHeader extends React.PureComponent {
   }
 }
 
-export default ErrorMessageHeader
+export default withRouter(ErrorMessageHeader)
