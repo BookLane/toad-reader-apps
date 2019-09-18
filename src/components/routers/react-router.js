@@ -3,4 +3,4 @@ export {
   Link,
   Switch,
   NativeRouter as Router,
-} from 'react-router-dom'
+} from 'react-router-native'
