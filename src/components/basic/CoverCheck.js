@@ -23,19 +23,12 @@ const styles = StyleSheet.create({
   },
 })
 
-class CoverCheck extends React.Component {
-
-  render() {
-    const { downloadStatus } = this.props
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>
-          <Icon name='md-checkmark' style={styles.checkmark} />
-        </Text>
-      </View>
-    )
-  }
-}
+const CoverCheck = () => (
+  <View style={styles.container}>
+    <Text style={styles.text}>
+      <Icon name='md-checkmark' style={styles.checkmark} />
+    </Text>
+  </View>
+)
 
 export default CoverCheck

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -74,147 +74,146 @@ const styles = StyleSheet.create({
 
 const notesForUndo = {}
 
-class HighlighterLabel extends React.PureComponent {
+const HighlighterLabel = ({
+  selectionInfo,
+  bookId,
+  highlight,
+  setHighlight,
+  deleteHighlight,
+  isEditingNote,
+  endEditingNote,
+}) => {
 
-  state = {
-    showDeletedMsgAndUndo: false,
-  }
+  // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
-  componentWillReceiveProps(nextProps) {
-    const { selectionInfo } = this.props
+  const [ showDeletedMsgAndUndo, setShowDeletedMsgAndUndo ] = useState(false)
 
-    if(JSON.stringify(nextProps.selectionInfo) !== JSON.stringify(selectionInfo)) {
-      this.setState({ showDeletedMsgAndUndo: false })
-    }
-  }
+  useEffect(
+    () => setShowDeletedMsgAndUndo(false),
+    [ JSON.stringify(selectionInfo) ],
+  )
 
-  toggleHighlight = color => {
-    const { selectionInfo, bookId, highlight={}, setHighlight, deleteHighlight } = this.props
-    const { spineIdRef, cfi } = selectionInfo || {}
-    
-    const note = highlight.note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
+  const toggleHighlight = useCallback(
+    color => {
+      const { spineIdRef, cfi } = selectionInfo || {}
+      const note = (highlight || {}).note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
 
-    if(highlight && highlight.color === color) {
-      // save for if they highlight this selection again in the near future (effectively an "undo")
-      if(note) {
-        notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
+      if(highlight && highlight.color === color) {
+        // save for if they highlight this selection again in the near future (effectively an "undo")
+        if(note) {
+          notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
+        }
+
+        deleteHighlight({
+          bookId,
+          spineIdRef,
+          cfi,
+          patchInfo: this.props,
+        })
+
+        setShowDeletedMsgAndUndo(true)
+        
+      } else {
+        setHighlight({
+          bookId,
+          spineIdRef,
+          cfi,
+          color,
+          note,
+          patchInfo: this.props,
+        })
+
+        setShowDeletedMsgAndUndo(false)
       }
+    },
+    [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight ],
+  )
 
-      deleteHighlight({
-        bookId,
-        spineIdRef,
-        cfi,
-        patchInfo: this.props,
-      })
+  const toggleHighlight1 = useCallback(() => toggleHighlight(1), [])
 
-      this.setState({ showDeletedMsgAndUndo: true })
-      
-    } else {
-      setHighlight({
-        bookId,
-        spineIdRef,
-        cfi,
-        color,
-        note,
-        patchInfo: this.props,
-      })
+  const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
-      this.setState({ showDeletedMsgAndUndo: false })
-    }
-  }
-
-  toggleHighlight1 = () => this.toggleHighlight(1)
-  // unselectText = () => this.props.setSelectionText()
-
-  render() {
-    const { bookId, selectionInfo, highlight, isEditingNote, endEditingNote } = this.props
-    const { showDeletedMsgAndUndo } = this.state
-    // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-
-    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
-
-    let highlightButton = (
-      <View
-        style={[
-          styles.iconAndText,
-          styles.highlight1,
-        ]}
+  let highlightButton = (
+    <View
+      style={[
+        styles.iconAndText,
+        styles.highlight1,
+      ]}
+    >
+      <Text
+        style={styles.highlightText}
+        numberOfLines={1}
       >
-        <Text
-          style={styles.highlightText}
-          numberOfLines={1}
-        >
-          {highlight ? selectionInfo.text : i18n("Highlight the selection")}
-        </Text>
-        {!!(highlight && !isEditingNote) &&
-          <TouchableComponent
-            onPress={this.toggleHighlight1}
-          >
-            <Icon
-              name="trash"
-              style={styles.trash}
-            />
-          </TouchableComponent>
-        }
-      </View>
-    )
-
-    if(showDeletedMsgAndUndo) {
-      highlightButton = (
-        <View style={styles.deletedMessageCont}>
-          <Text>
-            {i18n("Highlight deleted.")}
-          </Text>
-          <Button primary light
-            style={styles.undoButton}
-            onPress={this.toggleHighlight1}
-          >
-            <Text>{i18n("Undo")}</Text>
-          </Button>
-        </View>
-      )
-
-    } else if(!highlight) {
-      highlightButton = (
+        {highlight ? selectionInfo.text : i18n("Highlight the selection")}
+      </Text>
+      {!!(highlight && !isEditingNote) &&
         <TouchableComponent
-          onPress={this.toggleHighlight1}
-        >
-          {highlightButton}
-        </TouchableComponent>
-      )
-    }
-
-    return (
-      <View style={styles.container}>
-        {highlightButton}
-        <View style={styles.emptySpace} />
-        {!!(highlight && !isEditingNote) &&
-          <HighlighterShareIcon
-            bookId={bookId}
-            selectionInfo={selectionInfo}
-            highlight={highlight}
-          />
-        }
-        {!!isEditingNote &&
-          <Button primary
-            style={styles.doneButton}
-            onPress={endEditingNote}
-          >
-            <Text>{i18n("Done")}</Text>
-          </Button>
-        }
-        {/* <View style={styles.smallEmptySpace} /> */}
-        {/* <TouchableOpacity
-          onPress={this.unselectText}
+          onPress={toggleHighlight1}
         >
           <Icon
-            name="close"
-            style={styles.close}
+            name="trash"
+            style={styles.trash}
           />
-        </TouchableOpacity> */}
+        </TouchableComponent>
+      }
+    </View>
+  )
+
+  if(showDeletedMsgAndUndo) {
+    highlightButton = (
+      <View style={styles.deletedMessageCont}>
+        <Text>
+          {i18n("Highlight deleted.")}
+        </Text>
+        <Button primary light
+          style={styles.undoButton}
+          onPress={toggleHighlight1}
+        >
+          <Text>{i18n("Undo")}</Text>
+        </Button>
       </View>
     )
+
+  } else if(!highlight) {
+    highlightButton = (
+      <TouchableComponent
+        onPress={toggleHighlight1}
+      >
+        {highlightButton}
+      </TouchableComponent>
+    )
   }
+
+  return (
+    <View style={styles.container}>
+      {highlightButton}
+      <View style={styles.emptySpace} />
+      {!!(highlight && !isEditingNote) &&
+        <HighlighterShareIcon
+          bookId={bookId}
+          selectionInfo={selectionInfo}
+          highlight={highlight}
+        />
+      }
+      {!!isEditingNote &&
+        <Button primary
+          style={styles.doneButton}
+          onPress={endEditingNote}
+        >
+          <Text>{i18n("Done")}</Text>
+        </Button>
+      }
+      {/* <View style={styles.smallEmptySpace} /> */}
+      {/* <TouchableOpacity
+        onPress={this.unselectText}
+      >
+        <Icon
+          name="close"
+          style={styles.close}
+        />
+      </TouchableOpacity> */}
+    </View>
+  )
 }
 
 const mapStateToProps = (state) => ({

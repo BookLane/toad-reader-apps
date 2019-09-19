@@ -23,20 +23,16 @@ const styles = StyleSheet.create({
   },
 })
 
-class CoversRow extends React.PureComponent {
-
-  render() {
-    const { children, isFirstRow } = this.props
-
-    return (
-      <View style={[
-        styles.covers,
-        isFirstRow ? styles.coversFirstRow : {},
-      ]}>
-        {children}
-      </View>
-    )
-  }
-}
+const CoversRow = ({
+  children,
+  isFirstRow,
+}) => (
+  <View style={[
+    styles.covers,
+    isFirstRow ? styles.coversFirstRow : {},
+  ]}>
+    {children}
+  </View>
+)
 
 export default CoversRow

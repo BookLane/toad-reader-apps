@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useCallback } from "react"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
@@ -10,8 +10,6 @@ import FullScreenSpin from "./FullScreenSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
-
-import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -46,58 +44,55 @@ const styles = StyleSheet.create({
   },
 })
 
-class Cover extends React.Component {
+const Cover = ({
+  bookId,
+  bookInfo,
+  bookWidth,
+  bookHeight,
+  downloadProgressByBookId,
+}) => {
 
-  state = {
-    imageError: false,
-  }
-
-  componentWillUnmount = unmountTimeouts
-
-  imageOnError = () => this.setState({ imageError: true })
+  const [ imageError, setImageError ] = useState(false)
+  const imageOnError = useCallback(() => setImageError(true), [])
   
-  render() {
-    const { bookId, bookInfo, bookWidth, bookHeight, downloadProgressByBookId } = this.props
-    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
-    const downloadProgress = downloadProgressByBookId[bookId]
-    const { imageError } = this.state
+  const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+  const downloadProgress = downloadProgressByBookId[bookId]
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+  const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
 
-    return (
-      <View
-        style={[
-          styles.cover,
-          {
-            width: bookWidth,
-            paddingTop: bookHeight,
-          },
-        ]}
-      >
-        {!!(!coverFilename || imageError) &&
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
-          </View>
-        }
-        {!!coverFilename &&
-          <Image
-            source={{ uri }}
-            style={styles.image}
-            resizeMode='cover'
-            onError={this.imageOnError}
-          />
-        }
-        {downloadStatus == 1 &&
-          <FullScreenSpin
-            percentage={downloadProgress}
-          />
-        }
-        {downloadStatus == 2 && <CoverCheck />}
-        {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
-        {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
-      </View>
-    )
-  }
+  return (
+    <View
+      style={[
+        styles.cover,
+        {
+          width: bookWidth,
+          paddingTop: bookHeight,
+        },
+      ]}
+    >
+      {!!(!coverFilename || imageError) &&
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+      }
+      {!!coverFilename &&
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          resizeMode='cover'
+          onError={imageOnError}
+        />
+      }
+      {downloadStatus == 1 &&
+        <FullScreenSpin
+          percentage={downloadProgress}
+        />
+      }
+      {downloadStatus == 2 && <CoverCheck />}
+      {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
+      {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
+    </View>
+  )
 }
 
 const mapStateToProps = (state) => ({

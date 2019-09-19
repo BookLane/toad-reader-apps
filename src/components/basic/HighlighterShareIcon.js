@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, Platform, Share } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -15,61 +15,68 @@ const styles = StyleSheet.create({
   },
 })
 
-class HighlighterShareIcon extends React.PureComponent {
+const HighlighterShareIcon = ({
+  idps,
+  accounts,
+  books,
+  userDataByBookId,
+  bookId,
+  selectionInfo,
+  highlight,
+}) => {
 
-  goShare = () => {
-    const { idps, accounts, books, userDataByBookId, bookId, selectionInfo, highlight } = this.props
+  const goShare = useCallback(
+    () => {
+      const book = books[bookId] || {}
+      const accountId = Object.keys(book.accounts)[0] || ""
+      const idpId = accountId.split(':')[0]
+      const { domain } = idps[idpId] || {}
+      const { latest_location } = (userDataByBookId[bookId] || {})
+      const fullname = getFullName(accounts[accountId])
 
-    const book = books[bookId] || {}
-    const accountId = Object.keys(book.accounts)[0] || ""
-    const idpId = accountId.split(':')[0]
-    const { domain } = idps[idpId] || {}
-    const { latest_location } = (userDataByBookId[bookId] || {})
-    const fullname = getFullName(accounts[accountId])
-
-    if(!domain || !latest_location || !fullname) {
-      throw new Error('Unable to share')
-    }
-
-    let url = `https://${domain}/book/${bookId}`
-      + `?goto=${encodeURIComponent(latest_location)}`
-      + `&highlight=${encodeURIComponent(selectionInfo.text)}`
-    if(highlight.note) {
-      url += `&note=${encodeURIComponent(highlight.note)}`
-        + `&sharer=${encodeURIComponent(fullname)}`
-    }
-
-    const title = i18n("Quote from {{book}}", {
-      book: book.title,
-    })
-
-    Share.share(
-      {
-        message: `“${selectionInfo.text}”${(Platform.OS === 'android' ? `\n\n${url}` : ``)}`,
-        title,
-        url,  // ios
-      },
-      {
-        subject: title,  // ios share via email
-        excludedActivityTypes: [  // ios
-        ],
-        dialogTitle: title,  // android
+      if(!domain || !latest_location || !fullname) {
+        throw new Error('Unable to share')
       }
-    )
-  }
 
-  render() {
-    return (
-      <TouchableOpacity
-        onPress={this.goShare}
-      >
-        <Icon
-          name="share"
-          style={styles.share}
-        />
-      </TouchableOpacity>
-    )
-  }
+      let url = `https://${domain}/book/${bookId}`
+        + `?goto=${encodeURIComponent(latest_location)}`
+        + `&highlight=${encodeURIComponent(selectionInfo.text)}`
+      if(highlight.note) {
+        url += `&note=${encodeURIComponent(highlight.note)}`
+          + `&sharer=${encodeURIComponent(fullname)}`
+      }
+
+      const title = i18n("Quote from {{book}}", {
+        book: book.title,
+      })
+
+      Share.share(
+        {
+          message: `“${selectionInfo.text}”${(Platform.OS === 'android' ? `\n\n${url}` : ``)}`,
+          title,
+          url,  // ios
+        },
+        {
+          subject: title,  // ios share via email
+          excludedActivityTypes: [  // ios
+          ],
+          dialogTitle: title,  // android
+        }
+      )
+    },
+    [ idps, accounts, books, userDataByBookId, bookId, selectionInfo, highlight ],
+  )
+
+  return (
+    <TouchableOpacity
+      onPress={goShare}
+    >
+      <Icon
+        name="share"
+        style={styles.share}
+      />
+    </TouchableOpacity>
+  )
 }
 
 const mapStateToProps = (state) => ({

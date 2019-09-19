@@ -19,17 +19,10 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesRow extends React.PureComponent {
-
-  render() {
-    const { children } = this.props
-
-    return (
-      <View style={styles.pages}>
-        {children}
-      </View>
-    )
-  }
-}
+const PagesRow = ({ children }) => (
+  <View style={styles.pages}>
+    {children}
+  </View>
+)
 
 export default PagesRow

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet } from "react-native"
 import { Text, ListItem } from "native-base"
 
@@ -8,29 +8,29 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookContentsLine extends React.Component {
+const BookContentsLine = ({
+  indentLevel,
+  label,
+  goToHref,
+  href,
+}) => {
 
-  goToHref = () => {
-    const { goToHref, href } = this.props
-
-    goToHref({ href })
-  }
-
-  render() {
-    const { indentLevel, label } = this.props
-
-    return (
-      <ListItem
-        style={[
-          styles.listItem,
-          { paddingLeft: indentLevel * 20 },
-        ]}
-        onPress={this.goToHref}
-      >
-        <Text>{label}</Text>
-      </ListItem>
-    )
-  }
+  const onPress = useCallback(
+    () => goToHref({ href }),
+    [ href ],
+  )
+  
+  return (
+    <ListItem
+      style={[
+        styles.listItem,
+        { paddingLeft: indentLevel * 20 },
+      ]}
+      onPress={onPress}
+    >
+      <Text>{label}</Text>
+    </ListItem>
+  )
 }
 
 export default BookContentsLine

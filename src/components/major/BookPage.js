@@ -71,6 +71,7 @@ class BookPage extends React.Component {
   }
 
   componentWillUnmount = unmountTimeouts
+  // const [ set ] = useSetTimeout()
 
   setDisplaySettings = nextProps => {
     postMessage(this.webView, 'setDisplaySettings', getDisplaySettingsObj(nextProps || this.props))

@@ -10,15 +10,8 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesBookmark extends React.Component {
-
-  render() {
-    const { children, header } = this.props
-
-    return (
-      <Icon name='bookmark' style={styles.icon} />
-    )
-  }
-}
+const PagesBookmark = () => (
+  <Icon name='bookmark' style={styles.icon} />
+)
 
 export default PagesBookmark

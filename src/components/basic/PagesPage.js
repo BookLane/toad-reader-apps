@@ -1,11 +1,12 @@
-import React from "react"
+import React, { useRef, useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Image, View } from "react-native"
 
-import PagesBookmark from "./PagesBookmark"
+// import PagesBookmark from "./PagesBookmark"
 import CapturingThumbnailsInfoIcon from "./CapturingThumbnailsInfoIcon"
 
-import { getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
+import { getSnapshotURI } from '../../utils/toolbox.js'
+import useSetTimeout from '../../hooks/useSetTimeout'
 
 const {
   CURRENT_PAGE_BORDER_COLOR,
@@ -42,105 +43,115 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesPage extends React.PureComponent {
+const PagesPage = ({
+  bookId,
+  spineIdRef,
+  cfi,
+  pageIndexInSpine,
+  pageCfisKey,
+  delayPageChangeScroll,
+  zoomToPage,
+  pageWidth,
+  pageHeight,
+  isCurrentPage,
+  indicateMultiplePages,
+}) => {
 
-  componentWillUnmount = unmountTimeouts
+  const [ setDoubleTapTimeout ] = useSetTimeout()
 
-  goToPage = () => {
-    const { bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage } = this.props
+  const preventDoubleTap = useRef(false)
+  const view = useRef(null)
 
-    if(this.preventDoubleTap) return
+  const goToPage = useCallback(
+    () => {
+      if(preventDoubleTap.current) return
 
-    delayPageChangeScroll({
-      bookId,
-      spineIdRef,
-      pageIndexInSpine,
-    })
-
-    this.preventDoubleTap = true
-
-    this.view.measureInWindow((x, y) => zoomToPage({
-      zoomToInfo: {
+      delayPageChangeScroll({
+        bookId,
         spineIdRef,
-        cfi,
         pageIndexInSpine,
-      },
-      snapshotCoords: { x, y },
-    }))
+      })
 
-    setUpTimeout(() => delete this.preventDoubleTap, 1000, this)
-  }
+      preventDoubleTap.current = true
 
-  setView = ref => this.view = ref
+      view.measureInWindow((x, y) => zoomToPage({
+        zoomToInfo: {
+          spineIdRef,
+          cfi,
+          pageIndexInSpine,
+        },
+        snapshotCoords: { x, y },
+      }))
 
-  render() {
-    const { pageWidth, pageHeight, isCurrentPage, indicateMultiplePages } = this.props
+      setDoubleTapTimeout(() => preventDoubleTap.current = false, 1000)
+    },
+    [ bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage ],
+  )
 
-    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
-    const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
+  const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
+  const TouchableBackground = Platform.OS === 'android' ? TouchableNativeFeedback.Ripple('#999', false) : null
 
-    const uri = getSnapshotURI(this.props)
+  const uri = getSnapshotURI({ bookId, spineIdRef, pageIndexInSpine, pageCfisKey })
 
-    return (
-      <View
-        style={[
-          styles.container,
-          (indicateMultiplePages ? { flex: 1 } : {}),
-        ]}
-        ref={Platform.OS !== 'android' && this.setView}
+  return (
+    <View
+      style={[
+        styles.container,
+        (indicateMultiplePages ? { flex: 1 } : {}),
+      ]}
+      ref={Platform.OS !== 'android' ? view : null}
+    >
+      {(indicateMultiplePages ? [4,3,2,1] : []).map(offsetLevel => {
+        const shrinkPercentage = (pageWidth - offsetLevel*3) / pageWidth
+        return <View
+          style={[
+            styles.shadowPage,
+            {
+              width: pageWidth * shrinkPercentage,
+              height: pageHeight * shrinkPercentage,
+              left: offsetLevel * 14 + (pageWidth - pageWidth * shrinkPercentage),
+              top: (pageHeight - pageHeight * shrinkPercentage) / 2,
+              opacity: .5 - offsetLevel * .07,
+            },
+          ]}
+          key={offsetLevel}
+        />
+      })}
+      <TouchableComponent
+        onPress={goToPage}
+        useForeground={true}
+        background={TouchableBackground}
+        delayPressIn={0}
       >
-        {(indicateMultiplePages ? [4,3,2,1] : []).map(offsetLevel => {
-          const shrinkPercentage = (pageWidth - offsetLevel*3) / pageWidth
-          return <View
-            style={[
-              styles.shadowPage,
-              {
-                width: pageWidth * shrinkPercentage,
-                height: pageHeight * shrinkPercentage,
-                left: offsetLevel * 14 + (pageWidth - pageWidth * shrinkPercentage),
-                top: (pageHeight - pageHeight * shrinkPercentage) / 2,
-                opacity: .5 - offsetLevel * .07,
-              },
-            ]}
-            key={offsetLevel}
-          />
-        })}
-        <TouchableComponent
-          onPress={this.goToPage}
-          useForeground={true}
-          background={TouchableBackground}
-          delayPressIn={0}
+        <View
+          style={[
+            styles.page,
+            {
+              width: pageWidth,
+              height: pageHeight,
+            },
+          ]}
+          ref={Platform.OS === 'android' ? view : null}
         >
+          <Image
+            source={{ uri }}
+            style={styles.coverAll}
+            resizeMode='cover'
+          />
+          {/* <PagesBookmark /> */}
           <View
             style={[
-              styles.page,
-              {
-                width: pageWidth,
-                height: pageHeight,
-              },
+              styles.coverAll,
+              (isCurrentPage ? styles.currentPage : {}),
             ]}
-            ref={Platform.OS === 'android' && this.setView}
-          >
-            <Image
-              source={{ uri }}
-              style={styles.coverAll}
-              resizeMode='cover'
-            />
-            {/* <PagesBookmark /> */}
-            <View
-              style={[
-                styles.coverAll,
-                (isCurrentPage ? styles.currentPage : {}),
-              ]}
-            />
-          </View>
-        </TouchableComponent>
-        {!!indicateMultiplePages &&
-          <CapturingThumbnailsInfoIcon />
-        }
-      </View>
-    )
-  }
+          />
+        </View>
+      </TouchableComponent>
+      {!!indicateMultiplePages &&
+        <CapturingThumbnailsInfoIcon />
+      }
+    </View>
+  )
 }
 
 export default PagesPage

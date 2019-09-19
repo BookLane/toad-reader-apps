@@ -20,35 +20,37 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoDetails extends React.Component {
+const BookInfoDetails = ({
+  bookInfo: {
+    downloadStatus,
+    // epubSizeInMB,
+    // totalCharacterCount,
+  },
+}) => {
 
-  render() {
-    const { downloadStatus, epubSizeInMB, totalCharacterCount } = this.props.bookInfo
-
-    if(downloadStatus == 2) {
-      return (
-        <View style={styles.container}>
-          <Icon name='md-checkmark' style={styles.icon} />
-          <Text style={styles.details}>{i18n("On device")}</Text>
-        </View>
-      )
-    }
-
-    if(downloadStatus == 1) {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.details}>{i18n("Downloading...")}</Text>
-        </View>
-      )
-    }
-
+  if(downloadStatus == 2) {
     return (
       <View style={styles.container}>
-        <Icon name='cloud-download' style={styles.icon} />
-        <Text style={styles.details}>{i18n("Tap to download")}</Text>
+        <Icon name='md-checkmark' style={styles.icon} />
+        <Text style={styles.details}>{i18n("On device")}</Text>
       </View>
     )
   }
+
+  if(downloadStatus == 1) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.details}>{i18n("Downloading...")}</Text>
+      </View>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      <Icon name='cloud-download' style={styles.icon} />
+      <Text style={styles.details}>{i18n("Tap to download")}</Text>
+    </View>
+  )
 }
 
 export default BookInfoDetails

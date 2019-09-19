@@ -35,29 +35,30 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfo extends React.Component {
+const BookInfo = ({
+  bookId,
+  bookInfo,
+  isFirstRow,
+}) => {
 
-  render() {
-    const { bookId, bookInfo, isFirstRow } = this.props
-    const { title, author } = bookInfo
+  const { title, author } = bookInfo
 
-    return (
-      <View style={[
-        styles.container,
-        isFirstRow ? styles.containerFirstRow : {},
-      ]}>
-        <View style={styles.cover}>
-          <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
-        </View>
-        <View style={styles.info}>
-          <BookInfoTitle>{title}</BookInfoTitle>
-          <BookInfoAuthor>{author}</BookInfoAuthor>
-          <View style={styles.spacer} />
-          <BookInfoDetails bookInfo={bookInfo} />
-        </View>
+  return (
+    <View style={[
+      styles.container,
+      isFirstRow ? styles.containerFirstRow : {},
+    ]}>
+      <View style={styles.cover}>
+        <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
       </View>
-    )
-  }
+      <View style={styles.info}>
+        <BookInfoTitle>{title}</BookInfoTitle>
+        <BookInfoAuthor>{author}</BookInfoAuthor>
+        <View style={styles.spacer} />
+        <BookInfoDetails bookInfo={bookInfo} />
+      </View>
+    </View>
+  )
 }
 
 export default BookInfo

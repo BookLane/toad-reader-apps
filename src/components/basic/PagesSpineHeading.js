@@ -21,26 +21,15 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesSpineHeading extends React.Component {
-
-  shouldComponentUpdate() {
-    return false
-  }
-
-  render() {
-    const { children } = this.props
-
-    return (
-      <View style={styles.heading}>
-        <Text
-          style={styles.headingText}
-          numberOfLines={1}
-        >
-          {children}
-        </Text>
-      </View>
-    )
-  }
-}
+const PagesSpineHeading = React.memo(({ children }) => (
+  <View style={styles.heading}>
+    <Text
+      style={styles.headingText}
+      numberOfLines={1}
+    >
+      {children}
+    </Text>
+  </View>
+))
 
 export default PagesSpineHeading

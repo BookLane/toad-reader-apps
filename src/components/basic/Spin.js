@@ -15,25 +15,21 @@ const styles = StyleSheet.create({
   },
 })
 
-const circleTextStyle = { fontSize: 12 }
+// const circleTextStyle = { fontSize: 12 }
 
-class Spin extends React.Component {
+const Spin = ({ percentage }) => {
 
-  render() {
-    const { percentage } = this.props
-
-    if(percentage) {
-      return (
-        <View style={styles.container}>
-          {/* <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} animated={false} /> */}
-        </View>
-      )
-    }
-    
+  if(percentage) {
     return (
-      <Spinner color={SPINNER_COLOR} />
+      <View style={styles.container}>
+        {/* <Circle progress={percentage/100} color={SPINNER_COLOR} showsText={true} size={50} textStyle={circleTextStyle} animated={false} /> */}
+      </View>
     )
   }
+  
+  return (
+    <Spinner color={SPINNER_COLOR} />
+  )
 }
 
 export default Spin

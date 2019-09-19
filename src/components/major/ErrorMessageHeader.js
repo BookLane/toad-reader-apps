@@ -22,6 +22,7 @@ class ErrorMessageHeader extends React.PureComponent {
   }
 
   componentWillUnmount = unmountTimeouts
+  // const [ set ] = useSetTimeout()
 
   onBackPress = () => {
     const { history } = this.props

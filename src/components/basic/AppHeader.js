@@ -19,34 +19,33 @@ const styles = StyleSheet.create({
   },
 })
 
-class AppHeader extends React.Component {
+const AppHeader = ({
+  hide,
+  children,
+}) => {
 
   // There is a bug by which the backgroundColor in the header does not get set on load.
   // Thus, this component is a hack to force it to render properly.
 
-  render() {
-    const { hide } = this.props
+  const style = {}
 
-    const style = {}
-
-    if(hide) {
-      style.top = getToolbarHeight() * -1
-    }
-
-    return (
-      <View style={!hide && styles.container}>
-        <Header
-          androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
-          style={[
-            styles.header,
-            style,
-          ]}
-        >
-          {this.props.children}
-        </Header>
-      </View>
-    )
+  if(hide) {
+    style.top = getToolbarHeight() * -1
   }
+
+  return (
+    <View style={!hide && styles.container}>
+      <Header
+        androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
+        style={[
+          styles.header,
+          style,
+        ]}
+      >
+        {children}
+      </Header>
+    </View>
+  )
 }
 
 export default AppHeader

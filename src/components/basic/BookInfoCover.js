@@ -7,8 +7,6 @@ import { View } from "native-base"
 
 import FullScreenSpin from "./FullScreenSpin"
 
-import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
-
 const styles = StyleSheet.create({
   container: {
     width: 100,
@@ -24,32 +22,31 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoCover extends React.Component {
+const BookInfoCover = ({
+  bookId,
+  bookInfo,
+  downloadProgressByBookId,
+}) => {
 
-  componentWillUnmount = unmountTimeouts
+  const { coverFilename, downloadStatus } = bookInfo
+  const downloadProgress = downloadProgressByBookId[bookId]
 
-  render() {
-    const { bookId, bookInfo, downloadProgressByBookId } = this.props
-    const { coverFilename, downloadStatus } = bookInfo
-    const downloadProgress = downloadProgressByBookId[bookId]
+  const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
-
-    return (
-      <View style={styles.container}>
-        <Image
-          source={{ uri }}
-          style={styles.image}
-          resizeMode='cover'
+  return (
+    <View style={styles.container}>
+      <Image
+        source={{ uri }}
+        style={styles.image}
+        resizeMode='cover'
+      />
+      {downloadStatus == 1 &&
+        <FullScreenSpin
+          percentage={downloadProgress}
         />
-        {downloadStatus == 1 &&
-          <FullScreenSpin
-            percentage={downloadProgress}
-          />
-        }
-      </View>
-    )
-  }
+      }
+    </View>
+  )
 }
 
 const mapStateToProps = (state) => ({

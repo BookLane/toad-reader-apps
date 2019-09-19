@@ -64,6 +64,7 @@ class PageCaptureManager extends React.Component {
   }
 
   componentWillUnmount = unmountTimeouts
+  // const [ set ] = useSetTimeout()
 
   getPageCaptureProps = (nextProps, nextState) => {
     const { bookId, setCapturingSnapshots, books, displaySettings } = nextProps || this.props

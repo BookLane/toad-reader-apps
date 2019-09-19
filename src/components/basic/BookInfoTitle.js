@@ -11,15 +11,8 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoTitle extends React.Component {
-
-  render() {
-    const { children } = this.props
-
-    return (
-      <Text style={styles.title}>{children}</Text>
-    )
-  }
-}
+const BookInfoTitle = ({ children }) => (
+  <Text style={styles.title}>{children}</Text>
+)
 
 export default BookInfoTitle

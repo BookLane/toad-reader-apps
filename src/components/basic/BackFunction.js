@@ -1,5 +1,5 @@
 import React from "react"
-import { BackHandler, View } from "react-native"
+import { BackHandler } from "react-native"
 
 class BackFunction extends React.Component {
 

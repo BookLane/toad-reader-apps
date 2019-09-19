@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, TextInput } from "react-native"
 import i18n from "../../utils/i18n.js"
 
@@ -11,27 +11,29 @@ const styles = StyleSheet.create({
   },
 })
 
-class HighlighterNotes extends React.PureComponent {
+const HighlighterNotes = ({
+  note,
+  updateNoteInEdit,
+  setNoteTextInputEl,
+  setEditingNote,
+}) => {
 
-  onFocus = () => this.props.setEditingNote(true)
-  onBlur = () => this.props.setEditingNote(false)
+  const onFocus = useCallback(() => setEditingNote(true), [])
+  const onBlur = useCallback(() => setEditingNote(false), [])
 
-  render() {
-    const { note, updateNoteInEdit, setNoteTextInputEl } = this.props
-
-    return (
-      <TextInput
-        style={styles.textinput}
-        placeholder={i18n("Notes")}
-        multiline={true}
-        underlineColorAndroid="transparent"
-        value={note}
-        onChangeText={updateNoteInEdit}
-        onFocus={this.onFocus}
-        onBlur={this.onBlur}
-        ref={setNoteTextInputEl}
-      />
-    )
-  }
+  return (
+    <TextInput
+      style={styles.textinput}
+      placeholder={i18n("Notes")}
+      multiline={true}
+      underlineColorAndroid="transparent"
+      value={note}
+      onChangeText={updateNoteInEdit}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      ref={setNoteTextInputEl}
+    />
+  )
 }
+
 export default HighlighterNotes
