@@ -56,13 +56,13 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused=()=>{}, title="", timeout }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, getDownloadPaused=()=>{}, title="", timeout }) => {
 
   // set up the cancel function
   let errorMessage
   let cancelComplete = false
   const isCanceled = async force => {
-    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || downloadIsPaused()) {
+    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || getDownloadPaused()) {
       if(!cancelComplete) {
         console.log(`Download canceled for ${zipUrl}`)
         delete cancelDownloadByLocalBaseUri[localBaseUri]

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useLayoutEffect, useCallback } from "react"
 import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -88,7 +88,7 @@ const HighlighterLabel = ({
 
   const [ showDeletedMsgAndUndo, setShowDeletedMsgAndUndo ] = useState(false)
 
-  useEffect(
+  useLayoutEffect(
     () => setShowDeletedMsgAndUndo(false),
     [ JSON.stringify(selectionInfo) ],
   )
