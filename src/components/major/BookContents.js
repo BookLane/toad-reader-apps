@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo, useCallback } from "react"
 import { FlatList } from "react-native"
 
 import BookContentsLine from "../basic/BookContentsLine"
@@ -7,16 +7,14 @@ const baseListItemStyle = {
   backgroundColor: 'transparent',
 }
 
-class BookContents extends React.Component {
+const BookContents = React.memo(({
+  toc,
+  goToHref,
+}) => {
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      !!nextProps.toc
-      && Object.keys(nextProps).some(key => nextProps[key] !== this.props[key])
-    )
-  }
+  if(!toc) return null
 
-  getListItems = (toc, indentLevel=0) => {
+  const getListItems = (toc, indentLevel=0) => {
     let listItems = []
 
     ;(toc || []).forEach(tocItem => {
@@ -27,39 +25,40 @@ class BookContents extends React.Component {
           indentLevel,
           key: `${tocItem.label}-${tocItem.href}`,
         },
-        ...this.getListItems(tocItem.subNav, indentLevel+1),
+        ...getListItems(tocItem.subNav, indentLevel+1),
       ]
     })
 
     return listItems
   }
 
-  renderItem = ({ item }) => {
-    const { goToHref } = this.props
-    const { href, indentLevel } = item
+  const data = useMemo(
+    getListItems(toc),
+    [ toc ],
+  )
 
-    return (
-      <BookContentsLine
-        indentLevel={indentLevel}
-        goToHref={goToHref}
-        href={href}
-        label={item.label}
-      />
-    )
-  }
+  const renderItem = useCallback(
+    ({ item }) => {
+      const { href, indentLevel, label } = item
 
-  render() {
-    const { toc } = this.props
+      return (
+        <BookContentsLine
+          indentLevel={indentLevel}
+          goToHref={goToHref}
+          href={href}
+          label={label}
+        />
+      )
+    },
+    [ goToHref ],
+  )
 
-    if(!toc) return null
-
-    return (
-      <FlatList
-        data={this.getListItems(toc)}
-        renderItem={this.renderItem}
-      />
-    )
-  }
-}
+  return (
+    <FlatList
+      data={data}
+      renderItem={renderItem}
+    />
+  )
+})
 
 export default BookContents
