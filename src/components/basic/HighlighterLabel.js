@@ -5,9 +5,9 @@ import { connect } from "react-redux"
 import { Text, View, Icon, Button } from "native-base"
 import i18n from "../../utils/i18n.js"
 
-import HighlighterShareIcon from "./HighlighterShareIcon.js";
+import HighlighterShareIcon from "./HighlighterShareIcon.js"
 
-import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
+import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   container: {

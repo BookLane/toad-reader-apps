@@ -8,7 +8,7 @@ import { withRouter } from "react-router"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import i18n from "../../utils/i18n.js"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js";
+import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
 
 const LibraryBook = props => {
   const {

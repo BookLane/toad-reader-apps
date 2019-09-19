@@ -24,7 +24,7 @@ import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight,
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords, setXapiConsentShown } from "../../redux/actions.js";
+         endRecordReading, flushReadingRecords, setXapiConsentShown } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,

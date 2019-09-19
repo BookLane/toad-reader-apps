@@ -143,7 +143,7 @@ class PageCapture extends React.Component {
                     spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
                   },
                 }));
-              })
+              });
             `)
 
           }

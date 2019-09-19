@@ -8,7 +8,7 @@ import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
 
-import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
+import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
 
 const styles = StyleSheet.create({
   clearCover: {

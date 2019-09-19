@@ -8,7 +8,7 @@ import { getBooksDir, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
 import parseEpub from "../../utils/parseEpub.js"
 
-import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions.js";
+import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions.js"
 
 class BookDownloader extends React.Component {
 

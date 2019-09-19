@@ -22,7 +22,7 @@ import LibraryList from "../major/LibraryList"
 import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
-import AppHeader from "../basic/AppHeader.js";
+import AppHeader from "../basic/AppHeader.js"
 import BookDownloader from "../major/BookDownloader.js"
 
 import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
