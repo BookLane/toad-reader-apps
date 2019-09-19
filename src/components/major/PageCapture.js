@@ -216,7 +216,7 @@ class PageCapture extends React.Component {
   setView = ref => this.view = ref
 
   render() {
-    const { bookId, width, height, spineIdRef, processingPaused } = this.props
+    const { bookId, width, height, spineIdRef, processingPaused, displaySettings } = this.props
 
     if(processingPaused) return null
 
@@ -234,7 +234,7 @@ class PageCapture extends React.Component {
         setView={this.setView}
         onMessage={this.onMessageEvent}
         initialLocation={JSON.stringify({ idref: spineIdRef })}
-        initialDisplaySettings={getDisplaySettingsObj(this.props)}
+        initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
       />
     )
   }

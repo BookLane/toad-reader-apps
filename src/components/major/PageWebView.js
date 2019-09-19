@@ -133,18 +133,18 @@ class PageWebView extends React.Component {
     }
   }
 
-  setWebViewEl = webViewEl => {
-    const { setWebViewEl } = this.state
+  setWebViewRef = ref => {
+    const { setWebViewRef } = this.state
 
-    this.webView = webViewEl
-    setWebViewEl && setWebViewEl(webViewEl)
+    this.webView = ref
+    setWebViewRef && setWebViewRef(ref)
   }
 
   onError = e => console.log('webview error', e)
 
   render() {
     // I get these from state and not props because these are all initial values
-    const { setView, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
+    const { viewRef, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
       location: initialLocation,
@@ -166,7 +166,7 @@ class PageWebView extends React.Component {
           ]}
           onLayout={this.calcSize}
           collapsable={false}
-          ref={setView}
+          ref={viewRef}
         >
           <WebView
             style={[
@@ -180,7 +180,7 @@ class PageWebView extends React.Component {
             injectedJavaScript={`
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             `}
-            ref={this.setWebViewEl}
+            ref={this.setWebViewRef}
             allowUniversalAccessFromFileURLs={true}
             allowFileAccess={true}
             originWhitelist={['*']}

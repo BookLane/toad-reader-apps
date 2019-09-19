@@ -123,14 +123,10 @@ export const latestLocationToStr = latestLocation => {
   })
 }
 
-export const getDisplaySettingsObj = props => {
-  const { displaySettings } = props
-
-  return {
-    ...displaySettings,
-    columns: 'single',
-  }
-}
+export const getDisplaySettingsObj = displaySettings => ({
+  ...displaySettings,
+  columns: 'single',
+})
 
 export const getPageCfisKey = ({ displaySettings, width, height }) => {
   const { textSize, textSpacing } = displaySettings
