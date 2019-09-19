@@ -41,56 +41,50 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookProgress extends React.Component {
+const onStartShouldSetResponder = () => true
 
-  doScroll = pageX => {
-    const { scrollToPercentage } = this.props
-    const { width } = Dimensions.get('window')
+const BookProgress = ({
+  scrollToPercentage,
+  animatedScrollPosition,
+  maxScroll,
+  capturingSnapshots,
+}) => {
 
-    const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
-    const percent = Math.min(Math.max(percentageFraction * 100, 0), 100)
-    
-    scrollToPercentage(percent)
-  }
+  const { width } = Dimensions.get('window')
 
-  onStartShouldSetResponder = event => true
+  const onResponderGrantAndMove = useCallback(
+    event => {
+      const { pageX } = event.nativeEvent
+      const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
+      const percent = Math.min(Math.max(percentageFraction * 100, 0), 100)
+      
+      scrollToPercentage(percent)
+    },
+    [ scrollToPercentage, width ],
+  )
 
-  onResponderGrant = event => {
-    const { pageX } = event.nativeEvent
-    this.doScroll(pageX)
-  }
-
-  onResponderMove = event => {
-    const { pageX } = event.nativeEvent
-    this.doScroll(pageX)
-  }
-
-  render() {
-    const { animatedScrollPosition, maxScroll, capturingSnapshots } = this.props
-
-    return (
-      <Footer style={styles.footer}>
-        <View
-          style={styles.touchResponder}
-          onStartShouldSetResponderCapture={this.onStartShouldSetResponder}
-          onStartShouldSetResponder={this.onStartShouldSetResponder}
-          onResponderGrant={this.onResponderGrant}
-          onResponderMove={this.onResponderMove}
-        />
-        <View style={styles.line}/>
-        <ProgressDot
-          size={30}
-          animatedScrollPosition={animatedScrollPosition}
-          maxScroll={maxScroll}
-          capturingSnapshots={capturingSnapshots}
-        />
-        {/* <ProgressDot
-          left={PROGRESS_BAR_SIDE_SPACING + 100}
-          size={6}
-        /> */}
-      </Footer>
-    )
-  }
+  return (
+    <Footer style={styles.footer}>
+      <View
+        style={styles.touchResponder}
+        onStartShouldSetResponderCapture={onStartShouldSetResponder}
+        onStartShouldSetResponder={onStartShouldSetResponder}
+        onResponderGrant={onResponderGrantAndMove}
+        onResponderMove={onResponderGrantAndMove}
+      />
+      <View style={styles.line}/>
+      <ProgressDot
+        size={30}
+        animatedScrollPosition={animatedScrollPosition}
+        maxScroll={maxScroll}
+        capturingSnapshots={capturingSnapshots}
+      />
+      {/* <ProgressDot
+        left={PROGRESS_BAR_SIDE_SPACING + 100}
+        size={6}
+      /> */}
+    </Footer>
+  )
 }
 
 const mapStateToProps = (state) => ({
