@@ -16,7 +16,7 @@ import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
-import usePrevious from "react-use"
+import usePrevious from "react-use/lib/usePrevious"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
          startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions.js"
