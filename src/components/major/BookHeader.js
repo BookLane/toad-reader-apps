@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
 import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
@@ -30,73 +30,76 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookHeader extends React.PureComponent {
+const BookHeader = ({
+  title,
+  subtitle,
+  mode,
+  showDisplaySettings,
+  toggleBookView,
+  toggleShowOptions,
+  width,
+  history,
+}) => {
 
-  onBackPress = () => {
-    const { history } = this.props
-    
-    history.go(-2)
-  }
+  const onBackPress = useCallback(
+    () => history.go(-2),
+    [ history ],
+  )
 
-  render() {
-    let { title, subtitle, mode, showDisplaySettings,
-            toggleBookView, toggleShowOptions, width } = this.props
-
-    width -= (leftIconsWidth + rightIconsWidth)
+  width -= (leftIconsWidth + rightIconsWidth)
             
-    return (
-      <AppHeader
-        hide={mode === 'page'}
-      >
-        <Left>
-          <Button
-            transparent
-            onPress={this.onBackPress}
-          >
-            <Icon name="home" />
-          </Button>
-        </Left>
-        <Body style={[
-          styles.body,
-          (
-            isPhoneSize()
-              ? {
-                width,
-                minWidth: width,
-                maxWidth: width,
-              }
-              : {}
-          ),
-        ]}>
-          <Title>{title}</Title>
-          {subtitle
-            ? <Subtitle>{subtitle}</Subtitle>
-            : null
-          }
-        </Body>
-        <Right>
-          <Button
-            transparent
-            onPress={showDisplaySettings}
-          >
-            <Icon name="settings" />
-          </Button>
-          <Button
-            transparent
-            onPress={toggleBookView}
-          >
-            <Icon name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
-          </Button>
-          <Button
-            transparent
-            onPress={toggleShowOptions}
-          >
-            <Icon name="more" />
-          </Button>
-        </Right>
-      </AppHeader>
-    )
-  }
+  return (
+    <AppHeader
+      hide={mode === 'page'}
+    >
+      <Left>
+        <Button
+          transparent
+          onPress={onBackPress}
+        >
+          <Icon name="home" />
+        </Button>
+      </Left>
+      <Body style={[
+        styles.body,
+        (
+          isPhoneSize()
+            ? {
+              width,
+              minWidth: width,
+              maxWidth: width,
+            }
+            : {}
+        ),
+      ]}>
+        <Title>{title}</Title>
+        {subtitle
+          ? <Subtitle>{subtitle}</Subtitle>
+          : null
+        }
+      </Body>
+      <Right>
+        <Button
+          transparent
+          onPress={showDisplaySettings}
+        >
+          <Icon name="settings" />
+        </Button>
+        <Button
+          transparent
+          onPress={toggleBookView}
+        >
+          <Icon name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
+        </Button>
+        <Button
+          transparent
+          onPress={toggleShowOptions}
+        >
+          <Icon name="more" />
+        </Button>
+      </Right>
+    </AppHeader>
+  )
 }
 
 export default withRouter(BookHeader)
