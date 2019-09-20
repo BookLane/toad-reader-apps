@@ -1,9 +1,9 @@
 import { AsyncStorage, NetInfo } from "react-native"
 import * as FileSystem from 'expo-file-system'
 
-import { isConnected } from "./toolbox.js"
 import { fetchZipAndAssets } from "./zipDownloader.js"
 // import i18n from "./i18n.js"
+import { connectionInfo } from "../hooks/useNetwork"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
@@ -45,9 +45,7 @@ export const updateReader = ({ setReaderStatus }) => {
       console.log(`Download updated reader...`)
       setReaderStatus({ readerStatus: "downloading" })
 
-      const connectionInfo = connectionChangeInfo || await isConnected()
-
-      if(connectionInfo.type === 'none') {
+      if(!connectionInfo.online) {
         setReaderStatus({ readerStatus: "waiting for internet" })
 
         // NetInfo.addEventListener('connectionChange', attemptToUpdateReader)

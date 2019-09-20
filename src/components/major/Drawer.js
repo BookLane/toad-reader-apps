@@ -1,15 +1,15 @@
-import React from "react"
+import React, { useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { Image, StyleSheet, NetInfo, Linking, Dimensions, StatusBar, TouchableOpacity } from "react-native"
+import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity } from "react-native"
 import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
 import i18n from "../../utils/i18n.js"
+import useNetwork from "../../hooks/useNetwork"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
-import { isConnected } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions.js"
@@ -54,239 +54,242 @@ const styles = StyleSheet.create({
   },
 })
 
-class Drawer extends React.Component {
+const Drawer = ({
+  history,
+  changeLibraryScope,
+  accounts,
+  idps,
+  books,
+}) => {
 
-  state = {
-    offline: false,
-  }
+  const { online } = useNetwork()
 
-  componentDidMount() {
-    isConnected().then(this.setOfflineStatus)
-    // NetInfo.addEventListener('connectionChange', this.setOfflineStatus)
-  }
+  const showAll = useCallback(
+    () => {
+      changeLibraryScope({ scope: "all" })
+      history.goBack()
+    },
+    [ changeLibraryScope, history ],
+  )
 
-  componentWillUnmount() {
-    // NetInfo.removeEventListener('connectionChange', this.setOfflineStatus)
-  }
+  const showDeviceOnly = useCallback(
+    () => {
+      changeLibraryScope({ scope: "device" })
+      history.goBack()
+    },
+    [ changeLibraryScope, history ],
+  )
 
-  setOfflineStatus = connectionInfo => {
-    this.setState({ offline: connectionInfo.type === 'none' })
-  }
-
-  goToLibrary = () => {
-    const { history } = this.props
-
-    history.goBack()
-  }
-
-  showAll = () => {
-    const { changeLibraryScope } = this.props
-
-    changeLibraryScope({ scope: "all" })
-    this.goToLibrary()
-  }
-
-  showDeviceOnly = () => {
-    const { changeLibraryScope } = this.props
-
-    changeLibraryScope({ scope: "device" })
-    this.goToLibrary()
-  }
-
-  confirmLogOut = () => {
-    const { accounts, idps, history } = this.props
-
-    const accountId = Object.keys(accounts)[0] || ""
-    const idpId = accountId.split(':')[0]
-
-    if(!idpId || !idps[idpId]) return
-
-    confirmRemoveAccountEPubs(this.props, () => {
-      history.push("/", {
-        logOutUrl: `https://${idps[idpId].domain}/logout`,
-        logOutAccountId: accountId,
-      })
-    })
-  }
-
-  reLogin = async () => {
-    const { accounts, idps, history } = this.props
-
-    const accountId = Object.keys(accounts)[0] || ""
-    const idpId = accountId.split(':')[0]
-
-    if(!idpId || !idps[idpId]) return
-    
-    // To force a refresh on the library, I need to call the url below and then open
-    // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
-    // login process includes javascript onload calls. When that process was over and it
-    // arrives back at the userDataUrl, then I would want to continue to get the library
-    // listing. In other words, I basically need to call the next line and run the whole
-    // login process again, but hidden.
-
-    history.push("/", {
-      logOutUrl: `https://${idps[idpId].domain}/logout/callback?noredirect=1`,
-      refreshLibraryAccountId: accountId,
-    })
-  }
-
-  removeAllEPubs = () => {
-    confirmRemoveAllEPubs(this.props)
-  }
-
-  goToToadReaderMarketingSite = () => {
-    const { history } = this.props
-    
-    Linking.openURL("https://toadreader.com").catch(err => {
-      console.log('ERROR: Request to open URL failed.', err)
-      history.push("/error", {
-        message: i18n("Your device is not allowing us to open this link."),
-      })
-    })
-  }
-
-  render() {
-    const { accounts, idps } = this.props
-    const { offline } = this.state
-
-    const accountIdpIds = []
-    const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
+  const confirmLogOut = useCallback(
+    () => {
+      const accountId = Object.keys(accounts)[0] || ""
       const idpId = accountId.split(':')[0]
-      if(accountIdpIds.includes(idpId)) return true
-      accountIdpIds.push(idpId)
-    })
 
-    const { height } = Dimensions.get('window')
-    const minHeight = height - (StatusBar.currentHeight || 0)
+      if(!idpId || !idps[idpId]) return
 
-    return (
-      <Container>
-        <Content>
-          <View style={{ minHeight }}>
-            <Image
-              source={require('../../../assets/images/drawer.png')}
-              style={styles.image}
-            />
-            <List style={styles.list}>
+      confirmRemoveAccountEPubs(
+        {
+          books,
+          removeFromBookDownloadQueue,
+          setDownloadStatus,
+          clearTocAndSpines,
+          clearUserDataExceptProgress,
+        },
+        () => {
+          history.push("/", {
+            logOutUrl: `https://${idps[idpId].domain}/logout`,
+            logOutAccountId: accountId,
+          })
+        },
+      )
+    },
+    [ accounts, idps, history, books ],
+  )
+
+  const reLogin = useCallback(
+    async () => {
+      const accountId = Object.keys(accounts)[0] || ""
+      const idpId = accountId.split(':')[0]
+
+      if(!idpId || !idps[idpId]) return
+      
+      // To force a refresh on the library, I need to call the url below and then open
+      // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
+      // login process includes javascript onload calls. When that process was over and it
+      // arrives back at the userDataUrl, then I would want to continue to get the library
+      // listing. In other words, I basically need to call the next line and run the whole
+      // login process again, but hidden.
+
+      history.push("/", {
+        logOutUrl: `https://${idps[idpId].domain}/logout/callback?noredirect=1`,
+        refreshLibraryAccountId: accountId,
+      })
+    },
+    [ accounts, idps, history ],
+  )
+
+  const removeAllEPubs = useCallback(
+    () => {
+      confirmRemoveAllEPubs({
+        books,
+        removeFromBookDownloadQueue,
+        setDownloadStatus,
+        clearTocAndSpines,
+        clearUserDataExceptProgress,
+      })
+    },
+    [ books ],
+  )
+
+  const goToToadReaderMarketingSite = useCallback(
+    () => {
+      Linking.openURL("https://toadreader.com").catch(err => {
+        console.log('ERROR: Request to open URL failed.', err)
+        history.push("/error", {
+          message: i18n("Your device is not allowing us to open this link."),
+        })
+      })
+    },
+    [ history ],
+  )
+
+  const accountIdpIds = []
+  const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
+    const idpId = accountId.split(':')[0]
+    if(accountIdpIds.includes(idpId)) return true
+    accountIdpIds.push(idpId)
+  })
+
+  const { height } = Dimensions.get('window')
+  const minHeight = height - (StatusBar.currentHeight || 0)
+
+  return (
+    <Container>
+      <Content>
+        <View style={{ minHeight }}>
+          <Image
+            source={require('../../../assets/images/drawer.png')}
+            style={styles.image}
+          />
+          <List style={styles.list}>
+            <ListItem icon
+              button
+              onPress={showAll}
+            >
+              <Left>
+                <Icon name="book" />
+              </Left>
+              <Body>
+                <Text>{i18n("Library")}</Text> 
+              </Body>
+            </ListItem>
+            {Object.keys(accounts).length > 1 && Object.keys(accounts).map(id => (
               <ListItem icon
+                key={id}
                 button
-                onPress={this.showAll}
+                onPress={() => {
+                  changeLibraryScope({ scope: id })
+                  history.goBack()
+                }}
               >
                 <Left>
                   <Icon name="book" />
                 </Left>
                 <Body>
-                  <Text>{i18n("Library")}</Text> 
-                </Body>
-              </ListItem>
-              {Object.keys(accounts).length > 1 && Object.keys(accounts).map(id => (
-                <ListItem icon
-                  key={id}
-                  button
-                  onPress={() => {
-                    changeLibraryScope({ scope: id })
-                    this.goToLibrary()
-                  }}
-                >
-                  <Left>
-                    <Icon name="book" />
-                  </Left>
-                  <Body>
-                    <Text>{i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName })}</Text>
-                    {!!hasMultipleAccountsForSingleIdp &&
-                      <Text>{accounts[id].email}</Text>
-                    }
-                  </Body>
-                </ListItem>
-              ))}
-              <ListItem icon
-                button
-                onPress={this.showDeviceOnly}
-              >
-                <Left>
-                  <Icon name="md-checkmark" />
-                </Left>
-                <Body>
-                  <Text>{i18n("On device only")}</Text>
-                </Body>
-              </ListItem>
-              <Separator bordered
-                style={styles.separator}
-              />
-              
-              {/* <Link to={`${match.url}/accounts`}>
-                <ListItem icon
-                  button
-                >
-                  <Left>
-                    <Icon name="person" />
-                  </Left>
-                  <Body>
-                    <Text>{i18n("Accounts")}</Text> 
-                  </Body>
-                </ListItem>
-              </Link> */}
-
-              <ListItem icon
-                button
-                onPress={offline ? null : this.reLogin}
-                style={offline ? styles.offline : null}
-              >
-                <Left>
-                  <Icon name="refresh" />
-                </Left>
-                <Body>
-                  <Text>{i18n("Refresh book list")}</Text>
-                </Body>
-              </ListItem>
-              <ListItem icon
-                button
-                onPress={this.removeAllEPubs}
-              >
-                <Left>
-                  <Icon name="remove-circle" />
-                </Left>
-                <Body>
-                  <Text>{i18n("Remove all books")}</Text>
-                </Body>
-              </ListItem>
-              {Object.values(idps).some(idp => !idp.idpNoAuth) &&
-                <ListItem icon
-                  button
-                  onPress={this.confirmLogOut}
-                >
-                  <Left>
-                    <Icon name="log-out" />
-                  </Left>
-                  <Body>
-                    <Text>{i18n("Log out")}</Text> 
-                  </Body>
-                </ListItem>
-              }
-            </List>
-            {!!LINK_TO_TOAD_READER_MARKETING_SITE &&
-              <TouchableOpacity
-                onPress={this.goToToadReaderMarketingSite}
-              >
-                <View style={styles.createdByContainer}>
-                  <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
-                  {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
-                    <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
+                  <Text>{i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName })}</Text>
+                  {!!hasMultipleAccountsForSingleIdp &&
+                    <Text>{accounts[id].email}</Text>
                   }
-                </View>
-              </TouchableOpacity>
+                </Body>
+              </ListItem>
+            ))}
+            <ListItem icon
+              button
+              onPress={showDeviceOnly}
+            >
+              <Left>
+                <Icon name="md-checkmark" />
+              </Left>
+              <Body>
+                <Text>{i18n("On device only")}</Text>
+              </Body>
+            </ListItem>
+            <Separator bordered
+              style={styles.separator}
+            />
+            
+            {/* <Link to={`${match.url}/accounts`}>
+              <ListItem icon
+                button
+              >
+                <Left>
+                  <Icon name="person" />
+                </Left>
+                <Body>
+                  <Text>{i18n("Accounts")}</Text> 
+                </Body>
+              </ListItem>
+            </Link> */}
+
+            <ListItem icon
+              button
+              onPress={online ? reLogin : null}
+              style={online ? null : styles.offline}
+            >
+              <Left>
+                <Icon name="refresh" />
+              </Left>
+              <Body>
+                <Text>{i18n("Refresh book list")}</Text>
+              </Body>
+            </ListItem>
+            <ListItem icon
+              button
+              onPress={removeAllEPubs}
+            >
+              <Left>
+                <Icon name="remove-circle" />
+              </Left>
+              <Body>
+                <Text>{i18n("Remove all books")}</Text>
+              </Body>
+            </ListItem>
+            {Object.values(idps).some(idp => !idp.idpNoAuth) &&
+              <ListItem icon
+                button
+                onPress={confirmLogOut}
+              >
+                <Left>
+                  <Icon name="log-out" />
+                </Left>
+                <Body>
+                  <Text>{i18n("Log out")}</Text> 
+                </Body>
+              </ListItem>
             }
-          </View>
-        </Content>
-      </Container>
-    )
-  }
+          </List>
+          {!!LINK_TO_TOAD_READER_MARKETING_SITE &&
+            <TouchableOpacity
+              onPress={goToToadReaderMarketingSite}
+            >
+              <View style={styles.createdByContainer}>
+                <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
+                {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
+                  <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
+                }
+              </View>
+            </TouchableOpacity>
+          }
+        </View>
+      </Content>
+    </Container>
+  )
 }
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts,
   idps: state.idps,
-  // books: state.books,
+  books: state.books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

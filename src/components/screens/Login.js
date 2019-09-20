@@ -10,7 +10,8 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts, isConnected } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+import { connectionInfo } from "../../hooks/useNetwork"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -47,39 +48,37 @@ class Login extends React.Component {
   onError = err => {
     const { history } = this.props
 
-    isConnected().then(connectionInfo => {
-      if(connectionInfo.type === 'none') {
-        // They are not connected to the internet
+    if(!connectionInfo.online) {
+      // They are not connected to the internet
 
+      NetInfo.removeEventListener('connectionChange', reattemptLogin)          
+
+      const reattemptLogin = () => {
         NetInfo.removeEventListener('connectionChange', reattemptLogin)          
-
-        const reattemptLogin = () => {
-          NetInfo.removeEventListener('connectionChange', reattemptLogin)          
-          this.webView.reload()
-        }
-
-        NetInfo.addEventListener('connectionChange', reattemptLogin)
-
-        this.setState({
-          offline: true,
-          error: null,
-        })
-            
-      } else {
-        // There was an unknown error
-
-        history.push("/error", {
-          message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
-        })
-
-        setUpTimeout(this.webView.reload, 15000, this)
-
-        this.setState({
-          offline: false,
-          error: i18n("Error. Trying again..."),
-        })
+        this.webView.reload()
       }
-    })
+
+      NetInfo.addEventListener('connectionChange', reattemptLogin)
+
+      this.setState({
+        offline: true,
+        error: null,
+      })
+          
+    } else {
+      // There was an unknown error
+
+      history.push("/error", {
+        message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
+      })
+
+      setUpTimeout(this.webView.reload, 15000, this)
+
+      this.setState({
+        offline: false,
+        error: i18n("Error. Trying again..."),
+      })
+    }
   }
 
   onNavigationStateChange = async ({ url, loading }) => {
