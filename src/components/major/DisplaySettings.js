@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Card, CardItem, Button, Icon, Text, View, ListItem, Left, Radio } from "native-base"
@@ -85,21 +85,31 @@ const styles = StyleSheet.create({
   },
 })
 
-class DisplaySettings extends React.PureComponent {
+const DisplaySettings = ({
+  displaySettings,
+  setTextSize,
+  requestHide,
+  // setTextSpacing,
+  // setTheme,
+}) => {
 
-  increaseTextSize = () => {
-    const { displaySettings, setTextSize } = this.props
-    const { textSize } = displaySettings
+  const { textSize } = displaySettings
+  // const { textSize, textSpacing, theme } = displaySettings
 
-    setTextSize({ textSize: textSize + 10 })
-  }
+  const increaseTextSize = useCallback(
+    () => {
+      setTextSize({ textSize: textSize + 10 })
+    },
+    [ textSize, setTextSize ],
+  )
 
-  decreaseTextSize = () => {
-    const { displaySettings, setTextSize } = this.props
-    const { textSize } = displaySettings
-
-    setTextSize({ textSize: textSize - 10 })
-  }
+  const decreaseTextSize = useCallback(
+    () => {
+      const { textSize } = displaySettings
+      setTextSize({ textSize: textSize - 10 })
+    },
+    [ textSize, setTextSize ],
+  )
 
   // increaseTextSpacing = () => {
   //   const { displaySettings, setTextSpacing } = this.props
@@ -115,97 +125,92 @@ class DisplaySettings extends React.PureComponent {
   //   setTextSpacing({ textSpacing: textSpacing - 10 })
   // }
 
-  render() {
-    const { requestHide, displaySettings, setTextSize, setTextSpacing, setTheme } = this.props
-    const { textSize, textSpacing, theme } = displaySettings
+  // const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
+  
+  return (
+    <View style={styles.container}>
+      <BackFunction func={requestHide} />
+      <Card style={styles.settings}>
 
-    const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
-    
-    return (
-      <View style={styles.container}>
-        <BackFunction func={requestHide} />
-        <Card style={styles.settings}>
+        <View style={styles.headerContainer}>
 
-          <View style={styles.headerContainer}>
+          <CardItem header style={styles.headerCont}>
+            <Text style={styles.header}>{i18n("Display settings")}</Text>
+          </CardItem>
 
-            <CardItem header style={styles.headerCont}>
-              <Text style={styles.header}>{i18n("Display settings")}</Text>
-            </CardItem>
+          <Button transparent dark
+            onPress={requestHide}
+          >
+            <Icon name='close' />
+          </Button>
+          
+        </View>
 
-            <Button transparent dark
-              onPress={requestHide}
-            >
-              <Icon name='close' />
-            </Button>
-            
-          </View>
-
-          <View style={styles.settingContainer}>
-            <View style={styles.setting}>
-              <Text style={styles.heading}>{i18n("Text size")}</Text>
-              <View style={styles.buttonRow}>
-                <Button light
-                  style={styles.addRemoveButton}
-                  onPress={this.decreaseTextSize}
-                >
-                  <Icon name='remove' />
-                </Button>
-                <Button light
-                  style={styles.addRemoveButton}
-                  onPress={this.increaseTextSize}
-                >
-                  <Icon name='add' />
-                </Button>
-              </View>
+        <View style={styles.settingContainer}>
+          <View style={styles.setting}>
+            <Text style={styles.heading}>{i18n("Text size")}</Text>
+            <View style={styles.buttonRow}>
+              <Button light
+                style={styles.addRemoveButton}
+                onPress={decreaseTextSize}
+              >
+                <Icon name='remove' />
+              </Button>
+              <Button light
+                style={styles.addRemoveButton}
+                onPress={increaseTextSize}
+              >
+                <Icon name='add' />
+              </Button>
             </View>
-
-            {/* <View style={styles.setting}>
-              <Text style={styles.heading}>{i18n("Spacing")}</Text>
-              <View style={styles.buttonRow}>
-                <Button light
-                  style={styles.addRemoveButton}
-                  onPress={this.decreaseTextSpacing}
-                >
-                  <Icon name='remove' />
-                </Button>
-                <Button light
-                  style={styles.addRemoveButton}
-                  onPress={this.increaseTextSpacing}
-                >
-                  <Icon name='add' />
-                </Button>
-              </View>
-            </View> */}
           </View>
 
-          {/* <View style={styles.settingContainer}>
-            <View style={styles.setting}>
-              <Text style={styles.heading}>{i18n("Theme")}</Text>
-              <View>
-                {themeOptions.map(themeOption => (
-                  <TouchableComponent
-                    key={themeOption.id}
-                    onPress={() => setTheme({ theme: themeOption.id })}
-                  >
-                    <View
-                      style={styles.radioLine}
-                    >
-                      <Radio
-                        style={styles.radio}
-                        selected={theme === themeOption.id}
-                      />
-                      <Text>{themeOption.label}</Text>
-                    </View>
-                  </TouchableComponent>
-                ))}
-              </View>
+          {/* <View style={styles.setting}>
+            <Text style={styles.heading}>{i18n("Spacing")}</Text>
+            <View style={styles.buttonRow}>
+              <Button light
+                style={styles.addRemoveButton}
+                onPress={decreaseTextSpacing}
+              >
+                <Icon name='remove' />
+              </Button>
+              <Button light
+                style={styles.addRemoveButton}
+                onPress={increaseTextSpacing}
+              >
+                <Icon name='add' />
+              </Button>
             </View>
           </View> */}
+        </View>
 
-        </Card>
-      </View>
-    )
-  }
+        {/* <View style={styles.settingContainer}>
+          <View style={styles.setting}>
+            <Text style={styles.heading}>{i18n("Theme")}</Text>
+            <View>
+              {themeOptions.map(themeOption => (
+                <TouchableComponent
+                  key={themeOption.id}
+                  onPress={() => setTheme({ theme: themeOption.id })}
+                >
+                  <View
+                    style={styles.radioLine}
+                  >
+                    <Radio
+                      style={styles.radio}
+                      selected={theme === themeOption.id}
+                    />
+                    <Text>{themeOption.label}</Text>
+                  </View>
+                </TouchableComponent>
+              ))}
+            </View>
+          </View>
+        </View> */}
+
+      </Card>
+    </View>
+  )
 }
 
 const mapStateToProps = (state) => ({
