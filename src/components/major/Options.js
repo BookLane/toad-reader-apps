@@ -36,54 +36,46 @@ const styles = StyleSheet.create({
   },
 })
 
-class Options extends React.PureComponent {
-
-  render() {
-    const { options, requestHide, headerText } = this.props
-
-    return (
-      <View style={styles.container}>
-        <BackFunction func={requestHide} />
-        <TouchableWithoutFeedback
-          onPress={requestHide}
-        >
-          <View style={styles.cover}>
-          </View>
-        </TouchableWithoutFeedback>
-        <Card style={styles.options}>
-          {!!headerText && 
-            <CardItem header>
-              <Text
-                style={styles.header}
-              >
-                {headerText}
-              </Text>
-            </CardItem>
-          }
-          {options.map((option, index) => (
-            <CardItem button
-              key={index}
-              onPress={() => {
-                requestHide()
-                option.onPress()
-              }}
-            >
-              <Text>{option.text}</Text>
-              {!!option.selected &&
-                <Icon
-                  name="md-checkmark"
-                  style={styles.icon}
-                />
-              }
-            </CardItem>
-          ))}
-          {Platform.OS === 'ios' && <CardItem />}
-        </Card>
+const Options = React.memo(({ options, requestHide, headerText }) => (
+  <View style={styles.container}>
+    <BackFunction func={requestHide} />
+    <TouchableWithoutFeedback
+      onPress={requestHide}
+    >
+      <View style={styles.cover}>
       </View>
-    )
-
-    // Last blank CardItem needed to offset a bug in iOS
-  }
-}
+    </TouchableWithoutFeedback>
+    <Card style={styles.options}>
+      {!!headerText && 
+        <CardItem header>
+          <Text
+            style={styles.header}
+          >
+            {headerText}
+          </Text>
+        </CardItem>
+      }
+      {options.map((option, index) => (
+        <CardItem button
+          key={index}
+          onPress={() => {
+            requestHide()
+            option.onPress()
+          }}
+        >
+          <Text>{option.text}</Text>
+          {!!option.selected &&
+            <Icon
+              name="md-checkmark"
+              style={styles.icon}
+            />
+          }
+        </CardItem>
+      ))}
+      {Platform.OS === 'ios' && <CardItem />}
+      {/* Last blank CardItem needed to offset a bug in iOS */}
+    </Card>
+  </View>
+))
 
 export default Options
