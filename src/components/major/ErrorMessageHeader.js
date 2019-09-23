@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { Title, Left, Right, Icon, Button, Body } from "native-base"
 import { withRouter } from "react-router"
@@ -6,7 +6,8 @@ import i18n from "../../utils/i18n.js"
 
 import AppHeader from "../basic/AppHeader"
 
-import { isPhoneSize, isStatusBarHidden, setStatusBarHidden, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
+import { isPhoneSize, isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox.js'
+import useSetTimeout from "../../hooks/useSetTimeout.js"
 
 const styles = StyleSheet.create({
   title: {
@@ -14,47 +15,44 @@ const styles = StyleSheet.create({
   },
 })
 
-class ErrorMessageHeader extends React.PureComponent {
+const ErrorMessageHeader = React.memo(({ history, location }) => {
 
-  componentDidMount() {
-    this.priorStatusBarHiddenValue = isStatusBarHidden()
-    setUpTimeout(() => setStatusBarHidden(false), 20, this)
-  }
+  const priorStatusBarHiddenValue = useRef(isStatusBarHidden())
+  const [ setHideStatusBarTimeout ] = useSetTimeout()
 
-  componentWillUnmount = unmountTimeouts
-  // const [ set ] = useSetTimeout()
+  useEffect(
+    () => setHideStatusBarTimeout(() => setStatusBarHidden(false), 20),
+    [],
+  )
 
-  onBackPress = () => {
-    const { history } = this.props
-    
-    setStatusBarHidden(this.priorStatusBarHiddenValue)
+  const onBackPress = useCallback(
+    () => {
+      setStatusBarHidden(priorStatusBarHiddenValue)
+      history.goBack()
+    },
+    [ history ],
+  )
 
-    history.goBack()
-  }
-
-  render() {
-    const { location } = this.props
-    const { title, critical } = location.state || {}
-    
-    return (
-      <AppHeader>
-        <Left>
-          {!critical &&
-            <Button
-              transparent
-              onPress={this.onBackPress}
-            >
-              <Icon name="arrow-back" />
-            </Button>
-          }
-        </Left>
-        <Body>
-          <Title style={styles.title}>{title || i18n("Error")}</Title>
-        </Body>
-        <Right />
-      </AppHeader>
-    )
-  }
-}
+  const { title, critical } = location.state || {}
+  
+  return (
+    <AppHeader>
+      <Left>
+        {!critical &&
+          <Button
+            transparent
+            onPress={onBackPress}
+          >
+            <Icon name="arrow-back" />
+          </Button>
+        }
+      </Left>
+      <Body>
+        <Title style={styles.title}>{title || i18n("Error")}</Title>
+      </Body>
+      <Right />
+    </AppHeader>
+  )
+})
 
 export default withRouter(ErrorMessageHeader)
