@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Link } from "../routers/react-router"
@@ -10,68 +10,73 @@ import AppHeader from "../basic/AppHeader"
 
 import { setSort, toggleView } from "../../redux/actions.js"
 
-class LibraryHeader extends React.Component {
+const LibraryHeader = ({
+  toggleView,
+  hideOptions,
+  idps,
+  accounts,
+  library,
+  toggleShowOptions,
+}) => {
 
-  toggleView = () => {
-    const { toggleView, hideOptions } = this.props
+  const onPressToggleView = useCallback(
+    () => {
+      hideOptions()
+      toggleView()
+    },
+    [ hideOptions, toggleView ],
+  )
 
-    hideOptions()
-    toggleView()
+  const scope = library.scope || "all"
+
+  let title = i18n("Library")
+  let subtitle = ""
+
+  if(scope == 'device') {
+    title = i18n("On device")
   }
 
-  render() {
-    const { idps, accounts, library, toggleShowOptions, hideOptions } = this.props
-    const scope = library.scope || "all"
-
-    let title = i18n("Library")
-    let subtitle = ""
-
-    if(scope == 'device') {
-      title = i18n("On device")
-    }
+  if(accounts[scope]) {
+    title = idps[scope.split(':')[0]].idpName
+    subtitle = accounts[scope].email
+  }
   
-    if(accounts[scope]) {
-      title = idps[scope.split(':')[0]].idpName
-      subtitle = accounts[scope].email
-    }
-    
-    return (
-      <AppHeader>
-        <Left>
-          <Link to="/drawer">
-            <Button
-              transparent
-              onPress={hideOptions}
-            >
-              <Icon name="menu" />
-            </Button>
-          </Link>
-        </Left>
-        <Body>
-          <Title>{title}</Title>
-          {subtitle
-            ? <Subtitle>{subtitle}</Subtitle>
-            : null
-          }
-        </Body>
-        <Right>
+  return (
+    <AppHeader>
+      <Left>
+        <Link to="/drawer">
           <Button
             transparent
-            onPress={this.toggleView}
+            onPress={hideOptions}
           >
-            <Icon name={library.view == "covers" ? "list" : "md-apps"} />
-            {/* square */}
+            <Icon name="menu" />
           </Button>
-          <Button
-            transparent
-            onPress={toggleShowOptions}
-          >
-            <Icon name="more" />
-          </Button>
-        </Right>
-      </AppHeader>
-    )
-  }
+        </Link>
+      </Left>
+      <Body>
+        <Title>{title}</Title>
+        {subtitle
+          ? <Subtitle>{subtitle}</Subtitle>
+          : null
+        }
+      </Body>
+      <Right>
+        <Button
+          transparent
+          onPress={onPressToggleView}
+        >
+          <Icon name={library.view == "covers" ? "list" : "md-apps"} />
+          {/* square */}
+        </Button>
+        <Button
+          transparent
+          onPress={toggleShowOptions}
+        >
+          <Icon name="more" />
+        </Button>
+      </Right>
+    </AppHeader>
+  )
 }
 
 const mapStateToProps = (state) => ({

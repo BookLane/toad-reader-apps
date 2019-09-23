@@ -15,7 +15,10 @@ const styles = StyleSheet.create({
   },
 })
 
-const ErrorMessageHeader = React.memo(({ history, location }) => {
+const ErrorMessageHeader = React.memo(({
+  history,
+  location,
+}) => {
 
   const priorStatusBarHiddenValue = useRef(isStatusBarHidden())
   const [ setHideStatusBarTimeout ] = useSetTimeout()
