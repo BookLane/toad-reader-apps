@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const HighlighterShareIcon = ({
+const HighlighterShareIcon = React.memo(({
   idps,
   accounts,
   books,
@@ -77,7 +77,7 @@ const HighlighterShareIcon = ({
       />
     </TouchableOpacity>
   )
-}
+})
 
 const mapStateToProps = (state) => ({
   idps: state.idps,

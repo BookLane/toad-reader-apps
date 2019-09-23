@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 
 const notesForUndo = {}
 
-const HighlighterLabel = ({
+const HighlighterLabel = React.memo(({
   selectionInfo,
   bookId,
   highlight,
@@ -214,7 +214,7 @@ const HighlighterLabel = ({
       </TouchableOpacity> */}
     </View>
   )
-}
+})
 
 const mapStateToProps = (state) => ({
 })

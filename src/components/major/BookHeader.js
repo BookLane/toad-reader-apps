@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const BookHeader = ({
+const BookHeader = React.memo(({
   title,
   subtitle,
   mode,
@@ -100,6 +100,6 @@ const BookHeader = ({
       </Right>
     </AppHeader>
   )
-}
+})
 
 export default withRouter(BookHeader)

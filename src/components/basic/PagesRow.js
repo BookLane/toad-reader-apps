@@ -19,10 +19,10 @@ const styles = StyleSheet.create({
   },
 })
 
-const PagesRow = ({ children }) => (
+const PagesRow = React.memo(({ children }) => (
   <View style={styles.pages}>
     {children}
   </View>
-)
+))
 
 export default PagesRow

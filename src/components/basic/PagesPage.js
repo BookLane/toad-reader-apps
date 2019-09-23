@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const PagesPage = ({
+const PagesPage = React.memo(({
   bookId,
   spineIdRef,
   cfi,
@@ -152,6 +152,6 @@ const PagesPage = ({
       }
     </View>
   )
-}
+})
 
 export default PagesPage

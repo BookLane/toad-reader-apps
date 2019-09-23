@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const CapturingThumbnailsInfoIcon = () => {
+const CapturingThumbnailsInfoIcon = React.memo(() => {
 
   const showInfo = useCallback(
     () => {
@@ -43,6 +43,6 @@ const CapturingThumbnailsInfoIcon = () => {
       </TouchableOpacity>
     </View>
   )
-}
+})
 
 export default CapturingThumbnailsInfoIcon

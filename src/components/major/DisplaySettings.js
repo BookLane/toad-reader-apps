@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const DisplaySettings = ({
+const DisplaySettings = React.memo(({
   displaySettings,
   setTextSize,
   requestHide,
@@ -211,7 +211,7 @@ const DisplaySettings = ({
       </Card>
     </View>
   )
-}
+})
 
 const mapStateToProps = (state) => ({
   displaySettings: state.displaySettings,

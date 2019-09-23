@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const CoversRow = ({
+const CoversRow = React.memo(({
   children,
   isFirstRow,
 }) => (
@@ -33,6 +33,6 @@ const CoversRow = ({
   ]}>
     {children}
   </View>
-)
+))
 
 export default CoversRow
