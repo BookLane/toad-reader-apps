@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useLayoutEffect } from "react"
 // import { AppLoading } from "expo"
 import * as Font from 'expo-font'
 import { Root } from "native-base"
@@ -44,53 +44,55 @@ const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
 
-export default class App extends React.Component {
-  state = {
-    isReady: false,
+const App = () => {
+
+  const [ isReady, setIsReady ] = useState(false)
+
+  useLayoutEffect(
+    () => {
+      (async () => {
+        await Promise.all([
+          Font.loadAsync({
+            Roboto: require('native-base/Fonts/Roboto.ttf'),
+            Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+            Ionicons: require("native-base/Fonts/Ionicons.ttf"),
+          }),
+        ])
+        
+        await updateDataStructure()  // needs to be after the persistStore call above
+
+        setIsReady(true)
+
+        // no need to wait for the following, but preload anyway
+        // Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
+        // the above line was causing a crash in development mode
+      })()
+    },
+    [],
+  )
+
+  if(!isReady) {
+    return <View><Text>Loading</Text></View>
+    // return <AppLoading />
   }
 
-  async componentWillMount() {
-    await Promise.all([
-      Font.loadAsync({
-        Roboto: require('native-base/Fonts/Roboto.ttf'),
-        Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-        Ionicons: require("native-base/Fonts/Ionicons.ttf"),
-      }),
-    ])
-    
-    await updateDataStructure()  // needs to be after the persistStore call above
-
-    this.setState({ isReady: true })
-
-    // no need to wait for the following, but preload anyway
-    // Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),
-    // the above line was causing a crash in development mode
-  }
-
-  render() {
-    const { isReady } = this.state
-
-    if(!isReady) {
-      return <View><Text>Loading</Text></View>
-      // return <AppLoading />
-    }
-
-    return (
-      <Root>
-        <PersistGate 
-          persistor={persistor} 
-          //loading={<AppLoading />}
-        >
-          <Provider store={store}>
-            <Router>
-              <Library />
-            </Router>
-          </Provider>
-        </PersistGate>
-      </Root>
-    )
-  }
+  return (
+    <Root>
+      <PersistGate 
+        persistor={persistor} 
+        //loading={<AppLoading />}
+      >
+        <Provider store={store}>
+          <Router>
+            <Library />
+          </Router>
+        </Provider>
+      </PersistGate>
+    </Root>
+  )
 }
+
+export default App
 
 /*
 
