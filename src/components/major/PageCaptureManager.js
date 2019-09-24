@@ -3,7 +3,6 @@ import Constants from 'expo-constants'
 import { Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "native-base"
 
 import PageCapture from "./PageCapture"
 

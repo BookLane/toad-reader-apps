@@ -132,7 +132,7 @@ class ZoomPage extends React.Component {
   }
 
   render() {
-    const { snapshotCoords, pageCfiKnown } = this.props
+    const { pageCfiKnown } = this.props
     const { translateX, translateY, scale, opacity } = this
 
     const uri = getSnapshotURI(this.props)
