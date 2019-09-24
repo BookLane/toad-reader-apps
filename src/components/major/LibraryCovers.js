@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
 })
 
 const LibraryCovers = ({
-  bookList=[],
-  library,
   books,
+  bookList=[],
+  library={},
 }) => {
 
   const { coverWidth, coverHeight, coversPerRow } = useCoverSize()
@@ -115,12 +115,11 @@ const LibraryCovers = ({
     scrollToTop()
   }
 
-  const scrollToTopIfSortIsRecent = ({ action }) => {
-    if(action.type === 'Navigation/BACK' && library.sort == 'recent') {
-      scrollToTop()
-    }
-  }
-
+  // const scrollToTopIfSortIsRecent = ({ action }) => {
+  //   if(action.type === 'Navigation/BACK' && library.sort == 'recent') {
+  //     scrollToTop()
+  //   }
+  // }
   // TODO: navigation.addListener("willFocus", scrollToTopIfSortIsRecent)
   // this.navigationWillFocusListener.remove()
 

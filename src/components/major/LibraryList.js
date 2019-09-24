@@ -1,9 +1,10 @@
-import React from "react"
+import React, { useCallback, useRef } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View } from "native-base"
 import { StyleSheet, FlatList } from "react-native"
+import usePrevious from "react-use/lib/usePrevious"
 
 import LibraryBook from "../basic/LibraryBook"
 import BookInfo from "../basic/BookInfo"
@@ -20,53 +21,42 @@ const styles = StyleSheet.create({
   },
 })
 
-class LibraryList extends React.PureComponent {
+const LibraryList = React.memo(({
+  books,
+  bookList=[],
+  library={},
+}) => {
 
-  componentDidMount() {
-    // const { navigation } = this.props
+  const flatListRef = useRef()
 
-    // this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+  const scrollToTop = () => {
+    flatListRef.current && flatListRef.current.scrollToOffset({ offset: 0, animated: false })
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.scrollToTopIfSortOrScopeChanged(nextProps)
+  const prevLibrary = usePrevious(library)
+
+  // scroll to top if sort or scope changed
+  if(
+    library
+    && ['sort', 'scope'].some(key => (
+      prevLibrary[key]
+      && library[key]
+      && prevLibrary[key] != library[key]
+    ))
+  ) {
+    scrollToTop()
   }
 
-  componentWillUnmount() {
-    // this.navigationWillFocusListener.remove()
-  }
+  // const scrollToTopIfSortIsRecent = ({ action }) => {
+  //   if(action.type === 'Navigation/BACK' && library.sort == 'recent') {
+  //     scrollToTop()
+  //   }
+  // }
+  // TODO: this.navigationWillFocusListener = navigation.addListener("willFocus", this.scrollToTopIfSortIsRecent)
+  // this.navigationWillFocusListener.remove()
 
-  scrollToTopIfSortIsRecent = ({ action }) => {
-    const { library={} } = this.props
-
-    if(action.type === 'Navigation/BACK' && library.sort == 'recent') {
-      this.scrollToTop()
-    }
-  }
-
-  scrollToTopIfSortOrScopeChanged = nextProps => {
-    const { library={} } = this.props
-
-    if(
-      nextProps.library
-      && ['sort', 'scope'].some(key => (
-        library[key]
-        && nextProps.library[key]
-        && library[key] != nextProps.library[key]
-      ))
-    ) {
-      this.scrollToTop()
-    }
-  }
-
-  scrollToTop = () => {
-    this.flatListEl && this.flatListEl.scrollToOffset({ offset: 0, animated: false })
-  }
-
-  renderItem = ({ item: { key: bookId }, index }) => {
-    const { books } = this.props
-  
-    return (
+  const renderItem = useCallback(
+    ({ item: { key: bookId }, index }) => (
       <LibraryBook
         key={bookId}
         bookId={bookId}
@@ -77,30 +67,22 @@ class LibraryList extends React.PureComponent {
           isFirstRow={index === 0}
         />
       </LibraryBook>
-    )
-  }
+    ),
+    [ books ],
+  )
 
-  setFlatListEl = ref => {
-    this.flatListEl = ref
-  }
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={bookList.map(bookId => ({ key: bookId }))}
+        renderItem={this.renderItem}
+        showsVerticalScrollIndicator={false}
+        ref={flatListRef}
+      />
 
-  render() {
-
-    const { bookList=[] } = this.props
-
-    return (
-      <View style={styles.container}>
-        <FlatList
-          data={bookList.map(bookId => ({ key: bookId }))}
-          renderItem={this.renderItem}
-          showsVerticalScrollIndicator={false}
-          ref={this.setFlatListEl}
-        />
-
-      </View>
-    )
-  }
-}
+    </View>
+  )
+})
 
 const mapStateToProps = (state) => ({
   books: state.books,
