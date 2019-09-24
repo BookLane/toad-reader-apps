@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef } from "react"
 import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -37,113 +37,106 @@ const styles = StyleSheet.create({
   },
 })
 
-class Highlighter extends React.PureComponent {
+const Highlighter = React.memo(({
+  noteInEdit,
+  selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+  userDataByBookId,
+  bookId,
+  setHighlight,
+  updateNoteInEdit,
+  setSelectionText,
+  updateAccount,
+  updateBookAccount,
+}) => {
 
-  constructor(props) {
-    super(props)
+  // We do not use useState here, because we don't want to wait until the next render.
+  // We do not use a simple local variable here, because we sometimes want it to 
+  // not change from the previous value.
+  const highlight = useRef()
 
-    this.state = {
-      highlight: this.getHighlight(props),
-    }
-  }
+  if(noteInEdit == null) {
 
-  componentWillReceiveProps(nextProps) {
-    const { noteInEdit } = this.state
-
-    if(nextProps.noteInEdit == null) {
-      this.setState({
-        highlight: this.getHighlight(nextProps),
-      })
-    }
-  }
-
-  getHighlight = props => {
-    const { selectionInfo, userDataByBookId, bookId } = props || this.props
-    // example of selectionInfo: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-
-    let highlightToReturn
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
-    thisBooksHighlights.some(highlight => {
-      if(highlight.spineIdRef === selectionInfo.spineIdRef && highlight.cfi === selectionInfo.cfi && !highlight._delete) {
-        highlightToReturn = highlight
+    thisBooksHighlights.some(h => {
+      if(h.spineIdRef === selectionInfo.spineIdRef && h.cfi === selectionInfo.cfi && !h._delete) {
+        highlight.current = h
         return true
       }
     })
 
-    return highlightToReturn
   }
 
-  setEditingNote = editingNote => {
-    const { bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText } = this.props
-    const { spineIdRef, cfi } = selectionInfo || {}
-    const { highlight } = this.state
+  const noteTextInputRef = useRef()
 
-    if(editingNote) {
-      updateNoteInEdit(highlight.note)
+  const setEditingNote = useCallback(
+    editingNote => {
+      const { spineIdRef, cfi } = selectionInfo || {}
 
-    } else {
-      setHighlight({
-        ...highlight,
-        bookId,
-        note: noteInEdit,
-        patchInfo: this.props,
-      })
+      if(editingNote) {
+        updateNoteInEdit(highlight.note)
 
-      updateNoteInEdit(null)
+      } else {
+        setHighlight({
+          ...highlight,
+          bookId,
+          note: noteInEdit,
+          patchInfo: {
+            userDataByBookId,
+            updateAccount,
+            updateBookAccount,
+          },
+        })
 
-      setSelectionText({
-        spineIdRef,
-        cfi,
-      })
-    }
-  }
+        updateNoteInEdit(null)
 
-  setNoteTextInputEl = el => this.noteTextInputEl = el
-  endEditingNote = () => this.noteTextInputEl.blur()
+        setSelectionText({
+          spineIdRef,
+          cfi,
+        })
+      }
+    },
+    [ bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText, highlight, userDataByBookId, updateAccount, updateBookAccount ],
+  )
+
+  const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])
   
-  render() {
-    const { selectionInfo, bookId, noteInEdit, setSelectionText, updateNoteInEdit } = this.props
-    // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-    const { highlight } = this.state
+  const isEditingNote = noteInEdit != null 
 
-    const isEditingNote = noteInEdit != null 
-
-    return [
-      ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
-      <BackFunction key="back" func={isEditingNote ? this.endEditingNote : setSelectionText} />,
-      <KeyboardAvoidingView
-        key="container"
-        style={[
-          styles.container,
-          (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
-        ]}
-        keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
-        behavior="padding"
-      >
-        <HighlighterLabel
-          selectionInfo={selectionInfo}
-          bookId={bookId}
-          highlight={highlight}
-          // setSelectionText={setSelectionText}
-          isEditingNote={isEditingNote}
-          endEditingNote={this.endEditingNote}
+  return [
+    ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
+    <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
+    <KeyboardAvoidingView
+      key="container"
+      style={[
+        styles.container,
+        (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
+      ]}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
+      behavior="padding"
+    >
+      <HighlighterLabel
+        selectionInfo={selectionInfo}
+        bookId={bookId}
+        highlight={highlight}
+        // setSelectionText={setSelectionText}
+        isEditingNote={isEditingNote}
+        endEditingNote={endEditingNote}
+      />
+      {!!highlight && 
+        <HighlighterNotes
+          note={isEditingNote ? noteInEdit : highlight.note}
+          updateNoteInEdit={updateNoteInEdit}
+          setEditingNote={setEditingNote}
+          noteTextInputRef={noteTextInputRef}
         />
-        {!!highlight && 
-          <HighlighterNotes
-            note={isEditingNote ? noteInEdit : highlight.note}
-            updateNoteInEdit={updateNoteInEdit}
-            setEditingNote={this.setEditingNote}
-            setNoteTextInputEl={this.setNoteTextInputEl}
-          />
-        }
-      </KeyboardAvoidingView>
-    ]
-  }
-}
+      }
+    </KeyboardAvoidingView>
+  ]
+})
 
-const mapStateToProps = (state) => ({
-  userDataByBookId: state.userDataByBookId,
+const mapStateToProps = ({ userDataByBookId }) => ({
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

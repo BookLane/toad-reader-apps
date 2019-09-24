@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
 const HighlighterNotes = React.memo(({
   note,
   updateNoteInEdit,
-  setNoteTextInputEl,
+  noteTextInputRef,
   setEditingNote,
 }) => {
 
@@ -31,7 +31,7 @@ const HighlighterNotes = React.memo(({
       onChangeText={updateNoteInEdit}
       onFocus={onFocus}
       onBlur={onBlur}
-      ref={setNoteTextInputEl}
+      ref={noteTextInputRef}
     />
   )
 })
