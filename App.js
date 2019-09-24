@@ -1,8 +1,8 @@
 import React, { useState, useLayoutEffect } from "react"
-// import { AppLoading } from "expo"
-import * as Font from 'expo-font'
+import { AppLoading } from "expo"
+// import * as Font from 'expo-font'
 
-import { AsyncStorage, View, Text } from "react-native"
+import { AsyncStorage } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
@@ -68,8 +68,7 @@ const App = () => {
   )
 
   if(!isReady) {
-    return <View><Text>Loading</Text></View>
-    // return <AppLoading />
+    return <AppLoading />
   }
 
   return (
@@ -80,7 +79,7 @@ const App = () => {
       {/* <IconRegistry icons={EvaIconsPack} /> */}
       <PersistGate 
         persistor={persistor} 
-        //loading={<AppLoading />}
+        loading={<AppLoading />}
       >
         <Provider store={store}>
           <Router>
