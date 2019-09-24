@@ -49,7 +49,7 @@ const PagesPage = React.memo(({
   cfi,
   pageIndexInSpine,
   pageCfisKey,
-  delayPageChangeScroll,
+  // delayPageChangeScroll,
   zoomToPage,
   pageWidth,
   pageHeight,
@@ -66,11 +66,11 @@ const PagesPage = React.memo(({
     () => {
       if(preventDoubleTap.current) return
 
-      delayPageChangeScroll({
-        bookId,
-        spineIdRef,
-        pageIndexInSpine,
-      })
+      // delayPageChangeScroll({
+      //   bookId,
+      //   spineIdRef,
+      //   pageIndexInSpine,
+      // })
 
       preventDoubleTap.current = true
 
@@ -85,7 +85,7 @@ const PagesPage = React.memo(({
 
       setDoubleTapTimeout(() => preventDoubleTap.current = false, 1000)
     },
-    [ bookId, spineIdRef, cfi, pageIndexInSpine, delayPageChangeScroll, zoomToPage ],
+    [ bookId, spineIdRef, cfi, pageIndexInSpine, zoomToPage ],
   )
 
   const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
