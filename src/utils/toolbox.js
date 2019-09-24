@@ -1,8 +1,6 @@
 import { Platform, Dimensions, StatusBar } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
-import { Toast } from "native-base"
 import i18n from "./i18n.js"
 
 const {
@@ -181,9 +179,13 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   }
 }
 
-export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
-export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
-export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
+export const isIPhoneX = false
+export const getFooterHeight = () => 50
+export const getToolbarHeight = () => 50
+// TODO
+// export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
+// export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
+// export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
 
 export const isPhoneSize = () => {
   const { width, height } = Dimensions.get('window')
@@ -388,12 +390,12 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
     }
   })) {
 
-    Toast.show({
-      text,
-      buttonText: i18n("Okay"),
-      duration: 0,
-      onClose: setXapiConsentShown,
-    })
+    // Toast.show({
+    //   text,
+    //   buttonText: i18n("Okay"),
+    //   duration: 0,
+    //   onClose: setXapiConsentShown,
+    // })
 
   }
 

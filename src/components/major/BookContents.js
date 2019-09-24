@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from "react"
-import { FlatList } from "react-native"
+import { List } from "react-native-ui-kitten"
 
 import BookContentsLine from "../basic/BookContentsLine"
 
@@ -54,7 +54,7 @@ const BookContents = React.memo(({
   )
 
   return (
-    <FlatList
+    <List
       data={data}
       renderItem={renderItem}
     />

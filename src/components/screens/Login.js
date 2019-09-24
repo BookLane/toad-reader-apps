@@ -1,11 +1,11 @@
 import React, { useState, useRef, useCallback } from "react"
 import { Updates } from "expo"
-import { StyleSheet, NetInfo } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { Container, View } from "native-base"
+import { Layout } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
@@ -172,7 +172,7 @@ const Login = ({
       )
 
   return (
-    <Container>
+    <Layout>
       <WebView
         style={[
           styles.fullscreen,
@@ -196,7 +196,7 @@ const Login = ({
           style={{ backgroundColor: 'white' }}
         />
       }
-    </Container>
+    </Layout>
   )
 }
 

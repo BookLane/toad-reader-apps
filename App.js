@@ -1,7 +1,6 @@
 import React, { useState, useLayoutEffect } from "react"
 // import { AppLoading } from "expo"
 import * as Font from 'expo-font'
-import { Root } from "native-base"
 
 import { AsyncStorage, View, Text } from "react-native"
 import { Router } from "./src/components/routers/react-router"
@@ -10,6 +9,10 @@ import { persistStore, persistReducer } from "redux-persist"
 import { PersistGate } from 'redux-persist/integration/react'
 import reducers from "./src/redux/reducers.js"
 import { Provider } from "react-redux"
+
+import { mapping, light as lightTheme } from "@eva-design/eva"
+import { ApplicationProvider, IconRegistry } from "react-native-ui-kitten"
+// import { EvaIconsPack } from '@ui-kitten/eva-icons'
 
 import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch, reportReadings } from "./src/utils/syncUserData.js"
@@ -51,13 +54,6 @@ const App = () => {
   useLayoutEffect(
     () => {
       (async () => {
-        await Promise.all([
-          Font.loadAsync({
-            Roboto: require('native-base/Fonts/Roboto.ttf'),
-            Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-            Ionicons: require("native-base/Fonts/Ionicons.ttf"),
-          }),
-        ])
         
         await updateDataStructure()  // needs to be after the persistStore call above
 
@@ -77,7 +73,11 @@ const App = () => {
   }
 
   return (
-    <Root>
+    <ApplicationProvider
+      mapping={mapping}
+      theme={lightTheme}
+    >
+      {/* <IconRegistry icons={EvaIconsPack} /> */}
       <PersistGate 
         persistor={persistor} 
         //loading={<AppLoading />}
@@ -88,7 +88,7 @@ const App = () => {
           </Router>
         </Provider>
       </PersistGate>
-    </Root>
+    </ApplicationProvider>
   )
 }
 

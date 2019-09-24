@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { Icon, Toast } from "native-base"
+import { Icon } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
@@ -22,11 +22,12 @@ const CapturingThumbnailsInfoIcon = React.memo(() => {
 
   const showInfo = useCallback(
     () => {
-      Toast.show({
-        text: i18n("We will create thumbnail images in the background when you are reading."),
-        buttonText: i18n("Okay"),
-        duration: 15000,
-      })
+      // TODO
+      // Toast.show({
+      //   text: i18n("We will create thumbnail images in the background when you are reading."),
+      //   buttonText: i18n("Okay"),
+      //   duration: 15000,
+      // })
     },
     [],
   )

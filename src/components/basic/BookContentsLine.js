@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
-import { StyleSheet } from "react-native"
-import { Text, ListItem } from "native-base"
+import { StyleSheet, Text } from "react-native"
+import { ListItem } from 'react-native-ui-kitten'
 
 const styles = StyleSheet.create({
   listItem: {

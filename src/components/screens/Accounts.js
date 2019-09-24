@@ -1,11 +1,11 @@
 import React from "react"
-import { Container, Title, Left, Icon, Right, Button, Body, Content } from "native-base"
+import { Layout } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
 const Accounts = ({ history }) => (
-  <Container>
+  <Layout>
     <AppHeader>
-      <Left>
+      {/* <Left>
         <Button
           transparent
           onPress={history.goBack}
@@ -16,9 +16,9 @@ const Accounts = ({ history }) => (
       <Body>
         <Title>Accounts</Title>
       </Body>
-      <Right />
+      <Right /> */}
     </AppHeader>
-  </Container>
+  </Layout>
 )
 
 export default Accounts

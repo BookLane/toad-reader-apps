@@ -3,7 +3,6 @@ import Constants from 'expo-constants'
 import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Footer } from "native-base"
 
 import ProgressDot from "../basic/ProgressDot"
 
@@ -64,7 +63,7 @@ const BookProgress = ({
   )
 
   return (
-    <Footer style={styles.footer}>
+    <View style={styles.footer}>
       <View
         style={styles.touchResponder}
         onStartShouldSetResponderCapture={onStartShouldSetResponder}
@@ -83,7 +82,7 @@ const BookProgress = ({
         left={PROGRESS_BAR_SIDE_SPACING + 100}
         size={6}
       /> */}
-    </Footer>
+    </View>
   )
 }
 

@@ -9,7 +9,7 @@ import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SideMenu from "react-native-side-menu"
-import { Container } from "native-base"
+import { Layout } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
@@ -274,7 +274,7 @@ class Library extends React.Component {
 
     if(logOutUrl) {
       return (
-        <Container>
+        <Layout>
           <AppHeader hide={true} />
           <WebView
             style={styles.flex1}
@@ -296,7 +296,7 @@ class Library extends React.Component {
             }
             style={{ backgroundColor: 'white' }}
           />
-        </Container>
+        </Layout>
       )
     }
 
@@ -307,7 +307,7 @@ class Library extends React.Component {
         isOpen={location.pathname === '/drawer'}
         onChange={this.sideMenuOnChange}
       >
-        <Container>
+        <Layout>
           <LibraryHeader
             scope={scope}
             toggleShowOptions={this.toggleShowOptions}
@@ -360,7 +360,7 @@ class Library extends React.Component {
           <BookDownloader
             downloadPaused={downloadPaused}
           />
-        </Container>
+        </Layout>
 
         <Switch>
           <Route path="/book/:id" component={Book} />

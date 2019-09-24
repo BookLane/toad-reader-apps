@@ -1,7 +1,7 @@
 import React from "react"
-// import { StyleSheet } from "react-native"
+import { Text, View } from "react-native"
 import { withRouter } from "react-router"
-import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
+import { Button, Layout } from "react-native-ui-kitten"
 
 // const styles = StyleSheet.create({
 //   container: {
@@ -9,23 +9,23 @@ import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Car
 // })
 
 const Chooser = ({ history }) => (
-  <Container>
-    <Content padder>
-      <Card>
+  <Layout>
+    <View>
+      {/* <Card>
         <CardItem>
           <Body>
             <Text>Chooser here</Text>
           </Body>
         </CardItem>
-      </Card>
+      </Card> */}
       <Button full rounded dark
         style={{ marginTop: 10 }}
         onPress={history.goBack}
       >
         <Text>Back</Text>
       </Button>
-    </Content>
-  </Container>
+    </View>
+  </Layout>
 )
 
 export default withRouter(Chooser)

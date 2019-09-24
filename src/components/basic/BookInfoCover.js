@@ -2,8 +2,7 @@ import React from "react"
 import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet } from "react-native"
-import { View } from "native-base"
+import { Image, StyleSheet, View } from "react-native"
 
 import FullScreenSpin from "./FullScreenSpin"
 

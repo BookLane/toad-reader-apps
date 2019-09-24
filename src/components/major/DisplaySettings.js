@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Card, CardItem, Button, Icon, Text, View, ListItem, Left, Radio } from "native-base"
-import { StyleSheet, TouchableHighlight, TouchableNativeFeedback, Platform } from "react-native"
+import { Button, Icon } from "react-native-ui-kitten"
+import { StyleSheet, Text, View } from "react-native"
 
 import i18n from "../../utils/i18n.js"
 
@@ -130,7 +130,9 @@ const DisplaySettings = React.memo(({
   return (
     <View style={styles.container}>
       <BackFunction func={requestHide} />
-      <Card style={styles.settings}>
+      {/* <Card style={styles.settings}> */}
+      <View style={styles.settings}>
+
 
         <View style={styles.headerContainer}>
 
@@ -208,7 +210,7 @@ const DisplaySettings = React.memo(({
           </View>
         </View> */}
 
-      </Card>
+      </View>
     </View>
   )
 })

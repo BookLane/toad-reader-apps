@@ -3,8 +3,7 @@ import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Text } from "native-base"
-import { Image, StyleSheet } from "react-native"
+import { Image, StyleSheet, View, Text } from "react-native"
 
 import FullScreenSpin from "./FullScreenSpin"
 import CoverCheck from "./CoverCheck"

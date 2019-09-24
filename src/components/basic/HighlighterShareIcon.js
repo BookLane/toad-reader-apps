@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, Platform, Share } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Icon } from "native-base"
+import { Icon } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import { getFullName } from '../../utils/toolbox.js'

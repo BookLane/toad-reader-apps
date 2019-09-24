@@ -1,8 +1,7 @@
 import React, { useRef } from "react"
-import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from "react-native"
+import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from 'native-base'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'

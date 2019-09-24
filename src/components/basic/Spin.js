@@ -1,7 +1,7 @@
 import React from "react"
 import Constants from 'expo-constants'
-import { StyleSheet } from "react-native"
-import { Spinner, View } from "native-base"
+import { StyleSheet, View } from "react-native"
+import { Spinner } from "react-native-ui-kitten"
 
 // import { Circle } from 'react-native-progress'
 
@@ -28,7 +28,8 @@ const Spin = ({ percentage }) => {
   }
   
   return (
-    <Spinner color={SPINNER_COLOR} />
+    <Spinner />
+    // TODO <Spinner color={SPINNER_COLOR} />
   )
 }
 

@@ -1,7 +1,6 @@
 import React from "react"
 import Constants from 'expo-constants'
-import { View, Text } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 
 const {
   PAGE_LIST_HEADER_ROW_HEIGHT,

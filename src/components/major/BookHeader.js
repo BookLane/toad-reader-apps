@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
-import { Subtitle, Title, Left, Icon, Right, Button, Body } from "native-base"
+import { Icon, Button } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
@@ -52,7 +52,7 @@ const BookHeader = React.memo(({
     <AppHeader
       hide={mode === 'page'}
     >
-      <Left>
+      {/* <Left>
         <Button
           transparent
           onPress={onBackPress}
@@ -97,7 +97,7 @@ const BookHeader = React.memo(({
         >
           <Icon name="more" />
         </Button>
-      </Right>
+      </Right> */}
     </AppHeader>
   )
 })

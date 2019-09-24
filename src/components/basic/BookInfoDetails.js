@@ -1,6 +1,6 @@
 import React from "react"
-import { View, Text, Icon } from "native-base"
-import { StyleSheet } from "react-native"
+import { Icon } from 'react-native-ui-kitten'
+import { StyleSheet, View, Text } from "react-native"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({

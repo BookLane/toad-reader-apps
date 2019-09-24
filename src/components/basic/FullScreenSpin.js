@@ -1,6 +1,5 @@
 import React from "react"
-import { View, Text } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 
 import Spin from "./Spin"
 

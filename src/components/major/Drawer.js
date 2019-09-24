@@ -4,8 +4,8 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity } from "react-native"
-import { Container, Content, Text, List, ListItem, Left, Icon, Body, Separator, View } from "native-base"
+import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity, Text, View } from "react-native"
+import { Layout, List, ListItem, Icon } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import useNetwork from "../../hooks/useNetwork"
 
@@ -164,8 +164,8 @@ const Drawer = ({
   const minHeight = height - (StatusBar.currentHeight || 0)
 
   return (
-    <Container>
-      <Content>
+    <Layout>
+      <View>
         <View style={{ minHeight }}>
           <Image
             source={require('../../../assets/images/drawer.png')}
@@ -176,12 +176,12 @@ const Drawer = ({
               button
               onPress={showAll}
             >
-              <Left>
+              {/* <Left>
                 <Icon name="book" />
               </Left>
               <Body>
                 <Text>{i18n("Library")}</Text> 
-              </Body>
+              </Body> */}
             </ListItem>
             {Object.keys(accounts).length > 1 && Object.keys(accounts).map(id => (
               <ListItem icon
@@ -192,7 +192,7 @@ const Drawer = ({
                   history.goBack()
                 }}
               >
-                <Left>
+                {/* <Left>
                   <Icon name="book" />
                 </Left>
                 <Body>
@@ -200,23 +200,24 @@ const Drawer = ({
                   {!!hasMultipleAccountsForSingleIdp &&
                     <Text>{accounts[id].email}</Text>
                   }
-                </Body>
+                </Body> */}
               </ListItem>
             ))}
             <ListItem icon
               button
               onPress={showDeviceOnly}
             >
-              <Left>
+              {/* <Left>
                 <Icon name="md-checkmark" />
               </Left>
               <Body>
                 <Text>{i18n("On device only")}</Text>
-              </Body>
+              </Body> */}
             </ListItem>
-            <Separator bordered
+            {/* TODO */}
+            {/* <Separator bordered
               style={styles.separator}
-            />
+            /> */}
             
             {/* <Link to={`${match.url}/accounts`}>
               <ListItem icon
@@ -236,35 +237,35 @@ const Drawer = ({
               onPress={online ? reLogin : null}
               style={online ? null : styles.offline}
             >
-              <Left>
+              {/* <Left>
                 <Icon name="refresh" />
               </Left>
               <Body>
                 <Text>{i18n("Refresh book list")}</Text>
-              </Body>
+              </Body> */}
             </ListItem>
             <ListItem icon
               button
               onPress={removeAllEPubs}
             >
-              <Left>
+              {/* <Left>
                 <Icon name="remove-circle" />
               </Left>
               <Body>
                 <Text>{i18n("Remove all books")}</Text>
-              </Body>
+              </Body> */}
             </ListItem>
             {Object.values(idps).some(idp => !idp.idpNoAuth) &&
               <ListItem icon
                 button
                 onPress={confirmLogOut}
               >
-                <Left>
+                {/* <Left>
                   <Icon name="log-out" />
                 </Left>
                 <Body>
                   <Text>{i18n("Log out")}</Text> 
-                </Body>
+                </Body> */}
               </ListItem>
             }
           </List>
@@ -281,8 +282,8 @@ const Drawer = ({
             </TouchableOpacity>
           }
         </View>
-      </Content>
-    </Container>
+      </View>
+    </Layout>
   )
 }
 

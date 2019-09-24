@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
-import { Title, Left, Right, Icon, Button, Body } from "native-base"
+import { Icon, Button } from "react-native-ui-kitten"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
@@ -40,7 +40,7 @@ const ErrorMessageHeader = React.memo(({
   
   return (
     <AppHeader>
-      <Left>
+      {/* <Left>
         {!critical &&
           <Button
             transparent
@@ -53,7 +53,7 @@ const ErrorMessageHeader = React.memo(({
       <Body>
         <Title style={styles.title}>{title || i18n("Error")}</Title>
       </Body>
-      <Right />
+      <Right /> */}
     </AppHeader>
   )
 })

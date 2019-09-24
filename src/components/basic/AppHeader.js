@@ -1,6 +1,6 @@
 import React from "react"
 import Constants from 'expo-constants'
-import { Header } from "native-base"
+import { TopNavigation } from 'react-native-ui-kitten'
 import { Platform, StyleSheet, View } from "react-native"
 
 import { getToolbarHeight } from '../../utils/toolbox.js'
@@ -35,7 +35,13 @@ const AppHeader = ({
 
   return (
     <View style={!hide && styles.container}>
-      <Header
+      <TopNavigation
+        title='Title'
+        subtitle='Subtitle'
+        // titleStyle={styles.title}
+        // subtitleStyle={styles.subtitle}
+      />
+      {/* <Header
         androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
         style={[
           styles.header,
@@ -43,7 +49,7 @@ const AppHeader = ({
         ]}
       >
         {children}
-      </Header>
+      </Header> */}
     </View>
   )
 }

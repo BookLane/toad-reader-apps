@@ -1,6 +1,6 @@
 import React from "react"
-import { View, Text, Icon } from "native-base"
-import { StyleSheet } from "react-native"
+import { Icon } from "react-native-ui-kitten"
+import { StyleSheet, View, Text } from "react-native"
 
 const styles = StyleSheet.create({
   container: {

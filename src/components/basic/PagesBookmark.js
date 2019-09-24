@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from "native-base"
+import { Icon } from "react-native-ui-kitten"
 import { StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({

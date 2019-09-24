@@ -1,11 +1,11 @@
 import React from "react"
-import { Container, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
+import { Layout, Button, Icon } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
 const Highlights = ({ history }) => (
-  <Container>
+  <Layout>
     <AppHeader>
-      <Left>
+      {/* <Left>
         <Button
           transparent
           onPress={history.goBack}
@@ -16,9 +16,9 @@ const Highlights = ({ history }) => (
       <Body>
         <Title>Highlights</Title>
       </Body>
-      <Right />
+      <Right /> */}
     </AppHeader>
-    <Content padder>
+    {/* <Content padder>
       <Card>
         <CardItem>
           <Body>
@@ -26,8 +26,8 @@ const Highlights = ({ history }) => (
           </Body>
         </CardItem>
       </Card>
-    </Content>
-  </Container>
+    </Content> */}
+  </Layout>
 )
 
 export default Highlights

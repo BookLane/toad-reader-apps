@@ -1,6 +1,5 @@
 import React, { useCallback } from "react"
-import { View, Text, Toast } from "native-base"
-import { StyleSheet, TouchableOpacity, Linking } from "react-native"
+import { StyleSheet, TouchableOpacity, Linking, View, Text } from "react-native"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
@@ -29,11 +28,12 @@ const BookPageMessage = ({
   const showMoreInfo = useCallback(
     () =>  {
       if(moreInfoText) {
-        Toast.show({
-          text: moreInfoText,
-          buttonText: i18n("Okay"),
-          duration: 15000,
-        })
+        // TODO
+        // Toast.show({
+        //   text: moreInfoText,
+        //   buttonText: i18n("Okay"),
+        //   duration: 15000,
+        // })
 
       } else if(externalHref) {
         Linking.openURL(externalHref).catch(err => {

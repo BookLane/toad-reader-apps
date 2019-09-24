@@ -2,8 +2,7 @@ import React, { useCallback, useRef } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "native-base"
-import { StyleSheet, FlatList } from "react-native"
+import { StyleSheet, FlatList, View } from "react-native"
 import usePrevious from "react-use/lib/usePrevious"
 
 import LibraryBook from "../basic/LibraryBook"

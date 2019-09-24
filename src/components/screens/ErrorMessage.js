@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Updates } from "expo"
-import { StyleSheet, View } from "react-native"
-import { Container, Content, Body, Text } from "native-base"
+import { StyleSheet, View, Text } from "react-native"
+import { Layout } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import ErrorMessageHeader from "../major/ErrorMessageHeader"
@@ -32,20 +32,18 @@ const ErrorMessage = ({ location }) => {
   )
 
   return (
-    <Container>
+    <Layout>
       <ErrorMessageHeader />
-      <Content>
-        <Body style={styles.body}>
-          <View style={styles.view}>
-            <Text>{message || (
-              critical
-                ? i18n("There was a critical error. The app will reload in a few seconds. Please contact us if you continue to receive this message.")
-                : i18n("There was an unknown error. Please contact us if you continue to receive this message.")
-            )}</Text>
-          </View>
-        </Body>
-      </Content>
-    </Container>
+      <View style={styles.body}>
+        <View style={styles.view}>
+          <Text>{message || (
+            critical
+              ? i18n("There was a critical error. The app will reload in a few seconds. Please contact us if you continue to receive this message.")
+              : i18n("There was an unknown error. Please contact us if you continue to receive this message.")
+          )}</Text>
+        </View>
+      </View>
+    </Layout>
   )
 }
 

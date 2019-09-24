@@ -2,7 +2,8 @@ import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Link } from "../routers/react-router"
-import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-base"
+import { Icon, Button } from "react-native-ui-kitten"
+import { Text } from "react-native"
 import i18n from "../../utils/i18n.js"
 import AppHeader from "../basic/AppHeader"
 
@@ -43,7 +44,7 @@ const LibraryHeader = ({
   
   return (
     <AppHeader>
-      <Left>
+      {/* <Left>
         <Link to="/drawer">
           <Button
             transparent
@@ -65,16 +66,16 @@ const LibraryHeader = ({
           transparent
           onPress={onPressToggleView}
         >
-          <Icon name={library.view == "covers" ? "list" : "md-apps"} />
+          <Icon name={library.view == "covers" ? "list" : "md-apps"} /> */}
           {/* square */}
-        </Button>
+        {/* </Button>
         <Button
           transparent
           onPress={toggleShowOptions}
         >
           <Icon name="more" />
         </Button>
-      </Right>
+      </Right> */}
     </AppHeader>
   )
 }

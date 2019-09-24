@@ -1,6 +1,6 @@
 import React from "react"
-import { Card, CardItem, Icon, Text, View } from "native-base"
-import { StyleSheet, TouchableWithoutFeedback, BackAndroid, Platform } from "react-native"
+import { Icon } from "react-native-ui-kitten"
+import { StyleSheet, TouchableWithoutFeedback, Platform, Text, View } from "react-native"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -45,7 +45,8 @@ const Options = React.memo(({ options, requestHide, headerText }) => (
       <View style={styles.cover}>
       </View>
     </TouchableWithoutFeedback>
-    <Card style={styles.options}>
+    {/* TODO */}
+    {/* <Card style={styles.options}>
       {!!headerText && 
         <CardItem header>
           <Text
@@ -72,9 +73,9 @@ const Options = React.memo(({ options, requestHide, headerText }) => (
           }
         </CardItem>
       ))}
-      {Platform.OS === 'ios' && <CardItem />}
+      {Platform.OS === 'ios' && <CardItem />} */}
       {/* Last blank CardItem needed to offset a bug in iOS */}
-    </Card>
+    {/* </Card> */}
   </View>
 ))
 

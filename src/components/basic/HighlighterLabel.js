@@ -1,8 +1,8 @@
 import React, { useState, useLayoutEffect, useCallback } from "react"
-import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, TouchableOpacity, Platform } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform, Text, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Text, View, Icon, Button } from "native-base"
+import { Icon, Button } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import HighlighterShareIcon from "./HighlighterShareIcon.js"

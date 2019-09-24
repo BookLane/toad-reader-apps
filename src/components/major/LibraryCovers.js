@@ -2,8 +2,7 @@ import React from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from "native-base"
-import { StyleSheet, Dimensions, FlatList } from "react-native"
+import { StyleSheet, View, FlatList } from "react-native"
 import usePrevious from "react-use/lib/usePrevious"
 import useDimensions from "../../hooks/useDimensions"
 import useCoverSize from '../../hooks/useCoverSize'

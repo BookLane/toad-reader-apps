@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
-import { StyleSheet, Platform } from "react-native"
-import { Text } from "native-base"
+import { StyleSheet, Platform, Text } from "react-native"
 import i18n from "../../utils/i18n.js"
 import useSetTimeout from '../../hooks/useSetTimeout'
 
