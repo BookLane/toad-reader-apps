@@ -26,7 +26,7 @@ import AppHeader from "../basic/AppHeader.js"
 import BookDownloader from "../major/BookDownloader.js"
 
 import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
-import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
+// import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions.js"

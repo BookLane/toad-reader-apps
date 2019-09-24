@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useRef, useCallback } from "react"
 import { Updates } from "expo"
 import { StyleSheet, NetInfo } from "react-native"
 import { WebView } from 'react-native-webview'
@@ -10,8 +10,9 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
-import { connectionInfo } from "../../hooks/useNetwork"
+import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import useNetwork from "../../hooks/useNetwork"
+import useSetTimeout from "../../hooks/useSetTimeout.js"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -33,182 +34,170 @@ const styles = StyleSheet.create({
   },
 })
 
-class Login extends React.Component {
+const Login = ({
+  history,
+  location,
+  idps,
+}) => {
 
-  state = {
-    loading: true,
-    leaving: false,
-    offline: false,
-    error: null,
-  }
+  const [ loading, setLoading ] = useState(true)
+  const [ leaving, setLeaving ] = useState(false)
+  const [ error, setError ] = useState(null)
+  
+  const webViewRef = useRef()
+  const initialStateChangeAlreadyHappened = useRef()
+  const askedForLoginInfoAtLeastOnce = useRef()
 
-  componentWillUnmount = unmountTimeouts
-  // const [ set ] = useSetTimeout()
+  const { online } = useNetwork()
 
-  onError = err => {
-    const { history } = this.props
+  const [ setReloadTimeout ] = useSetTimeout()
 
-    if(!connectionInfo.online) {
-      // They are not connected to the internet
+  const { idpId, hasJSUpdate } = location.state || {}
 
-      NetInfo.removeEventListener('connectionChange', reattemptLogin)          
-
-      const reattemptLogin = () => {
-        NetInfo.removeEventListener('connectionChange', reattemptLogin)          
-        this.webView.reload()
-      }
-
-      NetInfo.addEventListener('connectionChange', reattemptLogin)
-
-      this.setState({
-        offline: true,
-        error: null,
-      })
-          
-    } else {
+  const onError = useCallback(
+    err => {
       // There was an unknown error
 
       history.push("/error", {
         message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
       })
 
-      setUpTimeout(this.webView.reload, 15000, this)
+      setReloadTimeout(webViewRef.current.reload, 15000)
+      setError(i18n("Error. Trying again..."))
+    },
+    [ history ],
+  )
 
-      this.setState({
-        offline: false,
-        error: i18n("Error. Trying again..."),
-      })
-    }
-  }
+  const onNavigationStateChange = useCallback(
+    async ({ url, loading }) => {
 
-  onNavigationStateChange = async ({ url, loading }) => {
-    const { location, idps } = this.props
-    const { idpId } = location.state || {}
-
-    if(loading || !this.initialStateChangeAlreadyHappened) {
-      this.initialStateChangeAlreadyHappened = true
-      this.setState({ loading: true })
-      return
-    }
-
-    const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
-
-    if(url === userSetupUrl) {
-      this.setState({ leaving: true })
-
-      this.webView.injectJavaScript(`
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-            identifier: "sendCookieAndContent",
-            payload: {
-              cookie: document.cookie,
-              content: document.body.innerText,
-            },
-        }));
-        document.cookie = "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      `)
-      // we clear the cookie because we want auth status to be completely controlled by the app.
-
-    } else {
-      this.askedForLoginInfoAtLeastOnce = true
-      this.setState({
-        loading: false,
-        offline: false,
-        error: null,
-      })
-    }
-    
-  }
-
-  onMessageEvent = async event => {
-    const { location, history, addAccount } = this.props
-    const { idpId, hasJSUpdate } = location.state || {}
-    
-    const data = JSON.parse(event.nativeEvent.data)
-
-    if(data.identifier === 'sendCookieAndContent') {
-
-      let userData
-      try {
-        userData = JSON.parse(data.payload.content)
-      } catch(e) {}
-
-      if(!userData || !userData.userInfo) {
-        history.push("/error", {
-          critical: true,
-        })
+      if(loading || !initialStateChangeAlreadyHappened.current) {
+        initialStateChangeAlreadyHappened.current = true
+        setLoading(true)
         return
       }
 
-      const { userInfo, currentServerTime } = userData
+      const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
 
-      addAccount({
-        idpId,
-        userId: userInfo.id,
-        accountInfo: {
-          firstname: userInfo.firstname,
-          lastname: userInfo.lastname,
-          serverTimeOffset: currentServerTime - Date.now(),
-          cookie: data.payload.cookie,
-        },
-      })
+      if(url === userSetupUrl) {
+        setLeaving(true)
 
-      if(hasJSUpdate()) {
-        Updates.reloadFromCache()
+        webViewRef.current.injectJavaScript(`
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+              identifier: "sendCookieAndContent",
+              payload: {
+                cookie: document.cookie,
+                content: document.body.innerText,
+              },
+          }));
+          document.cookie = "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        `)
+        // we clear the cookie because we want auth status to be completely controlled by the app.
+
       } else {
-        history.goBack()
+        askedForLoginInfoAtLeastOnce.current = true
+        setLoading(true)
+        setError(null)
       }
+      
+    },
+    [ idps ],
+  )
 
-    }
-  }
+  const onMessageEvent = useCallback(
+    async event => {
+      
+      const data = JSON.parse(event.nativeEvent.data)
 
-  setWebViewEl = webViewEl => this.webView = webViewEl
+      if(data.identifier === 'sendCookieAndContent') {
 
-  render() {
-    const { location, idps } = this.props
-    const { idpId } = location.state || {}
-    const { loading, leaving, offline, error } = this.state
+        let userData
+        try {
+          userData = JSON.parse(data.payload.content)
+        } catch(e) {}
 
-    const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
-
-    const spinMessage = 
-      error ? error :
-      offline ? (
-        idps[idpId].idpNoAuth
-          ? i18n("Waiting for an internet connection to get your book list...")
-          : i18n("Waiting for an internet connection to log you in...")
-      ) :
-      idps[idpId].idpNoAuth ? i18n("Finding books...") :
-      this.askedForLoginInfoAtLeastOnce ? i18n("Logging you in...") :
-      i18n("Loading login portal...")
-
-    return (
-      <Container>
-        <WebView
-          style={[
-            styles.fullscreen,
-            (leaving ? styles.hidden : null),
-          ]}
-          source={getReqOptionsWithAdditions({
-            uri: userSetupUrl,
-          })}
-          mixedContentMode="always"
-          onError={this.onError}
-          onNavigationStateChange={this.onNavigationStateChange}
-          injectedJavaScript={`
-            document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
-          `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-          ref={this.setWebViewEl}
-          onMessage={this.onMessageEvent}
-        />
-        {!!(loading || offline || error || leaving) &&
-          <FullScreenSpin
-            text={spinMessage}
-            style={{ backgroundColor: 'white' }}
-          />
+        if(!userData || !userData.userInfo) {
+          history.push("/error", {
+            critical: true,
+          })
+          return
         }
-      </Container>
-    )
-  }
+
+        const { userInfo, currentServerTime } = userData
+
+        addAccount({
+          idpId,
+          userId: userInfo.id,
+          accountInfo: {
+            firstname: userInfo.firstname,
+            lastname: userInfo.lastname,
+            serverTimeOffset: currentServerTime - Date.now(),
+            cookie: data.payload.cookie,
+          },
+        })
+
+        if(hasJSUpdate()) {
+          Updates.reloadFromCache()
+        } else {
+          history.goBack()
+        }
+
+      }
+    },
+    [ history, addAccount, idpId, hasJSUpdate ],
+  )
+
+
+  const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
+
+  const spinMessage = 
+    error
+      ? error
+      : (
+        !online
+          ? (
+            idps[idpId].idpNoAuth
+              ? i18n("Waiting for an internet connection to get your book list...")
+              : i18n("Waiting for an internet connection to log you in...")
+          )
+          : (
+            idps[idpId].idpNoAuth
+              ? i18n("Finding books...")
+              : (
+                askedForLoginInfoAtLeastOnce.current
+                  ? i18n("Logging you in...")
+                  : i18n("Loading login portal...")
+              )
+          )
+      )
+
+  return (
+    <Container>
+      <WebView
+        style={[
+          styles.fullscreen,
+          (leaving ? styles.hidden : null),
+        ]}
+        source={getReqOptionsWithAdditions({
+          uri: userSetupUrl,
+        })}
+        mixedContentMode="always"
+        onError={onError}
+        onNavigationStateChange={onNavigationStateChange}
+        injectedJavaScript={`
+          document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
+        `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
+        ref={webViewRef}
+        onMessage={onMessageEvent}
+      />
+      {!!(loading || !online || error || leaving) &&
+        <FullScreenSpin
+          text={spinMessage}
+          style={{ backgroundColor: 'white' }}
+        />
+      }
+    </Container>
+  )
 }
 
 const mapStateToProps = (state) => ({
