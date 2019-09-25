@@ -2,8 +2,8 @@ import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Link } from "../routers/react-router"
-import { Icon, Button } from "react-native-ui-kitten"
-import { Text } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { TopNavigationAction } from 'react-native-ui-kitten'
 import i18n from "../../utils/i18n.js"
 import AppHeader from "../basic/AppHeader"
 
@@ -28,6 +28,29 @@ const LibraryHeader = ({
     [ hideOptions, toggleView ],
   )
 
+  const menuIcon = useCallback(
+    () => (
+      <Link to="/drawer">
+        <Ionicons name="ios-menu" />
+      </Link>
+    ),
+    [],
+  )
+
+  const viewIcon = useCallback(
+    () => (
+      <Ionicons name={library.view == "covers" ? "ios-list" : "md-apps"} />
+    ),
+    [ library.view ],
+  )
+
+  const moreIcon = useCallback(
+    () => (
+      <Ionicons name="md-more" />
+    ),
+    [],
+  )
+
   const scope = library.scope || "all"
 
   let title = i18n("Library")
@@ -43,40 +66,26 @@ const LibraryHeader = ({
   }
   
   return (
-    <AppHeader>
-      {/* <Left>
-        <Link to="/drawer">
-          <Button
-            transparent
-            onPress={hideOptions}
-          >
-            <Icon name="menu" />
-          </Button>
-        </Link>
-      </Left>
-      <Body>
-        <Title>{title}</Title>
-        {subtitle
-          ? <Subtitle>{subtitle}</Subtitle>
-          : null
-        }
-      </Body>
-      <Right>
-        <Button
-          transparent
+    <AppHeader
+      title={title}
+      subtitle={subtitle}
+      leftControl={
+        <TopNavigationAction
+          icon={menuIcon}
+          onPress={() => console.log('onPress')}
+        />
+      }
+      rightControls={[
+        <TopNavigationAction
+          icon={viewIcon}
           onPress={onPressToggleView}
-        >
-          <Icon name={library.view == "covers" ? "list" : "md-apps"} /> */}
-          {/* square */}
-        {/* </Button>
-        <Button
-          transparent
+        />,
+        <TopNavigationAction
+          icon={moreIcon}
           onPress={toggleShowOptions}
-        >
-          <Icon name="more" />
-        </Button>
-      </Right> */}
-    </AppHeader>
+        />,
+      ]}
+    />
   )
 }
 

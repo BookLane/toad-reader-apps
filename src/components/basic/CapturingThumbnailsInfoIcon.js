@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
@@ -37,7 +37,7 @@ const CapturingThumbnailsInfoIcon = React.memo(() => {
       <TouchableOpacity
         onPress={showInfo}
       >
-        <Icon
+        <Ionicons
           name="information-circle-outline"
           style={styles.info}
         />

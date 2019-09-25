@@ -1,4 +1,5 @@
 import React from "react"
+import { Ionicons } from "@expo/vector-icons"
 import { Layout } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
@@ -10,7 +11,7 @@ const Accounts = ({ history }) => (
           transparent
           onPress={history.goBack}
         >
-          <Icon name="arrow-back" />
+          <Ionicons name="arrow-back" />
         </Button>
       </Left>
       <Body>

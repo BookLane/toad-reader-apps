@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
 })
 
 const PagesBookmark = () => (
-  <Icon name='bookmark' style={styles.icon} />
+  <Ionicons name='bookmark' style={styles.icon} />
 )
 
 export default PagesBookmark

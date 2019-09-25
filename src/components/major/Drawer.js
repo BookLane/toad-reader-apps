@@ -5,7 +5,8 @@ import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
 import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity, Text, View } from "react-native"
-import { Layout, List, ListItem, Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
+import { Layout, List, ListItem } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import useNetwork from "../../hooks/useNetwork"
 
@@ -177,7 +178,7 @@ const Drawer = ({
               onPress={showAll}
             >
               {/* <Left>
-                <Icon name="book" />
+                <Ionicons name="book" />
               </Left>
               <Body>
                 <Text>{i18n("Library")}</Text> 
@@ -193,7 +194,7 @@ const Drawer = ({
                 }}
               >
                 {/* <Left>
-                  <Icon name="book" />
+                  <Ionicons name="book" />
                 </Left>
                 <Body>
                   <Text>{i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName })}</Text>
@@ -208,7 +209,7 @@ const Drawer = ({
               onPress={showDeviceOnly}
             >
               {/* <Left>
-                <Icon name="md-checkmark" />
+                <Ionicons name="md-checkmark" />
               </Left>
               <Body>
                 <Text>{i18n("On device only")}</Text>
@@ -224,7 +225,7 @@ const Drawer = ({
                 button
               >
                 <Left>
-                  <Icon name="person" />
+                  <Ionicons name="person" />
                 </Left>
                 <Body>
                   <Text>{i18n("Accounts")}</Text> 
@@ -238,7 +239,7 @@ const Drawer = ({
               style={online ? null : styles.offline}
             >
               {/* <Left>
-                <Icon name="refresh" />
+                <Ionicons name="refresh" />
               </Left>
               <Body>
                 <Text>{i18n("Refresh book list")}</Text>
@@ -249,7 +250,7 @@ const Drawer = ({
               onPress={removeAllEPubs}
             >
               {/* <Left>
-                <Icon name="remove-circle" />
+                <Ionicons name="remove-circle" />
               </Left>
               <Body>
                 <Text>{i18n("Remove all books")}</Text>
@@ -261,7 +262,7 @@ const Drawer = ({
                 onPress={confirmLogOut}
               >
                 {/* <Left>
-                  <Icon name="log-out" />
+                  <Ionicons name="log-out" />
                 </Left>
                 <Body>
                   <Text>{i18n("Log out")}</Text> 

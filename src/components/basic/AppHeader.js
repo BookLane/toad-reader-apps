@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 
 const AppHeader = ({
   hide,
-  children,
+  ...topNavigationProps,
 }) => {
 
   // There is a bug by which the backgroundColor in the header does not get set on load.
@@ -35,12 +35,7 @@ const AppHeader = ({
 
   return (
     <View style={!hide && styles.container}>
-      <TopNavigation
-        title='Title'
-        subtitle='Subtitle'
-        // titleStyle={styles.title}
-        // subtitleStyle={styles.subtitle}
-      />
+      <TopNavigation {...topNavigationProps} />
       {/* <Header
         androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
         style={[

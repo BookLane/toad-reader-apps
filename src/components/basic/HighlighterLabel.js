@@ -2,7 +2,8 @@ import React, { useState, useLayoutEffect, useCallback } from "react"
 import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform, Text, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Icon, Button } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
+import { Button } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import HighlighterShareIcon from "./HighlighterShareIcon.js"
@@ -150,7 +151,7 @@ const HighlighterLabel = React.memo(({
         <TouchableComponent
           onPress={toggleHighlight1}
         >
-          <Icon
+          <Ionicons
             name="trash"
             style={styles.trash}
           />
@@ -207,7 +208,7 @@ const HighlighterLabel = React.memo(({
       {/* <TouchableOpacity
         onPress={this.unselectText}
       >
-        <Icon
+        <Ionicons
           name="close"
           style={styles.close}
         />

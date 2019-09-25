@@ -1,7 +1,8 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Button, Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
+import { Button } from "react-native-ui-kitten"
 import { StyleSheet, Text, View } from "react-native"
 
 import i18n from "../../utils/i18n.js"
@@ -143,7 +144,7 @@ const DisplaySettings = React.memo(({
           <Button transparent dark
             onPress={requestHide}
           >
-            <Icon name='close' />
+            <Ionicons name='close' />
           </Button>
           
         </View>
@@ -156,13 +157,13 @@ const DisplaySettings = React.memo(({
                 style={styles.addRemoveButton}
                 onPress={decreaseTextSize}
               >
-                <Icon name='remove' />
+                <Ionicons name='remove' />
               </Button>
               <Button light
                 style={styles.addRemoveButton}
                 onPress={increaseTextSize}
               >
-                <Icon name='add' />
+                <Ionicons name='add' />
               </Button>
             </View>
           </View>
@@ -174,13 +175,13 @@ const DisplaySettings = React.memo(({
                 style={styles.addRemoveButton}
                 onPress={decreaseTextSpacing}
               >
-                <Icon name='remove' />
+                <Ionicons name='remove' />
               </Button>
               <Button light
                 style={styles.addRemoveButton}
                 onPress={increaseTextSpacing}
               >
-                <Icon name='add' />
+                <Ionicons name='add' />
               </Button>
             </View>
           </View> */}

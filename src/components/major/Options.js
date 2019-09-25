@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, TouchableWithoutFeedback, Platform, Text, View } from "react-native"
 
 import BackFunction from '../basic/BackFunction'
@@ -66,7 +66,7 @@ const Options = React.memo(({ options, requestHide, headerText }) => (
         >
           <Text>{option.text}</Text>
           {!!option.selected &&
-            <Icon
+            <Ionicons
               name="md-checkmark"
               style={styles.icon}
             />

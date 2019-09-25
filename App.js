@@ -11,8 +11,7 @@ import reducers from "./src/redux/reducers.js"
 import { Provider } from "react-redux"
 
 import { mapping, light as lightTheme } from "@eva-design/eva"
-import { ApplicationProvider, IconRegistry } from "react-native-ui-kitten"
-// import { EvaIconsPack } from '@ui-kitten/eva-icons'
+import { ApplicationProvider } from "react-native-ui-kitten"
 
 import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch, reportReadings } from "./src/utils/syncUserData.js"
@@ -76,7 +75,6 @@ const App = () => {
       mapping={mapping}
       theme={lightTheme}
     >
-      {/* <IconRegistry icons={EvaIconsPack} /> */}
       <PersistGate 
         persistor={persistor} 
         loading={<AppLoading />}

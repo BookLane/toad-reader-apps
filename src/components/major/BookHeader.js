@@ -1,7 +1,8 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
-import { Icon, Button } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
+import { Button } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
@@ -57,7 +58,7 @@ const BookHeader = React.memo(({
           transparent
           onPress={onBackPress}
         >
-          <Icon name="home" />
+          <Ionicons name="home" />
         </Button>
       </Left>
       <Body style={[
@@ -83,19 +84,19 @@ const BookHeader = React.memo(({
           transparent
           onPress={showDisplaySettings}
         >
-          <Icon name="settings" />
+          <Ionicons name="settings" />
         </Button>
         <Button
           transparent
           onPress={toggleBookView}
         >
-          <Icon name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
+          <Ionicons name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
         </Button>
         <Button
           transparent
           onPress={toggleShowOptions}
         >
-          <Icon name="more" />
+          <Ionicons name="more" />
         </Button>
       </Right> */}
     </AppHeader>

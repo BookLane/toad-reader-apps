@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from 'react-native-ui-kitten'
+import { Ionicons } from '@expo/vector-icons'
 import { StyleSheet, View, Text } from "react-native"
 import i18n from "../../utils/i18n.js"
 
@@ -31,7 +31,7 @@ const BookInfoDetails = ({
   if(downloadStatus == 2) {
     return (
       <View style={styles.container}>
-        <Icon name='md-checkmark' style={styles.icon} />
+        <Ionicons name='md-checkmark' style={styles.icon} />
         <Text style={styles.details}>{i18n("On device")}</Text>
       </View>
     )
@@ -47,7 +47,7 @@ const BookInfoDetails = ({
 
   return (
     <View style={styles.container}>
-      <Icon name='cloud-download' style={styles.icon} />
+      <Ionicons name='cloud-download' style={styles.icon} />
       <Text style={styles.details}>{i18n("Tap to download")}</Text>
     </View>
   )

@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, Platform, Share } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
 import i18n from "../../utils/i18n.js"
 
 import { getFullName } from '../../utils/toolbox.js'
@@ -71,7 +71,7 @@ const HighlighterShareIcon = React.memo(({
     <TouchableOpacity
       onPress={goShare}
     >
-      <Icon
+      <Ionicons
         name="share"
         style={styles.share}
       />

@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, View, Text } from "react-native"
 
 const styles = StyleSheet.create({
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 const CoverCheck = () => (
   <View style={styles.container}>
     <Text style={styles.text}>
-      <Icon name='md-checkmark' style={styles.checkmark} />
+      <Ionicons name='md-checkmark' style={styles.checkmark} />
     </Text>
   </View>
 )

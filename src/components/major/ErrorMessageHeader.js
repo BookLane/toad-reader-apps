@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
-import { Icon, Button } from "react-native-ui-kitten"
+import { Ionicons } from "@expo/vector-icons"
+import { Button } from "react-native-ui-kitten"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
@@ -46,7 +47,7 @@ const ErrorMessageHeader = React.memo(({
             transparent
             onPress={onBackPress}
           >
-            <Icon name="arrow-back" />
+            <Ionicons name="arrow-back" />
           </Button>
         }
       </Left>
