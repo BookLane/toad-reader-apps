@@ -21,6 +21,25 @@ const mapping = {
   //   },
   // },
 
+  components: {
+    Layout: {
+      meta: {
+        parameters: {
+          flex: {
+            type: "number",
+          },
+        },
+      },
+      appearances: {
+        default: {
+          mapping: {
+            flex: 1,
+          },
+        },
+      },
+    },
+  },
+  
   ...MAPPING_CUSTOMIZATION,
 }
 
