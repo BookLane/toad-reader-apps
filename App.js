@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react"
+import React, { useState, useCallback, useLayoutEffect } from "react"
 import { AppLoading } from "expo"
 // import * as Font from 'expo-font'
 
@@ -10,8 +10,11 @@ import { PersistGate } from 'redux-persist/integration/react'
 import reducers from "./src/redux/reducers.js"
 import { Provider } from "react-redux"
 
-import { mapping, light as lightTheme } from "@eva-design/eva"
+import { mapping } from "@eva-design/eva"
 import { ApplicationProvider } from "react-native-ui-kitten"
+import lightTheme from "./src/themes/light"
+import darkTheme from "./src/themes/dark"
+import contrastTheme from "./src/themes/contrast"
 
 import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch, reportReadings } from "./src/utils/syncUserData.js"
@@ -35,6 +38,8 @@ const patchMiddleware = store => next => action => {
   return result
 }
 
+const themes = { lightTheme, darkTheme, contrastTheme }
+
 // const store = compose(autoRehydrate())(createStore)(reducers, applyMiddleware(patchMiddleware))
 
 const persistConfig = {
@@ -49,6 +54,15 @@ const persistor = persistStore(store)
 const App = () => {
 
   const [ isReady, setIsReady ] = useState(false)
+  const [ theme, setTheme ] = useState('lightTheme')
+
+  const changeTheme = useCallback(
+    theme => {
+      if(!themes[theme]) return
+      setTheme(theme)
+    },
+    [],
+  )
 
   useLayoutEffect(
     () => {
@@ -73,7 +87,7 @@ const App = () => {
   return (
     <ApplicationProvider
       mapping={mapping}
-      theme={lightTheme}
+      theme={themes[theme]}
     >
       <PersistGate 
         persistor={persistor} 
@@ -81,7 +95,7 @@ const App = () => {
       >
         <Provider store={store}>
           <Router>
-            <Library />
+            <Library changeTheme={changeTheme} />
           </Router>
         </Provider>
       </PersistGate>
