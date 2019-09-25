@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useLayoutEffect } from "react"
-import { AppLoading } from "expo"
+import './src/themes/style'
 // import * as Font from 'expo-font'
 
+import { AppLoading } from "expo"
 import { AsyncStorage } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
