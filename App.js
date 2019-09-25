@@ -15,6 +15,7 @@ import { ApplicationProvider } from "react-native-ui-kitten"
 import lightTheme from "./src/themes/light"
 import darkTheme from "./src/themes/dark"
 import contrastTheme from "./src/themes/contrast"
+import customMapping from "./src/themes/custom-mapping"
 
 import updateDataStructure from "./src/utils/updateDataStructure.js"
 import { patch, reportReadings } from "./src/utils/syncUserData.js"
@@ -87,6 +88,7 @@ const App = () => {
   return (
     <ApplicationProvider
       mapping={mapping}
+      customMapping={customMapping}
       theme={themes[theme]}
     >
       <PersistGate 

@@ -2,7 +2,7 @@ import Constants from 'expo-constants'
 import { light as lightTheme } from '@eva-design/eva'
 
 const {
-  THEME_CUSTOMIZATION,
+  THEME_CUSTOMIZATION={},
 } = Constants.manifest.extra
 
 const theme = {
@@ -214,7 +214,7 @@ const theme = {
 
   // "outline-color": "$color-basic-400"
 
-  ...THEME_CUSTOMIZATION.light,
+  ...(THEME_CUSTOMIZATION.light || {}),
 }
 
 export default theme
