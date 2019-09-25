@@ -36,8 +36,9 @@ const styles = StyleSheet.create({
 
 const Login = ({
   history,
-  location,
   idps,
+  idpId,
+  hasJSUpdate,
 }) => {
 
   const [ loading, setLoading ] = useState(true)
@@ -51,8 +52,6 @@ const Login = ({
   const { online } = useNetwork()
 
   const [ setReloadTimeout ] = useSetTimeout()
-
-  const { idpId, hasJSUpdate } = location.state || {}
 
   const onError = useCallback(
     err => {

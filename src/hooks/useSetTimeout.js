@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 const useSetTimeout = () => {
 

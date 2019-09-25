@@ -28,7 +28,8 @@ const Spin = ({ percentage }) => {
   }
   
   return (
-    <Spinner />
+    null
+    // <Spinner />
     // TODO <Spinner color={SPINNER_COLOR} />
   )
 }

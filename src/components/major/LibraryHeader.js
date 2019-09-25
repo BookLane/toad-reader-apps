@@ -72,7 +72,6 @@ const LibraryHeader = ({
       leftControl={
         <TopNavigationAction
           icon={menuIcon}
-          onPress={() => console.log('onPress')}
         />
       }
       rightControls={[

@@ -24,6 +24,7 @@ import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
 import AppHeader from "../basic/AppHeader.js"
 import BookDownloader from "../major/BookDownloader.js"
+import Login from "../major/Login"
 
 import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
 // import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
@@ -58,6 +59,7 @@ class Library extends React.Component {
   state = {
     showOptions: false,
     downloadPaused: false,
+    showLogin: false,
   }
 
   componentWillMount() {
@@ -121,11 +123,7 @@ class Library extends React.Component {
     const account = Object.values(accounts)[0]
     if(!account || account.needToLogInAgain) {
       // when I move to multiple accounts, this will instead need to go to the Accounts screen
-      // SET LOGIN IN STATE
-      // history.push(`${match.url}/login`, {
-      //   idpId: Object.keys(idps)[0],
-      //   hasJSUpdate: this.hasJSUpdate,
-      // })
+      this.setState({ showLogin: true })
       return
     }
 
@@ -257,7 +255,7 @@ class Library extends React.Component {
   
   render() {
     const { library, accounts, idps, books, fetchingBooks, setSort, location } = this.props
-    const { showOptions, downloadPaused } = this.state
+    const { showOptions, downloadPaused, showLogin } = this.state
 
     let { logOutUrl, logOutAccountId, refreshLibraryAccountId } = location.state || {}
     const scope = library.scope || "all"
@@ -271,6 +269,15 @@ class Library extends React.Component {
           Object.keys(books[bookId].accounts).some(accountId => accountId.split(':')[0] == scope.split(':')[0])
         ))
       )
+
+    if(showLogin) {
+      return (
+        <Login
+          idpId={Object.keys(idps)[0]}
+          hasJSUpdate={this.hasJSUpdate}
+        />
+      )
+    }
 
     if(logOutUrl) {
       return (
