@@ -225,7 +225,7 @@ class Library extends React.Component {
   
   hideOptions = () => this.setState({ showOptions: false })
 
-  logOurUrlOnLoad = () => {
+  logOutUrlOnLoad = () => {
     const { location, removeAccount, updateAccount } = this.props
     const { logOutAccountId, refreshLibraryAccountId } = location.state || {}
 
@@ -292,8 +292,8 @@ class Library extends React.Component {
                 "x-platform": Platform.OS,
               },
             })}
-            onLoad={this.logOurUrlOnLoad}
-            onError={this.logOurUrlOnLoad}  // Even if it fails, log them out on the device at least
+            onLoad={this.logOutUrlOnLoad}
+            onError={this.logOutUrlOnLoad}  // Even if it fails, log them out on the device at least
           />
           <FullScreenSpin
             text={
