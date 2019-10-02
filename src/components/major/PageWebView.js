@@ -94,7 +94,7 @@ class PageWebView extends React.Component {
   }
 
   onMessageEvent = async event => {
-    const { onMessage } = this.state
+    const { onMessage, initialLocation } = this.state
     const data = JSON.parse(event.nativeEvent.data)
 
     if(onMessage && await onMessage(this.webView, data)) return
@@ -109,6 +109,15 @@ class PageWebView extends React.Component {
       case 'loaded':
         console.log('reader loaded')
         this.webView.loaded = true
+        if(Platform.OS === 'web') {  // because injectedJavaScript is not implemented in WebView.web.js
+          const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
+            location: initialLocation,
+            highlights: getHighlightsObj(this.state),
+          })
+          postMessage(this.webView, 'renderHighlights', {
+            highlights: initialHighlightsInThisSpine,
+          })
+        }
         break;
 
       case 'consoleLog':
