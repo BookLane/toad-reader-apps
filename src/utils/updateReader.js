@@ -1,4 +1,4 @@
-import { AsyncStorage, NetInfo } from "react-native"
+import { AsyncStorage, NetInfo, Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 
 import { fetchZipAndAssets } from "./zipDownloader.js"
@@ -7,7 +7,7 @@ import { connectionInfo } from "../hooks/useNetwork"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const READER_VERSION_TIMESTAMP = "1568637246"
+export const READER_VERSION_TIMESTAMP = "1570009574"
 
 const zipUrl = `https://s3.amazonaws.com/cdn.toadreader.com/cloud-reader-lite/${READER_VERSION_TIMESTAMP}/reader.zip`
 const localBaseUri = `${FileSystem.documentDirectory}reader/`
@@ -15,8 +15,6 @@ const localBaseUri = `${FileSystem.documentDirectory}reader/`
 export const readerNeedsUpdate = async ({ setReaderStatus }) => {
   
   console.log(`Check reader...`)
-
-  return false
 
   const versionTimestampOfCurrentReader = await AsyncStorage.getItem('readerVersionTimestamp')
   const readerIndexInfo = await FileSystem.getInfoAsync(`${localBaseUri}/index.html`)
@@ -33,7 +31,12 @@ export const readerNeedsUpdate = async ({ setReaderStatus }) => {
 }
 
 export const updateReader = ({ setReaderStatus }) => {
-  
+
+  if(Platform.OS === 'web') {
+    setReaderStatus({ readerStatus: "ready" })
+    return
+  }
+
   // Until we know the status, we consider it downloading
   setReaderStatus({ readerStatus: "downloading" })
   

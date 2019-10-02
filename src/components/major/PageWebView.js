@@ -3,6 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import { WebView } from 'react-native-webview'
+import { READER_VERSION_TIMESTAMP } from "../../utils/updateReader.js"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"
@@ -175,6 +176,10 @@ class PageWebView extends React.Component {
       return null
     }
 
+    const readerUrl = Platform.OS === 'web'
+      ? `${location.origin}?version=${READER_VERSION_TIMESTAMP}`
+      : `${FileSystem.documentDirectory}reader/index.html?`
+
     return (
       <View
         style={doPushDownPreventionTrick ? styles.containerOffset1 : styles.containerNormal}
@@ -206,9 +211,9 @@ class PageWebView extends React.Component {
             allowFileAccess={true}
             originWhitelist={['*']}
             source={{
-              uri: `${FileSystem.documentDirectory}reader/index.html`
-                + `?epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
-                + `&${Platform.OS}=1`
+              uri: readerUrl
+                + `&epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
+                // + `&${Platform.OS}=1`  // appears to be unused
                 + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
                 + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
             }}

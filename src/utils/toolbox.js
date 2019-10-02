@@ -142,7 +142,7 @@ export const getSnapshotURI = params => {
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
 
-export const getBooksDir = () => `${FileSystem.documentDirectory}books/`
+export const getBooksDir = () => Platform.OS === 'web' ? `${location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
 export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
