@@ -46,6 +46,7 @@ class PageWebView extends React.Component {
       ...props,
       width,
       height,
+      unloaded: false,
     }
   }
 
@@ -68,10 +69,11 @@ class PageWebView extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { width } = this.state
+    const { width, unloaded } = this.state
 
     return (
       nextState.width !== width
+      || nextState.unloaded !== unloaded
     )
   }
 
@@ -98,6 +100,11 @@ class PageWebView extends React.Component {
     if(onMessage && await onMessage(this.webView, data)) return
 
     switch(data.identifier) {
+
+      case 'unload':
+        console.log('reader unloading (this should not happen)')
+        this.setState({ unloaded: true })
+        break;
 
       case 'loaded':
         console.log('reader loaded')
@@ -155,6 +162,10 @@ class PageWebView extends React.Component {
     // However, on iphoneX, we want it pushed down.
     const doPushDownPreventionTrick = Platform.OS === 'ios' && !isIPhoneX
 
+    if(unloaded) {
+      return null
+    }
+
     return (
       <View
         style={doPushDownPreventionTrick ? styles.containerOffset1 : styles.containerNormal}
@@ -179,6 +190,7 @@ class PageWebView extends React.Component {
             ]}
             injectedJavaScript={`
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
+              window.isReactNativeWebView = true;
             `}
             ref={this.setWebViewRef}
             allowUniversalAccessFromFileURLs={true}

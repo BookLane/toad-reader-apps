@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { StyleSheet, View, ActivityIndicator } from 'react-native'
 
 const styles = StyleSheet.create({
@@ -76,51 +76,17 @@ const WebView = ({
   const [ loaded, setLoaded ] = useState(false)
   const frameRef = useRef()
 
-  // useEffect(
-  //   () => {
-  //     const { uri, ...options } = source
-  //     const baseUrl = uri.substr(0, uri.lastIndexOf('/') + 1)
-  //     fetch(uri, options)
-  //       .then(({ ok, status, text }) => {
-  //         if(!ok) throw new Error(`Fetch failed with status ${status}.`)
-  //         return text()
-  //       })
-  //       .then(html => {
-
-  //         const setupJS = `
-
-  //         `
-
-  //         html = `<base href="${baseUrl}" />${html}`
-  //         html = html.replace(/<\/body *>/i, `<script>${setupJS}</script><script>${injectedJavaScript || ``}</script></body>`)
-
-  //         setSrcDoc(html)
-
-  //       })
-  //       .catch(err => {
-  //         onError && onError({
-  //           code: err.name,
-  //           description: err.message,
-  //           nativeEvent: err,
-  //         })
-  //       })
-  //   },
-  //   [ source ],
-  // )
-
   useEffect(
     () => {
 
       const onMessageWrapper = nativeEvent => {
+        // check that it is the same origin
+        if(nativeEvent.origin !== nativeEvent.location.origin) return
+
         // check that it is the right iframe sending the postmessage
+        if(nativeEvent.source !== frameRef.current.contentWindow) return
 
-        console.log('nativeEvent', nativeEvent)
-
-
-        // could be for: unload, onMessage, onNavigationStateChange, onLoad
-
-
-        // onMessage({ nativeEvent })
+        onMessage({ nativeEvent })
       }
 
       window.addEventListener('message', onMessageWrapper, true)
@@ -194,7 +160,6 @@ const WebView = ({
       <iframe
         ref={frameRef}
         src={source.uri}
-        // srcDoc={srcDoc}
         style={[
           styles.iframe,
           style,
