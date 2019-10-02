@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
-import { StyleSheet, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, ActivityIndicator } from 'react-native'
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
   iframe: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
     borderWidth: 0,
+  },
+  activityIndicatorContainer: {
+    ...StyleSheet.absoluteFillObject,
   },
 })
 
@@ -13,11 +19,11 @@ const WebView = ({
   source={},  // Need to support uri and headers keys
   ref,
   style,
-  injectedJavaScript,  // Need custom code in readium-js-viewer
-  onLoad,
   onMessage,  // Need custom code in readium-js-viewer
-  onNavigationStateChange,  // Need custom code in readium-js-viewer
   onError,  // Need custom code in readium-js-viewer
+  // injectedJavaScript,
+  // onLoad,
+  // onNavigationStateChange,
   // originWhitelist,
   // mixedContentMode,
   // bounces,
@@ -67,38 +73,40 @@ const WebView = ({
   // textZoom,
 }) => {
 
-  const [ srcDoc, setSrcDoc ] = useState(null)
+  const [ loaded, setLoaded ] = useState(false)
   const frameRef = useRef()
 
-  useEffect(
-    () => {
-      const { uri, ...options } = source
-      const baseUrl = uri.substr(0, uri.lastIndexOf('/') + 1)
-      fetch(uri, options)
-        .then(({ ok, status, text }) => {
-          if(!ok) throw new Error(`Fetch failed with status ${status}.`)
-          return text()
-        })
-        .then(html => {
+  // useEffect(
+  //   () => {
+  //     const { uri, ...options } = source
+  //     const baseUrl = uri.substr(0, uri.lastIndexOf('/') + 1)
+  //     fetch(uri, options)
+  //       .then(({ ok, status, text }) => {
+  //         if(!ok) throw new Error(`Fetch failed with status ${status}.`)
+  //         return text()
+  //       })
+  //       .then(html => {
 
-          const setupJS = ``
+  //         const setupJS = `
 
-          html = `<base href="${baseUrl}" />${html}`
-          html = html.replace(/<\/body *>/i, `<script>${setupJS}</script><script>${injectedJavaScript || ``}</script></body>`)
+  //         `
 
-          setSrcDoc(html)
+  //         html = `<base href="${baseUrl}" />${html}`
+  //         html = html.replace(/<\/body *>/i, `<script>${setupJS}</script><script>${injectedJavaScript || ``}</script></body>`)
 
-        })
-        .catch(err => {
-          onError && onError({
-            code: err.name,
-            description: err.message,
-            nativeEvent: err,
-          })
-        })
-    },
-    [ source ],
-  )
+  //         setSrcDoc(html)
+
+  //       })
+  //       .catch(err => {
+  //         onError && onError({
+  //           code: err.name,
+  //           description: err.message,
+  //           nativeEvent: err,
+  //         })
+  //       })
+  //   },
+  //   [ source ],
+  // )
 
   useEffect(
     () => {
@@ -109,7 +117,7 @@ const WebView = ({
         console.log('nativeEvent', nativeEvent)
 
 
-        // could be for: onMessage, onNavigationStateChange, onLoad
+        // could be for: unload, onMessage, onNavigationStateChange, onLoad
 
 
         // onMessage({ nativeEvent })
@@ -119,6 +127,28 @@ const WebView = ({
       return window.removeEventListener('message', onMessageWrapper, true)
     },
     [],
+  )
+
+  useEffect(
+    () => {
+
+      if(!frameRef.current) return
+
+      frameRef.contentWindow.onerror = nativeEvent => {
+        onError && onError({
+          code: nativeEvent.name,
+          description: nativeEvent.message,
+          nativeEvent,
+        })
+      }
+
+      frameRef.contentWindow.onload = nativeEvent => {
+        setLoaded(true)
+        onLoad && onLoad({ nativeEvent })
+      }
+
+    },
+    [ frameRef.current ],
   )
 
   useEffect(
@@ -141,7 +171,7 @@ const WebView = ({
 
         },
 
-        // Other methods:
+        // Other methods on native component:
         //   extraNativeComponentConfig
         //   goForward
         //   goBack
@@ -159,22 +189,23 @@ const WebView = ({
     [ ref ],
   )
 
-  if(!srcDoc) {
-    return (
-      <ActivityIndicator />
-    )
-  }
-
   return (
-    <iframe
-      ref={frameRef}
-      src={source.uri}
-      srcDoc={srcDoc}
-      style={[
-        styles.iframe,
-        style,
-      ]}
-    />
+    <View style={styles.container}>
+      <iframe
+        ref={frameRef}
+        src={source.uri}
+        // srcDoc={srcDoc}
+        style={[
+          styles.iframe,
+          style,
+        ]}
+      />
+      {!loaded && (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator />
+        </View>
+      )}
+    </View>
   )
 }
 
