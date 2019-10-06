@@ -1,24 +1,19 @@
 import * as FileSystem from 'expo-file-system'
-import { Asset } from 'expo-asset'
+import getReaderCode from '../../getReaderCode.js'
 
 export const updateReader = async ({ setReaderStatus }) => {
 
-  const readerRequire = require('../../assets/reader.html')
   const readerDestinationPath = `${FileSystem.documentDirectory}reader/index.html`
 
-  await Asset.loadAsync([ readerRequire ])
-  const { localUri, hash } = Asset.fromModule(readerRequire)
+  const { size } = await FileSystem.getInfoAsync(readerDestinationPath)
+  const readerCodeSizeInBytes = encodeURI(getReaderCode()).split(/%..|./).length - 1
 
-  const { md5 } = await FileSystem.getInfoAsync(readerDestinationPath, { md5: true })
-
-  if(hash !== md5) {
+  if(size !== readerCodeSizeInBytes) {
     setReaderStatus({ readerStatus: "updating" })
     console.log('Updating reader...')
 
-    const contents = await FileSystem.readAsStringAsync(localUri)
-
     await FileSystem.makeDirectoryAsync(readerDestinationPath.replace(/\/[^\/]*$/, ''), { intermediates: true })
-    await FileSystem.writeAsStringAsync(readerDestinationPath, contents)
+    await FileSystem.writeAsStringAsync(readerDestinationPath, getReaderCode())
 
     console.log('...reader updated.')
   }

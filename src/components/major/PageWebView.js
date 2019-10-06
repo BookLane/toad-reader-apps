@@ -3,7 +3,6 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import { WebView } from 'react-native-webview'
-import { READER_VERSION_TIMESTAMP } from "../../utils/updateReader.js"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"
@@ -177,7 +176,7 @@ class PageWebView extends React.Component {
     }
 
     const readerUrl = Platform.OS === 'web'
-      ? `${location.origin}?version=${READER_VERSION_TIMESTAMP}`
+      ? `${location.origin}?version=X`
       : `${FileSystem.documentDirectory}reader/index.html?`
 
     return (
