@@ -55,6 +55,9 @@ else
       cp -R "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" ./$TENANT_ITEM || exit 1;
     done
 
+    # copy contents of standard-assets to assets
+    cp -R "standard-assets/"* "./assets/" || exit 1;
+
     # update src/utils/translations/current.json with the current language data
     LANGUAGE_CODE=$(ruby -rjson -e 'j = JSON.parse(File.read("app.json")); puts j["expo"]["extra"]["LANGUAGE_CODE"]')
     if [ ! "$(ls -A src/utils/translations/$LANGUAGE_CODE.json 2>/dev/null)" ]; then
