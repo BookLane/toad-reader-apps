@@ -63,10 +63,10 @@ class Library extends React.Component {
   }
 
   componentWillMount() {
-    const { books, clearAllSpinePageCfis, reSort, autoUpdateCoreIdps } = this.props
+    const { books, clearAllSpinePageCfis, reSort, autoUpdateCoreIdps, setReaderStatus } = this.props
 
     Updates.addListener(this.onUpdateEvent)
-    this.getUpToDateReader()
+    updateReader({ setReaderStatus })
     // removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
 
     ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
@@ -99,12 +99,6 @@ class Library extends React.Component {
     // this.navigationWillFocusListener.remove()
 
     unmountTimeouts.bind(this)()
-  }
-
-  getUpToDateReader = async () => {
-    const { setReaderStatus } = this.props
-
-    updateReader({ setReaderStatus })
   }
 
   onUpdateEvent = ({ type }) => {

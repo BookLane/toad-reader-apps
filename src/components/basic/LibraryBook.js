@@ -19,7 +19,6 @@ const LibraryBook = props => {
     pushToBookDownloadQueue,
     clearTocAndSpines,
     clearUserDataExceptProgress,
-    readerStatus,
     history,
     children,
   } = props
@@ -35,32 +34,14 @@ const LibraryBook = props => {
       // const accountId = Object.keys(books[bookId].accounts)[0]
 
       if(downloadStatus == 2) {
-        switch(readerStatus) {
-          case 'ready':
-          case 'downloading':
-            history.push(`/book/${bookId}`)
-            break;
-          case 'waiting for internet':
-            history.push("/error", {
-              title: i18n("Connection error"),
-              message: i18n("The app has been updated and requires an updated reader component to be downloaded. Thus, you must connect to the internet before you will be able to read."),
-            })
-            break;
-          case 'error':
-            history.push("/error", {
-              message: i18n("There has been an update to the reader component that is not downloading properly. Please contact us if this issue persists."),
-            })
-            break;
-          default:
-            history.push("/error")
-        }
+        history.push(`/book/${bookId}`)
         
       } else if(downloadStatus == 0) {
         setDownloadStatus({ bookId, downloadStatus: 1 })
         pushToBookDownloadQueue({ bookId })
       }
     },
-    [ bookId, setDownloadStatus, pushToBookDownloadQueue, books, readerStatus, history ],
+    [ bookId, setDownloadStatus, pushToBookDownloadQueue, books, history ],
   )
   
   const onLongPress = useCallback(
@@ -86,7 +67,6 @@ const mapStateToProps = (state) => ({
   books: state.books,
   idps: state.idps,
   accounts: state.accounts,
-  readerStatus: state.readerStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

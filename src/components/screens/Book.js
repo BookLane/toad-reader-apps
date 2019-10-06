@@ -521,7 +521,7 @@ class Book extends React.Component {
       return (
         <Layout>
           <FullScreenSpin
-            text={i18n("Downloading updated reader...")}
+            text={i18n("Updating reader...")}
           />
         </Layout>
       )
