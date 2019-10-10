@@ -4,7 +4,7 @@ import getReaderCode from '../../getReaderCode.js'
 
 export const updateReader = async ({ setReaderStatus }) => {
 
-  if(Platform === 'web') return
+  if(Platform.OS === 'web') return
 
   const readerDestinationPath = `${FileSystem.documentDirectory}reader/index.html`
 
