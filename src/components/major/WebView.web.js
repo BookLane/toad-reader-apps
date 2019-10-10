@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, ActivityIndicator, createElement } from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
@@ -15,9 +15,18 @@ const styles = StyleSheet.create({
   },
 })
 
+const IFrame = ({
+  forwardRef,
+  ...otherProps,
+ }) => {
+  // putting this inside useRef makes this iframe unaffected by rerenders
+  forwardRef.current = useRef(createElement('iframe', otherProps)).current
+  return forwardRef.current
+ }
+
 const WebView = ({
   source={},  // Need to support uri and headers keys
-  ref,
+  forwardRef,
   style,
   onMessage,  // Need custom code in readium-js-viewer
   onError,  // Need custom code in readium-js-viewer
@@ -145,20 +154,20 @@ const WebView = ({
 
       }
 
-      if(typeof ref === 'function') {
-        ref(methods)
-      } else if(typeof ref === 'object') {
-        ref.current = methods
+      if(typeof forwardRef === 'function') {
+        forwardRef(methods)
+      } else if(typeof forwardRef === 'object') {
+        forwardRef.current = methods
       }
 
     },
-    [ ref ],
+    [ forwardRef ],
   )
 
   return (
     <View style={styles.container}>
-      <iframe
-        ref={frameRef}
+      <IFrame
+        forwardRef={frameRef}
         src={source.uri}
         style={[
           styles.iframe,
