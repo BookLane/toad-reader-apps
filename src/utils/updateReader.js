@@ -1,7 +1,10 @@
+import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import getReaderCode from '../../getReaderCode.js'
 
 export const updateReader = async ({ setReaderStatus }) => {
+
+  if(Platform === 'web') return
 
   const readerDestinationPath = `${FileSystem.documentDirectory}reader/index.html`
 
@@ -17,8 +20,6 @@ export const updateReader = async ({ setReaderStatus }) => {
 
     console.log('...reader updated.')
   }
-
-  console.log('await FileSystem.getInfoAsync(readerDestinationPath, { md5: true })', await FileSystem.getInfoAsync(readerDestinationPath, { md5: true }))
 
   setReaderStatus({ readerStatus: "ready" })
 
