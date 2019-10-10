@@ -89,16 +89,16 @@ const WebView = ({
 
       const onMessageWrapper = nativeEvent => {
         // check that it is the same origin
-        if(nativeEvent.origin !== nativeEvent.location.origin) return
+        if(nativeEvent.origin !== source.uri.replace(/^(https?:\/\/[^\/]+).*$/, '$1')) return
 
         // check that it is the right iframe sending the postmessage
-        if(nativeEvent.source !== frameRef.current) return
+        if(frameRef.current.contentWindow !== nativeEvent.source) return
 
         onMessage({ nativeEvent })
       }
 
       window.addEventListener('message', onMessageWrapper, true)
-      return window.removeEventListener('message', onMessageWrapper, true)
+      return () => window.removeEventListener('message', onMessageWrapper, true)
     },
     [],
   )
@@ -109,11 +109,11 @@ const WebView = ({
       const methods = {
 
         reload: () => {
-          frameRef.location.reload()
+          frameRef.current.location.reload()
         },
 
         injectJavaScript: jsStr => {
-          frameRef.postMessage(
+          frameRef.current.postMessage(
             {
               action: `injectJS`,
               jsStr,
