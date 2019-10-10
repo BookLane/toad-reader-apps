@@ -400,3 +400,5 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
   }
 
 }
+
+export const getOrigin = ({ domain, protocol=`https` }={}) => `${protocol}://${domain}`

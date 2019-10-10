@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import i18n from "../../utils/i18n.js"
 
-import { getFullName } from '../../utils/toolbox.js'
+import { getFullName, getOrigin } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   share: {
@@ -30,15 +30,15 @@ const HighlighterShareIcon = React.memo(({
       const book = books[bookId] || {}
       const accountId = Object.keys(book.accounts)[0] || ""
       const idpId = accountId.split(':')[0]
-      const { domain } = idps[idpId] || {}
+      const idp = idps[idpId]
       const { latest_location } = (userDataByBookId[bookId] || {})
       const fullname = getFullName(accounts[accountId])
 
-      if(!domain || !latest_location || !fullname) {
+      if(!idp || !latest_location || !fullname) {
         throw new Error('Unable to share')
       }
 
-      let url = `https://${domain}/book/${bookId}`
+      let url = `${getOrigin(idp)}/book/${bookId}`
         + `?goto=${encodeURIComponent(latest_location)}`
         + `&highlight=${encodeURIComponent(selectionInfo.text)}`
       if(highlight.note) {

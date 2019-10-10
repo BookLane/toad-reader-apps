@@ -5,9 +5,10 @@ import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
 import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity, Text, View } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+// import { Ionicons } from "@expo/vector-icons"
 import { Layout, List, ListItem } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
+import { getOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
@@ -98,7 +99,7 @@ const Drawer = ({
         },
         () => {
           history.push("/", {
-            logOutUrl: `https://${idps[idpId].domain}/logout`,
+            logOutUrl: `${getOrigin(idps[idpId])}/logout`,
             logOutAccountId: accountId,
           })
         },
@@ -122,7 +123,7 @@ const Drawer = ({
       // login process again, but hidden.
 
       history.push("/", {
-        logOutUrl: `https://${idps[idpId].domain}/logout/callback?noredirect=1`,
+        logOutUrl: `${getOrigin(idps[idpId])}/logout/callback?noredirect=1`,
         refreshLibraryAccountId: accountId,
       })
     },

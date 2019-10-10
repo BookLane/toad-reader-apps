@@ -1,6 +1,6 @@
 import { Platform, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions } from "./toolbox.js"
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getOrigin } from "./toolbox.js"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -119,7 +119,7 @@ export const patch = info => setTimeout(() => {
 
           console.log("Time-filtered userData object for patch request:", bookUserData);
 
-          const path = `https://${idp.domain}/users/${userId}/books/${bookId}.json`
+          const path = `${getOrigin(idp)}/users/${userId}/books/${bookId}.json`
 
           currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = true
 
@@ -211,7 +211,7 @@ export const reportReadings = info => setTimeout(() => {
 
     const { idpId, idp, userId } = getAccountInfo({ idps, accountId })
     const readingRecords = readingRecordsByAccountId[accountId]
-    const path = `https://${idp.domain}/reportReading`
+    const path = `${getOrigin(idp)}/reportReading`
 
     const flush = () => {
       flushReadingRecords({
@@ -302,7 +302,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
   if(!connectionInfo.online) return
 
-  const path = `https://${idp.domain}/users/${userId}/books/${bookId}.json`
+  const path = `${getOrigin(idp)}/users/${userId}/books/${bookId}.json`
 
   currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`] = true
   
