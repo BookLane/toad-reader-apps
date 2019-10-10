@@ -18,20 +18,19 @@ const styles = StyleSheet.create({
 const IFrame = ({
   forwardRef,
   ...otherProps,
- }) => {
-  // putting this inside useRef makes this iframe unaffected by rerenders
-  forwardRef.current = useRef(createElement('iframe', otherProps)).current
-  return forwardRef.current
- }
+ }) => (
+   // putting this inside useRef makes this iframe unaffected by rerenders
+   useRef(createElement('iframe', { ...otherProps, ref: forwardRef })).current
+ )
 
 const WebView = ({
   source={},  // Need to support uri and headers keys
   forwardRef,
   style,
   onMessage,  // Need custom code in readium-js-viewer
-  onError,  // Need custom code in readium-js-viewer
+  onError,
+  onLoad,
   // injectedJavaScript,
-  // onLoad,
   // onNavigationStateChange,
   // originWhitelist,
   // mixedContentMode,
@@ -93,7 +92,7 @@ const WebView = ({
         if(nativeEvent.origin !== nativeEvent.location.origin) return
 
         // check that it is the right iframe sending the postmessage
-        if(nativeEvent.source !== frameRef.current.contentWindow) return
+        if(nativeEvent.source !== frameRef.current) return
 
         onMessage({ nativeEvent })
       }
@@ -107,43 +106,20 @@ const WebView = ({
   useEffect(
     () => {
 
-      if(!frameRef.current) return
-
-      frameRef.contentWindow.onerror = nativeEvent => {
-        onError && onError({
-          code: nativeEvent.name,
-          description: nativeEvent.message,
-          nativeEvent,
-        })
-      }
-
-      frameRef.contentWindow.onload = nativeEvent => {
-        setLoaded(true)
-        onLoad && onLoad({ nativeEvent })
-      }
-
-    },
-    [ frameRef.current ],
-  )
-
-  useEffect(
-    () => {
-
       const methods = {
 
         reload: () => {
-          frameRef.contentWindow.location.reload()
+          frameRef.location.reload()
         },
 
         injectJavaScript: jsStr => {
-          frameRef.contentWindow.postMessage(
+          frameRef.postMessage(
             {
               action: `injectJS`,
               jsStr,
             },
             source.uri.replace(/^(https?:\/\/[^\/]*).*$/, '$1')
           )
-
         },
 
         // Other methods on native component:
@@ -164,11 +140,26 @@ const WebView = ({
     [ forwardRef ],
   )
 
+  const onErrorWrapper = nativeEvent => {
+    onError && onError({
+      code: nativeEvent.name,
+      description: nativeEvent.message,
+      nativeEvent,
+    })
+  }
+
+  const onLoadWrapper = nativeEvent => {
+    setLoaded(true)
+    onLoad && onLoad({ nativeEvent })
+  }
+
   return (
     <View style={styles.container}>
       <IFrame
         forwardRef={frameRef}
         src={source.uri}
+        onError={onErrorWrapper}
+        onLoad={onLoadWrapper}
         style={[
           styles.iframe,
           style,
