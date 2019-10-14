@@ -1,4 +1,4 @@
-import React, { useEffect, userRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const useInstanceValue = value => {
 

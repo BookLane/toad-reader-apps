@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useMemo, useRef } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, FlatList, Animated } from "react-native"
 

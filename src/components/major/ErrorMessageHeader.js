@@ -1,9 +1,9 @@
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useRef } from "react"
 import { StyleSheet, Platform } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
-import { Button } from "react-native-ui-kitten"
+// import { Ionicons } from "@expo/vector-icons"
+// import { Button } from "react-native-ui-kitten"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n.js"
+// import i18n from "../../utils/i18n.js"
 
 import AppHeader from "../basic/AppHeader"
 
