@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
