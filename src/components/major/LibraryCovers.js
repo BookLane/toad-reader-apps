@@ -104,7 +104,8 @@ const LibraryCovers = ({
 
   // scroll to top if sort or scope changed
   if(
-    library
+    prevLibrary
+    && library
     && ['sort', 'scope'].some(key => (
       prevLibrary[key]
       && library[key]
@@ -232,9 +233,9 @@ const LibraryCovers = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  library: state.library,
-  books: state.books,
+const mapStateToProps = ({ library, books }) => ({
+  library,
+  books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
