@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import Constants from 'expo-constants'
 import useDimensions from './useDimensions'
 

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"

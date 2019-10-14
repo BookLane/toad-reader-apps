@@ -1,21 +1,20 @@
-import useSize from "react-use/lib/useSize"
+import { useState, useEffect } from "react"
 
 const useDimensions = () => {
 
-  const [ sized, window ] = useSize(
-    document.body,
-    document.body.getBoundingClientRect(),
-  )
+console.log('document.body ', document.body, document.body.getBoundingClientRect())
+  const [ window, setWindow ] = useState(() => document.body.getBoundingClientRect())
 
-  // const dimensions = useMemo(
-  //   () => ({
-  //     window: {
-  //       width,
-  //       height,
-  //     },
-  //   }),
-  //   [ width, height ],
-  // )
+  useEffect(
+    () => {
+
+      const onResize = () => setWindow(document.body.getBoundingClientRect())
+
+      window.addEventListener('resize', onResize)
+      return () => window.removeEventListener('resize', onResize)
+    },
+    [],
+  )
 
   return { window }
 }
