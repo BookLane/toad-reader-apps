@@ -107,7 +107,13 @@ class Library extends React.Component {
     }
   }
 
-  hasJSUpdate = () => !!this.JSUpdateReady
+  onLoginSuccess = () => {
+    if(this.JSUpdateReady) {
+      Updates.reloadFromCache()
+    } else {
+      this.setState({ showLogin: false })
+    }
+  }
 
   async fetchAll(nextProps) {
     const { setFetchingBooks, accounts, idps, books, addBooks,
@@ -123,7 +129,7 @@ class Library extends React.Component {
 
     // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
     setFetchingBooks({ value: true })
-    for(accountId in accounts) {
+    for(let accountId in accounts) {
       try {
 
         const [ idpId ] = accountId.split(':')
@@ -268,7 +274,7 @@ class Library extends React.Component {
       return (
         <Login
           idpId={Object.keys(idps)[0]}
-          hasJSUpdate={this.hasJSUpdate}
+          onSuccess={this.onLoginSuccess}
         />
       )
     }

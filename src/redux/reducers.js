@@ -37,6 +37,8 @@ const slicedReducers = combineReducers({
 })
 
 const allReducers = reduceReducers(
+  {},  // initialState
+
   slicedReducers,
 
   // the following reducers receive the entire store

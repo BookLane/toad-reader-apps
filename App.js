@@ -92,16 +92,16 @@ const App = () => {
       customMapping={customMapping}
       theme={themes[theme]}
     >
-      <PersistGate 
-        persistor={persistor} 
-        loading={<AppLoading />}
-      >
-        <Provider store={store}>
+      <Provider store={store}>
+        <PersistGate 
+          persistor={persistor} 
+          loading={<AppLoading />}
+        >
           <Router>
             <Library changeTheme={changeTheme} />
           </Router>
-        </Provider>
-      </PersistGate>
+        </PersistGate>
+      </Provider>
     </ApplicationProvider>
   )
 }

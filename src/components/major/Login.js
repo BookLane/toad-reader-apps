@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback } from "react"
-import { Updates } from "expo"
-import { StyleSheet, View } from "react-native"
-import { WebView } from 'react-native-webview'
+import { StyleSheet, Platform } from "react-native"
+import WebView from './WebView'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -10,7 +9,7 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, getOrigin } from "../../utils/toolbox.js"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout.js"
 
@@ -38,7 +37,8 @@ const Login = ({
   history,
   idps,
   idpId,
-  hasJSUpdate,
+  onSuccess,
+  addAccount,
 }) => {
 
   const [ loading, setLoading ] = useState(true)
@@ -52,6 +52,8 @@ const Login = ({
   const { online } = useNetwork()
 
   const [ setReloadTimeout ] = useSetTimeout()
+
+  const confirmLoginUrl = `${getOrigin(idps[idpId])}/confirmlogin`
 
   const onError = useCallback(
     err => {
@@ -72,27 +74,8 @@ const Login = ({
 
       if(loading || !initialStateChangeAlreadyHappened.current) {
         initialStateChangeAlreadyHappened.current = true
-        setLoading(true)
-        return
-      }
-
-      const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
-
-      if(url === userSetupUrl) {
+      } else if(url === confirmLoginUrl) {
         setLeaving(true)
-
-        webViewRef.current.injectJavaScript(`
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-              identifier: "sendCookieAndContent",
-              payload: {
-                cookie: document.cookie,
-                content: document.body.innerText,
-              },
-          }));
-          document.cookie = "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        `)
-        // we clear the cookie because we want auth status to be completely controlled by the app.
-
       } else {
         askedForLoginInfoAtLeastOnce.current = true
         setLoading(true)
@@ -103,26 +86,32 @@ const Login = ({
     [ idps ],
   )
 
+  const onLoad = useCallback(
+    () => setLoading(false),
+    [ idps ],
+  )
+
   const onMessageEvent = useCallback(
     async event => {
       
-      const data = JSON.parse(event.nativeEvent.data)
+      let data
+      
+      try {
+        data = typeof event.nativeEvent.data !== 'object' ? JSON.parse(event.nativeEvent.data) : event.nativeEvent.data
+      } catch (e) {
+        return
+      }
 
-      if(data.identifier === 'sendCookieAndContent') {
+      if(data.identifier === 'sendCookiePlus') {
 
-        let userData
-        try {
-          userData = JSON.parse(data.payload.content)
-        } catch(e) {}
+        const { cookie, currentServerTime, userInfo } = data.payload || {}
 
-        if(!userData || !userData.userInfo) {
+        if(cookie == null || !currentServerTime || !userInfo) {
           history.push("/error", {
             critical: true,
           })
           return
         }
-
-        const { userInfo, currentServerTime } = userData
 
         addAccount({
           idpId,
@@ -131,23 +120,16 @@ const Login = ({
             firstname: userInfo.firstname,
             lastname: userInfo.lastname,
             serverTimeOffset: currentServerTime - Date.now(),
-            cookie: data.payload.cookie,
+            cookie,
           },
         })
 
-        if(hasJSUpdate()) {
-          Updates.reloadFromCache()
-        } else {
-          history.goBack()
-        }
+        onSuccess()
 
       }
     },
-    [ history, addAccount, idpId, hasJSUpdate ],
+    [ history, addAccount, idpId, onSuccess ],
   )
-
-
-  const userSetupUrl = `https://${idps[idpId].domain}/usersetup.json`
 
   const spinMessage = 
     error
@@ -178,15 +160,16 @@ const Login = ({
           (leaving ? styles.hidden : null),
         ]}
         source={getReqOptionsWithAdditions({
-          uri: userSetupUrl,
+          uri: confirmLoginUrl,
         })}
         mixedContentMode="always"
         onError={onError}
         onNavigationStateChange={onNavigationStateChange}
+        onLoad={onLoad}
         injectedJavaScript={`
           document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
         `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-        ref={webViewRef}
+        {...{[Platform.OS === `web` ? `forwardRef` : `ref`]: webViewRef}}
         onMessage={onMessageEvent}
       />
       {!!(loading || !online || error || leaving) &&
