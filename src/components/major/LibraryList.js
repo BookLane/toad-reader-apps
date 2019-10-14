@@ -36,7 +36,8 @@ const LibraryList = React.memo(({
 
   // scroll to top if sort or scope changed
   if(
-    library
+    prevLibrary
+    && library
     && ['sort', 'scope'].some(key => (
       prevLibrary[key]
       && library[key]
@@ -74,7 +75,7 @@ const LibraryList = React.memo(({
     <View style={styles.container}>
       <FlatList
         data={bookList.map(bookId => ({ key: bookId }))}
-        renderItem={this.renderItem}
+        renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         ref={flatListRef}
       />
