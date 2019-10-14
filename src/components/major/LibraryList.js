@@ -83,9 +83,9 @@ const LibraryList = React.memo(({
   )
 })
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-  library: state.library,
+const mapStateToProps = ({ books, library }) => ({
+  books,
+  library,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

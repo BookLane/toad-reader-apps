@@ -63,10 +63,10 @@ const LibraryBook = props => {
   )
 }
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-  idps: state.idps,
-  accounts: state.accounts,
+const mapStateToProps = ({ books, idps, accounts }) => ({
+  books,
+  idps,
+  accounts,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

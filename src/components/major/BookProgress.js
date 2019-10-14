@@ -86,8 +86,7 @@ const BookProgress = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  // books: state.books,
+const mapStateToProps = ({}) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

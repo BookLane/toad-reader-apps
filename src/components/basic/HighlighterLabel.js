@@ -217,7 +217,7 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = ({}) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

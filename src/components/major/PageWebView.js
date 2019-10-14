@@ -227,8 +227,8 @@ class PageWebView extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  userDataByBookId: state.userDataByBookId,
+const mapStateToProps = ({ userDataByBookId }) => ({
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

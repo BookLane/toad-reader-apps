@@ -378,12 +378,12 @@ class Library extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  accounts: state.accounts,
-  idps: state.idps,
-  books: state.books,
-  library: state.library,
-  fetchingBooks: state.fetchingBooks,
+const mapStateToProps = ({ accounts, idps, books, library, fetchingBooks }) => ({
+  accounts,
+  idps,
+  books,
+  library,
+  fetchingBooks,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

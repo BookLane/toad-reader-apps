@@ -182,8 +182,8 @@ const Login = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
+const mapStateToProps = ({ idps }) => ({
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

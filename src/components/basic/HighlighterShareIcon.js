@@ -79,11 +79,11 @@ const HighlighterShareIcon = React.memo(({
   )
 })
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  books: state.books,
-  userDataByBookId: state.userDataByBookId,
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+  idps,
+  accounts,
+  books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

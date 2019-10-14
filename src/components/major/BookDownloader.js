@@ -136,11 +136,11 @@ const BookDownloader = ({
   return null
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  bookDownloadQueue: state.bookDownloadQueue,
-  books: state.books,
+const mapStateToProps = ({ idps, accounts, bookDownloadQueue, books }) => ({
+  idps,
+  accounts,
+  bookDownloadQueue,
+  books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

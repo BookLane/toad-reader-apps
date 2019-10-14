@@ -235,10 +235,10 @@ class PageCaptureManager extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-  displaySettings: state.displaySettings,
-  readerStatus: state.readerStatus,
+const mapStateToProps = ({ books, displaySettings, readerStatus }) => ({
+  books,
+  displaySettings,
+  readerStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

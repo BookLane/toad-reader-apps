@@ -246,9 +246,9 @@ const BookPage = React.memo(props => {
   )
 })
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-  displaySettings: state.displaySettings,
+const mapStateToProps = ({ books, displaySettings }) => ({
+  books,
+  displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

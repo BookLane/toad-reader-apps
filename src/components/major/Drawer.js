@@ -289,10 +289,10 @@ const Drawer = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  accounts: state.accounts,
-  idps: state.idps,
-  books: state.books,
+const mapStateToProps = ({ accounts, idps, books }) => ({
+  accounts,
+  idps,
+  books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

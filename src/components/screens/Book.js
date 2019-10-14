@@ -606,13 +606,13 @@ class Book extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  books: state.books,
-  userDataByBookId: state.userDataByBookId,
-  displaySettings: state.displaySettings,
-  readerStatus: state.readerStatus,
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySettings, readerStatus }) => ({
+  idps,
+  accounts,
+  books,
+  userDataByBookId,
+  displaySettings,
+  readerStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

@@ -88,10 +88,10 @@ const LibraryHeader = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  library: state.library,
+const mapStateToProps = ({ idps, accounts, library }) => ({
+  idps,
+  accounts,
+  library,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

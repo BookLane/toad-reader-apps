@@ -216,8 +216,8 @@ const DisplaySettings = React.memo(({
   )
 })
 
-const mapStateToProps = (state) => ({
-  displaySettings: state.displaySettings,
+const mapStateToProps = ({ displaySettings }) => ({
+  displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

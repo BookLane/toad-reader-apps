@@ -48,8 +48,8 @@ const BookInfoCover = ({
   )
 }
 
-const mapStateToProps = (state) => ({
-  downloadProgressByBookId: state.downloadProgressByBookId,
+const mapStateToProps = ({ downloadProgressByBookId }) => ({
+  downloadProgressByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
