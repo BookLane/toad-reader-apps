@@ -7,7 +7,7 @@ const useSetTimeout = () => {
 
   const set = (...props) => {
     clear()
-    timeouts.current = setTimeout(...props)
+    timeout.current = setTimeout(...props)
   }
 
   const clear = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -28,17 +28,16 @@ const BookDownloader = ({
 
   const [ currentDownloadBookId, setCurrentDownloadBookId ] = useState(null)
 
-  if(currentDownloadBookId) return null
-  if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return null
-  if(downloadPaused) return null
-
   const [ setThrottleTimeout ] = useSetTimeout()
   const getDownloadPaused = useInstanceValue(downloadPaused)
   const getBooks = useInstanceValue(books)
 
+  if(currentDownloadBookId) return null
+  if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return null
+  if(getDownloadPaused()) return null
+
   const downloadWasCanceled = bookId => {
-    const books = getBooks() || {}
-    const { downloadStatus } = books[bookId] || {}
+    const { downloadStatus } = (getBooks() || {})[bookId] || {}
 
     if(downloadStatus === 0) {
       setCurrentDownloadBookId(null)
@@ -48,11 +47,11 @@ const BookDownloader = ({
     return false
   }
 
-  useEffect(async () => {
+  ;(async () => {
 
     const bookId = bookDownloadQueue[0]
-    const { downloadStatus, title } = books[bookId] || {}
-    const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
+    const { downloadStatus, title } = getBooks()[bookId] || {}
+    const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
 
     if(downloadStatus === 2 || !accountId) {
       removeFromBookDownloadQueue({ bookId })
@@ -132,7 +131,8 @@ const BookDownloader = ({
     setTocAndSpines({ bookId, toc, spines })
     markDownloadComplete(2)
     console.log(`Done downloading book with bookId ${bookId}`)
-  })
+
+  })()
 
   return null
 }
