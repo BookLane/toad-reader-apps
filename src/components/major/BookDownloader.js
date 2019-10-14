@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 import useInstanceValue from '../../hooks/useInstanceValue'
+import useSetTimeout from '../../hooks/useSetTimeout'
 
 import { getBooksDir, getOrigin } from "../../utils/toolbox.js"
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"

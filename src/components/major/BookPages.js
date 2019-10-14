@@ -9,6 +9,7 @@ import BookProgress from "./BookProgress"
 
 import { getFooterHeight, getToolbarHeight } from '../../utils/toolbox.js'
 import useDimensions from "../../hooks/useDimensions"
+import useSetTimeout from '../../hooks/useSetTimeout'
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
