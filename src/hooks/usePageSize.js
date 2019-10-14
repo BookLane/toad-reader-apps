@@ -14,14 +14,14 @@ const usePageSize = () => {
   const size = useMemo(
     () => {
       const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
-      const itemsPerRow = parseInt(width / maxWidth)
-      const itemWidth = (width - ((itemsPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / itemsPerRow
-      const itemHeight = itemWidth / ( width / height )
+      const pagesPerRow = parseInt(width / maxWidth)
+      const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
+      const pageHeight = pageWidth / ( width / height )
     
       return {
-        itemWidth,
-        itemHeight,
-        itemsPerRow,
+        pageWidth,
+        pageHeight,
+        pagesPerRow,
       }
     },
     [ width, height ],
