@@ -1,7 +1,7 @@
-node_modules/**/*
-.expo/*
-npm-debug.*
-assets/*
-tenants/*
+/.expo/*
+/node_modules/*
+/assets/*
+/tenants/*
 /app.json
 /src/utils/translations/current.json
+/web-build/*

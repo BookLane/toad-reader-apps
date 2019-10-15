@@ -116,7 +116,7 @@ const Drawer = ({
       if(!idpId || !idps[idpId]) return
       
       // To force a refresh on the library, I need to call the url below and then open
-      // up a webview with the userDataUrl (with App-Request header) since the shibboleth 
+      // up a webview with the userDataUrl since the shibboleth 
       // login process includes javascript onload calls. When that process was over and it
       // arrives back at the userDataUrl, then I would want to continue to get the library
       // listing. In other words, I basically need to call the next line and run the whole

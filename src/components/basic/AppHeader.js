@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 
 const AppHeader = ({
   hide,
-  ...topNavigationProps,
+  ...topNavigationProps
 }) => {
 
   // There is a bug by which the backgroundColor in the header does not get set on load.

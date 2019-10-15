@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
 
 const IFrame = ({
   forwardRef,
-  ...otherProps,
+  ...otherProps
  }) => (
    // putting this inside useRef makes this iframe unaffected by rerenders
    useRef(createElement('iframe', { ...otherProps, ref: forwardRef })).current

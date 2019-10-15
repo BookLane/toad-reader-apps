@@ -137,7 +137,7 @@ export const patch = info => setTimeout(() => {
               currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = false
 
               if(response.status < 400) {
-                console.log(`Patch successful (bookId: ${bookId}, userId: ${userId}, domain: ${idp.domain}).`)
+                console.log(`Patch successful (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
   
                 // update lastSuccessfulPatch
                 updateLastSuccessfulPatch()
@@ -161,7 +161,7 @@ export const patch = info => setTimeout(() => {
                 })
   
               } else if(response.status === 412) {
-                console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, domain: ${idp.domain}).`)
+                console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
   
                 // still, the new stuff was saved and so update lastSuccessfulPatch
                 updateLastSuccessfulPatch()
@@ -243,7 +243,7 @@ export const reportReadings = info => setTimeout(() => {
         currentlyReportingReadingsByAccountId[accountId] = false
 
         if(response.status < 400) {
-          console.log(`reportReading successful (userId: ${userId}, domain: ${idp.domain}).`)
+          console.log(`reportReading successful (userId: ${userId}, path: ${path}).`)
 
           // remove these reading records from readingRecordsByAccountId in the state
           flush()
@@ -342,7 +342,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
             
             setUserData({ bookId, userData, lastSuccessfulPatch })
 
-            console.log(`User data refresh successful (bookId: ${bookId}, userId: ${userId}, domain: ${idp.domain}).`)
+            console.log(`User data refresh successful (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
 
             patch()
             

@@ -401,4 +401,29 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
 
 }
 
-export const getOrigin = ({ domain, protocol=`https` }={}) => `${protocol}://${domain}`
+const dashifyDomain = domain => domain
+  .replace(/-/g, '--')
+  .replace(/\./g, '-')
+
+export const getOrigin = ({ domain, protocol=`https` }={}) => {
+
+  if(__DEV__) {
+    // dev environment
+    return `http://localhost:8080`
+  }
+
+  if(
+    Constants.manifest.releaseChannel === 'staging'
+    || (
+      Platform.OS === 'web'
+      && /\.staging\.toadreader\.com$/.test(location.hostname)
+    )
+  ) {
+    // staging environment
+    return `${protocol}://${dashifyDomain(domain)}.data.staging.toadreader.com`
+  }
+
+  // production environment
+  return `${protocol}://${dashifyDomain(domain)}.data.toadreader.com`
+
+}
