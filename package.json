@@ -14,7 +14,7 @@
     "ios": "expo start --ios",
     "push-to-production": "(npm run confirm -s && expo publish --release-channel production) || true",
     "push-to-staging": "(npm run confirm -s && npm run push-web-to-staging && expo publish --release-channel staging) || true",
-    "push-web-to-staging": "expo build:web && node ./scripts/pushWebToStaging.js",
+    "push-web-to-staging": "expo build:web && node ./scripts/pushWebToStaging.js && rm register-service-worker.js",
     "setup-translation": "node ./scripts/makeTranslationFiles.js",
     "start": "expo start -w"
   },
