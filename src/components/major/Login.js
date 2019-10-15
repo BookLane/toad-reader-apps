@@ -9,7 +9,7 @@ import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
 
-import { getReqOptionsWithAdditions, getOrigin } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox.js"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout.js"
 
@@ -53,7 +53,7 @@ const Login = ({
 
   const [ setReloadTimeout ] = useSetTimeout()
 
-  const confirmLoginUrl = `${getOrigin(idps[idpId])}/confirmlogin`
+  const confirmLoginUrl = `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const onError = useCallback(
     err => {

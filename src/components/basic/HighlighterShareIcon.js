@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import i18n from "../../utils/i18n.js"
 
-import { getFullName, getOrigin } from '../../utils/toolbox.js'
+import { getFullName, getDataOrigin } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   share: {
@@ -38,7 +38,7 @@ const HighlighterShareIcon = React.memo(({
         throw new Error('Unable to share')
       }
 
-      let url = `${getOrigin(idp)}/book/${bookId}`
+      let url = `${getDataOrigin(idp)}/book/${bookId}`
         + `?goto=${encodeURIComponent(latest_location)}`
         + `&highlight=${encodeURIComponent(selectionInfo.text)}`
       if(highlight.note) {

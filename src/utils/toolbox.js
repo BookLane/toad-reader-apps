@@ -405,7 +405,7 @@ const dashifyDomain = domain => domain
   .replace(/-/g, '--')
   .replace(/\./g, '-')
 
-export const getOrigin = ({ domain, protocol=`https` }={}) => {
+export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
   if(__DEV__) {
     // dev environment

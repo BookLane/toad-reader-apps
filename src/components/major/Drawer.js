@@ -8,7 +8,7 @@ import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity, Te
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, List, ListItem } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
-import { getOrigin } from "../../utils/toolbox"
+import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
@@ -99,7 +99,7 @@ const Drawer = ({
         },
         () => {
           history.push("/", {
-            logOutUrl: `${getOrigin(idps[idpId])}/logout`,
+            logOutUrl: `${getDataOrigin(idps[idpId])}/logout`,
             logOutAccountId: accountId,
           })
         },
@@ -123,7 +123,7 @@ const Drawer = ({
       // login process again, but hidden.
 
       history.push("/", {
-        logOutUrl: `${getOrigin(idps[idpId])}/logout/callback?noredirect=1`,
+        logOutUrl: `${getDataOrigin(idps[idpId])}/logout/callback?noredirect=1`,
         refreshLibraryAccountId: accountId,
       })
     },

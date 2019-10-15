@@ -26,7 +26,7 @@ import AppHeader from "../basic/AppHeader.js"
 import BookDownloader from "../major/BookDownloader.js"
 import Login from "../major/Login"
 
-import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts, getOrigin } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts, getDataOrigin } from "../../utils/toolbox.js"
 // import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
@@ -142,7 +142,7 @@ class Library extends React.Component {
 
         // update books
 
-        const libraryUrl = `${getOrigin(idps[idpId])}/epub_content/epub_library.json`
+        const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
         let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
           headers: {
             "x-cookie-override": accounts[accountId].cookie,
@@ -201,7 +201,7 @@ class Library extends React.Component {
           const coverFilename = book.coverHref.split('/').pop()
 
           downloadAsync(
-            `${getOrigin(idp)}/${book.coverHref}`,
+            `${getDataOrigin(idp)}/${book.coverHref}`,
             `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
           ).then(successful => {
             if(successful) {

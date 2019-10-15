@@ -6,7 +6,7 @@ import i18n from "../../utils/i18n.js"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
-import { getBooksDir, getOrigin } from "../../utils/toolbox.js"
+import { getBooksDir, getDataOrigin } from "../../utils/toolbox.js"
 import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
 import parseEpub from "../../utils/parseEpub.js"
 
@@ -71,7 +71,7 @@ const BookDownloader = ({
 
     let throttleLastRan = 0
     const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl: `${getOrigin(idps[accountId.split(':')[0]])}/epub_content/book_${bookId}/book.epub`,
+      zipUrl: `${getDataOrigin(idps[accountId.split(':')[0]])}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
       progressCallback: progress => {
