@@ -69,7 +69,9 @@ class Library extends React.Component {
     updateReader({ setReaderStatus })
     // removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
 
-    ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+    if(Platform.OS !== 'web') {
+      ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+    }
     reSort()
 
     autoUpdateCoreIdps()
