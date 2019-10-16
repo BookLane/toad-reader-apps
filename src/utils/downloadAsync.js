@@ -1,15 +1,17 @@
+import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 
 export default async (remoteUri, localUri, { skipIfExists }={}) => {
-  return true
-    
+
+  if(Platform.OS === 'web') return
+
   if(skipIfExists) {
     const localUriInfo = await FileSystem.getInfoAsync(localUri)
     if(localUriInfo.exists) return
   }
 
   const localDir = `${localUri.replace(/\/[^\/]*$/, '')}`
-  const localDirInfo = await FileSystem.getInfoAsync(localDir)
+  // const localDirInfo = await FileSystem.getInfoAsync(localDir)
 
   // if(!localDirInfo.exists) {
   try {

@@ -3,12 +3,14 @@ import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet, View, Text } from "react-native"
+import { Image, StyleSheet, View, Text, Platform } from "react-native"
 
 import FullScreenSpin from "./FullScreenSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
+
+import { getDataOrigin } from '../../utils/toolbox.js'
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -49,15 +51,19 @@ const Cover = ({
   bookWidth,
   bookHeight,
   downloadProgressByBookId,
+  idps,
 }) => {
 
   const [ imageError, setImageError ] = useState(false)
   const imageOnError = useCallback(() => setImageError(true), [])
   
-  const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
+  const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, coverHref } = bookInfo
+  const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
-  const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+  const uri = Platform.OS === 'web'
+    ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
+    : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
   return (
     <View
@@ -69,12 +75,12 @@ const Cover = ({
         },
       ]}
     >
-      {!!(!coverFilename || imageError) &&
+      {!!(!uri || imageError) &&
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{title}</Text>
         </View>
       }
-      {!!coverFilename &&
+      {!!uri &&
         <Image
           source={{ uri }}
           style={styles.image}
@@ -94,8 +100,9 @@ const Cover = ({
   )
 }
 
-const mapStateToProps = ({ downloadProgressByBookId }) => ({
+const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({
   downloadProgressByBookId,
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

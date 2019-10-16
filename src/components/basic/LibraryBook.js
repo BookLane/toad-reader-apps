@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { TouchableOpacity } from "react-native"
+import { TouchableOpacity, Platform } from "react-native"
 import { withRouter } from "react-router"
 
 // import { debounce, getBooksDir } from "../../utils/toolbox.js"
@@ -33,7 +33,7 @@ const LibraryBook = props => {
       const downloadStatus = getDownloadStatus(bookId)
       // const accountId = Object.keys(books[bookId].accounts)[0]
 
-      if(downloadStatus == 2) {
+      if(downloadStatus == 2 || Platform.OS === 'web') {
         history.push(`/book/${bookId}`)
         
       } else if(downloadStatus == 0) {

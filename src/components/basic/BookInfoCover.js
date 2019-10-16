@@ -2,9 +2,11 @@ import React from "react"
 import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet, View } from "react-native"
+import { Image, StyleSheet, View, Platform } from "react-native"
 
 import FullScreenSpin from "./FullScreenSpin"
+
+import { getDataOrigin } from '../../utils/toolbox.js'
 
 const styles = StyleSheet.create({
   container: {
@@ -25,12 +27,16 @@ const BookInfoCover = ({
   bookId,
   bookInfo,
   downloadProgressByBookId,
+  idps,
 }) => {
 
-  const { coverFilename, downloadStatus } = bookInfo
+  const { coverFilename, downloadStatus, accounts, coverHref } = bookInfo
+  const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
-  const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+  const uri = Platform.OS === 'web'
+    ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
+    : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
   return (
     <View style={styles.container}>
@@ -48,8 +54,9 @@ const BookInfoCover = ({
   )
 }
 
-const mapStateToProps = ({ downloadProgressByBookId }) => ({
+const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({
   downloadProgressByBookId,
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
