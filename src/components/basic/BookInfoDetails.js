@@ -1,6 +1,6 @@
 import React from "react"
 import { Ionicons } from '@expo/vector-icons'
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import i18n from "../../utils/i18n.js"
 
 const styles = StyleSheet.create({
@@ -27,6 +27,8 @@ const BookInfoDetails = ({
     // totalCharacterCount,
   },
 }) => {
+
+  if(Platform.OS === 'web') return null
 
   if(downloadStatus == 2) {
     return (
