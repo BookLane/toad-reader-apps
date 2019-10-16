@@ -47,7 +47,7 @@ const BookInfoDetails = ({
 
   return (
     <View style={styles.container}>
-      <Ionicons name='cloud-download' style={styles.icon} />
+      <Ionicons name='md-cloud-download' style={styles.icon} />
       <Text style={styles.details}>{i18n("Tap to download")}</Text>
     </View>
   )
