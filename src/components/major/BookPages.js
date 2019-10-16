@@ -11,6 +11,7 @@ import { getFooterHeight, getToolbarHeight } from '../../utils/toolbox.js'
 import useDimensions from "../../hooks/useDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
+import usePageSize from "../../hooks/usePageSize"
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
