@@ -108,13 +108,15 @@ const styles = StyleSheet.create({
   },
 })
 
+const getBookId = ({ pathname }) => pathname.split('/').pop()
+
 class Book extends React.Component {
 
   constructor(props) {
     super(props)
 
     const { location, books } = props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
     this.state = {
@@ -162,7 +164,7 @@ class Book extends React.Component {
 
   componentDidMount() {
     const { location, startRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { spineIdRef } = this.getLatestLocationObj()
 
     setStatusBarHidden(true)
@@ -193,7 +195,7 @@ class Book extends React.Component {
 
   handleAppStateChange = nextAppState => {
     const { location, startRecordReading, endRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { currentAppState, mode } = this.state
     const { spineIdRef } = this.getLatestLocationObj()
 
@@ -218,7 +220,7 @@ class Book extends React.Component {
 
   getFreshUserData = () => {
     const { location, books } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
 
     Object.keys(books[bookId].accounts).forEach(accountId => {
       refreshUserData({
@@ -231,7 +233,7 @@ class Book extends React.Component {
 
   getLatestLocationObj = () => {
     const { userDataByBookId, location } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
 
     const latest_location = (userDataByBookId[bookId] || {}).latest_location
     return latestLocationToObj(latest_location || "{}")
@@ -239,7 +241,7 @@ class Book extends React.Component {
 
   zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
     const { setLatestLocation, history, startRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
 
     const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
@@ -310,7 +312,7 @@ class Book extends React.Component {
 
   goToHref = ({ href }) => {
     const { location, startRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { spineIdRef } = this.getLatestLocationObj()
 
     this.pauseProcessing()
@@ -345,7 +347,7 @@ class Book extends React.Component {
 
   backToReading = () => {
     const { location, startRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { spineIdRef } = this.getLatestLocationObj()
 
     const { width, height } = Dimensions.get('window')
@@ -432,7 +434,7 @@ class Book extends React.Component {
 
   showDisplaySettings = () => {
     const { location, startRecordReading } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { spineIdRef } = this.getLatestLocationObj()
 
     this.pauseProcessing()
@@ -461,7 +463,7 @@ class Book extends React.Component {
 
   removeFromDevice = () => {
     const { location, books } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
 
     confirmRemoveEPub({
       ...this.props,
@@ -476,7 +478,7 @@ class Book extends React.Component {
 
   goToBookLink = () => {
     const { location, books } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
 
     const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
@@ -504,7 +506,7 @@ class Book extends React.Component {
   render() {
 
     const { location, books, userDataByBookId, displaySettings, readerStatus } = this.props
-    const { bookId } = location.state || {}
+    const bookId = getBookId(location)
     const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
       snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, processingPaused } = this.state
 
