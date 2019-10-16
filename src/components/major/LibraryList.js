@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     padding: LIBRARY_LIST_MARGIN,
     paddingTop: 0,
     paddingBottom: 0,
+    flex: 1,
   },
 })
 
