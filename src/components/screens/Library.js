@@ -316,63 +316,67 @@ class Library extends React.Component {
         isOpen={location.pathname === '/drawer'}
         onChange={this.sideMenuOnChange}
       >
-        <Layout>
-          <LibraryHeader
-            scope={scope}
-            toggleShowOptions={this.toggleShowOptions}
-            hideOptions={this.hideOptions}
-          />
-          {fetchingBooks && bookList.length == 0
-            ? (
-              <View style={styles.spinnerContainer}>
-                <Spin />
-              </View>
-            )
-            : (
-              bookList.length == 0
-                ? (
-                  <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-                )
-                : (
-                  <View style={styles.content}>
-                    <LibraryViewer
-                      bookList={bookList}
-                    />
-                  </View>
-                )
-            )
-          }
-          {!!showOptions && 
-            <Options
-              requestHide={this.hideOptions}
-              headerText={i18n("Sort by...")}
-              options={[
-                {
-                  text: i18n("Recent"),
-                  selected: library.sort == 'recent',
-                  onPress: () => setSort({ sort: 'recent' }),
-                },
-                {
-                  text: i18n("Title"),
-                  selected: library.sort == 'title',
-                  onPress: () => setSort({ sort: 'title' }),
-                },
-                {
-                  text: i18n("Author"),
-                  selected: library.sort == 'author',
-                  onPress: () => setSort({ sort: 'author' }),
-                },
-              ]}
-            />
-          }
-
-          <BookDownloader
-            downloadPaused={downloadPaused}
-          />
-        </Layout>
 
         <Switch>
           <Route path="/book/:id" component={Book} />
+          <Route>
+
+            <Layout>
+              <LibraryHeader
+                scope={scope}
+                toggleShowOptions={this.toggleShowOptions}
+                hideOptions={this.hideOptions}
+              />
+              {fetchingBooks && bookList.length == 0
+                ? (
+                  <View style={styles.spinnerContainer}>
+                    <Spin />
+                  </View>
+                )
+                : (
+                  bookList.length == 0
+                    ? (
+                      <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                    )
+                    : (
+                      <View style={styles.content}>
+                        <LibraryViewer
+                          bookList={bookList}
+                        />
+                      </View>
+                    )
+                )
+              }
+              {!!showOptions && 
+                <Options
+                  requestHide={this.hideOptions}
+                  headerText={i18n("Sort by...")}
+                  options={[
+                    {
+                      text: i18n("Recent"),
+                      selected: library.sort == 'recent',
+                      onPress: () => setSort({ sort: 'recent' }),
+                    },
+                    {
+                      text: i18n("Title"),
+                      selected: library.sort == 'title',
+                      onPress: () => setSort({ sort: 'title' }),
+                    },
+                    {
+                      text: i18n("Author"),
+                      selected: library.sort == 'author',
+                      onPress: () => setSort({ sort: 'author' }),
+                    },
+                  ]}
+                />
+              }
+
+              <BookDownloader
+                downloadPaused={downloadPaused}
+              />
+            </Layout>
+            
+          </Route>
         </Switch>
 
       </SideMenu>

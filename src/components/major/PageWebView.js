@@ -160,7 +160,7 @@ class PageWebView extends React.Component {
 
   render() {
     // I get these from state and not props because these are all initial values
-    const { viewRef, bookId, style, initialLocation, initialDisplaySettings, width, height } = this.state
+    const { viewRef, bookId, style, initialLocation, initialDisplaySettings, width, height, unloaded } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
       location: initialLocation,
