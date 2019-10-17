@@ -2705,17 +2705,17 @@ Cfi?F.getDomRangesFromRangeCfi(e,t,n):[F.getDomRangeFromRangeCfi(e,t,n)]},this.g
 on(e){if(F)return F.getRangeCfiFromDomRange(e)},this.getVisibleCfiFromPoint=function(e,t,n,i){if(F)return F.getVisibleCfiFromPoint(e,t,n,i)},this.getRangeCfiFromPoints=function(e,t,n,i,r){if(F)return \
 F.getRangeCfiFromPoints(e,t,n,i,r)},this.getCfiForElement=function(e){if(F)return F.getCfiForElement(e)},this.biblemesh_getColumnCount=function(e){if(F&&F.biblemesh_getColumnCount)return F.biblemesh_g\
 etColumnCount()}};return b.VIEW_TYPE_COLUMNIZED=1,b.VIEW_TYPE_FIXED=2,b.VIEW_TYPE_SCROLLED_DOC=3,b.VIEW_TYPE_SCROLLED_CONTINUOUS=4,b}),define("text",{load:function(e){throw new Error("Dynamic load not\
- allowed: "+e)}}),define("text!version.json",[],function(){return'{"readiumJsViewer":{"sha":"8fbf1e3a09ff409f6f59ab61ece1f208604cd0bc","clean":true,"version":"0.24.0","chromeVersion":"2.24.0","tag":"1\
-.0.8-107-g8fbf1e3","branch":"for-version-2","release":false},"readiumJs":{"sha":"eaa1e461603e51a0a68a50779343983d62cf49db","clean":true,"version":"0.24.0","tag":"1.0.8-44-geaa1e46","branch":"for-versi\
-on-2","release":false},"readiumSharedJs":{"sha":"f13f27a7c5f45555f40fa2b673d856ca979c112f","clean":true,"version":"0.24.0","tag":"1.0.8-41-gf13f27a","branch":"for-version-2","release":false},"readiumC\
-fiJs":{"sha":"b0924fbf095912ca210320b03feb95bafcfa7cd6","clean":true,"version":"0.24.0","tag":"1.0.8-20-gb0924fb","branch":"for-version-2","release":false}}'}),define("readium_js/epub-fetch/markup_par\
-ser",[],function(){return function(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(),"text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}}\
-),define("readium_js/epub-fetch/discover_content_type",["jquery","URIjs"],function(e,t){var n=void 0,i=function(){var n=this;i.suffixContentTypeMap={css:"text/css",epub:"application/epub+zip",gif:"ima\
-ge/gif",html:"text/html",jpg:"image/jpeg",jpeg:"image/jpeg",ncx:"application/x-dtbncx+xml",opf:"application/oebps-package+xml",png:"image/png",svg:"image/svg+xml",xhtml:"application/xhtml+xml"},this.i\
-dentifyContentTypeFromFileName=function(e){var n=t(e).suffix(),r="application/octet-stream";return void 0!==i.suffixContentTypeMap[n]&&(r=i.suffixContentTypeMap[n]),r},this.identifyContentType=functio\
-n(t){var i=e.ajax({type:"HEAD",url:t,async:!1}).getResponseHeader("Content-Type");return null===i&&(i=n.identifyContentTypeFromFileName(t),console.log("guessed contentType ["+i+"] from URI ["+t+"]. Co\
-nfiguring the web server to provide the content type is recommended.")),i}};return n||(n=new i),n}),define("readium_shared_js/biblemesh_helpers",["readium_shared_js/helpers"],function(e){var t={},n=0;\
-return t.getURLQueryParams=function(){var t=e.getURLQueryParams();if(window.location.pathname.match(/^\\/book\\/([0-9]+)\$/)){
+ allowed: "+e)}}),define("text!version.json",[],function(){return'{"readiumJsViewer":{"sha":"8fbf1e3a09ff409f6f59ab61ece1f208604cd0bc","clean":false,"version":"0.24.0","chromeVersion":"2.24.0","tag":"\
+1.0.8-107-g8fbf1e3","branch":"for-version-2","release":false},"readiumJs":{"sha":"eaa1e461603e51a0a68a50779343983d62cf49db","clean":true,"version":"0.24.0","tag":"1.0.8-44-geaa1e46","branch":"for-vers\
+ion-2","release":false},"readiumSharedJs":{"sha":"f13f27a7c5f45555f40fa2b673d856ca979c112f","clean":true,"version":"0.24.0","tag":"1.0.8-41-gf13f27a","branch":"for-version-2","release":false},"readium\
+CfiJs":{"sha":"b0924fbf095912ca210320b03feb95bafcfa7cd6","clean":true,"version":"0.24.0","tag":"1.0.8-20-gb0924fb","branch":"for-version-2","release":false}}'}),define("readium_js/epub-fetch/markup_pa\
+rser",[],function(){return function(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(),"text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}\
+}),define("readium_js/epub-fetch/discover_content_type",["jquery","URIjs"],function(e,t){var n=void 0,i=function(){var n=this;i.suffixContentTypeMap={css:"text/css",epub:"application/epub+zip",gif:"im\
+age/gif",html:"text/html",jpg:"image/jpeg",jpeg:"image/jpeg",ncx:"application/x-dtbncx+xml",opf:"application/oebps-package+xml",png:"image/png",svg:"image/svg+xml",xhtml:"application/xhtml+xml"},this.\
+identifyContentTypeFromFileName=function(e){var n=t(e).suffix(),r="application/octet-stream";return void 0!==i.suffixContentTypeMap[n]&&(r=i.suffixContentTypeMap[n]),r},this.identifyContentType=functi\
+on(t){var i=e.ajax({type:"HEAD",url:t,async:!1}).getResponseHeader("Content-Type");return null===i&&(i=n.identifyContentTypeFromFileName(t),console.log("guessed contentType ["+i+"] from URI ["+t+"]. C\
+onfiguring the web server to provide the content type is recommended.")),i}};return n||(n=new i),n}),define("readium_shared_js/biblemesh_helpers",["readium_shared_js/helpers"],function(e){var t={},n=0\
+;return t.getURLQueryParams=function(){var t=e.getURLQueryParams();if(window.location.pathname.match(/^\\/book\\/([0-9]+)\$/)){
 var n=parseInt(window.location.pathname.replace(/^\\/book\\/([0-9]+)\$/,"\$1"),10);t.epub="/epub_content/book_"+n}return t},t.buildUrlQueryParameters=function(e,n,i){e||(e=window.location?window.location.\
 protocol+"//"+window.location.hostname+(window.location.port?":"+window.location.port:""):"index.html");var r=/^.*?epub_content\\/book_([0-9]+)\$/;(n.epub||"").match(r)&&(e=n.epub.replace(r,"/book/\$1"))\
 ;var o="";for(var a in n)if(n.hasOwnProperty(a)&&n[a]&&"epub"!=a){var s=n[a].trim();s&&(console.debug("URL QUERY PARAM OVERRIDE: "+a+" = "+s),o+=a+"="+encodeURIComponent(s),o+="&")}var A=i?{}:t.getURL\
@@ -4155,62 +4155,113 @@ lugin_highlights","readium_shared_js/globalsSetup","readium_js_viewer/ReadiumVie
 
     </script>
 
-<script type="text/javascript">
-
-var path = (window.location && window.location.pathname) ? window.location.pathname : ''; 
-
-// extracts path to index.html (or more generally: /PATH/TO/*.[x]html)
-path = path.replace(/(.*)\\/.*\\.[x]?html\$/, "\$1");
-
-// removes trailing slash
-path = path.charAt(path.length-1) == '/'
-          ? path.substr(0, path.length-1)
-          : path;
-          
-var HTTPServerRootFolder =
-window.location ? (
-  window.location.protocol
-  + "//"
-  + window.location.hostname
-  + (window.location.port ? (':' + window.location.port) : '')
-  + path
-  ) : ''
-;
-
-console.log(HTTPServerRootFolder);
-
-
-// MUST BE *SINGLE* CALL TO require.config() FOR ALMOND (SINGLE BUNDLE) TO WORK CORRECTLY!!!
-require.config({
-    /* http://requirejs.org/docs/api.html#config-waitSeconds */
-    waitSeconds: 0,
-
-    config : {
-
-        'readium_js_viewer/ModuleConfig' : {
-
-            'mathJaxUrl': HTTPServerRootFolder + '/scripts/mathjax/MathJax.js',
-
-            'annotationCSSUrl': HTTPServerRootFolder + '/css/annotations.css',
-
-            'jsLibRoot': HTTPServerRootFolder + '/scripts/zip/',
-
-            'useSimpleLoader' : false, // cloud reader (strictly-speaking, this config option is false by default, but we prefer to have it explicitly set here).
-
-            'epubLibraryPath': undefined, // defaults to /epub_content/epub_library.json relative to the application's root index.html ... that being said, this is cloud reader LITE (no library view!)
-
-            'imagePathPrefix': undefined,
-
-            'canHandleUrl' : false,
-            'canHandleDirectory' : false,
-
-
-            'workerUrl': undefined,
-            'epubReadingSystemUrl': undefined
+    <style>
+        html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
         }
-    }
-});
-</script>
+
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            position: absolute;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        iframe {
+            border-width: 0;
+        }
+
+        #viewport {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .iframe-fixed {
+            width: 100%;
+            height: 100%;
+        }
+
+        #fixed-book-frame, .fixed-page-frame, .fixed-page-frame-left, .fixed-page-frame-right, .fixed-page-frame-center {
+            position: absolute !important;
+        }
+
+        #reflowable-book-frame {
+            position: absolute !important;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        #reflowable-content-frame {
+            position: absolute !important;
+            opacity: 1;
+            visibility: visible;
+            overflow: hidden;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+    var path = (window.location && window.location.pathname) ? window.location.pathname : ''; 
+
+    // extracts path to index.html (or more generally: /PATH/TO/*.[x]html)
+    path = path.replace(/(.*)\\/.*\\.[x]?html\$/, "\$1");
+
+    // removes trailing slash
+    path = path.charAt(path.length-1) == '/'
+            ? path.substr(0, path.length-1)
+            : path;
+            
+    var HTTPServerRootFolder =
+    window.location ? (
+    window.location.protocol
+    + "//"
+    + window.location.hostname
+    + (window.location.port ? (':' + window.location.port) : '')
+    + path
+    ) : ''
+    ;
+
+    console.log(HTTPServerRootFolder);
+
+
+    // MUST BE *SINGLE* CALL TO require.config() FOR ALMOND (SINGLE BUNDLE) TO WORK CORRECTLY!!!
+    require.config({
+        /* http://requirejs.org/docs/api.html#config-waitSeconds */
+        waitSeconds: 0,
+
+        config : {
+
+            'readium_js_viewer/ModuleConfig' : {
+
+                'mathJaxUrl': HTTPServerRootFolder + '/scripts/mathjax/MathJax.js',
+
+                'annotationCSSUrl': HTTPServerRootFolder + '/css/annotations.css',
+
+                'jsLibRoot': HTTPServerRootFolder + '/scripts/zip/',
+
+                'useSimpleLoader' : false, // cloud reader (strictly-speaking, this config option is false by default, but we prefer to have it explicitly set here).
+
+                'epubLibraryPath': undefined, // defaults to /epub_content/epub_library.json relative to the application's root index.html ... that being said, this is cloud reader LITE (no library view!)
+
+                'imagePathPrefix': undefined,
+
+                'canHandleUrl' : false,
+                'canHandleDirectory' : false,
+
+
+                'workerUrl': undefined,
+                'epubReadingSystemUrl': undefined
+            }
+        }
+    });
+    </script>
 
     </head>
 
