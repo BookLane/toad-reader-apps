@@ -2,7 +2,7 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
-import { WebView } from 'react-native-webview'
+import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"

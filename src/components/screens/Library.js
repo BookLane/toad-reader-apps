@@ -5,7 +5,6 @@ import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
 import { Switch, Route } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { WebView } from 'react-native-webview'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SideMenu from "react-native-side-menu"
@@ -25,6 +24,7 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 import AppHeader from "../basic/AppHeader.js"
 import BookDownloader from "../major/BookDownloader.js"
 import Login from "../major/Login"
+import WebView from "../major/WebView"
 
 import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts, getDataOrigin } from "../../utils/toolbox.js"
 // import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
