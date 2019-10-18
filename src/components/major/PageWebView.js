@@ -7,6 +7,7 @@ import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"
 import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"
+import getReaderCode from '../../../getReaderCode.js'
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -51,7 +52,7 @@ class PageWebView extends React.Component {
   }
 
   componentWillUnmount() {
-    this.webView.unmounted = true
+    this.webView.current.unmounted = true
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,7 +63,7 @@ class PageWebView extends React.Component {
         highlights,
         location: getLatestLocation(nextProps),
       })
-      postMessage(this.webView, 'renderHighlights', {
+      postMessage(this.webView.current, 'renderHighlights', {
         highlights: newHighlightsInThisSpine,
       })
     }
@@ -97,7 +98,7 @@ class PageWebView extends React.Component {
     const { onMessage, initialLocation } = this.state
     const data = JSON.parse(event.nativeEvent.data)
 
-    if(onMessage && await onMessage(this.webView, data)) return
+    if(onMessage && await onMessage(this.webView.current, data)) return
 
     switch(data.identifier) {
 
@@ -108,16 +109,7 @@ class PageWebView extends React.Component {
 
       case 'loaded':
         console.log('reader loaded')
-        this.webView.loaded = true
-        if(Platform.OS === 'web') {  // because injectedJavaScript is not implemented in WebView.web.js
-          const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
-            location: initialLocation,
-            highlights: getHighlightsObj(this.state),
-          })
-          postMessage(this.webView, 'renderHighlights', {
-            highlights: initialHighlightsInThisSpine,
-          })
-        }
+        this.webView.current.loaded = true
         break;
 
       case 'consoleLog':
@@ -128,14 +120,14 @@ class PageWebView extends React.Component {
         const { uri } = data.payload
         FileSystem.readAsStringAsync(`${uri.replace(/#.*$/, '')}`)
           .then(async fileText => {
-            postMessage(this.webView, 'fileAsText', {
+            postMessage(this.webView.current, 'fileAsText', {
               uri,
               fileText,
             })
           })
           .catch(fileText => {
             console.log('getFileAsText error: ' + uri)
-            postMessage(this.webView, 'fileAsText', {
+            postMessage(this.webView.current, 'fileAsText', {
               uri,
               error: true,
             })
@@ -149,10 +141,12 @@ class PageWebView extends React.Component {
     }
   }
 
+  webView = {}
+
   setWebViewRef = ref => {
     const { setWebViewRef } = this.state
 
-    this.webView = ref
+    this.webView.current = ref
     setWebViewRef && setWebViewRef(ref)
   }
 
@@ -175,9 +169,41 @@ class PageWebView extends React.Component {
       return null
     }
 
-    const readerUrl = Platform.OS === 'web'
-      ? `${location.origin}?version=X`
-      : `${FileSystem.documentDirectory}reader/index.html?`
+    const initialQueryStringParams = {
+      epub: `${getBooksDir()}${bookId}`
+    }
+
+    if(initialLocation) {
+      initialQueryStringParams.goto = initialLocation
+    }
+
+    if(initialDisplaySettings) {
+      initialQueryStringParams.settings = JSON.stringify(initialDisplaySettings)
+    }
+
+    const source = {
+      uri: Platform.OS === 'web'
+        ? location.origin
+        : (
+          `${FileSystem.documentDirectory}reader/index.html?${
+            Object.keys(initialQueryStringParams)
+              .map(key => `${key}=${encodeURIComponent(initialQueryStringParams[key])}`)
+              .join('&')
+          }`
+        )
+    }
+
+    if(Platform.OS === 'web') {
+        source.html = getReaderCode()
+          .replace(/(<head>)/i, `
+            $1
+            <script>
+              window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
+              window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
+              window.parentOriginForPostMessage = ${JSON.stringify(location.origin)};
+            </script>
+          `)
+    }
 
     return (
       <View
@@ -201,24 +227,20 @@ class PageWebView extends React.Component {
               },
               style,
             ]}
+            source={source}
+            onError={this.onError}
+            onMessage={this.onMessageEvent}
+            forwardRef={this.setWebViewRef}
+
+            // The rest of the props are ignored when on web platform
             injectedJavaScript={`
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
               window.isReactNativeWebView = true;
             `}
-            ref={this.setWebViewRef}
             allowUniversalAccessFromFileURLs={true}
             allowFileAccess={true}
             originWhitelist={['*']}
-            source={{
-              uri: readerUrl
-                + `&epub=${encodeURIComponent(`${getBooksDir()}${bookId}`)}`
-                // + `&${Platform.OS}=1`  // appears to be unused
-                + (initialLocation ? `&goto=${encodeURIComponent(initialLocation)}` : ``)
-                + (initialDisplaySettings ? `&settings=${encodeURIComponent(JSON.stringify(initialDisplaySettings))}` : ``)
-            }}
             mixedContentMode="always"
-            onError={this.onError}
-            onMessage={this.onMessageEvent}
             bounces={false}
           />
         </View>

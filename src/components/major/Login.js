@@ -169,7 +169,7 @@ const Login = ({
         injectedJavaScript={`
           document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
         `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-        {...{[Platform.OS === `web` ? `forwardRef` : `ref`]: webViewRef}}
+        forwardRef={webViewRef}
         onMessage={onMessageEvent}
       />
       {!!(loading || !online || error || leaving) &&

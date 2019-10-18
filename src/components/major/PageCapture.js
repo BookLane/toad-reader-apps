@@ -211,7 +211,7 @@ class PageCapture extends React.Component {
     }
   }
 
-  setWebViewEl = ref => this.webView = ref
+  setWebViewRef = ref => this.webView = ref
 
   setView = ref => this.view = ref
 
@@ -230,7 +230,7 @@ class PageCapture extends React.Component {
           minHeight: height,
         }}
         bookId={bookId}
-        setWebViewEl={this.setWebViewEl}
+        setWebViewRef={this.setWebViewRef}
         setView={this.setView}
         onMessage={this.onMessageEvent}
         initialLocation={JSON.stringify({ idref: spineIdRef })}

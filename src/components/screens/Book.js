@@ -519,7 +519,7 @@ class Book extends React.Component {
 
     const { width } = Dimensions.get('window')
     
-    if(readerStatus !== 'ready') {
+    if(Platform.OS !== 'web' && readerStatus !== 'ready') {
       return (
         <Layout>
           <FullScreenSpin
@@ -597,11 +597,13 @@ class Book extends React.Component {
         }
         <View />
 
-        <PageCaptureManager
-          bookId={bookId}
-          setCapturingSnapshots={this.setCapturingSnapshots}
-          processingPaused={processingPaused}
-        />
+        {Platform.OS !== 'web' &&
+          <PageCaptureManager
+            bookId={bookId}
+            setCapturingSnapshots={this.setCapturingSnapshots}
+            processingPaused={processingPaused}
+          />
+        }
 
       </Layout>
     )

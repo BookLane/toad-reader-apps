@@ -69,7 +69,7 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      postMessage(webView, 'setDisplaySettings', getDisplaySettingsObj(displaySettings))
+      postMessage(webView.current, 'setDisplaySettings', getDisplaySettingsObj(displaySettings))
     },
     [ displaySettings ],
   )
@@ -82,7 +82,7 @@ const BookPage = React.memo(props => {
   
       doAfterLoaded.current = () => {
         delete doAfterLoaded.current
-        postMessage(webView, 'goToPage', {
+        postMessage(webView.current, 'goToPage', {
           spineIdRef,
           pageIndexInSpine: Math.max(pageIndexInSpine, 0),
         })
@@ -97,14 +97,14 @@ const BookPage = React.memo(props => {
   useDidUpdate(
     () => {
       if(!hrefToGoTo) return
-      postMessage(webView, 'goToHref', { href: hrefToGoTo })
+      postMessage(webView.current, 'goToHref', { href: hrefToGoTo })
     },
     [ hrefToGoTo ],
   )
 
   const onMessageEvent = useCallback(
     async (webView2, data) => {
-      if(webView2 !== webView) return // just in case
+      if(webView2.current !== webView.current) return // just in case
       
       switch(data.identifier) {
         case 'pageChanged':
@@ -190,12 +190,12 @@ const BookPage = React.memo(props => {
       if(!payload) {
         setSelectionInfo(undefined)
       }
-      Platform.OS !== 'ios' && postMessage(webView, 'setSelectionText', payload)
+      Platform.OS !== 'ios' && postMessage(webView.current, 'setSelectionText', payload)
     },
     [],
   )
 
-  setWebViewRef = webViewRef => webView.current = webViewRef
+  const setWebViewRef = webViewRef => webView.current = webViewRef
   
 //   doTakeSnapshot = async () => {
 //     await takeSnapshot({

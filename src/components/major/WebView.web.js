@@ -68,7 +68,6 @@ const WebView = ({
   // geolocationEnabled,
   // allowingReadAccessToURL,
   // url,
-  // html,
   // keyboardDisplayRequiresUserAction,
   // hideKeyboardAccessoryView,
   // allowsBackForwardNavigationGestures,
@@ -113,12 +112,19 @@ const WebView = ({
         },
 
         injectJavaScript: jsStr => {
-          frameRef.current.postMessage(
+          // A minor security loop-hole exists in Safari since I cannot send a postMessage
+          // over with origin === null.
+          const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+          const origin = source.html
+            ? (isSafari ? '*' : null)
+            : source.uri.replace(/^(https?:\/\/[^\/]*).*$/, '$1')
+
+          frameRef.current.contentWindow.postMessage(
             {
               action: `injectJS`,
               jsStr,
             },
-            source.uri.replace(/^(https?:\/\/[^\/]*).*$/, '$1')
+            origin,
           )
         },
 
@@ -158,6 +164,7 @@ const WebView = ({
       <IFrame
         forwardRef={frameRef}
         src={source.uri}
+        srcdoc={source.html}
         onError={onErrorWrapper}
         onLoad={onLoadWrapper}
         style={[
