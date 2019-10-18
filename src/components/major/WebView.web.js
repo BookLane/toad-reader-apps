@@ -164,7 +164,7 @@ const WebView = ({
       <IFrame
         forwardRef={frameRef}
         src={source.uri}
-        srcdoc={source.html}
+        srcDoc={source.html}
         onError={onErrorWrapper}
         onLoad={onLoadWrapper}
         style={[
