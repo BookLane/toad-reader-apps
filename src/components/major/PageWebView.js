@@ -6,7 +6,7 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"
-import { getBooksDir, isIPhoneX } from "../../utils/toolbox.js"
+import { getBooksDir, isIPhoneX, getDataOrigin } from "../../utils/toolbox.js"
 import getReaderCode from '../../../getReaderCode.js'
 
 const styles = StyleSheet.create({
@@ -154,6 +154,7 @@ class PageWebView extends React.Component {
 
   render() {
     // I get these from state and not props because these are all initial values
+    const { idps } = this.props
     const { viewRef, bookId, style, initialLocation, initialDisplaySettings, width, height, unloaded } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
@@ -170,7 +171,11 @@ class PageWebView extends React.Component {
     }
 
     const initialQueryStringParams = {
-      epub: `${getBooksDir()}${bookId}`
+      epub: (
+        Platform.OS === 'web'
+          ? `${getDataOrigin(Object.values(idps)[0])}/epub_content/book_${bookId}`
+          : `${getBooksDir()}${bookId}`
+      ),
     }
 
     if(initialLocation) {
@@ -194,6 +199,8 @@ class PageWebView extends React.Component {
     }
 
     if(Platform.OS === 'web') {
+        // Put the following line before <script> if needed
+        // <base href="${getDataOrigin(Object.values(idps)[0])}">
         source.html = getReaderCode()
           .replace(/(<head>)/i, `
             $1
@@ -249,7 +256,8 @@ class PageWebView extends React.Component {
   }
 }
 
-const mapStateToProps = ({ userDataByBookId }) => ({
+const mapStateToProps = ({ idps, userDataByBookId }) => ({
+  idps,
   userDataByBookId,
 })
 
