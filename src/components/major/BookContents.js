@@ -33,7 +33,7 @@ const BookContents = React.memo(({
   }
 
   const data = useMemo(
-    getListItems(toc),
+    () => getListItems(toc),
     [ toc ],
   )
 
