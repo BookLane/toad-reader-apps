@@ -95,7 +95,7 @@ class PageWebView extends React.Component {
   }
 
   onMessageEvent = async event => {
-    const { onMessage, initialLocation } = this.state
+    const { onMessage } = this.props
     const data = JSON.parse(event.nativeEvent.data)
 
     if(onMessage && await onMessage(this.webView.current, data)) return
