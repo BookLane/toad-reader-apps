@@ -104,7 +104,7 @@ const BookPage = React.memo(props => {
 
   const onMessageEvent = useCallback(
     async (webView2, data) => {
-      if(webView2.current !== webView.current) return // just in case
+      if(webView2 !== webView.current) return // just in case
       
       switch(data.identifier) {
         case 'pageChanged':
