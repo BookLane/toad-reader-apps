@@ -2702,8 +2702,8 @@ Cfi?F.getDomRangesFromRangeCfi(e,t,n):[F.getDomRangeFromRangeCfi(e,t,n)]},this.g
 on(e){if(F)return F.getRangeCfiFromDomRange(e)},this.getVisibleCfiFromPoint=function(e,t,n,i){if(F)return F.getVisibleCfiFromPoint(e,t,n,i)},this.getRangeCfiFromPoints=function(e,t,n,i,r){if(F)return \
 F.getRangeCfiFromPoints(e,t,n,i,r)},this.getCfiForElement=function(e){if(F)return F.getCfiForElement(e)},this.biblemesh_getColumnCount=function(e){if(F&&F.biblemesh_getColumnCount)return F.biblemesh_g\
 etColumnCount()}};return b.VIEW_TYPE_COLUMNIZED=1,b.VIEW_TYPE_FIXED=2,b.VIEW_TYPE_SCROLLED_DOC=3,b.VIEW_TYPE_SCROLLED_CONTINUOUS=4,b}),define("text",{load:function(e){throw new Error("Dynamic load not\
- allowed: "+e)}}),define("text!version.json",[],function(){return'{"readiumJsViewer":{"sha":"5ddacfa2184d12f16d760bf2e7a6bdcc58aebbe6","clean":false,"version":"0.24.0","chromeVersion":"2.24.0","tag":"\
-1.0.8-121-g5ddacfa","branch":"for-version-2","release":false},"readiumJs":{"sha":"ded9db2c2822d03bc129b232a43f52ef2b43c2c6","clean":true,"version":"0.24.0","tag":"1.0.8-48-gded9db2","branch":"for-vers\
+ allowed: "+e)}}),define("text!version.json",[],function(){return'{"readiumJsViewer":{"sha":"1c01a227772a4a2f90469547c8ca6ef239356f08","clean":false,"version":"0.24.0","chromeVersion":"2.24.0","tag":"\
+1.0.8-122-g1c01a22","branch":"for-version-2","release":false},"readiumJs":{"sha":"ded9db2c2822d03bc129b232a43f52ef2b43c2c6","clean":true,"version":"0.24.0","tag":"1.0.8-48-gded9db2","branch":"for-vers\
 ion-2","release":false},"readiumSharedJs":{"sha":"41caf681f18df7a450c23c4d9ee038cd5c2e00ce","clean":true,"version":"0.24.0","tag":"1.0.8-45-g41caf68","branch":"for-version-2","release":false},"readium\
 CfiJs":{"sha":"0a2a6d2d0e4f8cdf53e6c1c6f72171ae33c97ab4","clean":true,"version":"0.24.0","tag":"1.0.8-21-g0a2a6d2","branch":"for-version-2","release":false}}'}),define("readium_js/epub-fetch/markup_pa\
 rser",[],function(){return function(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(),"text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}\
@@ -4173,7 +4173,7 @@ hlights","readium_shared_js/globalsSetup","readium_js_viewer/ReadiumViewerLite"]
             border: none;
             position: absolute;
             top: 0px;
-            left: 0px;
+            right: 0px;
             opacity: .3;
             outline: none;
         }
