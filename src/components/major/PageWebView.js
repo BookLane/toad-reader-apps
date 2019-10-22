@@ -154,7 +154,7 @@ class PageWebView extends React.Component {
 
   render() {
     // I get these from state and not props because these are all initial values
-    const { idps } = this.props
+    const { idps, accounts } = this.props
     const { viewRef, bookId, style, initialLocation, initialDisplaySettings, width, height, unloaded } = this.state
 
     const initialHighlightsInThisSpine = this.getHighlightsForThisSpine({
@@ -208,6 +208,10 @@ class PageWebView extends React.Component {
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
               window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
               window.parentOriginForPostMessage = ${JSON.stringify(location.origin)};
+              window.epubFileFetchHeaders = ${JSON.stringify({
+                "x-cookie-override": Object.values(accounts)[0].cookie,
+                "x-platform": Platform.OS,
+              })};
             </script>
           `)
     }
@@ -256,8 +260,9 @@ class PageWebView extends React.Component {
   }
 }
 
-const mapStateToProps = ({ idps, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, userDataByBookId }) => ({
   idps,
+  accounts,
   userDataByBookId,
 })
 
