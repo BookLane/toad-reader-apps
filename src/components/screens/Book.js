@@ -406,7 +406,7 @@ class Book extends React.Component {
       onZoomCompletion: () => {
 
         this.setState({
-          mode: 'pages',
+          mode: Platform.OS === 'web' ? 'contents' : 'pages',
           onZoomCompletion: null,
         })
 

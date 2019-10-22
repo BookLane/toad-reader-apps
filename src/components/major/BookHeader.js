@@ -1,8 +1,9 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
+import { Link } from "../routers/react-router"
 import { Ionicons } from "@expo/vector-icons"
-import { Button } from "react-native-ui-kitten"
+import { TopNavigationAction } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
@@ -48,58 +49,64 @@ const BookHeader = React.memo(({
   )
 
   width -= (leftIconsWidth + rightIconsWidth)
-            
+
+  const homeIcon = useCallback(
+    () => (
+      <Link to="/">
+        <Ionicons name="ios-home" />
+      </Link>
+    ),
+    [],
+  )
+
+  const settingsIcon = useCallback(
+    () => <Ionicons name="md-settings" />,
+    [],
+  )
+
+  const showOptionsIcon = useCallback(
+    () => <Ionicons name="md-more" />,
+    [],
+  )
+
+  const bookViewIcon = useCallback(
+    () => <Ionicons name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"} />,
+    [ mode ],
+  )
+
+  const rightControls = [
+    <TopNavigationAction
+      icon={settingsIcon}
+      onPress={showDisplaySettings}
+    />,
+    <TopNavigationAction
+      icon={showOptionsIcon}
+      onPress={toggleShowOptions}
+    />,
+  ]
+
+  if(Platform.OS !== 'web') {
+    rightControls.splice(1, 0, (
+      <TopNavigationAction
+        icon={bookViewIcon}
+        onPress={toggleBookView}
+      />
+    ))
+  }
+
   return (
     <AppHeader
       hide={mode === 'page'}
-    >
-      {/* <Left>
-        <Button
-          transparent
-          onPress={onBackPress}
-        >
-          <Ionicons name="home" />
-        </Button>
-      </Left>
-      <Body style={[
-        styles.body,
-        (
-          isPhoneSize()
-            ? {
-              width,
-              minWidth: width,
-              maxWidth: width,
-            }
-            : {}
-        ),
-      ]}>
-        <Title>{title}</Title>
-        {subtitle
-          ? <Subtitle>{subtitle}</Subtitle>
-          : null
-        }
-      </Body>
-      <Right>
-        <Button
-          transparent
-          onPress={showDisplaySettings}
-        >
-          <Ionicons name="settings" />
-        </Button>
-        <Button
-          transparent
-          onPress={toggleBookView}
-        >
-          <Ionicons name={[ 'pages', 'zooming' ].includes(mode) ? "list" : "md-apps"} />
-        </Button>
-        <Button
-          transparent
-          onPress={toggleShowOptions}
-        >
-          <Ionicons name="more" />
-        </Button>
-      </Right> */}
-    </AppHeader>
+      title={title}
+      subtitle={subtitle}
+      leftControl={
+        <TopNavigationAction
+          icon={homeIcon}
+        />
+      }
+      rightControls={rightControls}
+
+    />
   )
 })
 
