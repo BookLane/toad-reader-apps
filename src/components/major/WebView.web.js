@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   iframe: {
-    flex: 1,
     borderWidth: 0,
   },
   activityIndicatorContainer: {
