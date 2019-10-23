@@ -543,20 +543,22 @@ class Book extends React.Component {
           width={width}  // By sending this as a prop, I force a rerender
         />
         {mode === 'page' && <CustomKeepAwake />}
-        <View style={styles.pages}>
-          <BookPages
-            bookId={bookId}
-            spineIdRef={spineIdRef}
-            pageCfisKey={pageCfisKey}
-            pageIndexInSpine={pageIndexInSpine}
-            spines={bookLoaded && books[bookId].spines}
-            zoomToPage={this.zoomToPage}
-            updateSnapshotCoords={this.updateSnapshotCoords}
-            statusBarHeight={statusBarHeight}
-            setFlatListEl={this.setFlatListEl}
-            capturingSnapshots={capturingSnapshots}
-          />
-        </View>
+        {Platform.OS !== 'web' &&
+          <View style={styles.pages}>
+            <BookPages
+              bookId={bookId}
+              spineIdRef={spineIdRef}
+              pageCfisKey={pageCfisKey}
+              pageIndexInSpine={pageIndexInSpine}
+              spines={bookLoaded && books[bookId].spines}
+              zoomToPage={this.zoomToPage}
+              updateSnapshotCoords={this.updateSnapshotCoords}
+              statusBarHeight={statusBarHeight}
+              setFlatListEl={this.setFlatListEl}
+              capturingSnapshots={capturingSnapshots}
+            />
+          </View>
+        }
         <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
           <BookPage
             bookId={bookId}
