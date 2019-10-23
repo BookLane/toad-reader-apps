@@ -4,9 +4,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { Image, StyleSheet, Linking, Dimensions, StatusBar, TouchableOpacity, Text, View } from "react-native"
-// import { Ionicons } from "@expo/vector-icons"
-import { Layout, List, ListItem } from "react-native-ui-kitten"
+import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { Layout, Drawer } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const Drawer = ({
+const AppMenu = ({
   history,
   changeLibraryScope,
   accounts,
@@ -164,129 +164,107 @@ const Drawer = ({
     accountIdpIds.push(idpId)
   })
 
-  const { height } = Dimensions.get('window')
-  const minHeight = height - (StatusBar.currentHeight || 0)
+  const renderHeader = useCallback(
+    () => (
+      <Image
+        source={require('../../../assets/images/drawer.png')}
+        style={styles.image}
+      />
+    ),
+    [],
+  )
+
+  const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
+  const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
+  // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
+  const refreshIcon = useCallback(style => <Ionicons {...style} name="md-refresh" />, [])
+  const removeIcon = useCallback(style => <Ionicons {...style} name="md-remove-circle" />, [])
+  const logOutIcon = useCallback(style => <Ionicons {...style} name="md-log-out" />, [])
+
+  const drawerData = [
+    {
+      title: i18n("Library"),
+      icon: libraryIcon,
+      onSelect: showAll,
+    },
+    ...(Platform.OS === 'web' ? [] : [
+      {
+        title: i18n("On device only"),
+        icon: onDeviceIcon,
+        onSelect: showDeviceOnly,
+      },
+    ]),
+    ...(Object.keys(accounts).length === 1 ? [] : Object.keys(accounts).map(id => ({
+      title: i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName }),
+      // {!!hasMultipleAccountsForSingleIdp &&
+      //   <Text>{accounts[id].email}</Text>
+      // }
+      icon: libraryIcon,
+      onSelect: () => {
+        changeLibraryScope({ scope: id })
+        history.goBack()
+      },
+    }))),
+    // {
+    //   title: i18n("Accounts"),
+    //   icon: accountsIcon,
+    //   path: `${match.url}/accounts`,
+    // },
+    ...(!online ? [] : [
+      {
+        title: i18n("Refresh book list"),
+        icon: refreshIcon,
+        onSelect: reLogin,
+      },
+    ]),
+    {
+      title: i18n("Remove all books"),
+      icon: removeIcon,
+      onSelect: removeAllEPubs,
+    },
+    ...(Object.values(idps).every(idp => idp.idpNoAuth) ? [] : [
+      {
+        title: i18n("Log out"),
+        icon: logOutIcon,
+        onSelect: confirmLogOut,
+      },
+    ]),
+  ]
+
+  const onRouteSelect = index => {
+    const { [index]: route } = drawerData
+
+    if(route.onSelect) {
+      route.onSelect()
+    } else if(route.path) {
+      history.push(route.path)
+    }
+  }
+
+  const renderFooter = !LINK_TO_TOAD_READER_MARKETING_SITE ? null : useCallback(
+    () => (
+      <TouchableOpacity
+        onPress={goToToadReaderMarketingSite}
+      >
+        <View style={styles.createdByContainer}>
+          <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
+          {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
+            <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
+          }
+        </View>
+      </TouchableOpacity>
+    ),
+    [],
+  )
 
   return (
     <Layout>
-      <View>
-        <View style={{ minHeight }}>
-          <Image
-            source={require('../../../assets/images/drawer.png')}
-            style={styles.image}
-          />
-          <List style={styles.list}>
-            <ListItem icon
-              button
-              onPress={showAll}
-            >
-              {/* <Left>
-                <Ionicons name="book" />
-              </Left>
-              <Body>
-                <Text>{i18n("Library")}</Text> 
-              </Body> */}
-            </ListItem>
-            {Object.keys(accounts).length > 1 && Object.keys(accounts).map(id => (
-              <ListItem icon
-                key={id}
-                button
-                onPress={() => {
-                  changeLibraryScope({ scope: id })
-                  history.goBack()
-                }}
-              >
-                {/* <Left>
-                  <Ionicons name="book" />
-                </Left>
-                <Body>
-                  <Text>{i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName })}</Text>
-                  {!!hasMultipleAccountsForSingleIdp &&
-                    <Text>{accounts[id].email}</Text>
-                  }
-                </Body> */}
-              </ListItem>
-            ))}
-            <ListItem icon
-              button
-              onPress={showDeviceOnly}
-            >
-              {/* <Left>
-                <Ionicons name="md-checkmark" />
-              </Left>
-              <Body>
-                <Text>{i18n("On device only")}</Text>
-              </Body> */}
-            </ListItem>
-            {/* TODO */}
-            {/* <Separator bordered
-              style={styles.separator}
-            /> */}
-            
-            {/* <Link to={`${match.url}/accounts`}>
-              <ListItem icon
-                button
-              >
-                <Left>
-                  <Ionicons name="person" />
-                </Left>
-                <Body>
-                  <Text>{i18n("Accounts")}</Text> 
-                </Body>
-              </ListItem>
-            </Link> */}
-
-            <ListItem icon
-              button
-              onPress={online ? reLogin : null}
-              style={online ? null : styles.offline}
-            >
-              {/* <Left>
-                <Ionicons name="refresh" />
-              </Left>
-              <Body>
-                <Text>{i18n("Refresh book list")}</Text>
-              </Body> */}
-            </ListItem>
-            <ListItem icon
-              button
-              onPress={removeAllEPubs}
-            >
-              {/* <Left>
-                <Ionicons name="remove-circle" />
-              </Left>
-              <Body>
-                <Text>{i18n("Remove all books")}</Text>
-              </Body> */}
-            </ListItem>
-            {Object.values(idps).some(idp => !idp.idpNoAuth) &&
-              <ListItem icon
-                button
-                onPress={confirmLogOut}
-              >
-                {/* <Left>
-                  <Ionicons name="log-out" />
-                </Left>
-                <Body>
-                  <Text>{i18n("Log out")}</Text> 
-                </Body> */}
-              </ListItem>
-            }
-          </List>
-          {!!LINK_TO_TOAD_READER_MARKETING_SITE &&
-            <TouchableOpacity
-              onPress={goToToadReaderMarketingSite}
-            >
-              <View style={styles.createdByContainer}>
-                <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
-                {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
-                  <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
-                }
-              </View>
-            </TouchableOpacity>
-          }
-        </View>
-      </View>
+      <Drawer
+        data={drawerData}
+        onSelect={onRouteSelect}
+        header={renderHeader}
+        footer={renderFooter}
+      />
     </Layout>
   )
 }
@@ -305,4 +283,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   changeLibraryScope,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Drawer))
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(AppMenu))

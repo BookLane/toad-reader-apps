@@ -15,7 +15,7 @@ import { updateReader } from "../../utils/updateReader.js"
 
 import Book from "./Book"
 import ErrorMessage from "./ErrorMessage"
-import Drawer from "../major/Drawer"
+import AppMenu from "../major/AppMenu"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
@@ -316,7 +316,7 @@ class Library extends React.Component {
 
     return (
       <SideMenu
-        menu={<Drawer />}
+        menu={<AppMenu />}
         openMenuOffset={280}
         isOpen={location.pathname === '/drawer'}
         onChange={this.sideMenuOnChange}
