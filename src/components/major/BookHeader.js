@@ -39,16 +39,16 @@ const BookHeader = React.memo(({
   showDisplaySettings,
   toggleBookView,
   toggleShowOptions,
-  width,
-  history,
+  // width,
+  // history,
 }) => {
 
-  const onBackPress = useCallback(
-    () => history.go(-2),
-    [ history ],
-  )
+  // const onBackPress = useCallback(
+  //   () => history.go(-2),
+  //   [ history ],
+  // )
 
-  width -= (leftIconsWidth + rightIconsWidth)
+  // width -= (leftIconsWidth + rightIconsWidth)
 
   const homeIcon = useCallback(
     () => (

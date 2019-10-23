@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useLayoutEffect } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import './src/themes/style'
 // import * as Font from 'expo-font'
 
@@ -66,7 +66,7 @@ const App = () => {
     [],
   )
 
-  useLayoutEffect(
+  useEffect(
     () => {
       (async () => {
         

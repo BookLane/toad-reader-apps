@@ -272,6 +272,7 @@ class Book extends React.Component {
           const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
           setUpTimeout(() => {
             if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
+              // TODO: use pushToHistory from useRouterState
               history.push("/error", {
                 message: i18n("Sorry! There was an error flipping to that page."),
               })
@@ -484,6 +485,7 @@ class Book extends React.Component {
 
     Linking.openURL(bookLinkInfo.href).catch(err => {
       console.log('ERROR: Request to open URL failed.', err)
+      // TODO: use pushToHistory from useRouterState
       history.push("/error", {
         message: i18n("Your device is not allowing us to open this link."),
       })

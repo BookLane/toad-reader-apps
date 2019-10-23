@@ -1,11 +1,13 @@
 import React, { useEffect } from "react"
 import { Updates } from "expo"
 import { StyleSheet, View, Text } from "react-native"
+import { withRouter } from "react-router"
 import { Layout } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 
 import ErrorMessageHeader from "../major/ErrorMessageHeader"
 import useSetTimeout from "../../hooks/useSetTimeout.js"
+import useRouterState from "../../hooks/useRouterState.js"
 
 const styles = StyleSheet.create({
   body: {
@@ -20,7 +22,8 @@ const styles = StyleSheet.create({
 const ErrorMessage = ({ location }) => {
 
   const [ setReloadTimeout ] = useSetTimeout()
-  const { message, critical } = location.state || {}
+  const [ x, routerState ] = useRouterState({ location })
+  const { message, critical } = routerState
 
   useEffect(
     () => {
@@ -47,4 +50,4 @@ const ErrorMessage = ({ location }) => {
   )
 }
 
-export default ErrorMessage
+export default withRouter(ErrorMessage)

@@ -11,7 +11,8 @@ import FullScreenSpin from "../basic/FullScreenSpin"
 
 import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox.js"
 import useNetwork from "../../hooks/useNetwork"
-import useSetTimeout from "../../hooks/useSetTimeout.js"
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 
 import { addAccount } from "../../redux/actions.js"
 
@@ -50,6 +51,7 @@ const Login = ({
   const askedForLoginInfoAtLeastOnce = useRef()
 
   const { online } = useNetwork()
+  const [ pushToHistory ] = useRouterState({ history })
 
   const [ setReloadTimeout ] = useSetTimeout()
 
@@ -59,7 +61,7 @@ const Login = ({
     err => {
       // There was an unknown error
 
-      history.push("/error", {
+      pushToHistory("/error", {
         message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
       })
 
@@ -107,7 +109,7 @@ const Login = ({
         const { cookie, currentServerTime, userInfo } = data.payload || {}
 
         if(cookie == null || !currentServerTime || !userInfo) {
-          history.push("/error", {
+          pushToHistory("/error", {
             critical: true,
           })
           return

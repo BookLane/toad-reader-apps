@@ -16,6 +16,7 @@ import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
@@ -66,6 +67,8 @@ const BookPage = React.memo(props => {
   const getNoteInEdit = useInstanceValue(noteInEdit)
 
   const [ setUnselectTimeout, clearUnselectTimeout ] = useSetTimeout()
+
+  const [ pushToHistory ] = useRouterState({ history })
 
   useDidUpdate(
     () => {
@@ -148,7 +151,7 @@ const BookPage = React.memo(props => {
         case 'openURL':
           Linking.openURL(data.payload.url).catch(err => {
             console.log('ERROR: Request to open URL failed.', err)
-            history.push("/error", {
+            pushToHistory("/error", {
               message: i18n("Your device is not allowing us to open this link."),
             })
           })

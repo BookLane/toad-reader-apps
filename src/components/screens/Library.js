@@ -14,6 +14,7 @@ import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
 
 import Book from "./Book"
+import ErrorMessage from "./ErrorMessage"
 import Drawer from "../major/Drawer"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
@@ -121,6 +122,9 @@ class Library extends React.Component {
     const { setFetchingBooks, accounts, idps, books, addBooks,
             reSort, updateAccount, history, location } = nextProps || this.props
     const { refreshLibraryAccountId } = location.state || {}
+    // TODO: Need to set up this file with hooks
+    // const [ x, routerState ] = useRouterState({ history })
+    // const { refreshLibraryAccountId } = routerState
 
     const account = Object.values(accounts)[0]
     if(!account || account.needToLogInAgain) {
@@ -182,7 +186,8 @@ class Library extends React.Component {
         }
         
       } catch(error) {
-        history.push("/error", {
+          // TODO: use pushToHistory from useRouterState
+          history.push("/error", {
           message: error.message || null,
         })
       }
@@ -318,6 +323,7 @@ class Library extends React.Component {
       >
 
         <Switch>
+          <Route path="/error" component={ErrorMessage} />
           <Route path="/book/:id" component={Book} />
           <Route>
 

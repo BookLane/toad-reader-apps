@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useEffect } from 'react'
 import { NetInfo } from "react-native"
 import useUpdate from "react-use/lib/useUpdate"
 
@@ -22,7 +22,7 @@ const useNetwork = () => {
 
   const update = useUpdate()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     NetInfo.addEventListener('connectionChange', update)
     return () => {
       NetInfo.removeEventListener('connectionChange', update)

@@ -3,6 +3,8 @@ import { StyleSheet, TouchableOpacity, Linking, View, Text } from "react-native"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
+import useRouterState from "../../hooks/useRouterState.js"
+
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -25,6 +27,8 @@ const BookPageMessage = ({
   history,
 }) => {
 
+  const [ pushToHistory ] = useRouterState({ history })
+
   const showMoreInfo = useCallback(
     () =>  {
       if(moreInfoText) {
@@ -38,7 +42,7 @@ const BookPageMessage = ({
       } else if(externalHref) {
         Linking.openURL(externalHref).catch(err => {
           console.log('ERROR: Request to open URL failed.', err)
-          history.push("/error", {
+          pushToHistory("/error", {
             message: i18n("Your device is not allowing us to open this link."),
           })
         })

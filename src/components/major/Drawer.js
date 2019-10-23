@@ -10,6 +10,7 @@ import { Layout, List, ListItem } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
+import useRouterState from "../../hooks/useRouterState"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
@@ -65,6 +66,7 @@ const Drawer = ({
 }) => {
 
   const { online } = useNetwork()
+  const [ pushToHistory ] = useRouterState({ history })
 
   const showAll = useCallback(
     () => {
@@ -98,7 +100,7 @@ const Drawer = ({
           clearUserDataExceptProgress,
         },
         () => {
-          history.push("/", {
+          pushToHistory("/", {
             logOutUrl: `${getDataOrigin(idps[idpId])}/logout`,
             logOutAccountId: accountId,
           })
@@ -122,7 +124,7 @@ const Drawer = ({
       // listing. In other words, I basically need to call the next line and run the whole
       // login process again, but hidden.
 
-      history.push("/", {
+      pushToHistory("/", {
         logOutUrl: `${getDataOrigin(idps[idpId])}/logout/callback?noredirect=1`,
         refreshLibraryAccountId: accountId,
       })
@@ -147,7 +149,7 @@ const Drawer = ({
     () => {
       Linking.openURL("https://toadreader.com").catch(err => {
         console.log('ERROR: Request to open URL failed.', err)
-        history.push("/error", {
+        pushToHistory("/error", {
           message: i18n("Your device is not allowing us to open this link."),
         })
       })
