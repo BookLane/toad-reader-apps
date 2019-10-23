@@ -6,7 +6,7 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage.js"
-import { getBooksDir, isIPhoneX, getDataOrigin } from "../../utils/toolbox.js"
+import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox.js"
 import getReaderCode from '../../../getReaderCode.js'
 
 const styles = StyleSheet.create({
@@ -208,10 +208,10 @@ class PageWebView extends React.Component {
               window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
               window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
               window.parentOriginForPostMessage = ${JSON.stringify(location.origin)};
-              window.epubFileFetchHeaders = ${JSON.stringify({
+              window.epubFileFetchHeaders = ${JSON.stringify(getReqOptionsWithAdditions({
                 "x-cookie-override": Object.values(accounts)[0].cookie,
                 "x-platform": Platform.OS,
-              })};
+              }))};
             </script>
           `)
     }

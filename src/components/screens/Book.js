@@ -19,12 +19,13 @@ import CustomKeepAwake from "../basic/CustomKeepAwake"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
+import parseEpub from "../../utils/parseEpub.js"
 import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts, getFirstBookLinkInfo,
          getPageSize, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout, showXapiConsent } from "../../utils/toolbox.js"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords, setXapiConsentShown } from "../../redux/actions.js"
+         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines } from "../../redux/actions.js"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -176,6 +177,8 @@ class Book extends React.Component {
     })
 
     showXapiConsent(this.props)
+
+    this.getTocForWeb()
   }
 
   componentWillUnmount = () => {
@@ -216,6 +219,28 @@ class Book extends React.Component {
     this.setState({
       currentAppState: nextAppState,
     })
+  }
+
+  getTocForWeb = async () => {
+    const { location, books, idps, accounts, setTocAndSpines } = this.props
+    const bookId = getBookId(location)
+
+    if(Platform.OS === 'web' && books[bookId].toc === undefined) {
+
+      const accountId = Object.keys(books[bookId].accounts)[0]
+      const account = accounts[accountId]
+      const idpId = accountId.split(':')[0]
+      const idp = idps[idpId]
+
+      const { toc, spines, success } = await parseEpub({ bookId, idp, account })
+
+      if(success) {
+        setTocAndSpines({ bookId, toc, spines })
+      } else {
+        setUpTimeout(this.getTocForWeb, this)
+      }
+
+    }
   }
 
   getFreshUserData = () => {
@@ -636,6 +661,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   endRecordReading,
   flushReadingRecords,
   setXapiConsentShown,
+  setTocAndSpines,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)
