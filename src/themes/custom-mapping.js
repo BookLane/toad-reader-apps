@@ -22,6 +22,16 @@ const mapping = {
   // },
   
   components: {
+    TopNavigation: {
+      appearances: {
+        default: {
+          mapping: {
+            titleFontSize: 19,
+            titleFontWeight: "400",
+          },
+        },
+      },
+    },
     TopNavigationAction: {
       appearances: {
         default: {
