@@ -23,7 +23,7 @@ const HeaderIcon = ({
   )
 
   const goPath = useCallback(
-    () => history.push(`/drawer`),
+    () => history.push(path),
     [ path ],
   )
 
