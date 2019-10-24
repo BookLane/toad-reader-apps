@@ -1,10 +1,8 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
-import { Link } from "../routers/react-router"
-import { Ionicons } from "@expo/vector-icons"
-import { TopNavigationAction } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
 
@@ -50,45 +48,21 @@ const BookHeader = React.memo(({
 
   // width -= (leftIconsWidth + rightIconsWidth)
 
-  const homeIcon = useCallback(
-    () => (
-      <Link to="/">
-        <Ionicons name="ios-home" />
-      </Link>
-    ),
-    [],
-  )
-
-  const settingsIcon = useCallback(
-    () => <Ionicons name="md-settings" />,
-    [],
-  )
-
-  const showOptionsIcon = useCallback(
-    () => <Ionicons name="md-more" />,
-    [],
-  )
-
-  const bookViewIcon = useCallback(
-    () => <Ionicons name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"} />,
-    [ mode ],
-  )
-
   const rightControls = [
-    <TopNavigationAction
-      icon={settingsIcon}
+    <HeaderIcon
+      name="md-settings"
       onPress={showDisplaySettings}
     />,
-    <TopNavigationAction
-      icon={showOptionsIcon}
+    <HeaderIcon
+      name="md-more"
       onPress={toggleShowOptions}
     />,
   ]
 
   if(Platform.OS !== 'web') {
     rightControls.splice(1, 0, (
-      <TopNavigationAction
-        icon={bookViewIcon}
+      <HeaderIcon
+        name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
         onPress={toggleBookView}
       />
     ))
@@ -100,8 +74,9 @@ const BookHeader = React.memo(({
       title={title}
       subtitle={subtitle}
       leftControl={
-        <TopNavigationAction
-          icon={homeIcon}
+        <HeaderIcon
+          name="ios-home"
+          path="/"
         />
       }
       rightControls={rightControls}

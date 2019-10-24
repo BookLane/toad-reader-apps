@@ -20,8 +20,29 @@ const mapping = {
   //     },
   //   },
   // },
-
+  
   components: {
+    HeaderIcon: {
+      meta: {
+        parameters: {
+          fontSize: {
+            type: "number",
+          },
+        },
+        variantGroups: {},
+        states: {},
+        appearances: {
+          default: {
+            default: true,
+          },
+        },
+      },
+      appearances: {
+        default: {
+          mapping: {},
+        },
+      },
+    },
     Layout: {
       meta: {
         parameters: {
@@ -40,7 +61,8 @@ const mapping = {
     },
   },
   
-  ...MAPPING_CUSTOMIZATION,
+  // TODO: I need to lay this over top at each level of the object
+  // ...MAPPING_CUSTOMIZATION,
 }
 
 export default mapping

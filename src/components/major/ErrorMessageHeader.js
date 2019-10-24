@@ -1,11 +1,10 @@
 import React, { useEffect, useCallback, useRef } from "react"
 // import { StyleSheet, Platform } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
-import { TopNavigationAction } from "react-native-ui-kitten"
 import { withRouter } from "react-router"
 import i18n from "../../utils/i18n.js"
 
 import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
 
 import { isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox.js'
 import useSetTimeout from "../../hooks/useSetTimeout.js"
@@ -41,17 +40,12 @@ const ErrorMessageHeader = React.memo(({
   const [ x, routerState ] = useRouterState({ history, location })
   const { title, critical } = routerState
 
-  const backIcon = useCallback(
-    () => <Ionicons name="md-arrow-back" />,
-    [],
-  )
-
   return (
     <AppHeader
       title={title || i18n("Error")}
       leftControl={critical ? null : (
-        <TopNavigationAction
-          icon={backIcon}
+        <HeaderIcon
+          name="md-arrow-back"
           onPress={onBackPress}
         />
       )}
