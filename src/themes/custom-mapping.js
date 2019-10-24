@@ -28,6 +28,8 @@ const mapping = {
           mapping: {
             titleFontSize: 19,
             titleFontWeight: "400",
+            subtitleFontSize: 13,
+            subtitleFontWeight: "400",
           },
         },
       },
