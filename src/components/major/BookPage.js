@@ -84,7 +84,7 @@ const BookPage = React.memo(props => {
       // the prevPageIndexInSpine === -1 check is to ensure that it previously did not have snapshots
   
       doAfterLoaded.current = () => {
-        delete doAfterLoaded.current
+        doAfterLoaded.current = undefined
         postMessage(webView.current, 'goToPage', {
           spineIdRef,
           pageIndexInSpine: Math.max(pageIndexInSpine, 0),
@@ -92,7 +92,9 @@ const BookPage = React.memo(props => {
       }
   
       // TODO: This will need to change as I do the "Do you want to go to the latest location" functionality.
-      if(loaded.current) doAfterLoaded.current()
+      if(loaded.current) {
+        doAfterLoaded.current && doAfterLoaded.current()
+      }
     },
     [ spineIdRef, pageIndexInSpine ],
   )
