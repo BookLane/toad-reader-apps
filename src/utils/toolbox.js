@@ -10,6 +10,7 @@ const {
   LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
+  DEV_DATA_ORIGIN_OVERRIDE,
 } = Constants.manifest.extra
 
 const cachedSizes = {}
@@ -409,7 +410,7 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
   if(__DEV__) {
     // dev environment
-    return `http://localhost:8080`
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
   }
 
   if(
