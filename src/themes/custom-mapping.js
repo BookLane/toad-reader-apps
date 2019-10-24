@@ -22,6 +22,15 @@ const mapping = {
   // },
   
   components: {
+    TopNavigationAction: {
+      appearances: {
+        default: {
+          mapping: {
+            iconMarginHorizontal: 16,
+          },
+        },
+      },
+    },
     HeaderIcon: {
       meta: {
         parameters: {
@@ -39,7 +48,9 @@ const mapping = {
       },
       appearances: {
         default: {
-          mapping: {},
+          mapping: {
+            fontSize: 22,
+          },
         },
       },
     },
