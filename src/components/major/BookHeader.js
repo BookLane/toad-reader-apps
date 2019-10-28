@@ -37,16 +37,13 @@ const BookHeader = React.memo(({
   showDisplaySettings,
   toggleBookView,
   toggleShowOptions,
-  // width,
-  // history,
+  history,
 }) => {
 
-  // const onBackPress = useCallback(
-  //   () => history.go(-2),
-  //   [ history ],
-  // )
-
-  // width -= (leftIconsWidth + rightIconsWidth)
+  const onBackPress = useCallback(
+    () => history.goBack(),
+    [ history ],
+  )
 
   const rightControls = [
     <HeaderIcon
@@ -75,12 +72,11 @@ const BookHeader = React.memo(({
       subtitle={subtitle}
       leftControl={
         <HeaderIcon
-          name="ios-home"
-          path="/"
+          name="md-arrow-back"
+          onPress={onBackPress}
         />
       }
       rightControls={rightControls}
-
     />
   )
 })

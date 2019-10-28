@@ -1,10 +1,16 @@
 import React, { useCallback } from "react"
-import { StyleSheet } from "react-native"
+import { TouchableOpacity, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
-import { TopNavigationAction, styled } from 'react-native-ui-kitten'
+import { styled } from 'react-native-ui-kitten'
 
 const styles = StyleSheet.create({
+  container: {
+    height: '100%',
+    paddingLeft: 12,
+    paddingRight: 12,
+    justifyContent: 'center',
+  },
   icon: {
     fontSize: 22,
   },
@@ -20,22 +26,26 @@ const HeaderIcon = ({
   ...otherProps
 }) => {
 
-  const icon = useCallback(
-    () => <Ionicons style={[ styles.icon, themedStyle, style ]} name={name} />,
-    [ themedStyle, style, name ],
-  )
-
   const goPath = useCallback(
     () => history.push(path),
     [ path ],
   )
 
   return (
-    <TopNavigationAction
-      icon={icon}
+    <TouchableOpacity
       onPress={path ? goPath : onPress}
+      style={styles.container}        
       {...otherProps}
-    />
+    >
+      <Ionicons
+        style={[
+          styles.icon,
+          themedStyle,
+          style,
+        ]}
+        name={name}
+      />
+    </TouchableOpacity>
   )
 }
 

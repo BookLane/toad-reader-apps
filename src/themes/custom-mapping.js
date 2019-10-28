@@ -39,27 +39,6 @@ const mapping = {
   // },
   
   components: {
-    TopNavigation: {
-      appearances: {
-        default: {
-          mapping: {
-            titleFontSize: 19,
-            titleFontWeight: "400",
-            subtitleFontSize: 13,
-            subtitleFontWeight: "400",
-          },
-        },
-      },
-    },
-    TopNavigationAction: {
-      appearances: {
-        default: {
-          mapping: {
-            iconMarginHorizontal: 16,
-          },
-        },
-      },
-    },
     Layout: {
       meta: {
         parameters: {

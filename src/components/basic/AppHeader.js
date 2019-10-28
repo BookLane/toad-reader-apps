@@ -1,50 +1,69 @@
 import React from "react"
-import Constants from 'expo-constants'
-import { TopNavigation } from 'react-native-ui-kitten'
-import { Platform, StyleSheet, View } from "react-native"
-
-import { getToolbarHeight } from '../../utils/toolbox.js'
-
-const {
-  ANDROID_TOOLBAR_COLOR,
-  ANDROID_STATUS_BAR_COLOR,
-} = Constants.manifest.extra
+import { StyleSheet, View, Text } from "react-native"
+import { getToolbarHeight } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {
     zIndex: 3,
+    padding: 8,
+    height: getToolbarHeight(),
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
-  header: {
-    ...(Platform.OS === 'android' ? { backgroundColor: ANDROID_TOOLBAR_COLOR } : {}),
+  titleView: {
+    flex: 1,
+    justifyContent: 'center',
   },
+  title: {
+    fontSize: 19,
+    fontWeight: "400",
+  },
+  subtitle: {
+    fontSize: 13,
+    fontWeight: "400",
+  },
+
 })
 
 const AppHeader = ({
   hide,
+  title,
+  subtitle,
+  leftControl,
+  rightControls=[],
   ...topNavigationProps
 }) => {
 
-  // There is a bug by which the backgroundColor in the header does not get set on load.
-  // Thus, this component is a hack to force it to render properly.
-
-  const style = {}
-
-  if(hide) {
-    style.top = getToolbarHeight() * -1
-  }
+  if(hide) return null
 
   return (
-    <View style={!hide && styles.container}>
-      <TopNavigation {...topNavigationProps} />
-      {/* <Header
-        androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
-        style={[
-          styles.header,
-          style,
-        ]}
-      >
-        {children}
-      </Header> */}
+    <View style={styles.container}>
+      {!!leftControl &&
+        <View>
+          {leftControl}
+        </View>
+      }
+      <View style={styles.titleView}>
+        <Text
+          numberOfLines={1}
+          style={styles.title}
+        >
+          {title}
+        </Text>
+        {!!subtitle &&
+          <Text
+            numberOfLines={1}
+            style={styles.subtitle}
+          >
+            {subtitle}
+          </Text>
+        }
+      </View>
+      {rightControls.map((rightControl, idx) => (
+        <View key={idx}>
+          {rightControl}
+        </View>
+      ))}
     </View>
   )
 }

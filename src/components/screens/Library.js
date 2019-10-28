@@ -320,6 +320,7 @@ class Library extends React.Component {
         openMenuOffset={280}
         isOpen={location.pathname === '/drawer'}
         onChange={this.sideMenuOnChange}
+        disableGestures={true}
       >
 
         <Switch>
