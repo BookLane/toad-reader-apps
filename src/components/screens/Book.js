@@ -3,7 +3,7 @@ import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } 
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Layout } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 
 import BookPage from "../major/BookPage"
@@ -548,16 +548,16 @@ class Book extends React.Component {
     
     if(Platform.OS !== 'web' && readerStatus !== 'ready') {
       return (
-        <Layout>
+        <SafeLayout>
           <FullScreenSpin
             text={i18n("Updating reader...")}
           />
-        </Layout>
+        </SafeLayout>
       )
     }
 
     return (
-      <Layout>
+      <SafeLayout>
         {mode !== 'page' && <BackFunction func={this.backToReading} />}
         <BookHeader
           title={title}
@@ -634,7 +634,7 @@ class Book extends React.Component {
           />
         }
 
-      </Layout>
+      </SafeLayout>
     )
   }
 }

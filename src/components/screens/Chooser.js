@@ -1,7 +1,8 @@
 import React from "react"
 import { Text, View } from "react-native"
 import { withRouter } from "react-router"
-import { Button, Layout } from "react-native-ui-kitten"
+import { Button } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 
 // const styles = StyleSheet.create({
 //   container: {
@@ -9,7 +10,7 @@ import { Button, Layout } from "react-native-ui-kitten"
 // })
 
 const Chooser = ({ history }) => (
-  <Layout>
+  <SafeLayout>
     <View>
       {/* <Card>
         <CardItem>
@@ -25,7 +26,7 @@ const Chooser = ({ history }) => (
         <Text>Back</Text>
       </Button>
     </View>
-  </Layout>
+  </SafeLayout>
 )
 
 export default withRouter(Chooser)

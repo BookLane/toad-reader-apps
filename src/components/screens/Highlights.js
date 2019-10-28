@@ -1,10 +1,11 @@
 import React from "react"
-import { Ionicons } from "@expo/vector-icons"
-import { Layout, Button } from "react-native-ui-kitten"
+// import { Ionicons } from "@expo/vector-icons"
+// import { Button } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
+import SafeLayout from "../basic/SafeLayout"
 
 const Highlights = ({ history }) => (
-  <Layout>
+  <SafeLayout>
     <AppHeader>
       {/* <Left>
         <Button
@@ -28,7 +29,7 @@ const Highlights = ({ history }) => (
         </CardItem>
       </Card>
     </Content> */}
-  </Layout>
+  </SafeLayout>
 )
 
 export default Highlights

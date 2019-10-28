@@ -10,6 +10,7 @@ import { persistStore, persistReducer } from "redux-persist"
 import { PersistGate } from 'redux-persist/integration/react'
 import reducers from "./src/redux/reducers.js"
 import { Provider } from "react-redux"
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { mapping } from "@eva-design/eva"
 import { ApplicationProvider } from "react-native-ui-kitten"
@@ -92,16 +93,18 @@ const App = () => {
       customMapping={customMapping}
       theme={themes[theme]}
     >
-      <Provider store={store}>
-        <PersistGate 
-          persistor={persistor} 
-          loading={<AppLoading />}
-        >
-          <Router>
-            <Library changeTheme={changeTheme} />
-          </Router>
-        </PersistGate>
-      </Provider>
+      <SafeAreaProvider>
+        <Provider store={store}>
+          <PersistGate 
+            persistor={persistor} 
+            loading={<AppLoading />}
+          >
+            <Router>
+              <Library changeTheme={changeTheme} />
+            </Router>
+          </PersistGate>
+        </Provider>
+      </SafeAreaProvider>
     </ApplicationProvider>
   )
 }

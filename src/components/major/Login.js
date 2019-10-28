@@ -4,7 +4,7 @@ import WebView from './WebView'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { Layout } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 
 import FullScreenSpin from "../basic/FullScreenSpin"
@@ -157,7 +157,7 @@ const Login = ({
       )
 
   return (
-    <Layout>
+    <SafeLayout>
       <WebView
         style={[
           styles.fullscreen,
@@ -182,7 +182,7 @@ const Login = ({
           style={{ backgroundColor: 'white' }}
         />
       }
-    </Layout>
+    </SafeLayout>
   )
 }
 

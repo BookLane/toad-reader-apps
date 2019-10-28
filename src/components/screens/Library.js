@@ -8,7 +8,7 @@ import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SideMenu from "react-native-side-menu"
-import { Layout } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 import downloadAsync from "../../utils/downloadAsync.js"
 import { updateReader } from "../../utils/updateReader.js"
@@ -22,8 +22,8 @@ import LibraryList from "../major/LibraryList"
 import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import FullScreenSpin from "../basic/FullScreenSpin"
-import AppHeader from "../basic/AppHeader.js"
-import BookDownloader from "../major/BookDownloader.js"
+import AppHeader from "../basic/AppHeader"
+import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
 
@@ -288,7 +288,7 @@ class Library extends React.Component {
 
     if(logOutUrl) {
       return (
-        <Layout>
+        <SafeLayout>
           <AppHeader hide={true} />
           <WebView
             style={styles.flex1}
@@ -310,7 +310,7 @@ class Library extends React.Component {
             }
             style={{ backgroundColor: 'white' }}
           />
-        </Layout>
+        </SafeLayout>
       )
     }
 
@@ -328,7 +328,7 @@ class Library extends React.Component {
           <Route path="/book/:id" component={Book} />
           <Route>
 
-            <Layout>
+            <SafeLayout>
               <LibraryHeader
                 scope={scope}
                 toggleShowOptions={this.toggleShowOptions}
@@ -381,7 +381,7 @@ class Library extends React.Component {
               <BookDownloader
                 downloadPaused={downloadPaused}
               />
-            </Layout>
+            </SafeLayout>
             
           </Route>
         </Switch>

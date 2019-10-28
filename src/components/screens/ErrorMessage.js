@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { Updates } from "expo"
 import { StyleSheet, View, Text } from "react-native"
 import { withRouter } from "react-router"
-import { Layout } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 
 import ErrorMessageHeader from "../major/ErrorMessageHeader"
@@ -35,7 +35,7 @@ const ErrorMessage = ({ location }) => {
   )
 
   return (
-    <Layout>
+    <SafeLayout>
       <ErrorMessageHeader />
       <View style={styles.body}>
         <View style={styles.view}>
@@ -46,7 +46,7 @@ const ErrorMessage = ({ location }) => {
           )}</Text>
         </View>
       </View>
-    </Layout>
+    </SafeLayout>
   )
 }
 

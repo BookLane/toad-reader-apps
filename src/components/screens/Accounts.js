@@ -1,10 +1,10 @@
 import React from "react"
-import { Ionicons } from "@expo/vector-icons"
-import { Layout } from "react-native-ui-kitten"
+// import { Ionicons } from "@expo/vector-icons"
+import SafeLayout from "../basic/SafeLayout"
 import AppHeader from "../basic/AppHeader"
 
 const Accounts = ({ history }) => (
-  <Layout>
+  <SafeLayout>
     <AppHeader>
       {/* <Left>
         <Button
@@ -19,7 +19,7 @@ const Accounts = ({ history }) => (
       </Body>
       <Right /> */}
     </AppHeader>
-  </Layout>
+  </SafeLayout>
 )
 
 export default Accounts
