@@ -1,7 +1,14 @@
 import React, { useCallback } from "react"
+import { StyleSheet } from "react-native"
 import { withRouter } from "react-router"
 import { Ionicons } from "@expo/vector-icons"
 import { TopNavigationAction, styled } from 'react-native-ui-kitten'
+
+const styles = StyleSheet.create({
+  icon: {
+    fontSize: 22,
+  },
+})
 
 const HeaderIcon = ({
   themedStyle,
@@ -14,7 +21,7 @@ const HeaderIcon = ({
 }) => {
 
   const icon = useCallback(
-    () => <Ionicons style={[ themedStyle, style ]} name={name} />,
+    () => <Ionicons style={[ styles.icon, themedStyle, style ]} name={name} />,
     [ themedStyle, style, name ],
   )
 

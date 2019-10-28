@@ -61,7 +61,6 @@ const mapping = {
       appearances: {
         default: {
           mapping: {
-            fontSize: 22,
           },
         },
       },
