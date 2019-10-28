@@ -8,7 +8,7 @@ export const connectionInfo = {
 const useNetwork = () => {
   const newConnectionInfo = useNetworkFromReactUse()
 
-  connectionInfo.online = newConnectionInfo.effectiveType
+  connectionInfo.online = newConnectionInfo.online
   connectionInfo.effectiveType = newConnectionInfo.effectiveType
 
   return connectionInfo

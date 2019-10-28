@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
 import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+// import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
 import { getDataOrigin } from "../../utils/toolbox"
@@ -24,8 +24,6 @@ const {
         
 const styles = StyleSheet.create({
   separator: {
-    flex: 0,
-    height: 10,
     backgroundColor: '#e8e8e8',
   },
   image: {
@@ -35,11 +33,9 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     backgroundColor: '#e8e8e8',
   },
-  offline: {
-    opacity: .25,
-  },
-  list: {
-    flex: 1,
+  title: {
+    fontSize: 15,
+    fontWeight: "400",
   },
   createdByContainer: {
     paddingTop: 40,
@@ -174,23 +170,23 @@ const AppMenu = ({
     [],
   )
 
-  const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
-  const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
-  // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
-  const refreshIcon = useCallback(style => <Ionicons {...style} name="md-refresh" />, [])
-  const removeIcon = useCallback(style => <Ionicons {...style} name="md-remove-circle" />, [])
-  const logOutIcon = useCallback(style => <Ionicons {...style} name="md-log-out" />, [])
+  // const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
+  // const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
+  // // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
+  // const refreshIcon = useCallback(style => <Ionicons {...style} name="md-refresh" />, [])
+  // const removeIcon = useCallback(style => <Ionicons {...style} name="md-remove-circle" />, [])
+  // const logOutIcon = useCallback(style => <Ionicons {...style} name="md-log-out" />, [])
 
   const drawerData = [
     {
       title: i18n("Library"),
-      icon: libraryIcon,
+      // icon: libraryIcon,
       onSelect: showAll,
     },
     ...(Platform.OS === 'web' ? [] : [
       {
         title: i18n("On device only"),
-        icon: onDeviceIcon,
+        // icon: onDeviceIcon,
         onSelect: showDeviceOnly,
       },
     ]),
@@ -199,37 +195,41 @@ const AppMenu = ({
       // {!!hasMultipleAccountsForSingleIdp &&
       //   <Text>{accounts[id].email}</Text>
       // }
-      icon: libraryIcon,
+      // icon: libraryIcon,
       onSelect: () => {
         changeLibraryScope({ scope: id })
         history.goBack()
       },
     }))),
+    {
+      style: styles.separator,
+    },
     // {
     //   title: i18n("Accounts"),
     //   icon: accountsIcon,
     //   path: `${match.url}/accounts`,
     // },
-    ...(!online ? [] : [
-      {
-        title: i18n("Refresh book list"),
-        icon: refreshIcon,
-        onSelect: reLogin,
-      },
-    ]),
+    {
+      title: i18n("Refresh book list"),
+      // icon: refreshIcon,
+      onSelect: online ? reLogin : null,
+      disabled: !online,
+    },
     {
       title: i18n("Remove all books"),
-      icon: removeIcon,
+      // icon: removeIcon,
       onSelect: removeAllEPubs,
     },
     ...(Object.values(idps).every(idp => idp.idpNoAuth) ? [] : [
       {
         title: i18n("Log out"),
-        icon: logOutIcon,
+        // icon: logOutIcon,
         onSelect: confirmLogOut,
       },
     ]),
   ]
+
+  drawerData.forEach(drawerItem => drawerItem.titleStyle = styles.title)
 
   const onRouteSelect = index => {
     const { [index]: route } = drawerData
