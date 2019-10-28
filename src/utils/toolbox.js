@@ -15,6 +15,8 @@ const {
 
 const cachedSizes = {}
 
+export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
+
 const getSizes = ({
   type,
   width,

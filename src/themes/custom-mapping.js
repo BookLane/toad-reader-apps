@@ -1,8 +1,25 @@
 import Constants from 'expo-constants'
+import { cloneObj } from '../utils/toolbox'
 
 const {
   MAPPING_CUSTOMIZATION={},
 } = Constants.manifest.extra
+
+const getCustomComponentSetup = () => cloneObj({
+  meta: {
+    parameters: {},
+    variantGroups: {},
+    states: {},
+    appearances: {
+      default: {
+        default: true,
+      },
+    },
+  },
+  appearances: {
+    default: {},
+  },
+})
 
 const mapping = {
 
@@ -43,28 +60,6 @@ const mapping = {
         },
       },
     },
-    HeaderIcon: {
-      meta: {
-        parameters: {
-          fontSize: {
-            type: "number",
-          },
-        },
-        variantGroups: {},
-        states: {},
-        appearances: {
-          default: {
-            default: true,
-          },
-        },
-      },
-      appearances: {
-        default: {
-          mapping: {
-          },
-        },
-      },
-    },
     Layout: {
       meta: {
         parameters: {
@@ -81,6 +76,7 @@ const mapping = {
         },
       },
     },
+    HeaderIcon: getCustomComponentSetup(),
   },
   
   // TODO: I need to lay this over top at each level of the object
