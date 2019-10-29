@@ -1,11 +1,16 @@
 import React from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Platform } from "react-native"
+import { Button } from "react-native-ui-kitten"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import BookInfoCover from "./BookInfoCover"
 import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
+import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
+import i18n from "../../utils/i18n"
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -32,15 +37,22 @@ const styles = StyleSheet.create({
   spacer: {
     flexGrow: 1,
   },
+  buttonContainer: {
+    marginVertical: 10,
+    flexDirection: 'row',
+  },
 })
 
 const BookInfo = ({
   bookId,
   bookInfo,
   isFirstRow,
+  accounts,
 }) => {
 
   const { title, author } = bookInfo
+
+  const isAdmin = Object.keys(bookInfo.accounts).some(accountId => (accounts[accountId] || {}).isAdmin)
 
   return (
     <View style={[
@@ -53,11 +65,37 @@ const BookInfo = ({
       <View style={styles.info}>
         <BookInfoTitle>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
-        <View style={styles.spacer} />
-        <BookInfoDetails bookInfo={bookInfo} />
+        {isAdmin &&
+          <BookInfoId id={bookId} />
+        }
+        {Platform.OS === 'web'
+          ? (
+            <View style={styles.buttonContainer}>
+              <Button
+                onPress={null}
+                size='tiny'
+              >
+                {i18n("Delete from server")}
+              </Button>
+            </View>
+          )
+          : (
+            <>
+              <View style={styles.spacer} />
+              <BookInfoDetails bookInfo={bookInfo} />
+            </>
+          )
+        }
       </View>
     </View>
   )
 }
 
-export default BookInfo
+const mapStateToProps = ({ accounts }) => ({
+  accounts,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookInfo)

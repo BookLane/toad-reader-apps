@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
   modalBackdrop: {
     backgroundColor: "black",
     opacity: 0.5,
-    cursor: "default",
   },
   container: {
     width: 300,
