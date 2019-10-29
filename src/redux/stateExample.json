@@ -25,6 +25,7 @@
       "firstname": "Demo",
       "lastname": "Account",
       "email": "demo@email.com",
+      "isAdmin": false,
       "cookie": "connect.sid=lkjsdfljasdflkjsdf;",
       "serverTimeOffset": 60
     },
@@ -32,6 +33,7 @@
       "firstname": "Bill",
       "lastname": "Smith",
       "email": "bill@email.com",
+      "isAdmin": true,
       "cookie": "connect.sid=lkjsdfljasdflkjsdsdff;",
       "serverTimeOffset": -20
     }

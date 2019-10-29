@@ -152,7 +152,6 @@ class Library extends React.Component {
         let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
           headers: {
             "x-cookie-override": accounts[accountId].cookie,
-            "x-platform": Platform.OS,
           },
         }))
         // I do not catch the no internet connection error because I only get here immediately after logging in,
@@ -296,7 +295,6 @@ class Library extends React.Component {
               uri: logOutUrl,
               headers: {
                 "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
-                "x-platform": Platform.OS,
               },
             })}
             onLoad={this.logOutUrlOnLoad}

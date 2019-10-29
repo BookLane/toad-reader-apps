@@ -88,24 +88,24 @@ const App = () => {
   }
 
   return (
-    <ApplicationProvider
-      mapping={mapping}
-      customMapping={customMapping}
-      theme={themes[theme]}
-    >
-      <SafeAreaProvider>
-        <Provider store={store}>
-          <PersistGate 
-            persistor={persistor} 
-            loading={<AppLoading />}
-          >
-            <Router>
+    <Router>
+      <ApplicationProvider
+        mapping={mapping}
+        customMapping={customMapping}
+        theme={themes[theme]}
+      >
+        <SafeAreaProvider>
+          <Provider store={store}>
+            <PersistGate 
+              persistor={persistor} 
+              loading={<AppLoading />}
+            >
               <Library changeTheme={changeTheme} />
-            </Router>
-          </PersistGate>
-        </Provider>
-      </SafeAreaProvider>
-    </ApplicationProvider>
+            </PersistGate>
+          </Provider>
+        </SafeAreaProvider>
+      </ApplicationProvider>
+    </Router>
   )
 }
 

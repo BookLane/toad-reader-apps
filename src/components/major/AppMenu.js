@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -11,6 +11,7 @@ import i18n from "../../utils/i18n.js"
 import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
+import BookImporter from "./BookImporter"
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
@@ -60,6 +61,9 @@ const AppMenu = ({
   idps,
   books,
 }) => {
+
+  const [ importingBooks, setImportingBooks ] = useState(false)
+  const toggleImportingBooks = () => setImportingBooks(!importingBooks)
 
   const { online } = useNetwork()
   const [ pushToHistory ] = useRouterState({ history })
@@ -177,6 +181,16 @@ const AppMenu = ({
   // const removeIcon = useCallback(style => <Ionicons {...style} name="md-remove-circle" />, [])
   // const logOutIcon = useCallback(style => <Ionicons {...style} name="md-log-out" />, [])
 
+  let isAdmin = false
+  let bookImporterAccountId
+  Object.keys(accounts).some(accountId => {
+    if(accounts[accountId].isAdmin) {
+      isAdmin = true
+      bookImporterAccountId = accountId
+      return true
+    }
+  })
+
   const drawerData = [
     {
       title: i18n("Library"),
@@ -227,6 +241,16 @@ const AppMenu = ({
         onSelect: confirmLogOut,
       },
     ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+      {
+        style: styles.separator,
+      },
+      {
+        title: i18n("Import books to server"),
+        // icon: onDeviceIcon,
+        onSelect: toggleImportingBooks,
+      },
+    ]),
   ]
 
   drawerData.forEach(drawerItem => drawerItem.titleStyle = styles.title)
@@ -264,6 +288,11 @@ const AppMenu = ({
         onSelect={onRouteSelect}
         header={renderHeader}
         footer={renderFooter}
+      />
+      <BookImporter
+        open={!!importingBooks}
+        accountId={bookImporterAccountId}
+        onDone={toggleImportingBooks}
       />
     </Layout>
   )

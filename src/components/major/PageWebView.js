@@ -210,7 +210,6 @@ class PageWebView extends React.Component {
               window.parentOriginForPostMessage = ${JSON.stringify(location.origin)};
               window.epubFileFetchHeaders = ${JSON.stringify(getReqOptionsWithAdditions({
                 "x-cookie-override": Object.values(accounts)[0].cookie,
-                "x-platform": Platform.OS,
               }))};
             </script>
           `)

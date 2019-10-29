@@ -13,7 +13,6 @@ const getXmlAsObj = async ({ url, account }) => {
     ? (
       await fetch(urlWithoutHash, getReqOptionsWithAdditions({
         "x-cookie-override": account.cookie,
-        "x-platform": Platform.OS,
       })).then(response => response.text())
     )
     : await FileSystem.readAsStringAsync(urlWithoutHash)

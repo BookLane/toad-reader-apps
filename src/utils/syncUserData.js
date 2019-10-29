@@ -128,7 +128,6 @@ export const patch = info => setTimeout(() => {
             headers: {
               "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
               "x-cookie-override": accounts[accountId].cookie,
-              "x-platform": Platform.OS,
             },
             body: JSON_to_URLEncoded(bookUserData),
           }))
@@ -234,7 +233,6 @@ export const reportReadings = info => setTimeout(() => {
       headers: {
         "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
         "x-cookie-override": accounts[accountId].cookie,
-        "x-platform": Platform.OS,
       },
       body: JSON_to_URLEncoded({ readingRecords }),
     }))
@@ -309,7 +307,6 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
   fetch(path, getReqOptionsWithAdditions({
     headers: {
       "x-cookie-override": accounts[accountId].cookie,
-      "x-platform": Platform.OS,
     },
   }))
     .then(response => {

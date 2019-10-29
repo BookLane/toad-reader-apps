@@ -228,7 +228,6 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     const reqHeaders = (getReqOptionsWithAdditions({
       headers: {
         "x-cookie-override": cookie,
-        "x-platform": Platform.OS,
       },
     }) || {}).headers
 
@@ -290,6 +289,7 @@ export const getReqOptionsWithAdditions = additions => {
   }
 
   mergeInObj(reqOptions, additions)
+  mergeInObj(reqOptions, { headers: { "x-platform": Platform.OS } })
 
   return reqOptions
 }
@@ -429,4 +429,15 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
   // production environment
   return `${protocol}://${dashifyDomain(domain)}.data.toadreader.com`
 
+}
+
+export const getMBSizeStr = numBytes => {
+  const sizeInMB = Math.round(numBytes/10000, 10) / 100
+
+  if(sizeInMB) {
+    return i18n("{{num}} mb", { num: sizeInMB })
+  }
+  
+  const sizeInKB = Math.round(numBytes/10, 10) / 100
+  return i18n("{{num}} kb", { num: sizeInKB })
 }
