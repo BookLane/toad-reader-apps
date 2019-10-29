@@ -74,8 +74,10 @@ const BookInfo = ({
               <Button
                 onPress={null}
                 size='tiny'
+                status='basic'
+                appearance='outline'
               >
-                {i18n("Delete from server")}
+                {i18n("Delete")}
               </Button>
             </View>
           )
