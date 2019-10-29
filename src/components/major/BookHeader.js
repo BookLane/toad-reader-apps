@@ -3,6 +3,7 @@ import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 
 import { isPhoneSize } from '../../utils/toolbox.js'
 
@@ -47,7 +48,8 @@ const BookHeader = React.memo(({
 
   const rightControls = [
     <HeaderIcon
-      name="md-settings"
+      name="format-size"
+      IconPack={MaterialCommunityIcons}
       onPress={showDisplaySettings}
     />,
     <HeaderIcon

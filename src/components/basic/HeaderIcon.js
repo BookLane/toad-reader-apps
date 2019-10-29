@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 const HeaderIcon = ({
   themedStyle,
   style,
+  IconPack=Ionicons,
   name,
   path,
   onPress,
@@ -37,7 +38,7 @@ const HeaderIcon = ({
       style={styles.container}        
       {...otherProps}
     >
-      <Ionicons
+      <IconPack
         style={[
           styles.icon,
           themedStyle,
