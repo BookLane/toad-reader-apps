@@ -2,6 +2,7 @@ import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Modal, Button } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   modalBackdrop: {
@@ -53,6 +54,7 @@ const Dialog = ({
   // specific to type="info"
   onClose,
   closeButtonText,
+  closeButtonStatus="basic",
 
   // specific to type="confirm"
   onConfirm,
@@ -60,6 +62,7 @@ const Dialog = ({
   confirmButtonText,
   cancelButtonText,
   confirmButtonStatus="primary",
+  cancelButtonStatus="basic",
   // TODO: doubleConfirm,  // for destructive and unreversible actions
 
   // for extra customization
@@ -83,7 +86,7 @@ const Dialog = ({
             key="cancel"
             size="small"
             onPress={onCancel}
-            appearance="outline"
+            status={cancelButtonStatus}
             style={[
               styles.button,
             ]}
@@ -111,7 +114,7 @@ const Dialog = ({
             key="close"
             size="small"
             onPress={onClose}
-            appearance="outline"
+            status={closeButtonStatus}
             style={[
               styles.button,
             ]}

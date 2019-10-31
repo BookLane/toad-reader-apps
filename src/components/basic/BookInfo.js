@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, Platform } from "react-native"
+import { withRouter } from "react-router"
 import { Button } from "react-native-ui-kitten"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -12,6 +13,8 @@ import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
 import Dialog from "../major/Dialog"
+
+import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox.js'
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -46,6 +49,9 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: '500',
   },
+  subtle: {
+    fontSize: 12,
+  },
 })
 
 const BookInfo = ({
@@ -53,17 +59,55 @@ const BookInfo = ({
   bookInfo,
   isFirstRow,
   accounts,
+  idps,
 }) => {
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
 
   const { title, author } = bookInfo
 
-  const isAdmin = Object.keys(bookInfo.accounts).some(accountId => (accounts[accountId] || {}).isAdmin)
+  const adminInfo = Object.keys(bookInfo.accounts).filter(accountId => {
+    const { isAdmin, cookie } = accounts[accountId] || {}
+
+    if(isAdmin) {
+      return {
+        idpId: accountId.split(':')[0],
+        cookie,
+      }
+    }
+  })[0]
 
   const confirmDelete = useCallback(
-    () => setDeleteStatus('confirming')
+    () => setDeleteStatus('confirming'),
+    [],
+  )
+
+  const doDelete = useCallback(
+    async () => {
+      setDeleteStatus('deleting')
+
+      const path = `${getDataOrigin(idps[adminInfo.idpId])}/book/${bookId}`
+
+      const result = await fetch(path, getReqOptionsWithAdditions({
+        method: 'DELETE',
+        headers: {
+          "x-cookie-override": adminInfo.cookie,
+        },
+      }))
+
+      if(result.status === 200 && ((await result.json()) || {}).success) {
+        setDeleteStatus('done')
+      } else {
+        history.push("/error")
+      }
+
+    },
     [ bookId ],
+  )
+
+  const closeDelete = useCallback(
+    () => setDeleteStatus('none'),
+    [],
   )
 
   return (
@@ -77,7 +121,7 @@ const BookInfo = ({
       <View style={styles.info}>
         <BookInfoTitle>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
-        {isAdmin &&
+        {!!adminInfo &&
           <BookInfoId id={bookId} />
         }
         {Platform.OS === 'web'
@@ -102,22 +146,36 @@ const BookInfo = ({
         }
       </View>
       <Dialog
-        open={[ 'confirming', 'deleting' ].includes(deleteStatus)}
-        type="confirm"
-        message={[
-          i18n("Deleting this book from the server will revoke access to it for all users and make their user data connected to this book permanently inaccessible."),
-          { text: i18n("Are you sure you want to do so?"), textStyle: styles.emphasis },
-        ]}
+        open={[ 'confirming', 'deleting', 'done' ].includes(deleteStatus)}
+        type={[ 'done' ].includes(deleteStatus) ? "info" : "confirm"}
+        message={[ 'done' ].includes(deleteStatus)
+          ? [
+            i18n("“{{title}}” has been deleted.", { title }),
+            { text: i18n("Book id: {{book_id}}", { book_id: bookId }), textStyle: styles.subtle },
+          ]
+          : [
+            i18n("Deleting this book from the server will revoke access to it for all users and make user data connected to this book permanently inaccessible."),
+            { text: i18n("Are you sure you want to delete “{{title}}”?", { title }), textStyle: styles.emphasis },
+            { text: i18n("Book id: {{book_id}}", { book_id: bookId }), textStyle: styles.subtle },
+          ]
+        }
+        confirmButtonText={i18n("Permanently Delete")}
+        confirmButtonStatus="danger"
+        onCancel={closeDelete}
+        onConfirm={doDelete}
+        onClose={closeDelete}
+        submitting={[ 'deleting' ].includes(deleteStatus)}
       />
     </View>
   )
 }
 
-const mapStateToProps = ({ accounts }) => ({
+const mapStateToProps = ({ accounts, idps }) => ({
   accounts,
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookInfo)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookInfo))
