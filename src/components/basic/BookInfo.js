@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, Platform } from "react-native"
 import { Button } from "react-native-ui-kitten"
@@ -11,6 +11,7 @@ import BookInfoAuthor from "./BookInfoAuthor"
 import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
+import Dialog from "../major/Dialog"
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -41,6 +42,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     flexDirection: 'row',
   },
+  emphasis: {
+    color: 'black',
+    fontWeight: '500',
+  },
 })
 
 const BookInfo = ({
@@ -50,9 +55,16 @@ const BookInfo = ({
   accounts,
 }) => {
 
+  const [ deleteStatus, setDeleteStatus ] = useState('none')
+
   const { title, author } = bookInfo
 
   const isAdmin = Object.keys(bookInfo.accounts).some(accountId => (accounts[accountId] || {}).isAdmin)
+
+  const confirmDelete = useCallback(
+    () => setDeleteStatus('confirming')
+    [ bookId ],
+  )
 
   return (
     <View style={[
@@ -72,7 +84,7 @@ const BookInfo = ({
           ? (
             <View style={styles.buttonContainer}>
               <Button
-                onPress={null}
+                onPress={confirmDelete}
                 size='tiny'
                 status='basic'
                 appearance='outline'
@@ -89,6 +101,14 @@ const BookInfo = ({
           )
         }
       </View>
+      <Dialog
+        open={[ 'confirming', 'deleting' ].includes(deleteStatus)}
+        type="confirm"
+        message={[
+          i18n("Deleting this book from the server will revoke access to it for all users and make their user data connected to this book permanently inaccessible."),
+          { text: i18n("Are you sure you want to do so?"), textStyle: styles.emphasis },
+        ]}
+      />
     </View>
   )
 }
