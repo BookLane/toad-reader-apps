@@ -4,22 +4,11 @@ import { connect } from "react-redux"
 import { StyleSheet, View, Text, Platform } from "react-native"
 import i18n from "../../utils/i18n.js"
 import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr } from "../../utils/toolbox"
-import { Layout, Modal, Button } from "react-native-ui-kitten"
 import { Link } from "../routers/react-router"
 
+import Dialog from "./Dialog"
+
 const styles = StyleSheet.create({
-  modalBackdrop: {
-    backgroundColor: "black",
-    opacity: 0.5,
-  },
-  container: {
-    width: 300,
-    paddingBottom: 10,
-  },
-  title: {
-    fontSize: 18,
-    padding: 20,
-  },
   line: {
     paddingLeft: 20,
     paddingRight: 20,
@@ -50,10 +39,6 @@ const styles = StyleSheet.create({
   },
   bookId: {
     color: "rgba(0,0,0,.4)",
-  },
-  buttonContainer: {
-    padding: 20,
-    paddingBottom: 10
   },
 })
 
@@ -151,15 +136,11 @@ const BookImporter = ({
   if(Platform.OS !== 'web') return null
 
   return (
-    <Modal
-      visible={!!open}
-      style={{ left: 50, top: 50 }}  // This is temporary, until ui-kitten fixes the issue I reported (https://github.com/akveo/react-native-ui-kitten/issues/699)
-      allowBackdrop={true}
-      backdropStyle={styles.modalBackdrop}
-    >
-      {mode !== 'selecting' &&
-        <Layout style={styles.container}>
-          <Text style={styles.title}>{i18n("Importing books")}</Text>
+    <Dialog
+      open={!!open}
+      title={i18n("Importing books")}
+      content={
+        <View>
           {files.map(({ name, size, status, result }, idx) => (
             <View
               key={idx}
@@ -200,18 +181,11 @@ const BookImporter = ({
               }
             </View>
           ))}
-          {mode === 'complete' &&
-            <View style={styles.buttonContainer}>
-              <Button
-                onPress={onDone}
-              >
-                {i18n("Close")}
-              </Button>
-            </View>
-          }
-        </Layout>
+        </View>
       }
-    </Modal>
+      buttons={mode === 'complete' ? null : []}
+      onClose={onDone}
+    />
   )
 }
 
