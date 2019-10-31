@@ -1,7 +1,15 @@
 import React, { useMemo, useCallback } from "react"
+import { StyleSheet } from "react-native"
 import { List } from "react-native-ui-kitten"
 
 import BookContentsLine from "../basic/BookContentsLine"
+
+const styles = StyleSheet.create({
+  list: {
+    padding: 20,
+    paddingTop: 12,
+  },
+})
 
 const baseListItemStyle = {
   backgroundColor: 'transparent',
@@ -55,6 +63,7 @@ const BookContents = React.memo(({
 
   return (
     <List
+      style={styles.list}
       data={data}
       renderItem={renderItem}
     />
