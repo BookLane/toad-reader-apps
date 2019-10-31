@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Platform } from "react-native"
 
-import FullScreenSpin from "./FullScreenSpin"
+import CoverAndSpin from "./CoverAndSpin"
 
 import { getDataOrigin } from '../../utils/toolbox.js'
 
@@ -46,7 +46,7 @@ const BookInfoCover = ({
         resizeMode='cover'
       />
       {downloadStatus == 1 &&
-        <FullScreenSpin
+        <CoverAndSpin
           percentage={downloadProgress}
         />
       }

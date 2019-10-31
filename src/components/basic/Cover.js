@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Text, Platform } from "react-native"
 
-import FullScreenSpin from "./FullScreenSpin"
+import CoverAndSpin from "./CoverAndSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
@@ -89,7 +89,7 @@ const Cover = ({
         />
       }
       {downloadStatus == 1 &&
-        <FullScreenSpin
+        <CoverAndSpin
           percentage={downloadProgress}
         />
       }

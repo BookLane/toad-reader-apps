@@ -7,7 +7,7 @@ import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 
-import FullScreenSpin from "../basic/FullScreenSpin"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox.js"
 import useNetwork from "../../hooks/useNetwork"
@@ -178,7 +178,7 @@ const Login = ({
         onMessage={onMessageEvent}
       />
       {!!(loading || !online || error || leaving) &&
-        <FullScreenSpin
+        <CoverAndSpin
           text={spinMessage}
           style={{ backgroundColor: 'white' }}
         />

@@ -21,7 +21,7 @@ import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
 import Options from "../major/Options"
 import Spin from "../basic/Spin"
-import FullScreenSpin from "../basic/FullScreenSpin"
+import CoverAndSpin from "../basic/CoverAndSpin"
 import AppHeader from "../basic/AppHeader"
 import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
@@ -300,7 +300,7 @@ class Library extends React.Component {
             onLoad={this.logOutUrlOnLoad}
             onError={this.logOutUrlOnLoad}  // Even if it fails, log them out on the device at least
           />
-          <FullScreenSpin
+          <CoverAndSpin
             text={
               Object.values(idps).every(idp => idp.idpNoAuth)
                 ? i18n("Finding books...")

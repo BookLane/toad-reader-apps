@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const FullScreenSpin = ({
+const CoverAndSpin = ({
   style,
   text,
   percentage,
@@ -44,4 +44,4 @@ const FullScreenSpin = ({
   </View>
 )
 
-export default FullScreenSpin
+export default CoverAndSpin

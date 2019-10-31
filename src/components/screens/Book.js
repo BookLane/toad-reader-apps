@@ -13,7 +13,7 @@ import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import Options from "../major/Options"
 import BackFunction from '../basic/BackFunction'
-import FullScreenSpin from '../basic/FullScreenSpin'
+import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
 
@@ -549,7 +549,7 @@ class Book extends React.Component {
     if(Platform.OS !== 'web' && readerStatus !== 'ready') {
       return (
         <SafeLayout>
-          <FullScreenSpin
+          <CoverAndSpin
             text={i18n("Updating reader...")}
           />
         </SafeLayout>
