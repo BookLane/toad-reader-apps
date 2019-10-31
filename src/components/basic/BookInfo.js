@@ -129,9 +129,9 @@ const BookInfo = ({
             <View style={styles.buttonContainer}>
               <Button
                 onPress={confirmDelete}
-                size='tiny'
-                status='basic'
-                appearance='outline'
+                size="tiny"
+                status="basic"
+                appearance="outline"
               >
                 {i18n("Delete")}
               </Button>
@@ -148,6 +148,7 @@ const BookInfo = ({
       <Dialog
         open={[ 'confirming', 'deleting', 'done' ].includes(deleteStatus)}
         type={[ 'done' ].includes(deleteStatus) ? "info" : "confirm"}
+        title={i18n("Delete book from server")}
         message={[ 'done' ].includes(deleteStatus)
           ? [
             i18n("“{{title}}” has been deleted.", { title }),
