@@ -53,7 +53,7 @@ const Login = ({
   const askedForLoginInfoAtLeastOnce = useRef()
 
   const { online } = useNetwork()
-  const [ pushToHistory ] = useRouterState({ history })
+  const { historyPush } = useRouterState({ history })
 
   const [ setReloadTimeout ] = useSetTimeout()
 
@@ -63,7 +63,7 @@ const Login = ({
     err => {
       // There was an unknown error
 
-      pushToHistory("/error", {
+      historyPush("/error", {
         message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
       })
 
@@ -111,7 +111,7 @@ const Login = ({
         const { cookie, currentServerTime, userInfo } = data.payload || {}
 
         if(cookie == null || !currentServerTime || !userInfo) {
-          pushToHistory("/error", {
+          historyPush("/error", {
             critical: true,
           })
           return

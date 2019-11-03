@@ -37,7 +37,7 @@ const ErrorMessageHeader = React.memo(({
     [ history ],
   )
 
-  const [ x, routerState ] = useRouterState({ history, location })
+  const { routerState } = useRouterState({ history, location })
   const { title, critical } = routerState
 
   return (

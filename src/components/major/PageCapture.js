@@ -92,7 +92,7 @@ class PageCapture extends React.Component {
         reportInfoOrCapture(this.props)
 
         if(data.payload.startIndex !== this.pageCfis.length) {
-          // TODO: use pushToHistory from useRouterState
+          // TODO: use historyPush from useRouterState
           history.push("/error", {
             message: i18n("Invalid book."),
           })

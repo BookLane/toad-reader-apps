@@ -8,10 +8,8 @@ import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } fr
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n.js"
-import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
-import BookImporter from "./BookImporter"
 import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
@@ -62,13 +60,11 @@ const AppMenu = ({
   accounts,
   idps,
   books,
+  onImportBooks,
 }) => {
 
-  const [ importingBooks, setImportingBooks ] = useState(false)
-  const toggleImportingBooks = () => setImportingBooks(!importingBooks)
-
   const { online } = useNetwork()
-  const [ pushToHistory ] = useRouterState({ history })
+  const { historyPush, historyReplace } = useRouterState({ history })
 
   const showAll = useCallback(
     () => {
@@ -102,7 +98,8 @@ const AppMenu = ({
           clearUserDataExceptProgress,
         },
         () => {
-          pushToHistory("/", {
+          history.back()
+          historyPush("/", {
             logOutAccountId: accountId,
           })
         },
@@ -125,7 +122,8 @@ const AppMenu = ({
       // listing. In other words, I basically need to call the next line and run the whole
       // login process again, but hidden.
 
-      pushToHistory("/", {
+      history.back()
+      historyReplace("/", {
         refreshLibraryAccountId: accountId,
       })
     },
@@ -149,7 +147,7 @@ const AppMenu = ({
     () => {
       Linking.openURL("https://toadreader.com").catch(err => {
         console.log('ERROR: Request to open URL failed.', err)
-        pushToHistory("/error", {
+        historyPush("/error", {
           message: i18n("Your device is not allowing us to open this link."),
         })
       })
@@ -248,7 +246,7 @@ const AppMenu = ({
       {
         title: i18n("Import books to server"),
         // icon: onDeviceIcon,
-        onSelect: toggleImportingBooks,
+        onSelect: onImportBooks,
       },
     ]),
   ]
@@ -288,11 +286,6 @@ const AppMenu = ({
         onSelect={onRouteSelect}
         header={renderHeader}
         footer={renderFooter}
-      />
-      <BookImporter
-        open={!!importingBooks}
-        accountId={bookImporterAccountId}
-        onDone={toggleImportingBooks}
       />
       {location.pathname === '/drawer' && <BackFunction func={history.goBack} />}
     </Layout>

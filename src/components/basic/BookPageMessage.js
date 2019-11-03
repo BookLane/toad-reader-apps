@@ -27,7 +27,7 @@ const BookPageMessage = ({
   history,
 }) => {
 
-  const [ pushToHistory ] = useRouterState({ history })
+  const { historyPush } = useRouterState({ history })
 
   const showMoreInfo = useCallback(
     () =>  {
@@ -42,7 +42,7 @@ const BookPageMessage = ({
       } else if(externalHref) {
         Linking.openURL(externalHref).catch(err => {
           console.log('ERROR: Request to open URL failed.', err)
-          pushToHistory("/error", {
+          historyPush("/error", {
             message: i18n("Your device is not allowing us to open this link."),
           })
         })

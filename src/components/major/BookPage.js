@@ -68,7 +68,7 @@ const BookPage = React.memo(props => {
 
   const [ setUnselectTimeout, clearUnselectTimeout ] = useSetTimeout()
 
-  const [ pushToHistory ] = useRouterState({ history })
+  const { historyPush } = useRouterState({ history })
 
   useDidUpdate(
     () => {
@@ -153,7 +153,7 @@ const BookPage = React.memo(props => {
         case 'openURL':
           Linking.openURL(data.payload.url).catch(err => {
             console.log('ERROR: Request to open URL failed.', err)
-            pushToHistory("/error", {
+            historyPush("/error", {
               message: i18n("Your device is not allowing us to open this link."),
             })
           })

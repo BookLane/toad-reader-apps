@@ -8,8 +8,13 @@ const useRouterState = ({ history, location }) => {
   // const history = useHistory()
   // const location = useLocation()
 
-  const pushToHistory = useCallback(
+  const historyPush = useCallback(
     (route, state) => history.push(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
+    [ history, location ],
+  )
+
+  const historyReplace = useCallback(
+    (route, state) => history.replace(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
     [ history, location ],
   )
 
@@ -19,7 +24,7 @@ const useRouterState = ({ history, location }) => {
     routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
   } catch(e) {}
 
-  return [ pushToHistory, routerState ]
+  return { historyPush, historyReplace, routerState }
 }
 
 export default useRouterState

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 const ErrorMessage = ({ location }) => {
 
   const [ setReloadTimeout ] = useSetTimeout()
-  const [ x, routerState ] = useRouterState({ location })
+  const { routerState } = useRouterState({ location })
   const { message, critical } = routerState
 
   useEffect(

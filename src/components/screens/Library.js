@@ -13,6 +13,7 @@ import i18n from "../../utils/i18n"
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 
+import BookImporter from "../major/BookImporter"
 import Book from "./Book"
 import ErrorMessage from "./ErrorMessage"
 import AppMenu from "../major/AppMenu"
@@ -84,12 +85,14 @@ const Library = ({
   const [ showOptions, setShowOptions ] = useState(false)
   const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(false)
+  const [ importingBooks, setImportingBooks ] = useState(false)
 
   const [ setGetCoversTimeout ] = useSetTimeout()
+  const [ setRefreshLibraryTimeout ] = useSetTimeout()
 
   const JSUpdateReady = useRef(false)
 
-  const [ pushToHistory, routerState ] = useRouterState({ history, location })
+  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout`
@@ -223,12 +226,12 @@ const Library = ({
             setGetCoversTimeout(() => getCovers({ idpId }))
 
             if(refreshLibraryAccountId) {
-              pushToHistory()
+              historyReplace()
             }
             
           } catch(error) {
             console.log("ERROR", error)
-            pushToHistory("/error", {
+            historyPush("/error", {
               message: error.message || null,
             })
           }
@@ -266,7 +269,7 @@ const Library = ({
 
       if(logOutAccountId) {
         removeAccount({ accountId: logOutAccountId })
-        pushToHistory()
+        historyReplace()
       }
     },
     [ logOutAccountId, refreshLibraryAccountId ],
@@ -280,7 +283,27 @@ const Library = ({
     },
     [],
   )
-  
+
+  const doneImportingBooks = useCallback(
+    () => {
+      setImportingBooks(false)
+      setRefreshLibraryTimeout(() => {
+        historyReplace("/", {
+          refreshLibraryAccountId: bookImporterAccountId,
+        })
+      })
+    },
+    [],
+  )
+
+  const onImportBooks = useCallback(
+    () => {
+      setImportingBooks(true)
+      history.goBack()
+    },
+    [],
+  )
+
   const scope = library.scope || "all"
 
   const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -293,6 +316,8 @@ const Library = ({
       ))
     )
 
+  const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
+  
   if(showLogin) {
     return (
       <Login
@@ -331,7 +356,7 @@ const Library = ({
 
   return (
     <SideMenu
-      menu={<AppMenu />}
+      menu={<AppMenu onImportBooks={onImportBooks} />}
       openMenuOffset={280}
       isOpen={location.pathname === '/drawer'}
       onChange={sideMenuOnChange}
@@ -396,6 +421,13 @@ const Library = ({
             <BookDownloader
               downloadPaused={downloadPaused}
             />
+
+            <BookImporter
+              open={!!importingBooks}
+              accountId={bookImporterAccountId}
+              onDone={doneImportingBooks}
+            />
+
           </SafeLayout>
           
         </Route>

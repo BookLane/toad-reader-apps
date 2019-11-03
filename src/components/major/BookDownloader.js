@@ -32,7 +32,7 @@ const BookDownloader = ({
   const [ setThrottleTimeout ] = useSetTimeout()
   const getDownloadPaused = useInstanceValue(downloadPaused)
   const getBooks = useInstanceValue(books)
-  const [ pushToHistory ] = useRouterState({ history })
+  const { historyPush } = useRouterState({ history })
 
   if(currentDownloadBookId) return null
   if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return null
@@ -101,7 +101,7 @@ const BookDownloader = ({
     if(downloadWasCanceled(bookId)) return  // check this after each await
     if(zipFetchInfo.errorMessage) {
       console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
-      pushToHistory("/error", {
+      historyPush("/error", {
         title: zipFetchInfo.errorTitle,
         message: zipFetchInfo.errorMessage,
       })
@@ -122,7 +122,7 @@ const BookDownloader = ({
     const { toc, spines, success } = await parseEpub({ bookId })
     if(downloadWasCanceled(bookId)) return
     if(!success) {
-      pushToHistory("/error", {
+      historyPush("/error", {
         message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
       })
       markDownloadComplete(0)
