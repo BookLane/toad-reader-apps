@@ -89,7 +89,7 @@ const Library = ({
 
   const JSUpdateReady = useRef(false)
 
-  const [ pushToHistory, routerState ] = useRouterState({ history })
+  const [ pushToHistory, routerState ] = useRouterState({ history, location })
   const { logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout`
@@ -227,6 +227,7 @@ const Library = ({
             }
             
           } catch(error) {
+            console.log("ERROR", error)
             pushToHistory("/error", {
               message: error.message || null,
             })
