@@ -28,7 +28,6 @@ import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
 
-import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
@@ -86,9 +85,6 @@ const Library = ({
   const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
-
-  const [ setGetCoversTimeout ] = useSetTimeout()
-  const [ setRefreshLibraryTimeout ] = useSetTimeout()
 
   const JSUpdateReady = useRef(false)
 
@@ -188,7 +184,7 @@ const Library = ({
 
             // no need to get the library listing if we already have it
             if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
-              setGetCoversTimeout(() => getCovers({ idpId }))
+              requestAnimationFrame(() => getCovers({ idpId }))
               continue
             }
 
@@ -223,7 +219,7 @@ const Library = ({
             })
             reSort()
 
-            setGetCoversTimeout(() => getCovers({ idpId }))
+            requestAnimationFrame(() => getCovers({ idpId }))
 
             if(refreshLibraryAccountId) {
               historyReplace()
@@ -287,7 +283,7 @@ const Library = ({
   const doneImportingBooks = useCallback(
     () => {
       setImportingBooks(false)
-      setRefreshLibraryTimeout(() => {
+      requestAnimationFrame(() => {
         historyReplace("/", {
           refreshLibraryAccountId: bookImporterAccountId,
         })

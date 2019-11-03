@@ -14,7 +14,6 @@ import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
 import Dialog from "../major/Dialog"
 
-import useSetTimeout from '../../hooks/useSetTimeout'
 import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox.js'
 
 import { deleteBook } from "../../redux/actions"
@@ -68,8 +67,6 @@ const BookInfo = ({
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
 
-  const [ setDeleteBookTimeout ] = useSetTimeout()
-
   const { title, author } = bookInfo
 
   const adminInfo = Object.keys(bookInfo.accounts).filter(accountId => {
@@ -119,7 +116,7 @@ const BookInfo = ({
   const updateLibrary = useCallback(
     () => {
       setDeleteStatus('none')
-      setDeleteBookTimeout(() => deleteBook({ bookId }))
+      requestAnimationFrame(() => deleteBook({ bookId }))
     },
     [ bookId ],
   )
