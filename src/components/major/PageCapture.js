@@ -60,12 +60,12 @@ class PageCapture extends React.Component {
   getPageInfo = () => {
     const { spineIdRef } = this.props
 
-    if(this.loadSpineAndGetPagesInfoAlreadyCalled || !this.webView) return
+    if(this.loadSpineAndGetPagesInfoAlreadyCalled || !this.webView.current) return
     if(this.getProcessingPaused()) return
 
     this.reset()
 
-    postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
+    postMessage(this.webView.current, 'loadSpineAndGetPagesInfo', {
       spineIdRef,
       allottedMS: 100,
       minimumPagesToFetch: 1,
@@ -81,7 +81,7 @@ class PageCapture extends React.Component {
     const { bookId, spineIdRef, width, height, displaySettings, history,
       reportInfoOrCapture, reportFinished, addSpinePageCfis } = this.props
 
-    if(webView !== this.webView || this.unmounted) return // just in case
+    if(webView !== this.webView.current || this.unmounted) return // just in case
 
     switch(data.identifier) {
 
@@ -105,7 +105,7 @@ class PageCapture extends React.Component {
         ]
 
         if(!data.payload.completed) {
-          this.getCfisOrShiftAndSnap = () => postMessage(this.webView, 'continueToGetPagesInfo', {
+          this.getCfisOrShiftAndSnap = () => postMessage(this.webView.current, 'continueToGetPagesInfo', {
             spineIdRef,
             startIndex: this.pageCfis.length,
             allottedMS: 100,
@@ -134,7 +134,7 @@ class PageCapture extends React.Component {
             this.inProcessOfShifting = true
             const shift = this.pageIndexInSpine * (width - platformOffset) * -1 + platformOffset
 
-            this.webView.injectJavaScript(`
+            this.webView.current.injectJavaScript(`
               document.documentElement.style.transform = "translate(${shift}px)";
               document.documentElement.getBoundingClientRect();  // ensures paint is done before postMessage call
               requestAnimationFrame(() => {
@@ -212,7 +212,7 @@ class PageCapture extends React.Component {
     }
   }
 
-  setWebViewRef = ref => this.webView = ref
+  webView = {}
 
   setView = ref => this.view = ref
 
@@ -231,7 +231,7 @@ class PageCapture extends React.Component {
           minHeight: height,
         }}
         bookId={bookId}
-        setWebViewRef={this.setWebViewRef}
+        webViewRef={webView}
         setView={this.setView}
         onMessage={this.onMessageEvent}
         initialLocation={JSON.stringify({ idref: spineIdRef })}

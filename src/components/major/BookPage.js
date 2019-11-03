@@ -200,8 +200,6 @@ const BookPage = React.memo(props => {
     [],
   )
 
-  const setWebViewRef = webViewRef => webView.current = webViewRef
-  
 //   doTakeSnapshot = async () => {
 //     await takeSnapshot({
 //       view,
@@ -221,7 +219,7 @@ const BookPage = React.memo(props => {
       <PageWebView
         key={bookId}
         bookId={bookId}
-        setWebViewRef={setWebViewRef}
+        webViewRef={webView}
         onMessage={onMessageEvent}
         initialLocation={latest_location}
         initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
