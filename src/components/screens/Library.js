@@ -281,7 +281,7 @@ const Library = ({
         history.goBack()
       }
     },
-    [],
+    [ location ],
   )
 
   const doneImportingBooks = useCallback(
