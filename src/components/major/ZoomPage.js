@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
 
+import usePrevious from "react-use/lib/usePrevious"
 import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
 
 const {
@@ -33,36 +34,70 @@ const getZoomOutScale = () => {
   return pageWidth / width
 }
 
-class ZoomPage extends React.Component {
+const ZoomPage = ({
+  bookId,
+  spineIdRef,
+  pageCfisKey,
+  pageIndexInSpine,
+  snapshotCoords,
+  zoomed,
+  zoomingEnabled,
+  onZoomCompletion,
+  pageCfiKnown,
+}) => {
 
-  constructor(props) {
-    super(props)
+  const scale = useRef(new Animated.Value(zoomed ? 1 : getZoomOutScale()))
+  const opacity = useRef(new Animated.Value(1))
+  const translateX = useRef()
+  const translateY = useRef()
+  
+  const prevSnapshotCoords = usePrevious(snapshotCoords)
 
-    this.scale = new Animated.Value(this.props.zoomed ? 1 : getZoomOutScale())
-    this.opacity = new Animated.Value(1)
-    this.setUpInterpolatedValues(props)
-  }
+  useEffect(
+    () => {
+      requestAnimationFrame(() => {
+        if(zoomed || !zoomingEnabled) {
+          Animated.timing(
+            scale.current,
+            {
+              toValue: 1,
+              // easing: Easing.linear,
+              easing: Easing.inOut(Easing.cubic),
+              duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
+            }
+          ).start(onZoomCompletion)
+      
+        } else {
+          Animated.sequence([
+            Animated.timing(
+              scale.current,
+              {
+                toValue: getZoomOutScale(),
+                easing: Easing.inOut(Easing.cubic),
+                duration: PAGE_ZOOM_MILLISECONDS,
+              }
+            ),
+            Animated.timing(
+              opacity.current,
+              {
+                toValue: 0,
+                easing: Easing.linear,
+                duration: PAGE_ZOOM_MILLISECONDS / 4,
+              }
+            )
+          ]).start(onZoomCompletion)
+    
+          requestAnimationFrame(() => {
+            opacity.current = new Animated.Value(1)
+          })
+      
+        }    
+      })
+    },
+    [ zoomed ],
+  )
 
-  componentWillReceiveProps(nextProps) {
-    const { snapshotCoords, zoomed } = this.props
-
-    if(JSON.stringify(nextProps.snapshotCoords) !== JSON.stringify(snapshotCoords)) {
-      this.setUpInterpolatedValues(nextProps)
-    }
-
-    if(nextProps.zoomed !== zoomed) {
-      requestAnimationFrame(() => this.animate(nextProps))
-    }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return [ 'bookId', 'spineIdRef', 'pageCfisKey', 'pageIndexInSpine', 'snapshotCoords' ].some(key => (
-      nextProps[key] !== this.props[key]
-    ))
-  }
-
-  setUpInterpolatedValues = nextProps => {
-    const { snapshotCoords } = nextProps || this.props
+  if(JSON.stringify(snapshotCoords) !== JSON.stringify(prevSnapshotCoords)) {
 
     let outputRangeX = 1
     let outputRangeY = 1
@@ -79,101 +114,56 @@ class ZoomPage extends React.Component {
 
     const zoomOutScale = getZoomOutScale()
 
-    this.translateX = this.scale.interpolate({
+    translateX.current = scale.current.interpolate({
       inputRange: [zoomOutScale, 1],
       outputRange: [outputRangeX, 0],
     })
 
-    this.translateY = this.scale.interpolate({
+    translateY.current = scale.current.interpolate({
       inputRange: [zoomOutScale, 1],
       outputRange: [outputRangeY, 0],
     })
+
   }
 
-  animate = nextProps => {
-    const { zoomed, zoomingEnabled, onZoomCompletion } = nextProps || this.props
+  const uri = getSnapshotURI({ bookId, spineIdRef, pageIndexInSpine, pageCfisKey })
 
-    if(zoomed || !zoomingEnabled) {
-      Animated.timing(
-        this.scale,
-        {
-          toValue: 1,
-          // easing: Easing.linear,
-          easing: Easing.inOut(Easing.cubic),
-          duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
-        }
-      ).start(onZoomCompletion)
-  
-    } else {
-      Animated.sequence([
-        Animated.timing(
-          this.scale,
-          {
-            toValue: getZoomOutScale(),
-            easing: Easing.inOut(Easing.cubic),
-            duration: PAGE_ZOOM_MILLISECONDS,
-          }
-        ),
-        Animated.timing(
-          this.opacity,
-          {
-            toValue: 0,
-            easing: Easing.linear,
-            duration: PAGE_ZOOM_MILLISECONDS / 4,
-          }
-        )
-      ]).start(onZoomCompletion)
-
-      requestAnimationFrame(() => {
-        this.opacity = new Animated.Value(1)
-      })
-  
-    }
+  const zoomStyles1 = {
+    transform: [
+      {
+        translateX: translateX.current,
+      },
+      {
+        translateY: translateY.current,
+      },
+    ],
   }
 
-  render() {
-    const { pageCfiKnown } = this.props
-    const { translateX, translateY, scale, opacity } = this
-
-    const uri = getSnapshotURI(this.props)
-
-    const zoomStyles1 = {
-      transform: [
-        {
-          translateX,
-        },
-        {
-          translateY,
-        },
-      ],
-    }
-
-    const zoomStyles2 = {
-      transform: [
-        {
-          scale,
-        },
-      ],
-      opacity,
-    }
-      
-    return (
-      <Animated.View
+  const zoomStyles2 = {
+    transform: [
+      {
+        scale: scale.current,
+      },
+    ],
+    opacity: opacity.current,
+  }
+    
+  return (
+    <Animated.View
+      style={[
+        styles.snapshotCont,
+        zoomStyles1,
+      ]}
+    >
+      <Animated.Image
+        source={{ uri: pageCfiKnown ? uri : undefined }}
         style={[
-          styles.snapshotCont,
-          zoomStyles1,
+          styles.snapshot,
+          zoomStyles2,
         ]}
-      >
-        <Animated.Image
-          source={{ uri: pageCfiKnown ? uri : undefined }}
-          style={[
-            styles.snapshot,
-            zoomStyles2,
-          ]}
-        />
-      </Animated.View>
-    )
-  }
+      />
+    </Animated.View>
+  )
 }
 
 export default ZoomPage
