@@ -1,26 +1,25 @@
-import React from "react"
+import { useEffect } from "react"
 import { BackHandler } from "react-native"
 
-class BackFunction extends React.Component {
+const BackFunction = ({
+  func,
+}) => {
 
-  backPressEvent = () => {
-    const { func } = this.props
+  useEffect(
+    () => {
+      const backPressEvent = () => {
+        func()
+        return true
+      }
 
-    func()
-    return true
-  }
+      BackHandler.addEventListener('hardwareBackPress', backPressEvent)
   
-  componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.backPressEvent)
-  }
+      return () => BackHandler.removeEventListener('hardwareBackPress', backPressEvent)
+    },
+    [ func ],
+  )
   
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.backPressEvent)
-  }
-  
-  render() {
-    return null
-  }
+  return null
 }
 
 export default BackFunction

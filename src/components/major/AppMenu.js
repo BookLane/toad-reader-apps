@@ -12,6 +12,7 @@ import { getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BookImporter from "./BookImporter"
+import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
 
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
 
 const AppMenu = ({
   history,
+  location,
   changeLibraryScope,
   accounts,
   idps,
@@ -294,6 +296,7 @@ const AppMenu = ({
         accountId={bookImporterAccountId}
         onDone={toggleImportingBooks}
       />
+      {location.pathname === '/drawer' && <BackFunction func={history.goBack} />}
     </Layout>
   )
 }
