@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useRef, useCallback } from 'react'
 
 const useInstanceValue = value => {
 
   const latestValue = useRef()
-  useEffect(() => { latestValue.current = value })
+  latestValue.current = value
 
-  return () => latestValue.current
+  const getValue = useCallback(() => latestValue.current, [])
+
+  return getValue
 }
 
 export default useInstanceValue

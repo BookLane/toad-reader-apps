@@ -9,8 +9,8 @@ const useRouterState = ({ history, location }) => {
   // const location = useLocation()
 
   const pushToHistory = useCallback(
-    (route, state) => history.push(`${route}${state ? `#${JSON.stringify(state)}` : ``}`),
-    [ history ],
+    (route, state) => history.push(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
+    [ history, location ],
   )
 
   let routerState = {}

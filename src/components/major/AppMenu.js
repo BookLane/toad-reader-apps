@@ -103,7 +103,6 @@ const AppMenu = ({
         },
         () => {
           pushToHistory("/", {
-            logOutUrl: `${getDataOrigin(idps[idpId])}/logout`,
             logOutAccountId: accountId,
           })
         },
@@ -127,7 +126,6 @@ const AppMenu = ({
       // login process again, but hidden.
 
       pushToHistory("/", {
-        logOutUrl: `${getDataOrigin(idps[idpId])}/logout/callback?noredirect=1`,
         refreshLibraryAccountId: accountId,
       })
     },

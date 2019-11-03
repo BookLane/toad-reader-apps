@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import i18n from "./i18n.js"
-import { AsyncStorage } from "react-native"
+import { AsyncStorage, Platform } from "react-native"
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox.js"
 import { cancelFetch } from "./zipDownloader.js"
@@ -38,6 +38,8 @@ const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownl
 
 export const removeSnapshotsIfANewUpdateRequiresIt = async ({ books, clearAllSpinePageCfis }) => {
 
+  if(Platform.OS === 'web') return
+
   const dateOfMostRecentChangeRequiringPageRecapture = await AsyncStorage.getItem('dateOfMostRecentChangeRequiringPageRecapture')
 
   if(dateOfMostRecentChangeRequiringPageRecapture !== MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE) {
@@ -53,6 +55,8 @@ export const removeSnapshotsIfANewUpdateRequiresIt = async ({ books, clearAllSpi
 
 export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCfis }) => {
 
+  if(Platform.OS === 'web') return
+
   clearAllSpinePageCfis({ bookId })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
 
@@ -60,6 +64,9 @@ export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCf
 }
 
 export const confirmRemoveEPub = ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, done }) => {
+
+  if(Platform.OS === 'web') return
+
   // TODO
   // ActionSheet.show(
   //   {
@@ -86,6 +93,9 @@ export const confirmRemoveEPub = ({ books, bookId, removeFromBookDownloadQueue, 
 }
 
 export const confirmRemoveAllEPubs = ({ books, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
+
+  if(Platform.OS === 'web') return
+
   // TODO
   // ActionSheet.show(
   //   {
