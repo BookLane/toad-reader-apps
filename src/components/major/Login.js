@@ -48,7 +48,7 @@ const Login = ({
   const [ leaving, setLeaving ] = useState(false)
   const [ error, setError ] = useState(null)
   
-  const webViewRef = useRef()
+  const webView = useRef()
   const initialStateChangeAlreadyHappened = useRef()
   const askedForLoginInfoAtLeastOnce = useRef()
 
@@ -67,7 +67,7 @@ const Login = ({
         message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
       })
 
-      setReloadTimeout(webViewRef.current.reload, 15000)
+      setReloadTimeout(webView.current.reload, 15000)
       setError(i18n("Error. Trying again..."))
     },
     [ history ],
@@ -174,7 +174,7 @@ const Login = ({
         injectedJavaScript={`
           document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
         `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
-        forwardRef={webViewRef}
+        forwardRef={webView}
         onMessage={onMessageEvent}
       />
       {!!(loading || !online || error || leaving) &&
