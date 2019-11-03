@@ -51,6 +51,10 @@ export default function(state = initialState, action) {
       })
       return newState
 
+    case "DELETE_BOOK":
+      delete newState[action.bookId]
+      return newState
+
     case "SET_COVER_FILENAME":
       if(newState[action.bookId]) {
         newState[action.bookId] = {

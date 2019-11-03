@@ -14,7 +14,10 @@ import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
 import Dialog from "../major/Dialog"
 
+import useSetTimeout from '../../hooks/useSetTimeout'
 import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox.js'
+
+import { deleteBook } from "../../redux/actions"
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -60,9 +63,12 @@ const BookInfo = ({
   isFirstRow,
   accounts,
   idps,
+  deleteBook,
 }) => {
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
+
+  const [ setDeleteBookTimeout ] = useSetTimeout()
 
   const { title, author } = bookInfo
 
@@ -108,6 +114,14 @@ const BookInfo = ({
   const closeDelete = useCallback(
     () => setDeleteStatus('none'),
     [],
+  )
+
+  const updateLibrary = useCallback(
+    () => {
+      setDeleteStatus('none')
+      setDeleteBookTimeout(() => deleteBook({ bookId }))
+    },
+    [ bookId ],
   )
 
   return (
@@ -164,7 +178,7 @@ const BookInfo = ({
         confirmButtonStatus="danger"
         onCancel={closeDelete}
         onConfirm={doDelete}
-        onClose={closeDelete}
+        onClose={updateLibrary}
         submitting={[ 'deleting' ].includes(deleteStatus)}
       />
     </View>
@@ -177,6 +191,7 @@ const mapStateToProps = ({ accounts, idps }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  deleteBook,
 }, dispatch)
 
 export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookInfo))
