@@ -134,8 +134,8 @@ const PageCaptureManager = ({
   }
 
   const reportInfoOrCapture = useCallback(
-    params => {  // params: { bookId, spineIdRef, width, height, displaySettings }
-      if(getSnapshotURI(pageCaptureProps.current) === getSnapshotURI(params)) {  // confirm we haven't moved on
+    uriAsKey => {  // params: { bookId, spineIdRef, width, height, displaySettings }
+      if(uriAsKey === getSnapshotURI(pageCaptureProps.current)) {  // confirm we haven't moved on
         setUpCaptureTimeout()  // reset the timeout so long as stuff is happening
       }
     },
@@ -143,9 +143,8 @@ const PageCaptureManager = ({
   )
 
   const reportFinished = useCallback(
-    params => {  // params: { bookId, spineIdRef, width, height, displaySettings }
-      const uriAsKey = getSnapshotURI(pageCaptureProps.current)
-      if(uriAsKey === getSnapshotURI(params)) {  // confirm we haven't moved on
+    uriAsKey => {  // params: { bookId, spineIdRef, width, height, displaySettings }
+      if(uriAsKey === getSnapshotURI(pageCaptureProps.current)) {  // confirm we haven't moved on
 
         if(skipList.current[uriAsKey]) {
           delete skipList.current[uriAsKey]
