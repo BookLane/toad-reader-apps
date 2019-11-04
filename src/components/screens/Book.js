@@ -334,7 +334,11 @@ class Book extends React.Component {
 
   updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
 
-  setCapturingSnapshots = capturingSnapshots => this.setState({ capturingSnapshots })
+  setCapturingSnapshots = capturingSnapshots => {
+    if(this.state.capturingSnapshots !== capturingSnapshots) {
+      requestAnimationFrame(() => this.setState({ capturingSnapshots }))
+    }
+  }
 
   goToHref = ({ href }) => {
     const { location, startRecordReading } = this.props

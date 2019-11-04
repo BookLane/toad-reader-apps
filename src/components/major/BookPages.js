@@ -57,6 +57,8 @@ const BookPages = React.memo(({
   const animatedScrollPosition = useRef(new Animated.Value(0)).current
   const flatListEl = useRef()
 
+  const scrollToLatestLocationNextTimeReceivingProps = useRef(false)
+
   // Next block commented out with syntax prior to upddate for hooks.
   // this.opacity = this.animatedScrollPosition.interpolate({
   //   inputRange: [0, 5],
@@ -198,12 +200,11 @@ const BookPages = React.memo(({
   if(
     spineIdRef !== prevSpineIdRef
     || pageIndexInSpine !== prevPageIndexInSpine
-    || (scrollToLatestLocationNextTimeReceivingProps || {}).current
+    || scrollToLatestLocationNextTimeReceivingProps.current
   ) {
+    scrollToLatestLocationNextTimeReceivingProps.current = false
     scrollToLatestLocation()
   }
-
-  const scrollToLatestLocationNextTimeReceivingProps = useRef(false)
 
   const [ setScrollToLatestTimeout ] = useSetTimeout()
 

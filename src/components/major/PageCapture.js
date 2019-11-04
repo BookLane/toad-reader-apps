@@ -192,7 +192,7 @@ class PageCapture extends React.Component {
         })
 
         await takeSnapshot({
-          view: this.view,
+          view: this.view.current,
           uri,
           width: pageWidth,
           height: pageHeight,
@@ -212,9 +212,9 @@ class PageCapture extends React.Component {
     }
   }
 
-  webView = {}
+  webView = React.createRef()
 
-  setView = ref => this.view = ref
+  view = React.createRef()
 
   render() {
     const { bookId, width, height, spineIdRef, processingPaused, displaySettings } = this.props
@@ -232,7 +232,7 @@ class PageCapture extends React.Component {
         }}
         bookId={bookId}
         webViewRef={this.webView}
-        setView={this.setView}
+        viewRef={this.view}
         onMessage={this.onMessageEvent}
         initialLocation={JSON.stringify({ idref: spineIdRef })}
         initialDisplaySettings={getDisplaySettingsObj(displaySettings)}

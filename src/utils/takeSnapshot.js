@@ -10,7 +10,8 @@ const START_OF_LENGTH = 1000
 let startOfLastSnapShotBase64
 
 export default async ({ view, uri, width, height, viewWidth, viewHeight, force }) => {
-  return true
+
+  if(Platform.OS === 'web') return false
 
   const uriFileInfo = force || await FileSystem.getInfoAsync(uri)
 
