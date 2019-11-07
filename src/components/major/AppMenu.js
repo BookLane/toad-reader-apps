@@ -227,11 +227,13 @@ const AppMenu = ({
       onSelect: online ? reLogin : null,
       disabled: !online,
     },
-    {
-      title: i18n("Remove all books"),
-      // icon: removeIcon,
-      onSelect: removeAllEPubs,
-    },
+    ...(Platform.OS === 'web' ? [] : [
+      {
+        title: i18n("Remove all books"),
+        // icon: removeIcon,
+        onSelect: removeAllEPubs,
+      },
+    ]),
     ...(Object.values(idps).every(idp => idp.idpNoAuth) ? [] : [
       {
         title: i18n("Log out"),
