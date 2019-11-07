@@ -89,7 +89,7 @@ const Library = ({
   const JSUpdateReady = useRef(false)
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
-  const { logOutAccountId, refreshLibraryAccountId, softRefreshLibraryAccountId } = routerState
+  const { logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
@@ -136,38 +136,81 @@ const Library = ({
     [ location ],
   )
 
+  const getCovers = useCallback(
+    ({ idpId }) => {
+
+      for(let bookId in books) {
+        const book = books[bookId]
+
+        if(book.coverHref && !book.coverFilename) {
+          const idp = idps[idpId]
+
+          if(idp) {
+            const coverFilename = book.coverHref.split('/').pop()
+
+            downloadAsync(
+              `${getDataOrigin(idp)}/${book.coverHref}`,
+              `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
+            ).then(successful => {
+              if(successful) {
+                setCoverFilename({
+                  bookId,
+                  coverFilename,
+                })
+              }
+            })
+          }
+          
+        }
+      }
+    },
+    [ books, idps ],
+  )
+
+  const updateBooks = useCallback(
+    async ({ accountId }) => {
+
+      const [ idpId ] = accountId.split(':')
+
+      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
+      let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": accounts[accountId].cookie,
+        },
+      }))
+      // I do not catch the no internet connection error because I only get here immediately after logging in,
+      // which requires the internet.
+
+      if(response.status != 200) {
+        // they need to login again
+        // TODO: I should probably look for other possibilities like 3XX or 5XX errors
+        updateAccount({
+          accountId,
+          accountInfo: {
+            needToLogInAgain: true
+          },
+        })
+        return
+      }
+
+      const newBooks = await response.json()
+
+      addBooks({
+        books: newBooks,
+        accountId,
+      })
+      reSort()
+
+      requestAnimationFrame(() => getCovers({ idpId }))
+
+    },
+    [ idps, accounts, books ],
+  )
+
   useEffect(  // fetch all
     () => {
       (async () => {
 
-        const getCovers = ({ idpId }) => {
-
-          for(let bookId in books) {
-            const book = books[bookId]
-      
-            if(book.coverHref && !book.coverFilename) {
-              const idp = idps[idpId]
-      
-              if(idp) {
-                const coverFilename = book.coverHref.split('/').pop()
-      
-                downloadAsync(
-                  `${getDataOrigin(idp)}/${book.coverHref}`,
-                  `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
-                ).then(successful => {
-                  if(successful) {
-                    setCoverFilename({
-                      bookId,
-                      coverFilename,
-                    })
-                  }
-                })
-              }
-              
-            }
-          }
-        }
-      
         const account = Object.values(accounts)[0]
         if(!account || account.needToLogInAgain) {
           // when I move to multiple accounts, this will instead need to go to the Accounts screen
@@ -183,45 +226,15 @@ const Library = ({
             const [ idpId ] = accountId.split(':')
 
             // no need to get the library listing if we already have it
-            if(!refreshLibraryAccountId && !softRefreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
+            if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
               requestAnimationFrame(() => getCovers({ idpId }))
               continue
             }
 
             // update books
+            await updateBooks({ accountId })
 
-            const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
-            let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
-              headers: {
-                "x-cookie-override": accounts[accountId].cookie,
-              },
-            }))
-            // I do not catch the no internet connection error because I only get here immediately after logging in,
-            // which requires the internet.
-
-            if(response.status != 200) {
-              // they need to login again
-              // TODO: I should probably look for other possibilities like 3XX or 5XX errors
-              updateAccount({
-                accountId,
-                accountInfo: {
-                  needToLogInAgain: true
-                },
-              })
-              return
-            }
-
-            const newBooks = await response.json()
-
-            addBooks({
-              books: newBooks,
-              accountId,
-            })
-            reSort()
-
-            requestAnimationFrame(() => getCovers({ idpId }))
-
-            if(refreshLibraryAccountId || softRefreshLibraryAccountId) {
+            if(refreshLibraryAccountId) {
               historyReplace()
             }
             
@@ -235,7 +248,7 @@ const Library = ({
         setFetchingBooks({ value: false })
       })()
     },
-    [ idps, accounts, books, softRefreshLibraryAccountId ],
+    [ idps, accounts, books, refreshLibraryAccountId ],
   )
 
   const onLoginSuccess = useCallback(
@@ -288,19 +301,12 @@ const Library = ({
     [],
   )
 
-  const doneImportingBooks = useCallback(
-    () => {
-      historyReplace(null, {
-        softRefreshLibraryAccountId: bookImporterAccountId,
-      })
-    },
-    [ bookImporterAccountId ],
-  )
-
   const closeImportingBooks = useCallback(() => setImportingBooks(false), [])
 
   useEffect(
     () => {
+      // If they have clicked on one of the links in the import
+      // results, close the import dialog.
       if(location.pathname !== '/') {
         setImportingBooks(false)
       }
@@ -434,7 +440,7 @@ const Library = ({
       <BookImporter
         open={!!importingBooks}
         accountId={bookImporterAccountId}
-        onDone={doneImportingBooks}
+        updateBooks={updateBooks}
         onClose={closeImportingBooks}
       />
 

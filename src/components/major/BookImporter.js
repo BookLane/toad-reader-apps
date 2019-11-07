@@ -7,6 +7,7 @@ import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr } fro
 import { Link } from "../routers/react-router"
 
 import Dialog from "./Dialog"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   line: {
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
 const BookImporter = ({
   open,
   accountId,
-  onDone,
+  updateBooks,
   onClose,
   accounts,
   idps,
@@ -81,7 +82,7 @@ const BookImporter = ({
 
       window.addEventListener('focus', checkForCancel)
 
-      fileInput.onchange = async () => { 
+      fileInput.onchange = async () => {
 
         filesSelected.current = true
 
@@ -121,8 +122,11 @@ const BookImporter = ({
           setFiles(cloneObj(files))
         }
 
+        setMode('refreshing')
+
+        await updateBooks({ accountId })
+  
         setMode('complete')
-        onDone()
 
       }
 
@@ -188,6 +192,7 @@ const BookImporter = ({
               }
             </View>
           ))}
+          {mode === 'refreshing' && <CoverAndSpin />}
         </View>
       }
       buttons={mode === 'complete' ? null : []}
