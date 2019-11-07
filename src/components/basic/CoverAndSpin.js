@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, .8)',
   },
   textContainer: {
-    padding: "10%",
-    paddingTop: 0,
+    padding: 20,
     alignItems: "center",
   },
   spacer: {
@@ -32,14 +31,14 @@ const CoverAndSpin = ({
     style,
   ]}>
     <View style={styles.spacer} />
+    <Spin
+      percentage={percentage}
+    />
     {!!text &&
       <View style={styles.textContainer}>
         <Text>{text}</Text>
       </View>
     }
-    <Spin
-      percentage={percentage}
-    />
     <View style={styles.spacer} />
   </View>
 )

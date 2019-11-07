@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   spinnerContainer: {
-    padding: 40,
+    paddingTop: 70,
   },
   content: {
     zIndex: 1,
