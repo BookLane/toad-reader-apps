@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, View, ActivityIndicator, createElement } from 'react-native'
+import { StyleSheet, View, createElement } from 'react-native'
+import CoverAndSpin from '../basic/CoverAndSpin'
 
 const styles = StyleSheet.create({
   container: {
@@ -172,9 +173,7 @@ const WebView = ({
         ]}
       />
       {!loaded && (
-        <View style={styles.activityIndicatorContainer}>
-          <ActivityIndicator />
-        </View>
+        <CoverAndSpin />
       )}
     </View>
   )
