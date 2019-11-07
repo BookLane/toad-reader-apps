@@ -55,6 +55,8 @@ const LibraryBook = props => {
     [ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress ],
   )
 
+  if(Platform.OS === 'web') return children
+
   return (
     <TouchableOpacity
       onPress={onPress}

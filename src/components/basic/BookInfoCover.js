@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Platform } from "react-native"
+import { Link } from "../routers/react-router"
 
 import CoverAndSpin from "./CoverAndSpin"
 
@@ -38,7 +39,7 @@ const BookInfoCover = ({
     ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
     : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
-  return (
+  const cover = (
     <View style={styles.container}>
       <Image
         source={{ uri }}
@@ -52,6 +53,16 @@ const BookInfoCover = ({
       }
     </View>
   )
+
+  if(Platform.OS === 'web') {
+    return (
+      <Link to={`/book/${bookId}`}>
+        {cover}
+      </Link>
+    )
+  }
+
+  return cover
 }
 
 const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({

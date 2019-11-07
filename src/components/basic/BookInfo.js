@@ -130,7 +130,7 @@ const BookInfo = ({
         <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
       </View>
       <View style={styles.info}>
-        <BookInfoTitle>{title}</BookInfoTitle>
+        <BookInfoTitle to={`/book/${bookId}`}>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
         {!!adminInfo &&
           <BookInfoId id={bookId} />

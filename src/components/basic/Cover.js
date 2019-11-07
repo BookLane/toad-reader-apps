@@ -4,6 +4,7 @@ import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Text, Platform } from "react-native"
+import { Link } from "../routers/react-router"
 
 import CoverAndSpin from "./CoverAndSpin"
 import CoverCheck from "./CoverCheck"
@@ -65,7 +66,7 @@ const Cover = ({
     ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
     : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
-  return (
+  const cover = (
     <View
       style={[
         styles.cover,
@@ -98,6 +99,16 @@ const Cover = ({
       {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
     </View>
   )
+
+  if(Platform.OS === 'web') {
+    return (
+      <Link to={`/book/${bookId}`}>
+        {cover}
+      </Link>
+    )
+  }
+
+  return cover
 }
 
 const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({
