@@ -25,6 +25,7 @@ import { getPageCfisKey, getSpineAndPage,
          isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
+import useSetState from "react-use/lib/useSetState"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
@@ -143,18 +144,28 @@ const Book = React.memo(({
 
 }) => {
 
-  const [ bookLoaded, setBookLoaded ] = useState(false)
-  const [ mode, setMode ] = useState('page')
-  const [ showOptions, setShowOptions ] = useState(false)
-  const [ showSettings, setShowSettings ] = useState(false)
-  const [ hrefToGoTo, setHrefToGoTo ] = useState(null)
-  const [ zoomToInfo, setZoomToInfo ] = useState(null)
-  const [ snapshotCoords, setSnapshotCoords ] = useState(null)
-  const [ snapshotZoomed, setSnapshotZoomed ] = useState(true)
-  const [ onZoomCompletion, setOnZoomCompletion ] = useState(null)
   const [ capturingSnapshots, setCapturingSnapshots ] = useState(false)
   const [ processingPaused, setProcessingPaused ] = useState(true)
   const [ currentAppState, setCurrentAppState ] = useState('active')
+
+  const [{
+    bookLoaded,
+    mode,
+    showOptions,
+    showSettings,
+    hrefToGoTo,
+    zoomToInfo,
+    snapshotCoords,
+    snapshotZoomed,
+    onZoomCompletion,
+  }, setState ] = useSetState({
+    bookLoaded: false,
+    mode: 'page',
+    showOptions: false,
+    showSettings: false,
+    snapshotZoomed: true,
+  })
+
 
   const { historyPush } = useRouterState({ history })
 
@@ -302,53 +313,59 @@ const Book = React.memo(({
 
       setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
-      setMode('zooming')
-      setZoomToInfo(zoomToInfo)
-      setSnapshotCoords(snapshotCoords)
-      setSnapshotZoomed(true)
-      setOnZoomCompletion(() => () => {
+      setState({
+        mode: 'zooming',
+        zoomToInfo,
+        snapshotCoords,
+        snapshotZoomed: true,
+        onZoomCompletion: () => {
 
-        if(zoomToInfo.spineIdRef !== spineIdRef || (zoomToInfo.cfi && zoomToInfo.cfi != cfi)) {
+          if(zoomToInfo.spineIdRef !== spineIdRef || (zoomToInfo.cfi && zoomToInfo.cfi != cfi)) {
 
-          setOnZoomCompletion(null)
-          setBookLoaded(false)
-
-          if(!zoomToInfo.cfi && Platform.OS !== 'android') {
-            setMode('page')
-          }
-
-          // The indicateLoaded function is called by a pageChanged postMessage.
-          // In the event that this never happens, we don't want to leave things stuck.
-          // Therefore, use a timeout to ensure this happens, and otherwise display an
-          // error message.
-          setAwaitLoadTimeout(() => {
-            historyPush("/error", {
-              message: i18n("Sorry! There was an error flipping to that page."),
+            setState({
+              bookLoaded: false,
+              onZoomCompletion: null,
             })
-            indicateLoaded(true)
-          }, 5000)
 
-          setLatestLocation({
-            bookId,
-            latestLocation: zoomToInfo,
-            patchInfo: {
-              idps,
-              accounts,
-              books,
-              userDataByBookId,
-              updateAccount,
-              updateBookAccount,
-            },
-          })
+            if(!zoomToInfo.cfi && Platform.OS !== 'android') {
+              setState({ mode: 'page' })
+            }
 
-        } else {  // back to the same page
+            // The indicateLoaded function is called by a pageChanged postMessage.
+            // In the event that this never happens, we don't want to leave things stuck.
+            // Therefore, use a timeout to ensure this happens, and otherwise display an
+            // error message.
+            setAwaitLoadTimeout(() => {
+              historyPush("/error", {
+                message: i18n("Sorry! There was an error flipping to that page."),
+              })
+              indicateLoaded(true)
+            }, 5000)
 
-          setZoomToInfo(null)
-          setOnZoomCompletion(null)
-          setMode('page')
+            setLatestLocation({
+              bookId,
+              latestLocation: zoomToInfo,
+              patchInfo: {
+                idps,
+                accounts,
+                books,
+                userDataByBookId,
+                updateAccount,
+                updateBookAccount,
+              },
+            })
 
-          temporarilyPauseProcessing()
-        }
+          } else {  // back to the same page
+
+            setState({
+              mode: 'page',
+              zoomToInfo: null,
+              onZoomCompletion: null,
+            })
+
+            temporarilyPauseProcessing()
+          }
+        },
       })
 
       startRecordReading({
@@ -363,9 +380,11 @@ const Book = React.memo(({
     ({ href }) => {
       pauseProcessing()
 
-      setMode('page')
-      setSnapshotZoomed(true)
-      setHrefToGoTo(href)
+      setState({
+        mode: 'page',
+        snapshotZoomed: true,
+        hrefToGoTo: href,
+      })
       
       setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
@@ -384,8 +403,10 @@ const Book = React.memo(({
 
   const toggleBookView = useCallback(
     () => {
-      setMode(mode === 'pages' ? 'contents' : 'pages')
-      setShowOptions(false)
+      setState({
+        mode: mode === 'pages' ? 'contents' : 'pages',
+        showOptions: false,
+      })
     },
     [ mode ],
   )
@@ -402,13 +423,17 @@ const Book = React.memo(({
       
       setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
-      setMode('zooming')
-      setSnapshotCoords(snapshotCoords)
-      setSnapshotZoomed(true)
-      setOnZoomCompletion(() => () => {
-        setOnZoomCompletion(null)
-        setMode('page')
-        temporarilyPauseProcessing()
+      setState({
+        mode: 'zooming',
+        snapshotCoords,
+        snapshotZoomed: true,
+        onZoomCompletion: () => {
+          setState({
+            mode: 'page',
+            onZoomCompletion: null,
+          })
+          temporarilyPauseProcessing()
+        },
       })
 
       startRecordReading({
@@ -421,11 +446,11 @@ const Book = React.memo(({
   )
 
   const toggleShowOptions = useCallback(
-    () => setShowOptions(!showOptions),
+    () => setState({ showOptions: !showOptions }),
     [ showOptions ],
   )
   
-  const hideOptions = useCallback(() => setShowOptions(false), [])
+  const hideOptions = useCallback(() => setState({ showOptions: false }), [])
 
   const requestShowPages = useCallback(
     () => {
@@ -435,11 +460,15 @@ const Book = React.memo(({
 
       setStatusBarHidden(false)
 
-      setMode('zooming')
-      setSnapshotZoomed(false)
-      setOnZoomCompletion(() => () => {
-        setMode(Platform.OS === 'web' ? 'contents' : 'pages')
-        setOnZoomCompletion(null)
+      setState({
+        mode: 'zooming',
+        snapshotZoomed: false,
+        onZoomCompletion: () => {
+          setState({
+            mode: Platform.OS === 'web' ? 'contents' : 'pages',
+            onZoomCompletion: null,
+          })
+        },
       })
     },
     [ JSON.stringify(reportReadingsInfo) ],
@@ -447,7 +476,7 @@ const Book = React.memo(({
 
   const requestHideSettings = useCallback(
     () => {
-      setShowSettings(false)
+      setState({ showSettings: false })
       temporarilyPauseProcessing()
     },
     [],
@@ -462,9 +491,11 @@ const Book = React.memo(({
 
       clearAwaitLoadTimeout()
 
-      setBookLoaded(true)
-      setMode(zooming ? 'page' : mode)
-      setZoomToInfo(zooming ? null : zoomToInfo)
+      setState({
+        bookLoaded: true,
+        mode: zooming ? 'page' : mode,
+        zoomToInfo: zooming ? null : zoomToInfo,
+      })
       
       temporarilyPauseProcessing()
     },
@@ -475,9 +506,11 @@ const Book = React.memo(({
     () => {
       pauseProcessing()
 
-      setShowSettings(true)
-      setMode('page')
-      setSnapshotZoomed(true)
+      setState({
+        showSettings: true,
+        mode: 'page',
+        snapshotZoomed: true,
+      })
 
       setStatusBarHidden(true)
 
@@ -550,6 +583,8 @@ const Book = React.memo(({
     },
     [],
   )
+
+  const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
   const { title } = (books && books[bookId]) || {}
