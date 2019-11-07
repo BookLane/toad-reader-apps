@@ -20,7 +20,6 @@ import AppMenu from "../major/AppMenu"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
-import Options from "../major/Options"
 import Spin from "../basic/Spin"
 import CoverAndSpin from "../basic/CoverAndSpin"
 import AppHeader from "../basic/AppHeader"
@@ -82,7 +81,6 @@ const Library = ({
 
 }) => {
 
-  const [ showOptions, setShowOptions ] = useState(false)
   const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
@@ -265,9 +263,6 @@ const Library = ({
     [],
   )
 
-  const toggleShowOptions = useCallback(() => setShowOptions(!showOptions), [])
-  const hideOptions = useCallback(() => setShowOptions(false), [])
-
   const logOutUrlOnLoad = useCallback(
     () => {
       if(refreshLibraryAccountId) {
@@ -384,8 +379,6 @@ const Library = ({
           <SafeLayout>
             <LibraryHeader
               scope={scope}
-              toggleShowOptions={toggleShowOptions}
-              hideOptions={hideOptions}
             />
             {fetchingBooks && bookList.length == 0
               ? (
@@ -406,29 +399,6 @@ const Library = ({
                     </View>
                   )
               )
-            }
-            {!!showOptions && 
-              <Options
-                requestHide={hideOptions}
-                headerText={i18n("Sort by...")}
-                options={[
-                  {
-                    text: i18n("Recent"),
-                    selected: library.sort == 'recent',
-                    onPress: () => setSort({ sort: 'recent' }),
-                  },
-                  {
-                    text: i18n("Title"),
-                    selected: library.sort == 'title',
-                    onPress: () => setSort({ sort: 'title' }),
-                  },
-                  {
-                    text: i18n("Author"),
-                    selected: library.sort == 'author',
-                    onPress: () => setSort({ sort: 'author' }),
-                  },
-                ]}
-              />
             }
 
             <BookDownloader

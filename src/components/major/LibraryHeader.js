@@ -1,30 +1,26 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import i18n from "../../utils/i18n"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
+import { OverflowMenu } from "react-native-ui-kitten"
 
 // import { debounce } from "../../utils/toolbox"
 
 import { setSort, toggleView } from "../../redux/actions"
 
 const LibraryHeader = ({
-  toggleView,
-  hideOptions,
   idps,
   accounts,
   library,
-  toggleShowOptions,
+  setSort,
+  toggleView,
 }) => {
 
-  const onPressToggleView = useCallback(
-    () => {
-      hideOptions()
-      toggleView()
-    },
-    [ hideOptions, toggleView ],
-  )
+  const [ showOptions, setShowOptions ] = useState(false)
+
+  const onPressToggleView = useCallback(toggleView, [])
 
   const scope = library.scope || "all"
 
@@ -39,7 +35,37 @@ const LibraryHeader = ({
     title = idps[scope.split(':')[0]].idpName
     subtitle = accounts[scope].email
   }
-  
+
+  const moreOptions = [
+    {
+      key: 'recent',
+      title: i18n("Recent"),
+    },
+    {
+      key: 'title',
+      title: i18n("Title"),
+    },
+    {
+      key: 'author',
+      title: i18n("Author"),
+    },
+  ]
+
+  const moreKeys = moreOptions.map(({ key }) => key)
+
+  const toggleShowOptions = useCallback(
+    () => setShowOptions(!showOptions),
+    [ showOptions ],
+  )
+
+  const selectSort = useCallback(
+    selectedIndex => {
+      setSort({ sort: moreKeys[selectedIndex] })
+      // setShowOptions(false)
+    },
+    [],
+  )
+
   return (
     <AppHeader
       title={title}
@@ -55,10 +81,18 @@ const LibraryHeader = ({
           name={library.view == "covers" ? "ios-list" : "md-apps"}
           onPress={onPressToggleView}
         />,
-        <HeaderIcon
-          name="md-more"
-          onPress={toggleShowOptions}
-        />,
+        <OverflowMenu
+          data={moreOptions}
+          visible={showOptions}
+          selectedIndex={moreKeys.indexOf(library.sort)}
+          onSelect={selectSort}
+          onBackdropPress={toggleShowOptions}
+        >
+          <HeaderIcon
+            name="md-more"
+            onPress={toggleShowOptions}
+          />
+        </OverflowMenu>,
       ]}
     />
   )

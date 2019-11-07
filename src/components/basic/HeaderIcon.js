@@ -7,6 +7,7 @@ import { styled } from 'react-native-ui-kitten'
 const styles = StyleSheet.create({
   container: {
     height: '100%',
+    padding: 8,
     paddingLeft: 12,
     paddingRight: 12,
     justifyContent: 'center',
@@ -35,7 +36,7 @@ const HeaderIcon = ({
   return (
     <TouchableOpacity
       onPress={path ? goPath : onPress}
-      style={styles.container}        
+      style={styles.container}
       {...otherProps}
     >
       <IconPack
