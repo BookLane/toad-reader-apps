@@ -31,6 +31,7 @@ import WebView from "../major/WebView"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
@@ -93,6 +94,8 @@ const Library = ({
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
+
+  const getLocationPathname = useInstanceValue(location.pathname)
 
   useEffect(
     () => {
@@ -284,14 +287,14 @@ const Library = ({
     [ logOutAccountId, refreshLibraryAccountId ],
   )
 
-  // const sideMenuOnChange = useCallback(
-  //   isOpen => {
-  //     if(!isOpen && location.pathname === '/drawer') {
-  //       history.goBack()
-  //     }
-  //   },
-  //   [ location ],
-  // )
+  const sideMenuOnChange = useCallback(
+    isOpen => {
+      if(!isOpen && getLocationPathname() === '/drawer') {
+        history.goBack()
+      }
+    },
+    [],
+  )
 
   const openImportBooks = useCallback(
     () => {
@@ -369,7 +372,7 @@ const Library = ({
       menu={<AppMenu onImportBooks={openImportBooks} />}
       openMenuOffset={280}
       isOpen={location.pathname === '/drawer'}
-      // onChange={sideMenuOnChange}
+      onChange={sideMenuOnChange}
       disableGestures={true}
     >
 
