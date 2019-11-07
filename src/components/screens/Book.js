@@ -540,10 +540,13 @@ const Book = React.memo(({
 
   const temporarilyPauseProcessing = useCallback(
     () => {
-      requestAnimationFrame(() => {
+      // If I find I need to bring this requestAnimationFrame back, then I'll need to check
+      // the current value of processingPaused before setting this timeout, and not set
+      // the timeout if it is already paused.
+      // requestAnimationFrame(() => {
         setPauseProcessing(true)
         setTemporarilyPauseProcessingTimeout(unpauseProcessing, 4000)
-      })
+      // })
     },
     [],
   )

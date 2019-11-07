@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     height: getToolbarHeight(),
     flexDirection: 'row',
     alignItems: 'stretch',
+    backgroundColor: 'white',
   },
   titleView: {
     flex: 1,
