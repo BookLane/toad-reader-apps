@@ -89,7 +89,7 @@ const Library = ({
   const JSUpdateReady = useRef(false)
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
-  const { logOutAccountId, refreshLibraryAccountId } = routerState
+  const { logOutAccountId, refreshLibraryAccountId, softRefreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
@@ -183,7 +183,7 @@ const Library = ({
             const [ idpId ] = accountId.split(':')
 
             // no need to get the library listing if we already have it
-            if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
+            if(!refreshLibraryAccountId && !softRefreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
               requestAnimationFrame(() => getCovers({ idpId }))
               continue
             }
@@ -221,7 +221,7 @@ const Library = ({
 
             requestAnimationFrame(() => getCovers({ idpId }))
 
-            if(refreshLibraryAccountId) {
+            if(refreshLibraryAccountId || softRefreshLibraryAccountId) {
               historyReplace()
             }
             
@@ -235,7 +235,7 @@ const Library = ({
         setFetchingBooks({ value: false })
       })()
     },
-    [ idps, accounts, books ],
+    [ idps, accounts, books, softRefreshLibraryAccountId ],
   )
 
   const onLoginSuccess = useCallback(
@@ -271,33 +271,41 @@ const Library = ({
     [ logOutAccountId, refreshLibraryAccountId ],
   )
 
-  const sideMenuOnChange = useCallback(
-    isOpen => {
-      if(!isOpen && location.pathname === '/drawer') {
-        history.goBack()
-      }
-    },
-    [ location ],
-  )
+  // const sideMenuOnChange = useCallback(
+  //   isOpen => {
+  //     if(!isOpen && location.pathname === '/drawer') {
+  //       history.goBack()
+  //     }
+  //   },
+  //   [ location ],
+  // )
 
-  const doneImportingBooks = useCallback(
-    () => {
-      setImportingBooks(false)
-      requestAnimationFrame(() => {
-        historyReplace("/", {
-          refreshLibraryAccountId: bookImporterAccountId,
-        })
-      })
-    },
-    [],
-  )
-
-  const onImportBooks = useCallback(
+  const openImportBooks = useCallback(
     () => {
       setImportingBooks(true)
       history.goBack()
     },
     [],
+  )
+
+  const doneImportingBooks = useCallback(
+    () => {
+      historyReplace(null, {
+        softRefreshLibraryAccountId: bookImporterAccountId,
+      })
+    },
+    [ bookImporterAccountId ],
+  )
+
+  const closeImportingBooks = useCallback(() => setImportingBooks(false), [])
+
+  useEffect(
+    () => {
+      if(location.pathname !== '/') {
+        setImportingBooks(false)
+      }
+    },
+    [ location ],
   )
 
   const scope = library.scope || "all"
@@ -352,10 +360,10 @@ const Library = ({
 
   return (
     <SideMenu
-      menu={<AppMenu onImportBooks={onImportBooks} />}
+      menu={<AppMenu onImportBooks={openImportBooks} />}
       openMenuOffset={280}
       isOpen={location.pathname === '/drawer'}
-      onChange={sideMenuOnChange}
+      // onChange={sideMenuOnChange}
       disableGestures={true}
     >
 
@@ -418,16 +426,17 @@ const Library = ({
               downloadPaused={downloadPaused}
             />
 
-            <BookImporter
-              open={!!importingBooks}
-              accountId={bookImporterAccountId}
-              onDone={doneImportingBooks}
-            />
-
           </SafeLayout>
           
         </Route>
       </Switch>
+
+      <BookImporter
+        open={!!importingBooks}
+        accountId={bookImporterAccountId}
+        onDone={doneImportingBooks}
+        onClose={closeImportingBooks}
+      />
 
     </SideMenu>
   )

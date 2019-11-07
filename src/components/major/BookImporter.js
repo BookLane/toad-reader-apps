@@ -46,6 +46,7 @@ const BookImporter = ({
   open,
   accountId,
   onDone,
+  onClose,
   accounts,
   idps,
 }) => {
@@ -74,7 +75,7 @@ const BookImporter = ({
         // cancelled. So I do it this way, with a 300 ms delay to allow 
         // fileInput.onchange to first fire.
         setTimeout(() => {
-          if(!filesSelected.current) onDone()
+          if(!filesSelected.current) onClose()
         }, 300)
       }
 
@@ -121,6 +122,7 @@ const BookImporter = ({
         }
 
         setMode('complete')
+        onDone()
 
       }
 
@@ -155,7 +157,7 @@ const BookImporter = ({
               ]}
             >
               <Text style={styles.name}>
-                {!!(result || {}).bookId
+                {!!(mode === 'complete' && (result || {}).bookId)
                   ? (
                     <Link
                       to={`/book/${(result || {}).bookId}`}
@@ -189,7 +191,7 @@ const BookImporter = ({
         </View>
       }
       buttons={mode === 'complete' ? null : []}
-      onClose={onDone}
+      onClose={onClose}
     />
   )
 }
