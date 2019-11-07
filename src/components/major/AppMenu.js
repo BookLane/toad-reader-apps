@@ -89,6 +89,18 @@ const AppMenu = ({
 
       if(!idpId || !idps[idpId]) return
 
+      const doLogOut = () => {
+        history.goBack()
+        historyPush("/", {
+          logOutAccountId: accountId,
+        })
+      }
+
+      if(Platform.OS === 'web') {
+        doLogOut()
+        return
+      }
+
       confirmRemoveAccountEPubs(
         {
           books,
@@ -97,12 +109,7 @@ const AppMenu = ({
           clearTocAndSpines,
           clearUserDataExceptProgress,
         },
-        () => {
-          history.goBack()
-          historyPush("/", {
-            logOutAccountId: accountId,
-          })
-        },
+        doLogOut,
       )
     },
     [ accounts, idps, history, books ],
