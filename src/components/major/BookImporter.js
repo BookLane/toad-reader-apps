@@ -141,6 +141,11 @@ const BookImporter = ({
       title={i18n("Importing books")}
       content={
         <View>
+          {files.length === 0 &&
+            <View style={styles.line}>
+              <Text>{i18n("Select files to import.")}</Text>
+            </View>
+          }
           {files.map(({ name, size, status, result }, idx) => (
             <View
               key={idx}
