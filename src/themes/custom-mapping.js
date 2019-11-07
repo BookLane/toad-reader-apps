@@ -55,6 +55,27 @@ const mapping = {
         },
       },
     },
+    OverflowMenu: {
+      meta: {
+        parameters: {
+          borderWidth: {
+            type: "number",
+          },
+          borderColor: {
+            type: "string",
+          },
+        },
+      },
+      appearances: {
+        default: {
+          mapping: {
+            borderWidth: 1,
+            borderColor: "rgb(237, 241, 247)",
+            borderRadius: 8,
+          },
+        },
+      },
+    },
     HeaderIcon: getCustomComponentSetup(),
   },
   
