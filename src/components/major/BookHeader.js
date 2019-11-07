@@ -1,45 +1,104 @@
-import React, { useCallback } from "react"
-import { StyleSheet, Platform } from "react-native"
+import React, { useState, useCallback } from "react"
+import { Platform, Linking } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import { withRouter } from "react-router"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { OverflowMenu } from "react-native-ui-kitten"
+import i18n from "../../utils/i18n"
+
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
 
-import { isPhoneSize } from '../../utils/toolbox'
+import { confirmRemoveEPub } from "../../utils/removeEpub"
+import { getFirstBookLinkInfo } from "../../utils/toolbox"
 
-const leftIconsWidth = 50
-const rightIconsWidth = 135
-
-const styles = StyleSheet.create({
-  body: {
-    ...(
-      Platform.OS === 'ios' && isPhoneSize() ?
-        {
-          alignItems: 'flex-start',
-          left: (leftIconsWidth - rightIconsWidth) / 2,
-        }
-        : {}
-    ),
-    ...(
-      Platform.OS === 'android' && isPhoneSize() ?
-        {
-          marginLeft: -5,
-          marginRight: -20,
-        }
-        : {}
-    ),
-  },
-})
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
 
 const BookHeader = React.memo(({
+  bookId,
   title,
   subtitle,
   mode,
   showDisplaySettings,
   toggleBookView,
-  toggleShowOptions,
+
+  books,
+
+  removeFromBookDownloadQueue,
+  setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
+
   history,
 }) => {
+
+  const [ showOptions, setShowOptions ] = useState(false)
+
+  const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+
+  const goToBookLink = useCallback(
+    () => {
+      const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+
+      Linking.openURL(bookLinkInfo.href).catch(err => {
+        console.log('ERROR: Request to open URL failed.', err)
+        historyPush("/error", {
+          message: i18n("Your device is not allowing us to open this link."),
+        })
+      })
+    },
+    [ books, bookId ],
+  )
+
+  const removeFromDevice = useCallback(
+    () => {
+      confirmRemoveEPub({
+        books,
+        removeFromBookDownloadQueue,
+        setDownloadStatus,
+        clearTocAndSpines,
+        clearUserDataExceptProgress,
+        bookId,
+        done: () => {
+          history.go(-2)
+        }
+      })
+    },
+    [ books, bookId ],
+  )
+
+  const moreOptions = [
+    // {
+    //   title: i18n("Recommend this book"),
+    //   onPress: recommendBook,
+    // },
+    // {
+    //   title: i18n("My highlights and notes"),
+    //   onPress: goToHighlights,
+    // },
+    ...(!bookLinkInfo ? [] : [{
+      title: bookLinkInfo.label,
+      onPress: goToBookLink,
+    }]),
+    ...(Platform.OS === 'web' ? [] : [{
+      title: i18n("Remove from device"),
+      onPress: removeFromDevice,
+    }]),
+  ]
+
+  const toggleShowOptions = useCallback(
+    () => setShowOptions(!showOptions),
+    [ showOptions ],
+  )
+
+  const selectOption = useCallback(
+    selectedIndex => {
+      moreOptions[selectedIndex].onPress()
+      setShowOptions(false)
+    },
+    [],
+  )
 
   const onBackPress = useCallback(
     () => history.goBack(),
@@ -52,10 +111,19 @@ const BookHeader = React.memo(({
       IconPack={MaterialCommunityIcons}
       onPress={showDisplaySettings}
     />,
-    <HeaderIcon
-      name="md-more"
-      onPress={toggleShowOptions}
-    />,
+    ...(moreOptions.length === 0 ? [] : [
+      <OverflowMenu
+        data={moreOptions}
+        visible={showOptions}
+        onSelect={selectOption}
+        onBackdropPress={toggleShowOptions}
+      >
+        <HeaderIcon
+          name="md-more"
+          onPress={toggleShowOptions}
+        />
+      </OverflowMenu>,
+    ]),
   ]
 
   if(Platform.OS !== 'web') {
@@ -83,4 +151,15 @@ const BookHeader = React.memo(({
   )
 })
 
-export default withRouter(BookHeader)
+const mapStateToProps = ({ books }) => ({
+  books,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  removeFromBookDownloadQueue,
+  setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
+}, dispatch)
+
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookHeader))

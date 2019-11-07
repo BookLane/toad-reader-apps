@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } from "react-native"
+import { StyleSheet, StatusBar, View, Platform, Dimensions, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -11,24 +11,20 @@ import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
-import Options from "../major/Options"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
 
-import { confirmRemoveEPub } from "../../utils/removeEpub"
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getSpineAndPage,
-         getToolbarHeight, getFirstBookLinkInfo, getPageSize,
+import { getPageCfisKey, getSpineAndPage, getToolbarHeight, getPageSize,
          isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useSetState from "react-use/lib/useSetState"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
-         setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
+import { setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
          endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines } from "../../redux/actions"
 
 const {
@@ -128,10 +124,6 @@ const Book = React.memo(({
   displaySettings,
   readerStatus,
 
-  removeFromBookDownloadQueue,
-  setDownloadStatus,
-  clearTocAndSpines,
-  clearUserDataExceptProgress,
   setLatestLocation,
   updateAccount,
   updateBookAccount,
@@ -151,7 +143,6 @@ const Book = React.memo(({
   const [{
     bookLoaded,
     mode,
-    showOptions,
     showSettings,
     hrefToGoTo,
     zoomToInfo,
@@ -161,7 +152,6 @@ const Book = React.memo(({
   }, setState ] = useSetState({
     bookLoaded: false,
     mode: 'page',
-    showOptions: false,
     showSettings: false,
     snapshotZoomed: true,
   })
@@ -175,34 +165,10 @@ const Book = React.memo(({
   const [ setTemporarilyPauseProcessingTimeout, clearTemporarilyPauseProcessingTimeout ] = useSetTimeout()
 
   const bookId = getBookId(location)
-  const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
   const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -10)
-
-  const options = [
-    // {
-    //   text: i18n("Recommend this book"),
-    //   onPress: recommendBook,
-    // },
-    // {
-    //   text: i18n("My highlights and notes"),
-    //   onPress: goToHighlights,
-    // },
-    ...(
-      bookLinkInfo
-        ? [{
-          text: bookLinkInfo.label,
-          onPress: goToBookLink,
-        }]
-        : []
-    ),
-    {
-      text: i18n("Remove from device"),
-      onPress: removeFromDevice,
-    },
-  ]
 
   const reportReadingsInfo = {
     idps,
@@ -405,7 +371,6 @@ const Book = React.memo(({
     () => {
       setState({
         mode: mode === 'pages' ? 'contents' : 'pages',
-        showOptions: false,
       })
     },
     [ mode ],
@@ -444,13 +409,6 @@ const Book = React.memo(({
     },
     [ bookId, spineIdRef ],
   )
-
-  const toggleShowOptions = useCallback(
-    () => setState({ showOptions: !showOptions }),
-    [ showOptions ],
-  )
-  
-  const hideOptions = useCallback(() => setState({ showOptions: false }), [])
 
   const requestShowPages = useCallback(
     () => {
@@ -529,37 +487,6 @@ const Book = React.memo(({
   //   [ match ],
   // )
 
-  const removeFromDevice = useCallback(
-    () => {
-      confirmRemoveEPub({
-        books,
-        removeFromBookDownloadQueue,
-        setDownloadStatus,
-        clearTocAndSpines,
-        clearUserDataExceptProgress,
-        bookId,
-        done: () => {
-          history.go(-2)
-        }
-      })
-    },
-    [ books, bookId ],
-  )
-
-  const goToBookLink = useCallback(
-    () => {
-      const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
-
-      Linking.openURL(bookLinkInfo.href).catch(err => {
-        console.log('ERROR: Request to open URL failed.', err)
-        historyPush("/error", {
-          message: i18n("Your device is not allowing us to open this link."),
-        })
-      })
-    },
-    [ books, bookId ],
-  )
-
   const setPauseProcessing = useCallback(
     processingPaused => {
       clearTemporarilyPauseProcessingTimeout()
@@ -604,10 +531,10 @@ const Book = React.memo(({
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
       <BookHeader
+        bookId={bookId}
         title={title}
         mode={mode}
         toggleBookView={toggleBookView}
-        toggleShowOptions={toggleShowOptions}
         showDisplaySettings={showDisplaySettings}
         width={width}  // By sending this as a prop, I force a rerender
       />
@@ -661,12 +588,6 @@ const Book = React.memo(({
           toc={bookLoaded && books[bookId].toc}
         />
       </View>
-      {showOptions && mode !== 'page' &&
-        <Options
-          requestHide={hideOptions}
-          options={options}
-        />
-      }
       <View />
 
       {Platform.OS !== 'web' &&
@@ -691,10 +612,6 @@ const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySetti
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  removeFromBookDownloadQueue,
-  setDownloadStatus,
-  clearTocAndSpines,
-  clearUserDataExceptProgress,
   setLatestLocation,
   updateAccount,
   updateBookAccount,
