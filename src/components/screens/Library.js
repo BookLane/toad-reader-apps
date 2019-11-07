@@ -91,7 +91,7 @@ const Library = ({
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
-    ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout`
+    ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
 
   useEffect(

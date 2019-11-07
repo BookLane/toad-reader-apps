@@ -98,7 +98,7 @@ const AppMenu = ({
           clearUserDataExceptProgress,
         },
         () => {
-          history.back()
+          history.goBack()
           historyPush("/", {
             logOutAccountId: accountId,
           })
@@ -122,7 +122,7 @@ const AppMenu = ({
       // listing. In other words, I basically need to call the next line and run the whole
       // login process again, but hidden.
 
-      history.back()
+      history.goBack()
       historyReplace("/", {
         refreshLibraryAccountId: accountId,
       })
