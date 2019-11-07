@@ -6,9 +6,9 @@ import { connect } from "react-redux"
 
 import ProgressDot from "../basic/ProgressDot"
 
-import { getFooterHeight } from '../../utils/toolbox.js'
+import { getFooterHeight } from '../../utils/toolbox'
 
-// import {  } from "../../redux/actions.js"
+// import {  } from "../../redux/actions"
 
 const {
   ANDROID_TOOLBAR_COLOR,

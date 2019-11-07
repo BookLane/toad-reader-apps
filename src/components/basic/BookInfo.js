@@ -14,7 +14,7 @@ import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
 import Dialog from "../major/Dialog"
 
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox.js'
+import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
 
 import { deleteBook } from "../../redux/actions"
 

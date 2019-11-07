@@ -1,14 +1,14 @@
 import React, { useEffect, useCallback, useRef } from "react"
 // import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 
-import { isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox.js'
-import useSetTimeout from "../../hooks/useSetTimeout.js"
-import useRouterState from "../../hooks/useRouterState.js"
+import { isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox'
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 
 // const styles = StyleSheet.create({
 //   title: {

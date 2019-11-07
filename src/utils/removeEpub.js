@@ -1,10 +1,10 @@
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import i18n from "./i18n.js"
+import i18n from "./i18n"
 import { AsyncStorage, Platform } from "react-native"
 
-import { getBooksDir, getSnapshotsDir } from "./toolbox.js"
-import { cancelFetch } from "./zipDownloader.js"
+import { getBooksDir, getSnapshotsDir } from "./toolbox"
+import { cancelFetch } from "./zipDownloader"
 
 const {
   REMOVE_ICON_COLOR,

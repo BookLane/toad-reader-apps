@@ -1,6 +1,6 @@
 import { Platform, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin } from "./toolbox.js"
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account

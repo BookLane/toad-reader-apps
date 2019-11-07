@@ -2,16 +2,16 @@ import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from '../../hooks/useRouterState'
 
-import { getBooksDir, getDataOrigin } from "../../utils/toolbox.js"
-import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
-import parseEpub from "../../utils/parseEpub.js"
+import { getBooksDir, getDataOrigin } from "../../utils/toolbox"
+import { fetchZipAndAssets } from "../../utils/zipDownloader"
+import parseEpub from "../../utils/parseEpub"
 
-import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions.js"
+import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions"
 
 const BookDownloader = ({
   downloadPaused,

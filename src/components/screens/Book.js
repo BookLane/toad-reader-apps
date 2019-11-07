@@ -4,7 +4,7 @@ import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SafeLayout from "../basic/SafeLayout"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import BookPage from "../major/BookPage"
 import BookHeader from "../major/BookHeader"
@@ -17,18 +17,18 @@ import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
 
-import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-import { refreshUserData } from "../../utils/syncUserData.js"
-import parseEpub from "../../utils/parseEpub.js"
+import { confirmRemoveEPub } from "../../utils/removeEpub"
+import { refreshUserData } from "../../utils/syncUserData"
+import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getSpineAndPage,
          getToolbarHeight, getFirstBookLinkInfo, getPageSize,
-         isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox.js"
+         isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines } from "../../redux/actions.js"
+         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,

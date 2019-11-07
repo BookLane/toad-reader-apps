@@ -4,7 +4,7 @@ import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import { parseString } from "xml2js"
 
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions } from "./toolbox.js"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions } from "./toolbox"
 
 const getXmlAsObj = async ({ url, account }) => {
   const urlWithoutHash = url.replace(/#.*$/, '')

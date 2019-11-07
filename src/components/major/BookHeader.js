@@ -5,7 +5,7 @@ import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 
-import { isPhoneSize } from '../../utils/toolbox.js'
+import { isPhoneSize } from '../../utils/toolbox'
 
 const leftIconsWidth = 50
 const rightIconsWidth = 135

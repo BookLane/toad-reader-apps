@@ -3,16 +3,16 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Linking, Platform, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
 import Highlighter from "./Highlighter"
 import BookPageMessage from "../basic/BookPageMessage"
 
-import { postMessage } from "../../utils/postMessage.js"
-// import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox.js"
+import { postMessage } from "../../utils/postMessage"
+// import takeSnapshot from "../../utils/takeSnapshot"
+import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
@@ -20,7 +20,7 @@ import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
-         startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions.js"
+         startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {

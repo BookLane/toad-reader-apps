@@ -5,10 +5,10 @@ import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
-import { postMessage } from "../../utils/postMessage.js"
-import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox.js"
+import { postMessage } from "../../utils/postMessage"
+import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
-import getReaderCode from '../../../getReaderCode.js'
+import getReaderCode from '../../../getReaderCode'
 
 const styles = StyleSheet.create({
   containerNormal: {

@@ -2,11 +2,11 @@ import React, { useEffect } from "react"
 import { Updates } from "expo"
 import { StyleSheet, View, Text } from "react-native"
 import SafeLayout from "../basic/SafeLayout"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import ErrorMessageHeader from "../major/ErrorMessageHeader"
-import useSetTimeout from "../../hooks/useSetTimeout.js"
-import useRouterState from "../../hooks/useRouterState.js"
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 
 const styles = StyleSheet.create({
   body: {

@@ -7,7 +7,7 @@ import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
 import BookProgress from "./BookProgress"
 
-import { getFooterHeight, getToolbarHeight } from '../../utils/toolbox.js'
+import { getFooterHeight, getToolbarHeight } from '../../utils/toolbox'
 import useDimensions from "../../hooks/useDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"

@@ -4,7 +4,7 @@ import { StyleSheet, TouchableWithoutFeedback, Platform, Text, View } from "reac
 
 import BackFunction from '../basic/BackFunction'
 
-import { getToolbarHeight } from '../../utils/toolbox.js'
+import { getToolbarHeight } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {

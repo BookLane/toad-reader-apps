@@ -1,7 +1,7 @@
 import { Platform, Dimensions, StatusBar } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import i18n from "./i18n.js"
+import i18n from "./i18n"
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,

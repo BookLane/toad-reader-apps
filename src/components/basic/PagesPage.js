@@ -5,7 +5,7 @@ import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Imag
 // import PagesBookmark from "./PagesBookmark"
 import CapturingThumbnailsInfoIcon from "./CapturingThumbnailsInfoIcon"
 
-import { getSnapshotURI } from '../../utils/toolbox.js'
+import { getSnapshotURI } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 const {

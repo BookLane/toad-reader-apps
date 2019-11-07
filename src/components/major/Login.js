@@ -5,16 +5,16 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import CoverAndSpin from "../basic/CoverAndSpin"
 
-import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox.js"
+import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 
-import { addAccount } from "../../redux/actions.js"
+import { addAccount } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   fullscreen: {

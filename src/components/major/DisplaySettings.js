@@ -5,11 +5,11 @@ import { Ionicons } from "@expo/vector-icons"
 import { Button } from "react-native-ui-kitten"
 import { StyleSheet, Text, View } from "react-native"
 
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
 import BackFunction from '../basic/BackFunction'
 
-import { setTextSize, setTextSpacing, setTheme } from "../../redux/actions.js"
+import { setTextSize, setTextSpacing, setTheme } from "../../redux/actions"
 
 const themeOptions = [
   {

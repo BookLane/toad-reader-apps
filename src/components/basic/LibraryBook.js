@@ -4,11 +4,11 @@ import { connect } from "react-redux"
 import { TouchableOpacity, Platform } from "react-native"
 import { withRouter } from "react-router"
 
-// import { debounce, getBooksDir } from "../../utils/toolbox.js"
-import { confirmRemoveEPub } from "../../utils/removeEpub.js"
-// import i18n from "../../utils/i18n.js"
+// import { debounce, getBooksDir } from "../../utils/toolbox"
+import { confirmRemoveEPub } from "../../utils/removeEpub"
+// import i18n from "../../utils/i18n"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions.js"
+import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
 
 const LibraryBook = props => {
   const {

@@ -3,7 +3,7 @@ import Constants from 'expo-constants'
 import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
 
 import usePrevious from "react-use/lib/usePrevious"
-import { getPageSize, getSnapshotURI } from '../../utils/toolbox.js'
+import { getPageSize, getSnapshotURI } from '../../utils/toolbox'
 
 const {
   PAGE_ZOOM_MILLISECONDS,

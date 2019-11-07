@@ -10,7 +10,7 @@ import useForceUpdate from "../../hooks/useForceUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useSetTimeouts from "../../hooks/useSetTimeouts"
 import useInstanceValue from "../../hooks/useInstanceValue"
-import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox"
 
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,

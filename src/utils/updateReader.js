@@ -1,6 +1,6 @@
 import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
-import getReaderCode from '../../getReaderCode.js'
+import getReaderCode from '../../getReaderCode'
 
 export const updateReader = async ({ setReaderStatus }) => {
 

@@ -1,13 +1,13 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 
-// import { debounce } from "../../utils/toolbox.js"
+// import { debounce } from "../../utils/toolbox"
 
-import { setSort, toggleView } from "../../redux/actions.js"
+import { setSort, toggleView } from "../../redux/actions"
 
 const LibraryHeader = ({
   toggleView,

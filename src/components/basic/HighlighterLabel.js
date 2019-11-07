@@ -4,11 +4,11 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import { Button } from "react-native-ui-kitten"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
-import HighlighterShareIcon from "./HighlighterShareIcon.js"
+import HighlighterShareIcon from "./HighlighterShareIcon"
 
-import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js"
+import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {

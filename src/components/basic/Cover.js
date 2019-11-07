@@ -10,7 +10,7 @@ import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
 
-import { getDataOrigin } from '../../utils/toolbox.js'
+import { getDataOrigin } from '../../utils/toolbox'
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,

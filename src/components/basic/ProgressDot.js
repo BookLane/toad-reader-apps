@@ -1,11 +1,11 @@
 import React from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
-// import i18n from "../../utils/i18n.js"
+// import i18n from "../../utils/i18n"
 
 import ProgressDotLabel from "./ProgressDotLabel"
 
-import { getFooterHeight } from "../../utils/toolbox.js"
+import { getFooterHeight } from "../../utils/toolbox"
 
 const {
   PROGRESS_BAR_SIDE_SPACING,

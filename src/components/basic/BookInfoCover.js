@@ -6,7 +6,7 @@ import { Image, StyleSheet, View, Platform } from "react-native"
 
 import CoverAndSpin from "./CoverAndSpin"
 
-import { getDataOrigin } from '../../utils/toolbox.js'
+import { getDataOrigin } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {

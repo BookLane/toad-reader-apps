@@ -1,9 +1,9 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, Linking, View, Text } from "react-native"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
-import useRouterState from "../../hooks/useRouterState.js"
+import useRouterState from "../../hooks/useRouterState"
 
 const styles = StyleSheet.create({
   container: {

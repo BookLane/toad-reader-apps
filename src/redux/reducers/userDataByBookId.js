@@ -1,4 +1,4 @@
-import { latestLocationToStr } from '../../utils/toolbox.js'
+import { latestLocationToStr } from '../../utils/toolbox'
 
 const initialState = {}
 

@@ -3,9 +3,9 @@ import { StyleSheet, TouchableOpacity, Platform, Share } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 
-import { getFullName, getDataOrigin } from '../../utils/toolbox.js'
+import { getFullName, getDataOrigin } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   share: {

@@ -8,7 +8,7 @@ import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
 import { PersistGate } from 'redux-persist/integration/react'
-import reducers from "./src/redux/reducers.js"
+import reducers from "./src/redux/reducers"
 import { Provider } from "react-redux"
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -19,8 +19,8 @@ import darkTheme from "./src/themes/dark"
 import contrastTheme from "./src/themes/contrast"
 import customMapping from "./src/themes/custom-mapping"
 
-import updateDataStructure from "./src/utils/updateDataStructure.js"
-import { patch, reportReadings } from "./src/utils/syncUserData.js"
+import updateDataStructure from "./src/utils/updateDataStructure"
+import { patch, reportReadings } from "./src/utils/syncUserData"
 
 import Library from "./src/components/screens/Library"
 

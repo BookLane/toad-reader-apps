@@ -7,11 +7,11 @@ import { withRouter } from "react-router"
 import PageWebView from "./PageWebView"
 
 import useInstanceValue from "../../hooks/useInstanceValue"
-import { postMessage } from "../../utils/postMessage.js"
-import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
+import { postMessage } from "../../utils/postMessage"
+import takeSnapshot from "../../utils/takeSnapshot"
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox'
 
-import { addSpinePageCfis } from "../../redux/actions.js"
+import { addSpinePageCfis } from "../../redux/actions"
 
 const PageCapture = ({
   bookId,

@@ -7,15 +7,15 @@ import { withRouter } from "react-router"
 import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
-import i18n from "../../utils/i18n.js"
+import i18n from "../../utils/i18n"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 
-import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub.js"
+import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
-         clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions.js"
+         clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions"
 
 const {
   LINK_TO_TOAD_READER_MARKETING_SITE,
