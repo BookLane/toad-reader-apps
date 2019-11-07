@@ -127,6 +127,9 @@ const Dialog = ({
     }
   }
 
+  // See my issue here: https://github.com/akveo/react-native-ui-kitten/issues/718
+  // If they do not fix it, use ModalService, based off their Modal code.
+
   return (
     <Modal
       visible={!!open}
