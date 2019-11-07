@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { StyleSheet, StatusBar, View, Platform, Dimensions, Linking, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
@@ -20,8 +20,11 @@ import CustomKeepAwake from "../basic/CustomKeepAwake"
 import { confirmRemoveEPub } from "../../utils/removeEpub.js"
 import { refreshUserData } from "../../utils/syncUserData.js"
 import parseEpub from "../../utils/parseEpub.js"
-import { getPageCfisKey, getSpineAndPage, latestLocationToObj, getToolbarHeight, unmountTimeouts, getFirstBookLinkInfo,
-         getPageSize, isIPhoneX, setStatusBarHidden, setUpTimeout, clearOutTimeout, showXapiConsent } from "../../utils/toolbox.js"
+import { getPageCfisKey, getSpineAndPage,
+         getToolbarHeight, getFirstBookLinkInfo, getPageSize,
+         isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox.js"
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress,
          setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
@@ -111,537 +114,534 @@ const styles = StyleSheet.create({
 
 const getBookId = ({ pathname }) => pathname.split('/').pop()
 
-class Book extends React.Component {
+const Book = React.memo(({
 
-  constructor(props) {
-    super(props)
+  history,
+  location,
+  // match,
 
-    const { location, books } = props
-    const bookId = getBookId(location)
-    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+  idps,
+  accounts,
+  books,
+  userDataByBookId,
+  displaySettings,
+  readerStatus,
 
-    this.state = {
-      bookLoaded: false,
-      mode: 'page',
-      showOptions: false,
-      showSettings: false,
-      hrefToGoTo: null,
-      zoomToInfo: null,
-      snapshotCoords: null,
-      snapshotZoomed: true,
-      onZoomCompletion: null,
-      statusBarHeight: StatusBar.currentHeight || (isIPhoneX ? 24 : -10),
-      capturingSnapshots: false,
-      processingPaused: true,
-      currentAppState: 'active',
-    }
+  removeFromBookDownloadQueue,
+  setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
+  setLatestLocation,
+  updateAccount,
+  updateBookAccount,
+  setUserData,
+  startRecordReading,
+  endRecordReading,
+  flushReadingRecords,
+  setXapiConsentShown,
+  setTocAndSpines,
 
-    this.getFreshUserData()
+}) => {
 
-    this.options = [
-      // {
-      //   text: i18n("Recommend this book"),
-      //   onPress: this.recommendBook,
-      // },
-      // {
-      //   text: i18n("My highlights and notes"),
-      //   onPress: this.goToHighlights,
-      // },
-      ...(
-        bookLinkInfo
-          ? [{
-            text: bookLinkInfo.label,
-            onPress: this.goToBookLink,
-          }]
-          : []
-      ),
-      {
-        text: i18n("Remove from device"),
-        onPress: this.removeFromDevice,
-      },
-    ]
-  
+  const [ bookLoaded, setBookLoaded ] = useState(false)
+  const [ mode, setMode ] = useState('page')
+  const [ showOptions, setShowOptions ] = useState(false)
+  const [ showSettings, setShowSettings ] = useState(false)
+  const [ hrefToGoTo, setHrefToGoTo ] = useState(null)
+  const [ zoomToInfo, setZoomToInfo ] = useState(null)
+  const [ snapshotCoords, setSnapshotCoords ] = useState(null)
+  const [ snapshotZoomed, setSnapshotZoomed ] = useState(true)
+  const [ onZoomCompletion, setOnZoomCompletion ] = useState(null)
+  const [ capturingSnapshots, setCapturingSnapshots ] = useState(false)
+  const [ processingPaused, setProcessingPaused ] = useState(true)
+  const [ currentAppState, setCurrentAppState ] = useState('active')
+
+  const { historyPush } = useRouterState({ history })
+
+  const [ setStatusBarTimeout ] = useSetTimeout()
+  const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
+  const [ setGetTOCTimeout ] = useSetTimeout()
+  const [ setTemporarilyPauseProcessingTimeout, clearTemporarilyPauseProcessingTimeout ] = useSetTimeout()
+
+  const bookId = getBookId(location)
+  const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+  const latest_location = (userDataByBookId[bookId] || {}).latest_location
+  const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
+
+  const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -10)
+
+  const options = [
+    // {
+    //   text: i18n("Recommend this book"),
+    //   onPress: recommendBook,
+    // },
+    // {
+    //   text: i18n("My highlights and notes"),
+    //   onPress: goToHighlights,
+    // },
+    ...(
+      bookLinkInfo
+        ? [{
+          text: bookLinkInfo.label,
+          onPress: goToBookLink,
+        }]
+        : []
+    ),
+    {
+      text: i18n("Remove from device"),
+      onPress: removeFromDevice,
+    },
+  ]
+
+  const reportReadingsInfo = {
+    idps,
+    accounts,
+    books,
+    flushReadingRecords,      
   }
 
-  componentDidMount() {
-    const { location, startRecordReading } = this.props
-    const bookId = getBookId(location)
-    const { spineIdRef } = this.getLatestLocationObj()
-
-    setStatusBarHidden(true)
-    AppState.addEventListener('change', this.handleAppStateChange)
-
-    startRecordReading({
-      bookId,
-      spineIdRef,
-    })
-
-    showXapiConsent(this.props)
-
-    this.getTocForWeb()
-  }
-
-  componentWillUnmount = () => {
-    const { endRecordReading } = this.props
-    const { mode } = this.state
-
-    if(mode === 'page') {
-      endRecordReading({
-        reportReadingsInfo: this.props,
-      })
-    }
-
-    AppState.removeEventListener('change', this.handleAppStateChange)
-    unmountTimeouts.bind(this)()
-    setStatusBarHidden(false)
-  }
-
-  handleAppStateChange = nextAppState => {
-    const { location, startRecordReading, endRecordReading } = this.props
-    const bookId = getBookId(location)
-    const { currentAppState, mode } = this.state
-    const { spineIdRef } = this.getLatestLocationObj()
-
-    if(mode === 'page') {
-      if(currentAppState === 'active' && nextAppState !== 'active') {
-        endRecordReading({
-          reportReadingsInfo: this.props,
-        })
-  
-      } else if(currentAppState !== 'active' && nextAppState === 'active') {
-        startRecordReading({
+  useEffect(
+    () => {
+      // get fresh user data
+      Object.keys(books[bookId].accounts).forEach(accountId => {
+        refreshUserData({
+          accountId,
           bookId,
-          spineIdRef,
+          info: {
+            idps,
+            accounts,
+            books,
+            userDataByBookId,
+            updateAccount,
+            setUserData,
+          },
         })
-      }
-    }
-
-    this.setState({
-      currentAppState: nextAppState,
-    })
-  }
-
-  getTocForWeb = async () => {
-    const { location, books, idps, accounts, setTocAndSpines } = this.props
-    const bookId = getBookId(location)
-
-    if(Platform.OS === 'web' && books[bookId].toc === undefined) {
-
-      const accountId = Object.keys(books[bookId].accounts)[0]
-      const account = accounts[accountId]
-      const idpId = accountId.split(':')[0]
-      const idp = idps[idpId]
-
-      const { toc, spines, success } = await parseEpub({ bookId, idp, account })
-
-      if(success) {
-        setTocAndSpines({ bookId, toc, spines })
-      } else {
-        setUpTimeout(this.getTocForWeb, this)
-      }
-
-    }
-  }
-
-  getFreshUserData = () => {
-    const { location, books } = this.props
-    const bookId = getBookId(location)
-
-    Object.keys(books[bookId].accounts).forEach(accountId => {
-      refreshUserData({
-        accountId,
-        bookId,
-        info: this.props,
       })
-    })
-  }
+    },
+    [],
+  )
 
-  getLatestLocationObj = () => {
-    const { userDataByBookId, location } = this.props
-    const bookId = getBookId(location)
+  useEffect(
+    () => {
+      const handleAppStateChange = nextAppState => {
+        if(mode === 'page') {
+          if(currentAppState === 'active' && nextAppState !== 'active') {
+            endRecordReading({ reportReadingsInfo })
+      
+          } else if(currentAppState !== 'active' && nextAppState === 'active') {
+            startRecordReading({
+              bookId,
+              spineIdRef,
+            })
+          }
+        }
+    
+        setCurrentAppState(nextAppState)
+      }
+    
+      AppState.addEventListener('change', handleAppStateChange)
 
-    const latest_location = (userDataByBookId[bookId] || {}).latest_location
-    return latestLocationToObj(latest_location || "{}")
-  }
+      startRecordReading({
+        bookId,
+        spineIdRef,
+      })
 
-  zoomToPage = ({ zoomToInfo, snapshotCoords }) => {
-    const { setLatestLocation, history, startRecordReading } = this.props
-    const bookId = getBookId(location)
+      return () => {
+        if(mode === 'page') {
+          endRecordReading({ reportReadingsInfo })
+        }
+    
+        AppState.removeEventListener('change', handleAppStateChange)
+      }
+    },
+    [ spineIdRef, currentAppState, mode, JSON.stringify(reportReadingsInfo) ],
+  )
 
-    const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
+  useEffect(
+    () => {
+      setStatusBarHidden(true)
+      return () => setStatusBarHidden(false)
+    },
+    [],
+  )
 
-    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
+  useEffect(
+    () => showXapiConsent({ idps, setXapiConsentShown }),
+    [],
+  )
 
-    this.setState({
-      mode: 'zooming',
-      zoomToInfo,
-      snapshotCoords,
-      snapshotZoomed: true,
-      onZoomCompletion: () => {
+  useEffect(
+    () => {
+      const getTocForWeb = async waitSecsOnFail => {
+        // get toc for web
+        if(Platform.OS === 'web' && books[bookId].toc === undefined) {
+    
+          const accountId = Object.keys(books[bookId].accounts)[0]
+          const account = accounts[accountId]
+          const idpId = accountId.split(':')[0]
+          const idp = idps[idpId]
+    
+          const { toc, spines, success } = await parseEpub({ bookId, idp, account })
+    
+          if(success) {
+            setTocAndSpines({ bookId, toc, spines })
+          } else {
+            setGetTOCTimeout(() => getTocForWeb(Math.min(waitSecsOnFail * 2, 1000 * 60 * 5)), waitSecsOnFail)
+          }
+    
+        }
+      }
+      getTocForWeb(5000)
+    },
+    [ books, bookId, accounts, idps ],
+  )
 
-        const priorLatestLocation = this.getLatestLocationObj()
+  const zoomToPage = useCallback(
+    ({ zoomToInfo, snapshotCoords }) => {
+      const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
-        if(priorLatestLocation.spineIdRef !== spineIdRef || (cfi && priorLatestLocation.cfi != cfi)) {
-          this.setState({
-            onZoomCompletion: null,
-            bookLoaded: false,
-            ...(cfi || Platform.OS === 'android' ? {} : {
-              mode: 'page',
-            }),
-          })
+      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
-          // The indicateLoaded function is called by after a pageChanged postMessage.
+      setMode('zooming')
+      setZoomToInfo(zoomToInfo)
+      setSnapshotCoords(snapshotCoords)
+      setSnapshotZoomed(true)
+      setOnZoomCompletion(() => () => {
+
+        if(zoomToInfo.spineIdRef !== spineIdRef || (zoomToInfo.cfi && zoomToInfo.cfi != cfi)) {
+
+          setOnZoomCompletion(null)
+          setBookLoaded(false)
+
+          if(!zoomToInfo.cfi && Platform.OS !== 'android') {
+            setMode('page')
+          }
+
+          // The indicateLoaded function is called by a pageChanged postMessage.
           // In the event that this never happens, we don't want to leave things stuck.
           // Therefore, use a timeout to ensure this happens, and otherwise display an
           // error message.
-          const currentIndicateLoadedCallCount = this.indicateLoadedCallCount
-          setUpTimeout(() => {
-            if(currentIndicateLoadedCallCount === this.indicateLoadedCallCount) {
-              // TODO: use historyPush from useRouterState
-              history.push("/error", {
-                message: i18n("Sorry! There was an error flipping to that page."),
-              })
-              this.indicateLoaded()
-            }
-          }, 5000, this)
+          setAwaitLoadTimeout(() => {
+            historyPush("/error", {
+              message: i18n("Sorry! There was an error flipping to that page."),
+            })
+            indicateLoaded(true)
+          }, 5000)
 
           setLatestLocation({
             bookId,
-            latestLocation: {
-              spineIdRef,
-              cfi,
+            latestLocation: zoomToInfo,
+            patchInfo: {
+              idps,
+              accounts,
+              books,
+              userDataByBookId,
+              updateAccount,
+              updateBookAccount,
             },
-            patchInfo: this.props,
           })
 
         } else {  // back to the same page
 
-          this.setState({
-            zoomToInfo: null,
-            onZoomCompletion: null,
-            mode: 'page',
-          }, this.temporarilyPauseProcessing)
+          setZoomToInfo(null)
+          setOnZoomCompletion(null)
+          setMode('page')
+
+          temporarilyPauseProcessing()
         }
-
-      },
-    })
-
-    startRecordReading({
-      bookId,
-      spineIdRef,
-    })
-  }
-
-  updateSnapshotCoords = snapshotCoords => this.setState({ snapshotCoords })
-
-  setCapturingSnapshots = capturingSnapshots => {
-    if(this.state.capturingSnapshots !== capturingSnapshots) {
-      requestAnimationFrame(() => this.setState({ capturingSnapshots }))
-    }
-  }
-
-  goToHref = ({ href }) => {
-    const { location, startRecordReading } = this.props
-    const bookId = getBookId(location)
-    const { spineIdRef } = this.getLatestLocationObj()
-
-    this.pauseProcessing()
-
-    this.setState({
-      mode: 'page',
-      snapshotZoomed: true,
-      hrefToGoTo: href,
-    })
-    
-    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
-
-    startRecordReading({
-      bookId,
-      spineIdRef,
-      // Starts a reading record with current spineIdRef, not necessarily that
-      // of the href. If it turns out they are one an the same, this function
-      // call was needed. If the href brings them to a new spine, then this 
-      // reading record will be stopped once that loads and the new one will
-      // be initiated.
-    })
-  }
-
-  toggleBookView = () => {
-    const { mode } = this.state
-
-    this.setState({
-      mode: mode === 'pages' ? 'contents' : 'pages',
-      showOptions: false,
-    })
-  }
-
-  backToReading = () => {
-    const { location, startRecordReading } = this.props
-    const bookId = getBookId(location)
-    const { spineIdRef } = this.getLatestLocationObj()
-
-    const { width, height } = Dimensions.get('window')
-    const { pageWidth } = getPageSize({ width, height })
-
-    const snapshotCoords = {
-      x: width / 2  - pageWidth / 2,
-      y: height,
-    }
-    
-    setUpTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100, this)
-
-    this.setState({
-      mode: 'zooming',
-      snapshotCoords,
-      snapshotZoomed: true,
-      onZoomCompletion: () => {
-
-        this.setState({
-          onZoomCompletion: null,
-          mode: 'page',
-        }, this.temporarilyPauseProcessing)
-
-      },
-    })
-
-    startRecordReading({
-      bookId,
-      spineIdRef,
-    })
-
-  }
-
-  toggleShowOptions = () => {
-    const { showOptions } = this.state
-
-    this.setState({ showOptions: !showOptions })
-  }
-  
-  hideOptions = () => this.setState({ showOptions: false })
-
-  requestShowPages = () => {
-    const { endRecordReading } = this.props
-
-    this.pauseProcessing()
-
-    endRecordReading({
-      reportReadingsInfo: this.props,
-    })
-
-    setStatusBarHidden(false)
-
-    this.setState({
-      mode: 'zooming',
-      snapshotZoomed: false,
-      onZoomCompletion: () => {
-
-        this.setState({
-          mode: Platform.OS === 'web' ? 'contents' : 'pages',
-          onZoomCompletion: null,
-        })
-
-      },
-    })
-  }
-
-  requestHideSettings = () => {
-    this.setState({ showSettings: false }, this.temporarilyPauseProcessing)
-  }
-
-  indicateLoadedCallCount = 0
-
-  indicateLoaded = () => {
-    const { mode, zoomToInfo } = this.state
-
-    this.indicateLoadedCallCount++
-
-    this.setState({
-      bookLoaded: true,
-      mode: mode === 'zooming' ? 'page' : mode,
-      zoomToInfo: mode === 'zooming' ? null : zoomToInfo,
-    }, this.temporarilyPauseProcessing)
-  }
-
-  showDisplaySettings = () => {
-    const { location, startRecordReading } = this.props
-    const bookId = getBookId(location)
-    const { spineIdRef } = this.getLatestLocationObj()
-
-    this.pauseProcessing()
-
-    this.setState({
-      showSettings: true,
-      mode: 'page',
-      snapshotZoomed: true,
-    })
-
-    setStatusBarHidden(true)
-
-    startRecordReading({
-      bookId,
-      spineIdRef,
-    })
-  }
-
-  recommendBook = () => alert('Recommend this book')
-
-  goToHighlights = () => {
-    const { history, match } = this.props
-
-    history.push(`${match.url}/highlights`)
-  }
-
-  removeFromDevice = () => {
-    const { location, books } = this.props
-    const bookId = getBookId(location)
-
-    confirmRemoveEPub({
-      ...this.props,
-      bookId,
-      done: () => {
-        history.go(-2)
-      }
-    })
-  }
-
-  setFlatListEl = ref => this.flatListEl = ref
-
-  goToBookLink = () => {
-    const { location, books } = this.props
-    const bookId = getBookId(location)
-
-    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
-
-    Linking.openURL(bookLinkInfo.href).catch(err => {
-      console.log('ERROR: Request to open URL failed.', err)
-      // TODO: use historyPush from useRouterState
-      history.push("/error", {
-        message: i18n("Your device is not allowing us to open this link."),
       })
-    })
-  }
 
-  setPauseProcessing = processingPaused => {
-    clearOutTimeout(this.unpauseProcessingTimeout, this)
-    this.setState({ processingPaused })
-  }
+      startRecordReading({
+        bookId,
+        spineIdRef,
+      })
+    },
+    [ spineIdRef, cfi, idps, accounts, books, userDataByBookId ],
+  )
 
-  temporarilyPauseProcessing = () => {
-    this.setPauseProcessing(true)
-    this.unpauseProcessingTimeout = setUpTimeout(this.unpauseProcessing, 4000, this)
-  }
+  const goToHref = useCallback(
+    ({ href }) => {
+      pauseProcessing()
 
-  pauseProcessing = () => this.setPauseProcessing(true)
-  unpauseProcessing = () => this.setPauseProcessing(false)
+      setMode('page')
+      setSnapshotZoomed(true)
+      setHrefToGoTo(href)
+      
+      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
-  render() {
+      startRecordReading({
+        bookId,
+        spineIdRef,
+        // Starts a reading record with current spineIdRef, not necessarily that
+        // of the href. If it turns out they are one an the same, this function
+        // call was needed. If the href brings them to a new spine, then this 
+        // reading record will be stopped once that loads and the new one will
+        // be initiated.
+      })
+    },
+    [ bookId, spineIdRef ],
+  )
 
-    const { location, books, userDataByBookId, displaySettings, readerStatus } = this.props
-    const bookId = getBookId(location)
-    const { bookLoaded, mode, showOptions, showSettings, zoomToInfo, capturingSnapshots,
-      snapshotCoords, snapshotZoomed, onZoomCompletion, statusBarHeight, hrefToGoTo, processingPaused } = this.state
+  const toggleBookView = useCallback(
+    () => {
+      setMode(mode === 'pages' ? 'contents' : 'pages')
+      setShowOptions(false)
+    },
+    [ mode ],
+  )
 
-    const pageCfisKey = getPageCfisKey({ displaySettings })
+  const backToReading = useCallback(
+    () => {
+      const { width, height } = Dimensions.get('window')
+      const { pageWidth } = getPageSize({ width, height })
 
-    const latest_location = (userDataByBookId[bookId] || {}).latest_location
-    const { spineIdRef, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
+      const snapshotCoords = {
+        x: width / 2  - pageWidth / 2,
+        y: height,
+      }
+      
+      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
-    const { title } = (books && books[bookId]) || {}
+      setMode('zooming')
+      setSnapshotCoords(snapshotCoords)
+      setSnapshotZoomed(true)
+      setOnZoomCompletion(() => () => {
+        setOnZoomCompletion(null)
+        setMode('page')
+        temporarilyPauseProcessing()
+      })
 
-    const { width } = Dimensions.get('window')
+      startRecordReading({
+        bookId,
+        spineIdRef,
+      })
+
+    },
+    [ bookId, spineIdRef ],
+  )
+
+  const toggleShowOptions = useCallback(
+    () => setShowOptions(!showOptions),
+    [ showOptions ],
+  )
+  
+  const hideOptions = useCallback(() => setShowOptions(false), [])
+
+  const requestShowPages = useCallback(
+    () => {
+      pauseProcessing()
+
+      endRecordReading({ reportReadingsInfo })
+
+      setStatusBarHidden(false)
+
+      setMode('zooming')
+      setSnapshotZoomed(false)
+      setOnZoomCompletion(() => () => {
+        setMode(Platform.OS === 'web' ? 'contents' : 'pages')
+        setOnZoomCompletion(null)
+      })
+    },
+    [ JSON.stringify(reportReadingsInfo) ],
+  )
+
+  const requestHideSettings = useCallback(
+    () => {
+      setShowSettings(false)
+      temporarilyPauseProcessing()
+    },
+    [],
+  )
+
+  const indicateLoaded = useCallback(
+    zooming => {
+
+      if(zooming === undefined) {
+        zooming = mode === 'zooming'
+      }
+
+      clearAwaitLoadTimeout()
+
+      setBookLoaded(true)
+      setMode(zooming ? 'page' : mode)
+      setZoomToInfo(zooming ? null : zoomToInfo)
+      
+      temporarilyPauseProcessing()
+    },
+    [ mode, zoomToInfo ],
+  )
+
+  const showDisplaySettings = useCallback(
+    () => {
+      pauseProcessing()
+
+      setShowSettings(true)
+      setMode('page')
+      setSnapshotZoomed(true)
+
+      setStatusBarHidden(true)
+
+      startRecordReading({
+        bookId,
+        spineIdRef,
+      })
+    },
+    [ bookId, spineIdRef ],
+  )
+
+  // const recommendBook = useCallback(() => alert('Recommend this book'), [])
+
+  // const goToHighlights = useCallback(
+  //   () => history.push(`${match.url}/highlights`),
+  //   [ match ],
+  // )
+
+  const removeFromDevice = useCallback(
+    () => {
+      confirmRemoveEPub({
+        books,
+        removeFromBookDownloadQueue,
+        setDownloadStatus,
+        clearTocAndSpines,
+        clearUserDataExceptProgress,
+        bookId,
+        done: () => {
+          history.go(-2)
+        }
+      })
+    },
+    [ books, bookId ],
+  )
+
+  const goToBookLink = useCallback(
+    () => {
+      const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+
+      Linking.openURL(bookLinkInfo.href).catch(err => {
+        console.log('ERROR: Request to open URL failed.', err)
+        historyPush("/error", {
+          message: i18n("Your device is not allowing us to open this link."),
+        })
+      })
+    },
+    [ books, bookId ],
+  )
+
+  const setPauseProcessing = useCallback(
+    processingPaused => {
+      clearTemporarilyPauseProcessingTimeout()
+      setProcessingPaused(processingPaused)
+    },
+    [],
+  )
+
+  const pauseProcessing = useCallback(() => setPauseProcessing(true), [])
+  const unpauseProcessing = useCallback(() => setPauseProcessing(false), [])
+
+  const temporarilyPauseProcessing = useCallback(
+    () => {
+      requestAnimationFrame(() => {
+        setPauseProcessing(true)
+        setTemporarilyPauseProcessingTimeout(unpauseProcessing, 4000)
+      })
+    },
+    [],
+  )
+
+  const pageCfisKey = getPageCfisKey({ displaySettings })
+  const { title } = (books && books[bookId]) || {}
+  const { width } = Dimensions.get('window')
     
-    if(Platform.OS !== 'web' && readerStatus !== 'ready') {
-      return (
-        <SafeLayout>
-          <CoverAndSpin
-            text={i18n("Updating reader...")}
-          />
-        </SafeLayout>
-      )
-    }
-
+  if(Platform.OS !== 'web' && readerStatus !== 'ready') {
     return (
       <SafeLayout>
-        {mode !== 'page' && <BackFunction func={this.backToReading} />}
-        <BookHeader
-          title={title}
-          mode={mode}
-          toggleBookView={this.toggleBookView}
-          toggleShowOptions={this.toggleShowOptions}
-          showDisplaySettings={this.showDisplaySettings}
-          width={width}  // By sending this as a prop, I force a rerender
+        <CoverAndSpin
+          text={i18n("Updating reader...")}
         />
-        {mode === 'page' && <CustomKeepAwake />}
-        {Platform.OS !== 'web' &&
-          <View style={styles.pages}>
-            <BookPages
-              bookId={bookId}
-              spineIdRef={spineIdRef}
-              pageCfisKey={pageCfisKey}
-              pageIndexInSpine={pageIndexInSpine}
-              spines={bookLoaded && books[bookId].spines}
-              zoomToPage={this.zoomToPage}
-              updateSnapshotCoords={this.updateSnapshotCoords}
-              statusBarHeight={statusBarHeight}
-              setFlatListEl={this.setFlatListEl}
-              capturingSnapshots={capturingSnapshots}
-            />
-          </View>
-        }
-        <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
-          <BookPage
-            bookId={bookId}
-            latest_location={latest_location}
-            spineIdRef={spineIdRef}
-            pageIndexInSpine={pageIndexInSpine}
-            requestShowPages={this.requestShowPages}
-            showSettings={showSettings}
-            requestHideSettings={this.requestHideSettings}
-            indicateLoaded={this.indicateLoaded}
-            hrefToGoTo={hrefToGoTo}
-            capturingSnapshots={capturingSnapshots}
-            temporarilyPauseProcessing={this.temporarilyPauseProcessing}
-          />
-        </View>
-        <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
-          <ZoomPage
-            bookId={bookId}
-            spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
-            pageCfisKey={pageCfisKey}
-            pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
-            onZoomCompletion={onZoomCompletion}
-            snapshotCoords={snapshotCoords}
-            zoomed={snapshotZoomed}
-            zoomingEnabled={mode === 'zooming'}
-            pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
-          />
-        </View>
-        <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
-          <BookContents
-            goToHref={this.goToHref}
-            toc={bookLoaded && books[bookId].toc}
-          />
-        </View>
-        {showOptions && mode !== 'page' &&
-          <Options
-            requestHide={this.hideOptions}
-            options={this.options}
-          />
-        }
-        <View />
-
-        {Platform.OS !== 'web' &&
-          <PageCaptureManager
-            bookId={bookId}
-            setCapturingSnapshots={this.setCapturingSnapshots}
-            processingPaused={processingPaused}
-          />
-        }
-
       </SafeLayout>
     )
   }
-}
+
+  return (
+    <SafeLayout>
+      {mode !== 'page' && <BackFunction func={backToReading} />}
+      <BookHeader
+        title={title}
+        mode={mode}
+        toggleBookView={toggleBookView}
+        toggleShowOptions={toggleShowOptions}
+        showDisplaySettings={showDisplaySettings}
+        width={width}  // By sending this as a prop, I force a rerender
+      />
+      {mode === 'page' && <CustomKeepAwake />}
+      {Platform.OS !== 'web' &&
+        <View style={styles.pages}>
+          <BookPages
+            bookId={bookId}
+            spineIdRef={spineIdRef}
+            pageCfisKey={pageCfisKey}
+            pageIndexInSpine={pageIndexInSpine}
+            spines={bookLoaded && books[bookId].spines}
+            zoomToPage={zoomToPage}
+            updateSnapshotCoords={setSnapshotCoords}
+            statusBarHeight={statusBarHeight}
+            capturingSnapshots={capturingSnapshots}
+          />
+        </View>
+      }
+      <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
+        <BookPage
+          bookId={bookId}
+          latest_location={latest_location}
+          spineIdRef={spineIdRef}
+          pageIndexInSpine={pageIndexInSpine}
+          requestShowPages={requestShowPages}
+          showSettings={showSettings}
+          requestHideSettings={requestHideSettings}
+          indicateLoaded={indicateLoaded}
+          hrefToGoTo={hrefToGoTo}
+          capturingSnapshots={capturingSnapshots}
+          temporarilyPauseProcessing={temporarilyPauseProcessing}
+        />
+      </View>
+      <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+        <ZoomPage
+          bookId={bookId}
+          spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
+          pageCfisKey={pageCfisKey}
+          pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
+          onZoomCompletion={onZoomCompletion}
+          snapshotCoords={snapshotCoords}
+          zoomed={snapshotZoomed}
+          zoomingEnabled={mode === 'zooming'}
+          pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
+        />
+      </View>
+      <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
+        <BookContents
+          goToHref={goToHref}
+          toc={bookLoaded && books[bookId].toc}
+        />
+      </View>
+      {showOptions && mode !== 'page' &&
+        <Options
+          requestHide={hideOptions}
+          options={options}
+        />
+      }
+      <View />
+
+      {Platform.OS !== 'web' &&
+        <PageCaptureManager
+          bookId={bookId}
+          setCapturingSnapshots={setCapturingSnapshots}
+          processingPaused={processingPaused}
+        />
+      }
+
+    </SafeLayout>
+  )
+})
 
 const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySettings, readerStatus }) => ({
   idps,

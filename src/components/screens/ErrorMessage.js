@@ -1,7 +1,6 @@
 import React, { useEffect } from "react"
 import { Updates } from "expo"
 import { StyleSheet, View, Text } from "react-native"
-import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
 import i18n from "../../utils/i18n.js"
 
@@ -50,4 +49,4 @@ const ErrorMessage = ({ location }) => {
   )
 }
 
-export default withRouter(ErrorMessage)
+export default ErrorMessage

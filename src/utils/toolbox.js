@@ -108,15 +108,6 @@ export const getPageIndexInSpine = ({ pageCfis, cfi }) => {
   return pageIndexInSpine
 }
 
-export const latestLocationToObj = latest_location => {
-  const latestLocation = JSON.parse(latest_location)
-
-  return {
-    spineIdRef: latestLocation.idref,
-    cfi: latestLocation.elementCfi,
-  }
-}
-
 export const latestLocationToStr = latestLocation => {
   return JSON.stringify({
     idref: latestLocation.spineIdRef,
@@ -152,9 +143,9 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   try {
     
     if(latest_location) {
-      const latestLocation = latestLocationToObj(latest_location)
-      spineIdRef = latestLocation.spineIdRef
-      cfi = latestLocation.cfi
+      const latestLocation = JSON.parse(latest_location)
+      spineIdRef = latestLocation.idref
+      cfi = latestLocation.elementCfi
     }
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
@@ -173,6 +164,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
 
     return {
       spineIdRef,
+      cfi,
       pageIndexInSpine,
       pageCfisKnown,
     }

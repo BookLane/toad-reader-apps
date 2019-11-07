@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react"
+import React, { useCallback, useMemo, useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, FlatList, Animated } from "react-native"
 
@@ -44,7 +44,6 @@ const BookPages = React.memo(({
   updateSnapshotCoords,
   statusBarHeight,
   capturingSnapshots,
-  setFlatListEl,
   zoomToPage,
 }) => {
 
@@ -55,7 +54,7 @@ const BookPages = React.memo(({
   const { height } = useDimensions().window
 
   const animatedScrollPosition = useRef(new Animated.Value(0)).current
-  const flatListEl = useRef()
+  const flatList = useRef()
 
   const scrollToLatestLocationNextTimeReceivingProps = useRef(false)
 
@@ -146,7 +145,7 @@ const BookPages = React.memo(({
 
       if(spineIdRef == null || pageIndexInSpine == null) return
       if(list.length === 0) return
-      if(!flatListEl.current) return
+      if(!flatList.current) return
 
       if(!spines) {
         scrollToLatestLocationNextTimeReceivingProps.current = true
@@ -174,7 +173,7 @@ const BookPages = React.memo(({
         return true
       })
 
-      flatListEl.current.scrollToIndex({
+      flatList.current.scrollToIndex({
         index,
         viewOffset: 0,
         viewPosition: 0.5,
@@ -243,22 +242,18 @@ const BookPages = React.memo(({
     [ bookId, spineIdRef, pageIndexInSpine, pageCfisKey, pageWidth, pageHeight, zoomToPage ],
   )
 
-  const setFlatListRef = useCallback(
-    ref => {
-
-      flatListEl.current = ref && ref._component
-      setFlatListEl && setFlatListEl(flatListEl.current)
-
+  useEffect(
+    () => {
       // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout
-      // without this timeout, flatListEl.current is not set and sticky headers are not accounted for
+      // without this timeout, flatList.current is not set and sticky headers are not accounted for
       setScrollToLatestTimeout(scrollToLatestLocation, 300)
     },
-    [ setFlatListEl, scrollToLatestLocation ],
+    [],
   )
 
   const scrollToPercentage = useCallback(
     percent => {
-      flatListEl.current && flatListEl.current.scrollToOffset({ offset: (percent/100) * maxScroll, animated: false })
+      flatList.current && flatList.current.scrollToOffset({ offset: (percent/100) * maxScroll, animated: false })
     },
     [ maxScroll ],
   )
@@ -287,7 +282,7 @@ const BookPages = React.memo(({
         getItemLayout={getItemLayout}
         onScroll={onScroll}
         scrollEventThrottle={1}
-        ref={setFlatListRef}
+        ref={flatList}
       />
       {/* <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} /> */}
       {maxScroll
