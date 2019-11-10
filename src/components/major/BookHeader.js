@@ -8,6 +8,7 @@ import i18n from "../../utils/i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
+import useWideMode from "../../hooks/useWideMode"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo } from "../../utils/toolbox"
@@ -33,6 +34,7 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)
+  const wideMode = useWideMode()
 
   const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
@@ -136,7 +138,7 @@ const BookHeader = React.memo(({
 
   return (
     <AppHeader
-      hide={mode === 'page'}
+      hide={mode === 'page' && !wideMode}
       title={title}
       subtitle={subtitle}
       leftControl={

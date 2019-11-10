@@ -22,6 +22,8 @@ import { getPageCfisKey, getSpineAndPage, getToolbarHeight, getPageSize,
          isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
+import useDimensions from "../../hooks/useDimensions"
+import useWideMode from "../../hooks/useWideMode"
 import useSetState from "react-use/lib/useSetState"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
@@ -169,6 +171,8 @@ const Book = React.memo(({
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
   const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -10)
+  const { width, height } = useDimensions().window
+  const wideMode = useWideMode()
 
   const reportReadingsInfo = {
     idps,
@@ -378,7 +382,6 @@ const Book = React.memo(({
 
   const backToReading = useCallback(
     () => {
-      const { width, height } = Dimensions.get('window')
       const { pageWidth } = getPageSize({ width, height })
 
       const snapshotCoords = {
@@ -407,7 +410,7 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef ],
+    [ bookId, spineIdRef, width, height ],
   )
 
   const requestShowPages = useCallback(
@@ -515,7 +518,6 @@ const Book = React.memo(({
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
   const { title } = (books && books[bookId]) || {}
-  const { width } = Dimensions.get('window')
     
   if(Platform.OS !== 'web' && readerStatus !== 'ready') {
     return (
@@ -527,17 +529,20 @@ const Book = React.memo(({
     )
   }
 
+  const bookHeader = (
+    <BookHeader
+      bookId={bookId}
+      title={title}
+      mode={mode}
+      toggleBookView={toggleBookView}
+      showDisplaySettings={showDisplaySettings}
+      width={width}  // By sending this as a prop, I force a rerender
+    />
+  )
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
-      <BookHeader
-        bookId={bookId}
-        title={title}
-        mode={mode}
-        toggleBookView={toggleBookView}
-        showDisplaySettings={showDisplaySettings}
-        width={width}  // By sending this as a prop, I force a rerender
-      />
+      {!wideMode && bookHeader}
       {mode === 'page' && <CustomKeepAwake />}
       {Platform.OS !== 'web' &&
         <View style={styles.pages}>
@@ -555,6 +560,7 @@ const Book = React.memo(({
         </View>
       }
       <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
+        {wideMode && bookHeader}
         <BookPage
           bookId={bookId}
           latest_location={latest_location}

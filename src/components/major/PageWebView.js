@@ -6,8 +6,9 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox"
+import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
+import useWideMode from "../../hooks/useWideMode"
 import getReaderCode from '../../../getReaderCode'
 
 const styles = StyleSheet.create({
@@ -31,6 +32,9 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 200,
     right: 0,
+  },
+  wideModeShiftUp: {
+    marginTop: -30,
   },
 })
 
@@ -69,7 +73,10 @@ const PageWebView = props => {
   const webViewLocalRef = useRef()
   const webView= webViewRef || webViewLocalRef
 
-  const { width, height } = useDimensions().window
+  let { width, height } = useDimensions().window
+  const wideMode = useWideMode()
+
+  if(wideMode) height -= (getToolbarHeight() - 30)
 
   useEffect(() => () => webView.current.unmounted = true, [])
 
@@ -204,6 +211,7 @@ const PageWebView = props => {
       <View
         style={[
           (doPushDownPreventionTrick ? styles.containerOffset2 : styles.containerNormal),
+          wideMode ? styles.wideModeShiftUp : null,
           style,
         ]}
         collapsable={false}
