@@ -1,8 +1,9 @@
 import React, { useCallback } from "react"
 import { TouchableOpacity, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
-import { Ionicons } from "@expo/vector-icons"
 import { styled } from 'react-native-ui-kitten'
+
+import Icon from './Icon'
 
 const styles = StyleSheet.create({
   container: {
@@ -13,14 +14,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    fontSize: 22,
+    height: 22,
   },
 })
 
 const HeaderIcon = ({
   themedStyle,
   style,
-  IconPack=Ionicons,
+  pack,
   name,
   path,
   onPress,
@@ -39,13 +40,14 @@ const HeaderIcon = ({
       style={styles.container}
       {...otherProps}
     >
-      <IconPack
+      <Icon
         style={[
           styles.icon,
           themedStyle,
           style,
         ]}
         name={name}
+        pack={pack}
       />
     </TouchableOpacity>
   )

@@ -1,4 +1,5 @@
 import React from "react"
+import { StyleSheet } from "react-native"
 
 import { Ionicons } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
@@ -15,7 +16,7 @@ const Icon = ({
 }) => {
 
   const IconComponent = packs[pack]
-  const adjustedStyle = { ...style }
+  const adjustedStyle = style instanceof Array ? StyleSheet.flatten(style) : { ...style }
 
   adjustedStyle.fontSize = adjustedStyle.height
   adjustedStyle.width = 'auto'

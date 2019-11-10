@@ -3,7 +3,6 @@ import { Platform, Linking } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { OverflowMenu } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n"
 
@@ -108,7 +107,7 @@ const BookHeader = React.memo(({
   const rightControls = [
     <HeaderIcon
       name="format-size"
-      IconPack={MaterialCommunityIcons}
+      pack="material"
       onPress={showDisplaySettings}
     />,
     ...(moreOptions.length === 0 ? [] : [
