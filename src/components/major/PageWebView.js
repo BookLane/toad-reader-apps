@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     bottom: 200,
     right: 0,
   },
-  wideModeShiftUp: {
-    marginTop: -30,
+  wideModeShift: {
+    marginTop: getToolbarHeight() - 30,
   },
 })
 
@@ -212,7 +212,7 @@ const PageWebView = props => {
       <View
         style={[
           (doPushDownPreventionTrick ? styles.containerOffset2 : styles.containerNormal),
-          wideMode ? styles.wideModeShiftUp : null,
+          wideMode ? styles.wideModeShift : null,
           style,
         ]}
         collapsable={false}
