@@ -187,7 +187,7 @@ const BookPage = React.memo(props => {
           return true
       }
     },
-    [ bookId, books, spineIdRef, indicateLoaded, history ],
+    [ bookId, books, spineIdRef, indicateLoaded, requestShowPages, history ],
   )
 
   const setSelectionText = useCallback(

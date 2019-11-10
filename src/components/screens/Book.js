@@ -439,6 +439,9 @@ const Book = React.memo(({
 
   const requestShowPages = useCallback(
     () => {
+
+      if(wideMode && Platform.OS === 'web') return
+
       pauseProcessing()
 
       endRecordReading({ reportReadingsInfo })
@@ -456,7 +459,7 @@ const Book = React.memo(({
         },
       })
     },
-    [ JSON.stringify(reportReadingsInfo) ],
+    [ JSON.stringify(reportReadingsInfo), wideMode ],
   )
 
   const requestHideSettings = useCallback(

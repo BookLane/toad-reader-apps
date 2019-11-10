@@ -50,7 +50,15 @@ const getHighlightsForThisSpine = ({ highlights, location }) => {
   }
 }
 
-const PageWebView = props => {
+const PageWebView = ({
+
+  // We need these up-to-date
+  onMessage,
+  sidePanelSettings,
+
+  ...props
+
+}) => {
 
   // props are put in state so as to use their initial value only
   const [ state ] = useState(props)
@@ -60,12 +68,11 @@ const PageWebView = props => {
     initialDisplaySettings,
     viewRef,
     webViewRef,
-    onMessage,
     style,
   
     idps,
     accounts,
-    userDataByBookId,  // used in getHighlightsObj and getLatestLocation functions
+    // userDataByBookId,  // used in getHighlightsObj and getLatestLocation functions
   } = state
 
   const [ unloaded, setUnloaded ] = useState(false)
@@ -77,7 +84,7 @@ const PageWebView = props => {
   const wideMode = useWideMode()
 
   if(wideMode) height -= (getToolbarHeight() - 30)
-  if(wideMode && props.sidePanelSettings.open) width -= props.sidePanelSettings.width
+  if(wideMode && sidePanelSettings.open) width -= sidePanelSettings.width
 
   useEffect(() => () => webView.current.unmounted = true, [])
 

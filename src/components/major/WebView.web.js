@@ -98,7 +98,7 @@ const WebView = ({
       window.addEventListener('message', onMessageWrapper, true)
       return () => window.removeEventListener('message', onMessageWrapper, true)
     },
-    [],
+    [ onMessage ],
   )
 
   useEffect(
