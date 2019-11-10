@@ -225,11 +225,10 @@ const BookPage = React.memo(props => {
         initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
         viewRef={view}
       />
-      {!!showSettings && 
-        <DisplaySettings
-          requestHide={requestHideSettings}
-        />
-      }
+      <DisplaySettings
+        open={showSettings}
+        requestHide={requestHideSettings}
+      />
       {!!selectionInfo &&
         <Highlighter
           bookId={bookId}
