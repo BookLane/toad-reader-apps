@@ -13,7 +13,7 @@ import useWideMode from "../../hooks/useWideMode"
 import { confirmRemoveEPub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo } from "../../utils/toolbox"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 
 const BookHeader = React.memo(({
   bookId,
@@ -22,6 +22,7 @@ const BookHeader = React.memo(({
   mode,
   showDisplaySettings,
   toggleBookView,
+  backToReading,
 
   books,
 
@@ -29,6 +30,7 @@ const BookHeader = React.memo(({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
+  toggleSidePanelOpen,
 
   history,
 }) => {
@@ -112,6 +114,22 @@ const BookHeader = React.memo(({
       pack="material"
       onPress={showDisplaySettings}
     />,
+    <HeaderIcon
+      name="md-list"
+      onPress={wideMode ? toggleSidePanelOpen : backToReading}
+    />,
+    ...(!(wideMode && Platform.OS !== 'web') ? [] : [
+      <HeaderIcon
+        name="md-apps"
+        onPress={toggleBookView}
+      />
+    ]),
+    ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
+      <HeaderIcon
+        name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
+        onPress={toggleBookView}
+      />
+    ]),
     ...(moreOptions.length === 0 ? [] : [
       <OverflowMenu
         data={moreOptions}
@@ -126,15 +144,6 @@ const BookHeader = React.memo(({
       </OverflowMenu>,
     ]),
   ]
-
-  if(Platform.OS !== 'web') {
-    rightControls.splice(1, 0, (
-      <HeaderIcon
-        name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
-        onPress={toggleBookView}
-      />
-    ))
-  }
 
   return (
     <AppHeader
@@ -161,6 +170,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setDownloadStatus,
   clearTocAndSpines,
   clearUserDataExceptProgress,
+  toggleSidePanelOpen,
 }, dispatch)
 
 export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookHeader))

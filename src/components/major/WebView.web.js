@@ -19,8 +19,7 @@ const IFrame = ({
   forwardRef,
   ...otherProps
  }) => (
-   // putting this inside useRef makes this iframe unaffected by rerenders
-   useRef(createElement('iframe', { ...otherProps, ref: forwardRef })).current
+   createElement('iframe', { ...otherProps, ref: forwardRef })
  )
 
 const WebView = ({

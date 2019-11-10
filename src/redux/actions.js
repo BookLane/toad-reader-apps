@@ -121,6 +121,15 @@ export const setTheme = ({ theme }) => ({
   theme,
 })
 
+export const setSidePanelWidth = ({ width }) => ({
+  type: "SET_SIDE_PANEL_WIDTH",
+  width,
+})
+
+export const toggleSidePanelOpen = () => ({
+  type: "TOGGLE_SIDE_PANEL_OPEN",
+})
+
 export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })

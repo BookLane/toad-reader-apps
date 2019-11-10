@@ -77,6 +77,7 @@ const PageWebView = props => {
   const wideMode = useWideMode()
 
   if(wideMode) height -= (getToolbarHeight() - 30)
+  if(wideMode && props.sidePanelSettings.open) width -= props.sidePanelSettings.width
 
   useEffect(() => () => webView.current.unmounted = true, [])
 
@@ -247,10 +248,11 @@ const PageWebView = props => {
   )
 }
 
-const mapStateToProps = ({ idps, accounts, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, userDataByBookId, sidePanelSettings }) => ({
   idps,
   accounts,
   userDataByBookId,
+  sidePanelSettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

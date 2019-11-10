@@ -6,6 +6,7 @@ import bookDownloadQueue from "./reducers/bookDownloadQueue"
 import books from "./reducers/books"
 import currentBookId from "./reducers/currentBookId"
 import displaySettings from "./reducers/displaySettings"
+import sidePanelSettings from "./reducers/sidePanelSettings"
 import downloadProgressByBookId from "./reducers/downloadProgressByBookId"
 import fetchingBooks from "./reducers/fetchingBooks"
 import highlights from "./reducers/highlights"
@@ -25,6 +26,7 @@ const slicedReducers = combineReducers({
   books,
   currentBookId,
   displaySettings,
+  sidePanelSettings,
   downloadProgressByBookId,
   fetchingBooks,
   highlights,

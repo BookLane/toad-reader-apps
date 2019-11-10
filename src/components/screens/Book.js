@@ -109,6 +109,18 @@ const styles = StyleSheet.create({
   hideContents: {
     ...contentsStyles,
   },
+  panels: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  mainPanel: {
+    flex: 1,
+  },
+  sidePanel: {
+    backgroundColor: '#fff',
+    width: 0,
+  },
 })
 
 const getBookId = ({ pathname }) => pathname.split('/').pop()
@@ -124,6 +136,7 @@ const Book = React.memo(({
   books,
   userDataByBookId,
   displaySettings,
+  sidePanelSettings,
   readerStatus,
 
   setLatestLocation,
@@ -373,11 +386,22 @@ const Book = React.memo(({
 
   const toggleBookView = useCallback(
     () => {
+
+      if(wideMode) {
+        if(mode === 'page') {
+          requestShowPages()
+        } else {
+          backToReading()
+        }
+        return
+      }
+
       setState({
         mode: mode === 'pages' ? 'contents' : 'pages',
       })
+
     },
-    [ mode ],
+    [ mode, wideMode ],
   )
 
   const backToReading = useCallback(
@@ -529,72 +553,80 @@ const Book = React.memo(({
     )
   }
 
-  const bookHeader = (
-    <BookHeader
-      bookId={bookId}
-      title={title}
-      mode={mode}
-      toggleBookView={toggleBookView}
-      showDisplaySettings={showDisplaySettings}
-      width={width}  // By sending this as a prop, I force a rerender
-    />
-  )
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
-      {!wideMode && bookHeader}
       {mode === 'page' && <CustomKeepAwake />}
-      {Platform.OS !== 'web' &&
-        <View style={styles.pages}>
-          <BookPages
+      <View style={styles.panels}>
+        <View style={[
+          styles.mainPanel,
+          mode !== 'contents' ? showStyles : null,
+        ]}>
+          <BookHeader
             bookId={bookId}
-            spineIdRef={spineIdRef}
-            pageCfisKey={pageCfisKey}
-            pageIndexInSpine={pageIndexInSpine}
-            spines={bookLoaded && books[bookId].spines}
-            zoomToPage={zoomToPage}
-            updateSnapshotCoords={setSnapshotCoords}
-            statusBarHeight={statusBarHeight}
-            capturingSnapshots={capturingSnapshots}
+            title={title}
+            mode={mode}
+            toggleBookView={toggleBookView}
+            backToReading={backToReading}
+            showDisplaySettings={showDisplaySettings}
+            width={width}  // By sending this as a prop, I force a rerender
+          />
+          {Platform.OS !== 'web' &&
+            <View style={styles.pages}>
+              <BookPages
+                bookId={bookId}
+                spineIdRef={spineIdRef}
+                pageCfisKey={pageCfisKey}
+                pageIndexInSpine={pageIndexInSpine}
+                spines={bookLoaded && books[bookId].spines}
+                zoomToPage={zoomToPage}
+                updateSnapshotCoords={setSnapshotCoords}
+                statusBarHeight={statusBarHeight}
+                capturingSnapshots={capturingSnapshots}
+              />
+            </View>
+          }
+          <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
+            <BookPage
+              bookId={bookId}
+              latest_location={latest_location}
+              spineIdRef={spineIdRef}
+              pageIndexInSpine={pageIndexInSpine}
+              requestShowPages={requestShowPages}
+              showSettings={showSettings}
+              requestHideSettings={requestHideSettings}
+              indicateLoaded={indicateLoaded}
+              hrefToGoTo={hrefToGoTo}
+              capturingSnapshots={capturingSnapshots}
+              temporarilyPauseProcessing={temporarilyPauseProcessing}
+            />
+          </View>
+          <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+            <ZoomPage
+              bookId={bookId}
+              spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
+              pageCfisKey={pageCfisKey}
+              pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
+              onZoomCompletion={onZoomCompletion}
+              snapshotCoords={snapshotCoords}
+              zoomed={snapshotZoomed}
+              zoomingEnabled={mode === 'zooming'}
+              pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
+            />
+          </View>
+        </View>
+        <View style={[
+          mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
+          wideMode ? styles.sidePanel : null,
+          sidePanelSettings.open ? { width: sidePanelSettings.width } : null,
+        ]}>
+          <BookContents
+            goToHref={goToHref}
+            toc={bookLoaded && books[bookId].toc}
           />
         </View>
-      }
-      <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
-        {wideMode && bookHeader}
-        <BookPage
-          bookId={bookId}
-          latest_location={latest_location}
-          spineIdRef={spineIdRef}
-          pageIndexInSpine={pageIndexInSpine}
-          requestShowPages={requestShowPages}
-          showSettings={showSettings}
-          requestHideSettings={requestHideSettings}
-          indicateLoaded={indicateLoaded}
-          hrefToGoTo={hrefToGoTo}
-          capturingSnapshots={capturingSnapshots}
-          temporarilyPauseProcessing={temporarilyPauseProcessing}
-        />
+        <View />
       </View>
-      <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
-        <ZoomPage
-          bookId={bookId}
-          spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
-          pageCfisKey={pageCfisKey}
-          pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
-          onZoomCompletion={onZoomCompletion}
-          snapshotCoords={snapshotCoords}
-          zoomed={snapshotZoomed}
-          zoomingEnabled={mode === 'zooming'}
-          pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
-        />
-      </View>
-      <View style={mode === 'contents' ? styles.showContents : styles.hideContents}>
-        <BookContents
-          goToHref={goToHref}
-          toc={bookLoaded && books[bookId].toc}
-        />
-      </View>
-      <View />
 
       {Platform.OS !== 'web' &&
         <PageCaptureManager
@@ -608,12 +640,13 @@ const Book = React.memo(({
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySettings, readerStatus }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySettings, sidePanelSettings, readerStatus }) => ({
   idps,
   accounts,
   books,
   userDataByBookId,
   displaySettings,
+  sidePanelSettings,
   readerStatus,
 })
 

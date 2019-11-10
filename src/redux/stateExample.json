@@ -201,6 +201,10 @@
     ]
   },
   "currentBookId": null,
+  "sidePanelSettings": {
+    "width": 150,
+    "open": false
+  },
   "displaySettings": {
     "textSize": 100,
     "textSpacing": 1,
