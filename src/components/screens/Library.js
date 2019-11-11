@@ -249,7 +249,7 @@ const Library = ({
         setFetchingBooks({ value: false })
       })()
     },
-    [ idps, accounts, books, refreshLibraryAccountId ],
+    [ idps, accounts, refreshLibraryAccountId ],
   )
 
   const onLoginSuccess = useCallback(
