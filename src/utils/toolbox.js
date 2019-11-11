@@ -187,7 +187,7 @@ export const isPhoneSize = () => {
   return Math.min(width, height) < 500
 }
 
-export const getFullName = user => user ? `${user.firstname || ''} ${user.lastname || ''}`.trim() : ``
+export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 
 export const JSON_to_URLEncoded = (element, key, list) => {
   var list = list || []

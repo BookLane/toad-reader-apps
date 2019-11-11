@@ -22,16 +22,14 @@
   },
   "accounts": {
     "1:-1": {
-      "firstname": "Demo",
-      "lastname": "Account",
+      "fullname": "Demo Account",
       "email": "demo@email.com",
       "isAdmin": false,
       "cookie": "connect.sid=lkjsdfljasdflkjsdf;",
       "serverTimeOffset": 60
     },
     "2:3": {
-      "firstname": "Bill",
-      "lastname": "Smith",
+      "fullname": "Bill Smith",
       "email": "bill@email.com",
       "isAdmin": true,
       "cookie": "connect.sid=lkjsdfljasdflkjsdsdff;",
