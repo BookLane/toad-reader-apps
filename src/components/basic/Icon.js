@@ -22,8 +22,10 @@ const Icon = ({
   adjustedStyle.width = 'auto'
   adjustedStyle.height = 'auto'
 
-  adjustedStyle.color = adjustedStyle.tintColor
-  delete adjustedStyle.tintColor
+  if(adjustedStyle.tintColor) {
+    adjustedStyle.color = adjustedStyle.tintColor
+    delete adjustedStyle.tintColor
+  }
 
   return (
     <IconComponent
