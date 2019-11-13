@@ -36,16 +36,17 @@ export default function(state = initialState, action) {
           spines: (state[book.id] && state[book.id].spines) || undefined,
           accounts: {
             ...((state[book.id] && state[book.id].accounts) || {}),
-            [action.accountId]: (
-              (book.link_href && book.link_label)
-                ? {
-                  link: {
-                    href: book.link_href,
-                    label: book.link_label,
-                  },
-                }
-                : {}
-            ),
+            [action.accountId]: {
+              ...!((book.link_href && book.link_label) ? {} : {
+                link: {
+                  href: book.link_href,
+                  label: book.link_label,
+                },
+              }),
+              version: book.version || 'BASE',
+              ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
+              ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
+            },
           },
         }
       })

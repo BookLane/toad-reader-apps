@@ -50,6 +50,7 @@ const BookHeader = React.memo(({
   const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+  const hasInstructorVersion = Object.values(book.accounts)[0].version === 'INSTRUCTOR'
 
   const toggleShowChangeClassroom = useCallback(
     () => setShowChangeClassroom(!showChangeClassroom),
@@ -94,7 +95,7 @@ const BookHeader = React.memo(({
           name: currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name,
         }),
       },
-      ...(classrooms.length < 2 ? [] : [{
+      ...(classrooms.length < 2 && !hasInstructorVersion ? [] : [{
         title: i18n("Change classrooms"),
         onPress: toggleShowChangeClassroom,
       }]),
