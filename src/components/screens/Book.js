@@ -621,7 +621,7 @@ const Book = React.memo(({
         <View style={[
           mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
           wideMode ? styles.sidePanel : null,
-          sidePanelSettings.open ? { width: sidePanelSettings.width } : null,
+          (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
         ]}>
           <BookContents
             goToHref={goToHref}
