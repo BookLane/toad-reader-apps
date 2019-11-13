@@ -99,6 +99,16 @@ export default function(state = initialState, action) {
       }
       return state
 
+    case "SET_CURRENT_CLASSROOM":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          currentClassroomUid: action.currentClassroomUid,
+        }
+        return newState
+      }
+      return state
+
     case "SET_TOC_AND_SPINES":
       if(newState[action.bookId]) {
         newState[action.bookId] = {

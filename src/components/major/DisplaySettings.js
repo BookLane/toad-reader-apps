@@ -111,7 +111,7 @@ const DisplaySettings = React.memo(({
   
   return (
     <>
-      <BackFunction func={requestHide} />
+      {!!open && <BackFunction func={requestHide} />}
       <Dialog
         open={open}
         title={i18n("Display settings")}

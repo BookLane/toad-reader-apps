@@ -56,7 +56,8 @@
           }
         }
       },
-      "downloadStatus": 1
+      "downloadStatus": 1,
+      "currentClassroomUid": "1-65"
     },
     "66": {
       "title": "God is the Gospel",
@@ -84,6 +85,7 @@
         }
       },
       "downloadStatus": 2,
+      "currentClassroomUid": "Du39fs-38DF83-dfjdfs34",
       "toc": [
         {
           "label": "Part 1",
@@ -153,7 +155,21 @@
           "updated_at": 1506078484221
         }
       ],
-      "highlights": []
+      "highlights": [],
+      "classrooms": [
+        {
+          "classroom_highlights_mode": "CLASSROOM",
+          "closes_at": null,
+          "created_at": 1573659531000,
+          "has_syllabus": 0,
+          "introduction": null,
+          "members": [],
+          "name": "",
+          "tools": [],
+          "uid": "1-135",
+          "updated_at": 1573659531000
+        }
+      ]
     },
     "68": {
       "progress": 34,

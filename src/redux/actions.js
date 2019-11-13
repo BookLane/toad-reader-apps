@@ -52,6 +52,12 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
+export const setCurrentClassroom = ({ bookId, currentClassroomUid }) => ({
+  type: "SET_CURRENT_CLASSROOM",
+  bookId,
+  currentClassroomUid,
+})
+
 export const pushToBookDownloadQueue = ({ bookId }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,

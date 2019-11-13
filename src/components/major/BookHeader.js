@@ -8,6 +8,7 @@ import i18n from "../../utils/i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
+import ChangeClassroom from "./ChangeClassroom"
 import useWideMode from "../../hooks/useWideMode"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub"
@@ -25,6 +26,7 @@ const BookHeader = React.memo(({
   backToReading,
 
   books,
+  userDataByBookId,
 
   removeFromBookDownloadQueue,
   setDownloadStatus,
@@ -36,13 +38,27 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)
+  const [ showChangeClassroom, setShowChangeClassroom ] = useState(false)
   const wideMode = useWideMode()
 
-  const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+  const book = books[bookId] || {}
+  const accountId = Object.keys(book.accounts)[0] || ""
+  const idpId = accountId.split(':')[0]
+
+  const bookLinkInfo = getFirstBookLinkInfo(book)
+  const defaultClassroomUid = `${idpId}-${bookId}`
+  const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
+  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
+  const currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+
+  const toggleShowChangeClassroom = useCallback(
+    () => setShowChangeClassroom(!showChangeClassroom),
+    [ showChangeClassroom ],
+  )
 
   const goToBookLink = useCallback(
     () => {
-      const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+      const bookLinkInfo = getFirstBookLinkInfo(book)
 
       Linking.openURL(bookLinkInfo.href).catch(err => {
         console.log('ERROR: Request to open URL failed.', err)
@@ -51,7 +67,7 @@ const BookHeader = React.memo(({
         })
       })
     },
-    [ books, bookId ],
+    [ book ],
   )
 
   const removeFromDevice = useCallback(
@@ -72,13 +88,24 @@ const BookHeader = React.memo(({
   )
 
   const moreOptions = [
-    // {
-    //   title: i18n("Recommend this book"),
-    //   onPress: recommendBook,
-    // },
+    ...(!currentClassroom ? [] : [
+      {
+        title: i18n("Enhanced: {{name}}", {
+          name: currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name,
+        }),
+      },
+      ...(classrooms.length < 2 ? [] : [{
+        title: i18n("Change classrooms"),
+        onPress: toggleShowChangeClassroom,
+      }]),
+    ]),
     // {
     //   title: i18n("My highlights and notes"),
     //   onPress: goToHighlights,
+    // },
+    // {
+    //   title: i18n("Recommend this book"),
+    //   onPress: recommendBook,
     // },
     ...(!bookLinkInfo ? [] : [{
       title: bookLinkInfo.label,
@@ -97,8 +124,11 @@ const BookHeader = React.memo(({
 
   const selectOption = useCallback(
     selectedIndex => {
-      moreOptions[selectedIndex].onPress()
-      setShowOptions(false)
+      const { onPress } = moreOptions[selectedIndex]
+      if(onPress) {
+        onPress()
+        setShowOptions(false)
+      }
     },
     [],
   )
@@ -134,6 +164,7 @@ const BookHeader = React.memo(({
       <OverflowMenu
         data={moreOptions}
         visible={showOptions}
+        selectedIndex={currentClassroom ? 0 : null}
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
       >
@@ -146,23 +177,31 @@ const BookHeader = React.memo(({
   ]
 
   return (
-    <AppHeader
-      hide={mode === 'page' && !wideMode}
-      title={title}
-      subtitle={subtitle}
-      leftControl={
-        <HeaderIcon
-          name="md-arrow-back"
-          onPress={onBackPress}
-        />
-      }
-      rightControls={rightControls}
-    />
+    <>
+      <AppHeader
+        hide={mode === 'page' && !wideMode}
+        title={title}
+        subtitle={subtitle}
+        leftControl={
+          <HeaderIcon
+            name="md-arrow-back"
+            onPress={onBackPress}
+          />
+        }
+        rightControls={rightControls}
+      />
+      <ChangeClassroom
+        open={showChangeClassroom}
+        requestHide={toggleShowChangeClassroom}
+        bookId={bookId}
+      />
+    </>
   )
 })
 
-const mapStateToProps = ({ books }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
   books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
