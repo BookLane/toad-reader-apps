@@ -99,19 +99,26 @@ export const patch = info => setTimeout(() => {
             ...classroom,
             ...classroomToPush,
           }
+          delete classroomToPush.created_at
           classroomHasUpdate = true
         }
 
         members.forEach(member => {
           if(member.updated_at > lastSuccessfulPatch) {
-            classroomToPush.members.push({ ...member })
+            const memberToPush = { ...member }
+            delete memberToPush.created_at
+            delete memberToPush.email
+            delete memberToPush.fullname
+            classroomToPush.members.push(memberToPush)
             classroomHasUpdate = true
           }
         })
 
         tools.forEach(tool => {
           if(tool.updated_at > lastSuccessfulPatch) {
-            classroomToPush.tools.push({ ...tool })
+            const toolToPush = { ...tool }
+            delete toolToPush.created_at
+            classroomToPush.tools.push(toolToPush)
             classroomHasUpdate = true
           }
         })

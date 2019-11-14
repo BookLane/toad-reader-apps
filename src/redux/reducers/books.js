@@ -46,6 +46,7 @@ export default function(state = initialState, action) {
               version: book.version || 'BASE',
               ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
               ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
+              lastSuccessfulPatch: Date.now(),
             },
           },
         }
@@ -104,7 +105,7 @@ export default function(state = initialState, action) {
       if(newState[action.bookId]) {
         newState[action.bookId] = {
           ...newState[action.bookId],
-          currentClassroomUid: action.currentClassroomUid,
+          currentClassroomUid: action.uid,
         }
         return newState
       }

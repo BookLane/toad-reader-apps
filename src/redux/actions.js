@@ -52,14 +52,15 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
-export const setCurrentClassroom = ({ bookId, currentClassroomUid }) => ({
+export const setCurrentClassroom = ({ bookId, uid }) => ({
   type: "SET_CURRENT_CLASSROOM",
   bookId,
-  currentClassroomUid,
+  uid,
 })
 
-export const createClassroom = ({ bookId, name, userId, patchInfo }) => ({
+export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
   type: "CREATE_CLASSROOM",
+  uid,
   bookId,
   name,
   userId,

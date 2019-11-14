@@ -1,5 +1,4 @@
 import { latestLocationToStr } from '../../utils/toolbox'
-import uuidv4 from 'uuid/v4'
 
 const initialState = {}
 
@@ -140,7 +139,7 @@ export default function(state = initialState, action) {
 
     case "CREATE_CLASSROOM":
       classrooms.push({
-        uid: uuidv4(),
+        uid: action.uid,
         name: action.name,
         updated_at: now,
         members: [

@@ -53,7 +53,7 @@ const ChangeClassroom = React.memo(({
     selectedIndex => {
       setCurrentClassroom({
         bookId,
-        currentClassroomUid: classrooms[selectedIndex].uid,
+        uid: classrooms[selectedIndex].uid,
       })
       requestHide()
     },

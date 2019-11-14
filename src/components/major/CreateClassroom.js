@@ -3,13 +3,14 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Input } from "react-native-ui-kitten"
 import { StyleSheet } from "react-native"
+import uuidv4 from 'uuid/v4'
 
 import Dialog from "./Dialog"
 import i18n from "../../utils/i18n"
 
 import BackFunction from '../basic/BackFunction'
 
-import { createClassroom } from "../../redux/actions"
+import { createClassroom, setCurrentClassroom } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   menu: {
@@ -29,6 +30,7 @@ const CreateClassroom = React.memo(({
   userDataByBookId,
 
   createClassroom,
+  setCurrentClassroom,
 }) => {
 
   const [ name, setName ] = useState("")
@@ -39,7 +41,10 @@ const CreateClassroom = React.memo(({
 
   const createNewClassroom = useCallback(
     () => {
+      const uid = uuidv4()
+
       createClassroom({
+        uid,
         bookId,
         name,
         userId,
@@ -47,6 +52,12 @@ const CreateClassroom = React.memo(({
           userDataByBookId,
         },
       })
+
+      setCurrentClassroom({
+        bookId,
+        uid,
+      })
+
       requestHide()
     },
     [ bookId, name, userId, userDataByBookId ],
@@ -85,6 +96,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   createClassroom,
+  setCurrentClassroom,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(CreateClassroom)
