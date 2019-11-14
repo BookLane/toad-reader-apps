@@ -40,7 +40,7 @@ const adjustAllUpdatedAts = (objOrAry, msAdjustment) => {
       obj.updated_at = obj.updated_at + msAdjustment
     }
     Object.values(obj).forEach(val => {
-      if(typeof val === 'object') {
+      if(val && typeof val === 'object') {
         adjustAllUpdatedAts(val, msAdjustment);
       }
     })
@@ -388,7 +388,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
             }
 
             // convert user data updated_at times to local device per server time offset
-            adjustAllUpdatedAts(bookUserData, serverTimeOffset * -1);
+            adjustAllUpdatedAts(userData, serverTimeOffset * -1);
             
             setUserData({ bookId, userData, lastSuccessfulPatch })
 
