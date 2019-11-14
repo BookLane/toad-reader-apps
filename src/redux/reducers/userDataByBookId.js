@@ -1,4 +1,5 @@
 import { latestLocationToStr } from '../../utils/toolbox'
+import uuidv4 from 'uuid/v4'
 
 const initialState = {}
 
@@ -7,6 +8,7 @@ export default function(state = initialState, action) {
   const newState = {...state}
   const userDataForThisBook = newState[action.bookId] || {}
   let highlights = (userDataForThisBook.highlights || [])
+  let classrooms = [ ...(userDataForThisBook.classrooms || []) ]
 
   switch (action.type) {
 
@@ -132,6 +134,20 @@ export default function(state = initialState, action) {
       }
 
       newState[action.bookId] = resetUserDataForThisBook
+
+      return newState
+
+    case "CREATE_CLASSROOM":
+      classrooms.push({
+        uid: uuidv4(),
+        name: action.name,
+        updated_at: Date.now(),
+      })
+
+      newState[action.bookId] = {
+        ...userDataForThisBook,
+        classrooms,
+      }
 
       return newState
 

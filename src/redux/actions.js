@@ -58,6 +58,13 @@ export const setCurrentClassroom = ({ bookId, currentClassroomUid }) => ({
   currentClassroomUid,
 })
 
+export const createClassroom = ({ bookId, name, patchInfo }) => ({
+  type: "CREATE_CLASSROOM",
+  bookId,
+  name,
+  patchInfo,
+})
+
 export const pushToBookDownloadQueue = ({ bookId }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,

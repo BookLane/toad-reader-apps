@@ -71,7 +71,7 @@ export const patch = info => setTimeout(() => {
       const bookUserData = userDataByBookId[bookId]
       const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
-      newUserData[bookId] = { highlights: [] };
+      newUserData[bookId] = { highlights: [], classrooms: [] };
 
       if(bookUserData.updated_at > lastSuccessfulPatch) {
         newUserData[bookId].latest_location = bookUserData.latest_location
@@ -79,12 +79,49 @@ export const patch = info => setTimeout(() => {
         somethingToPatch = true
       }
 
-      (bookUserData.highlights || []).forEach(highlight => {
+      ;(bookUserData.highlights || []).forEach(highlight => {
         if(highlight.updated_at > lastSuccessfulPatch) {
           newUserData[bookId].highlights.push({ ...highlight })
           somethingToPatch = true
         }
       })
+
+      ;(bookUserData.classrooms || []).forEach(classroom => {
+        const { members=[], tools=[] } = classroom
+        let classroomToPush = {
+          members: [],
+          tools: [],
+        }
+        let classroomHasUpdate = false
+
+        if(classroom.updated_at > lastSuccessfulPatch) {
+          classroomToPush = {
+            ...classroom,
+            ...classroomToPush,
+          }
+          classroomHasUpdate = true
+        }
+
+        members.forEach(member => {
+          if(member.updated_at > lastSuccessfulPatch) {
+            classroomToPush.members.push({ ...member })
+            classroomHasUpdate = true
+          }
+        })
+
+        tools.forEach(tool => {
+          if(tool.updated_at > lastSuccessfulPatch) {
+            classroomToPush.tools.push({ ...tool })
+            classroomHasUpdate = true
+          }
+        })
+        
+        if(classroomHasUpdate) {
+          newUserData[bookId].classrooms.push(classroomToPush)
+          somethingToPatch = true
+        }
+      })
+
     }
 
     if(somethingToPatch) {
@@ -323,6 +360,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
         response.json()
           .then(userData => {
+console.log('userData', userData)
             // put into redux
             if(!userData.latest_location || !userData.updated_at || !userData.highlights) {
               reportResponseError({

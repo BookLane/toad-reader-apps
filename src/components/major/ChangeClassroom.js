@@ -1,10 +1,11 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Menu } from "react-native-ui-kitten"
+import { Menu, Button } from "react-native-ui-kitten"
 import { StyleSheet } from "react-native"
 
 import Dialog from "./Dialog"
+import CreateClassroom from "./CreateClassroom"
 import i18n from "../../utils/i18n"
 
 import BackFunction from '../basic/BackFunction'
@@ -14,7 +15,10 @@ import { setCurrentClassroom } from "../../redux/actions"
 const styles = StyleSheet.create({
   menu: {
     width: '100%',
-  }
+  },
+  button: {
+    marginHorizontal: 4,
+  },
 })
 
 const ChangeClassroom = React.memo(({
@@ -28,6 +32,8 @@ const ChangeClassroom = React.memo(({
   setCurrentClassroom,
 }) => {
 
+  const [ showCreateClassroom, setShowCreateClassroom ] = useState(false)
+
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
   const idpId = accountId.split(':')[0]
@@ -36,6 +42,7 @@ const ChangeClassroom = React.memo(({
   const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const currentClassroomIndex = classrooms.map(({ uid }) => uid).indexOf(currentClassroomUid)
+  const hasInstructorVersion = Object.values(book.accounts)[0].version === 'INSTRUCTOR'
 
   const classroomData = classrooms
     .map(({ uid, name }) => ({
@@ -52,7 +59,44 @@ const ChangeClassroom = React.memo(({
     },
     [ bookId, classrooms, requestHide ],
   )
-  
+
+  const toggleShowCreateClassroom = useCallback(
+    () => {
+      setShowCreateClassroom(!showCreateClassroom)
+      if(showCreateClassroom) {
+        requestHide()
+      }
+    },
+    [ showCreateClassroom ],
+  )
+
+  const buttons = [
+    ...(!hasInstructorVersion ? [] : [
+      <Button
+        key="create"
+        size="small"
+        onPress={toggleShowCreateClassroom}
+        status="primary"
+        style={[
+          styles.button,
+        ]}
+      >
+        {i18n("Create new classroom")}
+      </Button>,
+    ]),
+    <Button
+      key="close"
+      size="small"
+      onPress={requestHide}
+      status="basic"
+      style={[
+        styles.button,
+      ]}
+    >
+      {i18n("Cancel")}
+    </Button>,
+  ]
+
   return (
     <>
       {!!open && <BackFunction func={requestHide} />}
@@ -67,8 +111,12 @@ const ChangeClassroom = React.memo(({
             style={styles.menu}
           />
         )}
-        onClose={requestHide}
-        closeButtonText={i18n("Cancel")}
+        buttons={buttons}
+      />
+      <CreateClassroom
+        open={showCreateClassroom}
+        requestHide={toggleShowCreateClassroom}
+        bookId={bookId}
       />
     </>
   )
