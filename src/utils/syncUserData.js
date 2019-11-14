@@ -36,7 +36,9 @@ const getAccountInfo = ({ idps, accountId }) => {
 
 const adjustAllUpdatedAts = (objOrAry, msAdjustment) => {
   ;(objOrAry instanceof Array ? objOrAry : [objOrAry]).forEach(obj => {
-    obj.updated_at = obj.updated_at + msAdjustment
+    if(obj.updated_at) {
+      obj.updated_at = obj.updated_at + msAdjustment
+    }
     Object.values(obj).forEach(val => {
       if(typeof val === 'object') {
         adjustAllUpdatedAts(val, msAdjustment);
@@ -164,7 +166,7 @@ export const patch = info => setTimeout(() => {
           books[bookId].accounts[accountId].lastSuccessfulPatch = patchTime
         }
 
-        if(bookUserData.latest_location || bookUserData.highlights.length > 0) {
+        if(bookUserData.latest_location || bookUserData.highlights.length > 0 || bookUserData.classrooms.length > 0) {
 
           // convert user data updated_at times to server time per server time offset
           adjustAllUpdatedAts(bookUserData, serverTimeOffset);
