@@ -52,7 +52,7 @@ const EnhancedHeader = React.memo(({
           <Text style={styles.enhanced}>
             {i18n("Enhanced")}
           </Text>
-          {" "}
+          {"  "}
           {currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name}
         </Text>
       </View>
