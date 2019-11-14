@@ -131,7 +131,7 @@ const BookHeader = React.memo(({
         setShowOptions(false)
       }
     },
-    [],
+    [ currentClassroom, defaultClassroomUid, hasInstructorVersion, classrooms, toggleShowChangeClassroom, bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
   const onBackPress = useCallback(

@@ -58,10 +58,11 @@ export const setCurrentClassroom = ({ bookId, currentClassroomUid }) => ({
   currentClassroomUid,
 })
 
-export const createClassroom = ({ bookId, name, patchInfo }) => ({
+export const createClassroom = ({ bookId, name, userId, patchInfo }) => ({
   type: "CREATE_CLASSROOM",
   bookId,
   name,
+  userId,
   patchInfo,
 })
 

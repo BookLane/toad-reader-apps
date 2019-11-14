@@ -9,6 +9,7 @@ export default function(state = initialState, action) {
   const userDataForThisBook = newState[action.bookId] || {}
   let highlights = (userDataForThisBook.highlights || [])
   let classrooms = [ ...(userDataForThisBook.classrooms || []) ]
+  const now = Date.now()
 
   switch (action.type) {
 
@@ -52,7 +53,7 @@ export default function(state = initialState, action) {
       newState[action.bookId] = {
         ...userDataForThisBook,
         latest_location,
-        updated_at: Date.now(),
+        updated_at: now,
       }
 
       return newState
@@ -79,7 +80,7 @@ export default function(state = initialState, action) {
         cfi: action.cfi,
         color: action.color,
         note: action.note,
-        updated_at: Date.now(),
+        updated_at: now,
       })
 
       newState[action.bookId] = {
@@ -106,7 +107,7 @@ export default function(state = initialState, action) {
       highlights.push({
         ...highlightToDel,
         _delete: true,
-        updated_at: Date.now(),
+        updated_at: now,
       })
 
       newState[action.bookId] = {
@@ -141,7 +142,14 @@ export default function(state = initialState, action) {
       classrooms.push({
         uid: uuidv4(),
         name: action.name,
-        updated_at: Date.now(),
+        updated_at: now,
+        members: [
+          {
+            user_id: action.userId,
+            role: 'INSTRUCTOR',
+            updated_at: now,
+          },
+        ]
       })
 
       newState[action.bookId] = {

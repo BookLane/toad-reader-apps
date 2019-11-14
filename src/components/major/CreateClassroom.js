@@ -25,6 +25,7 @@ const CreateClassroom = React.memo(({
   requestHide,
   bookId,
 
+  books,
   userDataByBookId,
 
   createClassroom,
@@ -32,18 +33,23 @@ const CreateClassroom = React.memo(({
 
   const [ name, setName ] = useState("")
 
+  const book = books[bookId] || {}
+  const accountId = Object.keys(book.accounts)[0] || ""
+  const userId = accountId.split(':')[1]
+
   const createNewClassroom = useCallback(
     () => {
       createClassroom({
         bookId,
         name,
+        userId,
         patchInfo: {
           userDataByBookId,
         },
       })
       requestHide()
     },
-    [ name, userDataByBookId ],
+    [ bookId, name, userId, userDataByBookId ],
   )
 
   const onChangeText = useCallback(name => setName(name), [])
@@ -72,7 +78,8 @@ const CreateClassroom = React.memo(({
   )
 })
 
-const mapStateToProps = ({ userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
   userDataByBookId,
 })
 
