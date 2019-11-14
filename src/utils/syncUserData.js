@@ -34,6 +34,17 @@ const getAccountInfo = ({ idps, accountId }) => {
   }
 }
 
+const adjustAllUpdatedAts = (objOrAry, msAdjustment) => {
+  ;(objOrAry instanceof Array ? objOrAry : [objOrAry]).forEach(obj => {
+    obj.updated_at = obj.updated_at + msAdjustment
+    Object.values(obj).forEach(val => {
+      if(typeof val === 'object') {
+        adjustAllUpdatedAts(val, msAdjustment);
+      }
+    })
+  })
+}
+
 const reportResponseError = ({ message, response, error, retry }) => {
   console.log(`ERROR: ${message}`, error)
   if(response) {
@@ -156,10 +167,7 @@ export const patch = info => setTimeout(() => {
         if(bookUserData.latest_location || bookUserData.highlights.length > 0) {
 
           // convert user data updated_at times to server time per server time offset
-          if(bookUserData.updated_at) {
-            bookUserData.updated_at = bookUserData.updated_at + serverTimeOffset
-          }
-          bookUserData.highlights.forEach(highlight => highlight.updated_at = highlight.updated_at + serverTimeOffset)
+          adjustAllUpdatedAts(bookUserData, serverTimeOffset);
 
           console.log("Time-filtered userData object for patch request:", bookUserData);
 
@@ -367,7 +375,6 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
 
         response.json()
           .then(userData => {
-console.log('userData', userData)
             // put into redux
             if(!userData.latest_location || !userData.updated_at || !userData.highlights) {
               reportResponseError({
@@ -379,8 +386,7 @@ console.log('userData', userData)
             }
 
             // convert user data updated_at times to local device per server time offset
-            userData.updated_at = userData.updated_at - serverTimeOffset
-            userData.highlights.forEach(highlight => highlight.updated_at = highlight.updated_at - serverTimeOffset)
+            adjustAllUpdatedAts(bookUserData, serverTimeOffset * -1);
             
             setUserData({ bookId, userData, lastSuccessfulPatch })
 
