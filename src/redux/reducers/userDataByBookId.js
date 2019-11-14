@@ -1,4 +1,4 @@
-import { latestLocationToStr } from '../../utils/toolbox'
+import { latestLocationToStr, createAccessCode } from '../../utils/toolbox'
 
 const initialState = {}
 
@@ -142,6 +142,8 @@ export default function(state = initialState, action) {
         uid: action.uid,
         name: action.name,
         updated_at: now,
+        access_code: createAccessCode(),
+        instructor_access_code: createAccessCode(),
         members: [
           {
             user_id: action.userId,

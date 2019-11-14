@@ -433,3 +433,12 @@ export const getMBSizeStr = numBytes => {
   const sizeInKB = Math.round(numBytes/10, 10) / 100
   return i18n("{{num}} kb", { num: sizeInKB })
 }
+
+export const createAccessCode = () => {
+  const digitOptions = `ABCDEFGHJKMNPQRSTUVWXYZ23456789`
+
+  return Array(6)
+    .fill(0)
+    .map(() => digitOptions[parseInt(Math.random() * digitOptions.length, 10)])
+    .join('')
+}

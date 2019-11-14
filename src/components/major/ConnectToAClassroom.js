@@ -8,7 +8,7 @@ import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
 import i18n from "../../utils/i18n"
 import { refreshUserData } from "../../utils/syncUserData"
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, JSON_to_URLEncoded } from '../../utils/toolbox'
 
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
@@ -41,7 +41,7 @@ const ConnectToAClassroom = React.memo(({
   const { historyPush } = useRouterState({ history })
 
   const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts)[1] || ""
+  const accountId = Object.keys(book.accounts)[0] || ""
   const idpId = accountId.split(':')[0]
   const idp = idps[idpId]
 
@@ -51,25 +51,26 @@ const ConnectToAClassroom = React.memo(({
       setConnecting(true)
 
       const path = `${getDataOrigin(idp)}/connect_to_classroom`
+      let response
+      try {
+        response = await fetch(path, getReqOptionsWithAdditions({
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+            "x-cookie-override": accounts[accountId].cookie,
+          },
+          body: JSON_to_URLEncoded({ code }),
+        }))
+      } catch(e) {}
 
-      const response = await fetch(path, getReqOptionsWithAdditions({
-        method: 'POST',
-        headers: {
-          "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
-          "x-cookie-override": accounts[accountId].cookie,
-        },
-        body: JSON_to_URLEncoded({ code }),
-      }))
-  
-      if(response.status >= 400) {
+      if(!response || response.status >= 400) {
         historyPush("/error", {
           message: i18n("Failed to connect to the classroom. Check the code and try again."),
         })
-        setConnecting(false)
         return
       }
 
-      const { uid } = response.json()
+      const { uid } = await response.json()
 
       const { success } = await refreshUserData({
         accountId,
