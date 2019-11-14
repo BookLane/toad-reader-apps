@@ -97,15 +97,7 @@ const BookHeader = React.memo(({
       },
     ]),
     ...(!['ENHANCED', 'INSTRUCTOR'].includes(bookVersion) ? [] : [{
-      title: (
-        classrooms.length >= 2
-          ? i18n("Change classrooms")
-          : (
-            bookVersion === 'INSTRUCTOR'
-              ? i18n("Create a classroom")
-              : i18n("Connect to a classroom")
-          )
-      ),
+      title: i18n("Manage classrooms"),
       onPress: toggleShowChangeClassroom,
     }]),
     // {

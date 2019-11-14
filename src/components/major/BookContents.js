@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native"
 import { List } from "react-native-ui-kitten"
 
 import BookContentsLine from "../basic/BookContentsLine"
+import EnhancedHeader from "./EnhancedHeader"
 
 const styles = StyleSheet.create({
   list: {
@@ -11,13 +12,10 @@ const styles = StyleSheet.create({
   },
 })
 
-const baseListItemStyle = {
-  backgroundColor: 'transparent',
-}
-
 const BookContents = React.memo(({
   toc,
   goToHref,
+  bookId,
 }) => {
 
   if(!toc) return null
@@ -62,11 +60,16 @@ const BookContents = React.memo(({
   )
 
   return (
-    <List
-      style={styles.list}
-      data={data}
-      renderItem={renderItem}
-    />
+    <>
+      <EnhancedHeader
+        bookId={bookId}
+      />
+      <List
+        style={styles.list}
+        data={data}
+        renderItem={renderItem}
+      />
+    </>
   )
 })
 

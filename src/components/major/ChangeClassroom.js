@@ -93,7 +93,10 @@ const ChangeClassroom = React.memo(({
     >
       {i18n("Cancel")}
     </Button>,
-    <View style={styles.buttonRow}>
+    <View
+      key="actions"
+      style={styles.buttonRow}
+    >
       {bookVersion === 'INSTRUCTOR' &&
         <Button
           key="create"

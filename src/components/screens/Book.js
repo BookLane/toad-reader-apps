@@ -626,6 +626,7 @@ const Book = React.memo(({
           <BookContents
             goToHref={goToHref}
             toc={bookLoaded && books[bookId].toc}
+            bookId={bookId}
           />
         </View>
         <View />
