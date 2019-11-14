@@ -2,10 +2,11 @@ import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Menu, Button } from "react-native-ui-kitten"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
 
 import Dialog from "./Dialog"
 import CreateClassroom from "./CreateClassroom"
+import ConnectToAClassroom from "./ConnectToAClassroom"
 import i18n from "../../utils/i18n"
 
 import BackFunction from '../basic/BackFunction'
@@ -16,8 +17,11 @@ const styles = StyleSheet.create({
   menu: {
     width: '100%',
   },
+  buttonRow: {
+    width: '100%',
+  },
   button: {
-    marginHorizontal: 4,
+    margin: 4,
   },
 })
 
@@ -33,6 +37,7 @@ const ChangeClassroom = React.memo(({
 }) => {
 
   const [ showCreateClassroom, setShowCreateClassroom ] = useState(false)
+  const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
@@ -42,7 +47,7 @@ const ChangeClassroom = React.memo(({
   const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const currentClassroomIndex = classrooms.map(({ uid }) => uid).indexOf(currentClassroomUid)
-  const hasInstructorVersion = Object.values(book.accounts)[0].version === 'INSTRUCTOR'
+  const bookVersion = Object.values(book.accounts)[0].version
 
   const classroomData = classrooms
     .map(({ uid, name }) => ({
@@ -61,29 +66,22 @@ const ChangeClassroom = React.memo(({
   )
 
   const toggleShowCreateClassroom = useCallback(
-    () => {
+    ({ hideAll }={}) => {
       setShowCreateClassroom(!showCreateClassroom)
-      if(showCreateClassroom) {
-        requestHide()
-      }
+      if(hideAll) requestHide()
     },
     [ showCreateClassroom ],
   )
 
+  const toggleShowConnectToAClassroom = useCallback(
+    ({ hideAll }={}) => {
+      setShowConnectToAClassroom(!showConnectToAClassroom)
+      if(hideAll) requestHide()
+    },
+    [ showConnectToAClassroom ],
+  )
+
   const buttons = [
-    ...(!hasInstructorVersion ? [] : [
-      <Button
-        key="create"
-        size="small"
-        onPress={toggleShowCreateClassroom}
-        status="primary"
-        style={[
-          styles.button,
-        ]}
-      >
-        {i18n("Create new classroom")}
-      </Button>,
-    ]),
     <Button
       key="close"
       size="small"
@@ -95,6 +93,34 @@ const ChangeClassroom = React.memo(({
     >
       {i18n("Cancel")}
     </Button>,
+    <View style={styles.buttonRow}>
+      {bookVersion === 'INSTRUCTOR' &&
+        <Button
+          key="create"
+          size="small"
+          onPress={toggleShowCreateClassroom}
+          status="primary"
+          style={[
+            styles.button,
+          ]}
+        >
+          {i18n("Create new classroom")}
+        </Button>
+      }
+      {['INSTRUCTOR', 'ENHANCED'].includes(bookVersion) &&
+        <Button
+          key="connect"
+          size="small"
+          onPress={toggleShowConnectToAClassroom}
+          status="primary"
+          style={[
+            styles.button,
+          ]}
+        >
+          {i18n("Connect to a classroom")}
+        </Button>
+      }
+    </View>,
   ]
 
   return (
@@ -116,6 +142,11 @@ const ChangeClassroom = React.memo(({
       <CreateClassroom
         open={showCreateClassroom}
         requestHide={toggleShowCreateClassroom}
+        bookId={bookId}
+      />
+      <ConnectToAClassroom
+        open={showConnectToAClassroom}
+        requestHide={toggleShowConnectToAClassroom}
         bookId={bookId}
       />
     </>

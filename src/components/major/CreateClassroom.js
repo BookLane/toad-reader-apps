@@ -1,25 +1,19 @@
 import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Input } from "react-native-ui-kitten"
-import { StyleSheet } from "react-native"
+// import { StyleSheet } from "react-native"
 import uuidv4 from 'uuid/v4'
 
 import Dialog from "./Dialog"
+import DialogInput from "../basic/DialogInput"
 import i18n from "../../utils/i18n"
 
 import BackFunction from '../basic/BackFunction'
 
 import { createClassroom, setCurrentClassroom } from "../../redux/actions"
 
-const styles = StyleSheet.create({
-  menu: {
-    width: '100%',
-  },
-  button: {
-    marginHorizontal: 4,
-  },
-})
+// const styles = StyleSheet.create({
+// })
 
 const CreateClassroom = React.memo(({
   open,
@@ -58,7 +52,7 @@ const CreateClassroom = React.memo(({
         uid,
       })
 
-      requestHide()
+      requestHide({ hideAll: true })
     },
     [ bookId, name, userId, userDataByBookId ],
   )
@@ -73,11 +67,11 @@ const CreateClassroom = React.memo(({
         type="confirm"
         title={i18n("Create new classroom")}
         message={(
-          <Input
-            style={styles.input}
+          <DialogInput
             value={name}
             onChangeText={onChangeText}
-            placeholder={i18n("Classroom name (Eg. “Fall 2020”)")}
+            label={i18n("Classroom name")}
+            placeholder={i18n("Eg. Fall 2020")}
           />
         )}
         confirmButtonText={i18n("Create")}

@@ -35,12 +35,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 16,
     paddingTop: 0,
-    paddingBottom: 8,
+    paddingBottom: 4,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    flexWrap: 'wrap',
   },
   button: {
-    marginHorizontal: 4,
+    margin: 4,
   },
 })
 

@@ -50,7 +50,7 @@ const BookHeader = React.memo(({
   const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
-  const hasInstructorVersion = Object.values(book.accounts)[0].version === 'INSTRUCTOR'
+  const bookVersion = Object.values(book.accounts)[0].version
 
   const toggleShowChangeClassroom = useCallback(
     () => setShowChangeClassroom(!showChangeClassroom),
@@ -95,11 +95,19 @@ const BookHeader = React.memo(({
           name: currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name,
         }),
       },
-      ...(classrooms.length < 2 && !hasInstructorVersion ? [] : [{
-        title: i18n("Change classrooms"),
-        onPress: toggleShowChangeClassroom,
-      }]),
     ]),
+    ...(!['ENHANCED', 'INSTRUCTOR'].includes(bookVersion) ? [] : [{
+      title: (
+        classrooms.length >= 2
+          ? i18n("Change classrooms")
+          : (
+            bookVersion === 'INSTRUCTOR'
+              ? i18n("Create a classroom")
+              : i18n("Connect to a classroom")
+          )
+      ),
+      onPress: toggleShowChangeClassroom,
+    }]),
     // {
     //   title: i18n("My highlights and notes"),
     //   onPress: goToHighlights,
@@ -131,7 +139,7 @@ const BookHeader = React.memo(({
         setShowOptions(false)
       }
     },
-    [ currentClassroom, defaultClassroomUid, hasInstructorVersion, classrooms, toggleShowChangeClassroom, bookLinkInfo, goToBookLink, removeFromDevice ],
+    [ currentClassroom, defaultClassroomUid, bookVersion, classrooms, toggleShowChangeClassroom, bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
   const onBackPress = useCallback(

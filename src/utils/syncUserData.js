@@ -337,22 +337,22 @@ export const reportReadings = info => setTimeout(() => {
   })
 })
 
-export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() => {
+export const refreshUserData = ({ accountId, bookId, info }) => new Promise(resolve => setTimeout(() => {
   // the setTimeout ensures this is async
 
   const { idps, accounts, books, userDataByBookId, updateAccount, setUserData } = setAndGetLatestInfo(info)
   
-  if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData) return
-  if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return
-  if(!books[bookId].accounts[accountId]) return
+  if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData) return resolve()
+  if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return resolve()
+  if(!books[bookId].accounts[accountId]) return resolve()
 
   const { idpId, idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
 
-  if(idp.idpNoAuth) return
+  if(idp.idpNoAuth) return resolve()
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
-  if(!connectionInfo.online) return
+  if(!connectionInfo.online) return resolve()
 
   const path = `${getDataOrigin(idp)}/users/${userId}/books/${bookId}.json`
 
@@ -372,7 +372,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
         if(response._bodyText === "") {
           // there has not yet been any user data set for this book
           patch()
-          return
+          return resolve({ success: true })
         }
 
         response.json()
@@ -384,7 +384,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
                 response,
                 retry: () => refreshUserData({ accountId, bookId }),
               })
-              return
+              return resolve()
             }
 
             // convert user data updated_at times to local device per server time offset
@@ -395,6 +395,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
             console.log(`User data refresh successful (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
 
             patch()
+            resolve({ success: true })
             
           })
           .catch(error => {
@@ -403,6 +404,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
               response,
               retry: () => refreshUserData({ accountId, bookId }),
             })
+            resolve()
           })
 
       } else if(response.status === 403) {
@@ -419,6 +421,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
+        resolve()
 
       } else {
         reportResponseError({
@@ -426,6 +429,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
+        resolve()
       }
 
     })
@@ -439,8 +443,10 @@ export const refreshUserData = ({ accountId, bookId, info }) => setTimeout(() =>
         retry: () => refreshUserData({ accountId, bookId }),
       })
 
+      resolve()
+
     })
-})
+}))
 
 console.log('Setting up event listeners for patch and reportReadings...')
 // NetInfo.addEventListener('connectionChange', () => patch())
