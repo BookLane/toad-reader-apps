@@ -46,7 +46,7 @@ export default function(state = initialState, action) {
               version: book.version || 'BASE',
               ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
               ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
-              lastSuccessfulPatch: Date.now(),
+              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || Date.now(),
             },
           },
         }
