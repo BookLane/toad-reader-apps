@@ -22,7 +22,7 @@ const setAndGetLatestInfo = info => {
 }
 
 const getAccountInfo = ({ idps, accountId }) => {
-  const [ idpId, userId ] = accountId.split(':')
+  const [ idpId, userId ] = accountId.split(':').map(Number)
   const idp = idps[idpId]
   const { serverTimeOffset=0 } = latestInfo.accounts[accountId]
 
@@ -76,13 +76,16 @@ export const patch = info => setTimeout(() => {
 
     if(!idp || !userId || idp.idpNoAuth) return
 
-    // filter down the userData object to only new items
+    // Filter down the userData object to only new items
+    // Also, ignore things I did not and cannot modify
     for(let bookId in userDataByBookId) {
-      if(!books[bookId]) continue   // should not ever happen
-      if(!books[bookId].accounts[accountId]) continue
+      const book = books[bookId]
+      if(!book) continue   // should not ever happen
+      if(!book.accounts[accountId]) continue
 
+      const isPublisher = book.version === 'PUBLISHER'
       const bookUserData = userDataByBookId[bookId]
-      const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
+      const lastSuccessfulPatch = book.accounts[accountId].lastSuccessfulPatch || 0
 
       newUserData[bookId] = { highlights: [], classrooms: [] };
 
@@ -102,12 +105,16 @@ export const patch = info => setTimeout(() => {
       ;(bookUserData.classrooms || []).forEach(classroom => {
         const { members=[], tools=[] } = classroom
         let classroomToPush = {
+          uid: classroom.uid,
           members: [],
           tools: [],
         }
         let classroomHasUpdate = false
 
-        if(classroom.updated_at > lastSuccessfulPatch) {
+        const isInstructor = members.some(({ user_id, role }) => (user_id === userId && role === 'INSTRUCTOR'))
+        const isPublisherAndThisIsTheDefaultClassroom = isPublisher && classroom.uid === `${idpId}-${bookId}`
+
+        if(isInstructor && classroom.updated_at > lastSuccessfulPatch) {
           classroomToPush = {
             ...classroom,
             ...classroomToPush,
@@ -116,25 +123,29 @@ export const patch = info => setTimeout(() => {
           classroomHasUpdate = true
         }
 
-        members.forEach(member => {
-          if(member.updated_at > lastSuccessfulPatch) {
-            const memberToPush = { ...member }
-            delete memberToPush.created_at
-            delete memberToPush.email
-            delete memberToPush.fullname
-            classroomToPush.members.push(memberToPush)
-            classroomHasUpdate = true
-          }
-        })
+        if(isInstructor) {
+          members.forEach(member => {
+            if(member.updated_at > lastSuccessfulPatch) {
+              const memberToPush = { ...member }
+              delete memberToPush.created_at
+              delete memberToPush.email
+              delete memberToPush.fullname
+              classroomToPush.members.push(memberToPush)
+              classroomHasUpdate = true
+            }
+          })
+        }
 
-        tools.forEach(tool => {
-          if(tool.updated_at > lastSuccessfulPatch) {
-            const toolToPush = { ...tool }
-            delete toolToPush.created_at
-            classroomToPush.tools.push(toolToPush)
-            classroomHasUpdate = true
-          }
-        })
+        if(isInstructor || isPublisherAndThisIsTheDefaultClassroom) {
+          tools.forEach(tool => {
+            if(tool.updated_at > lastSuccessfulPatch) {
+              const toolToPush = { ...tool }
+              delete toolToPush.created_at
+              classroomToPush.tools.push(toolToPush)
+              classroomHasUpdate = true
+            }
+          })
+        }
         
         if(classroomHasUpdate) {
           newUserData[bookId].classrooms.push(classroomToPush)

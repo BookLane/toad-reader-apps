@@ -43,11 +43,17 @@ const ChangeClassroom = React.memo(({
   const accountId = Object.keys(book.accounts)[0] || ""
   const idpId = accountId.split(':')[0]
 
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const currentClassroomIndex = classrooms.map(({ uid }) => uid).indexOf(currentClassroomUid)
+  const classroomUids = classrooms.map(({ uid }) => uid)
   const bookVersion = Object.values(book.accounts)[0].version
+
+  const defaultClassroomUid = `${idpId}-${bookId}`
+  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
+  let currentClassroomIndex = classroomUids.indexOf(currentClassroomUid)
+  if(currentClassroomUid && !currentClassroomIndex) {
+    currentClassroomUid = defaultClassroomUid
+    currentClassroomIndex = classroomUids.indexOf(currentClassroomUid)
+  }
 
   const classroomData = classrooms
     .map(({ uid, name }) => ({

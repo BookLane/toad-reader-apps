@@ -46,11 +46,16 @@ const BookHeader = React.memo(({
   const idpId = accountId.split(':')[0]
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
   const bookVersion = Object.values(book.accounts)[0].version
+
+  const defaultClassroomUid = `${idpId}-${bookId}`
+  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
+  let currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+  if(currentClassroomUid && !currentClassroom) {
+    currentClassroomUid = defaultClassroomUid
+    currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+  }
 
   const toggleShowChangeClassroom = useCallback(
     () => setShowChangeClassroom(!showChangeClassroom),

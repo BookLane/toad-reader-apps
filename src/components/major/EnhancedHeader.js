@@ -34,11 +34,16 @@ const EnhancedHeader = React.memo(({
   const accountId = Object.keys(book.accounts)[0] || ""
   const [ idpId, userId ] = accountId.split(':').map(Number)
 
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  const currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
   const bookVersion = Object.values(book.accounts)[0].version
+
+  const defaultClassroomUid = `${idpId}-${bookId}`
+  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
+  let currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+  if(currentClassroomUid && !currentClassroom) {
+    currentClassroomUid = defaultClassroomUid
+    currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
+  }
   const myRole = (((currentClassroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
 
   const hasFrontMatter = false
