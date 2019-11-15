@@ -69,16 +69,18 @@ const BookInfo = ({
 
   const { title, author } = bookInfo
 
-  const adminInfo = Object.keys(bookInfo.accounts).filter(accountId => {
+  let adminInfo = false
+  Object.keys(bookInfo.accounts).some(accountId => {
     const { isAdmin, cookie } = accounts[accountId] || {}
 
     if(isAdmin) {
-      return {
+      adminInfo = {
         idpId: accountId.split(':')[0],
         cookie,
       }
+      return true
     }
-  })[0]
+  })
 
   const confirmDelete = useCallback(
     () => setDeleteStatus('confirming'),
