@@ -91,8 +91,10 @@ const AppMenu = ({
 
       const doLogOut = () => {
         history.goBack()
-        historyPush("/", {
-          logOutAccountId: accountId,
+        setTimeout(() => {
+          historyReplace("/", {
+            logOutAccountId: accountId,
+          })
         })
       }
 
