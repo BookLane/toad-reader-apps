@@ -95,7 +95,7 @@ const AppMenu = ({
           historyReplace("/", {
             logOutAccountId: accountId,
           })
-        })
+        }, 100)
       }
 
       if(Platform.OS === 'web') {
@@ -136,7 +136,7 @@ const AppMenu = ({
         historyReplace("/", {
           refreshLibraryAccountId: accountId,
         })
-      })
+      }, 100)
     },
     [ accounts, idps, history ],
   )
