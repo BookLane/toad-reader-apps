@@ -8,7 +8,7 @@ import i18n from "../../utils/i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import ChangeClassroom from "./ChangeClassroom"
+import ManageClassrooms from "./ManageClassrooms"
 import useWideMode from "../../hooks/useWideMode"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub"
@@ -38,7 +38,7 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)
-  const [ showChangeClassroom, setShowChangeClassroom ] = useState(false)
+  const [ showManageClassrooms, setShowManageClassrooms ] = useState(false)
   const wideMode = useWideMode()
 
   const book = books[bookId] || {}
@@ -57,9 +57,9 @@ const BookHeader = React.memo(({
     currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
   }
 
-  const toggleShowChangeClassroom = useCallback(
-    () => setShowChangeClassroom(!showChangeClassroom),
-    [ showChangeClassroom ],
+  const toggleShowManageClassrooms = useCallback(
+    () => setShowManageClassrooms(!showManageClassrooms),
+    [ showManageClassrooms ],
   )
 
   const goToBookLink = useCallback(
@@ -103,7 +103,7 @@ const BookHeader = React.memo(({
     ]),
     ...(!['ENHANCED', 'INSTRUCTOR'].includes(bookVersion) ? [] : [{
       title: i18n("Manage classrooms"),
-      onPress: toggleShowChangeClassroom,
+      onPress: toggleShowManageClassrooms,
     }]),
     // {
     //   title: i18n("My highlights and notes"),
@@ -136,7 +136,7 @@ const BookHeader = React.memo(({
         setShowOptions(false)
       }
     },
-    [ currentClassroom, defaultClassroomUid, bookVersion, classrooms, toggleShowChangeClassroom, bookLinkInfo, goToBookLink, removeFromDevice ],
+    [ currentClassroom, defaultClassroomUid, bookVersion, classrooms, toggleShowManageClassrooms, bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
   const onBackPress = useCallback(
@@ -196,9 +196,9 @@ const BookHeader = React.memo(({
         }
         rightControls={rightControls}
       />
-      <ChangeClassroom
-        open={showChangeClassroom}
-        requestHide={toggleShowChangeClassroom}
+      <ManageClassrooms
+        open={showManageClassrooms}
+        requestHide={toggleShowManageClassrooms}
         bookId={bookId}
       />
     </>

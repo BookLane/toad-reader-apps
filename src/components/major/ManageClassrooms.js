@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const ChangeClassroom = React.memo(({
+const ManageClassrooms = React.memo(({
   open,
   requestHide,
   bookId,
@@ -172,4 +172,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCurrentClassroom,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(ChangeClassroom)
+export default connect(mapStateToProps, matchDispatchToProps)(ManageClassrooms)
