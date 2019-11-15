@@ -137,7 +137,7 @@ const ChangeClassroom = React.memo(({
       {!!open && <BackFunction func={requestHide} />}
       <Dialog
         open={!!open}
-        title={i18n("Change classroom")}
+        title={i18n("Manage classrooms")}
         message={(
           <Menu
             data={classroomData}
