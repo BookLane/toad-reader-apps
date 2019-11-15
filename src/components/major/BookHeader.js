@@ -12,7 +12,7 @@ import ChangeClassroom from "./ChangeClassroom"
 import useWideMode from "../../hooks/useWideMode"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub"
-import { getFirstBookLinkInfo } from "../../utils/toolbox"
+import { getFirstBookLinkInfo, getIdsFromAccountId } from "../../utils/toolbox"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 
@@ -43,7 +43,7 @@ const BookHeader = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const idpId = accountId.split(':')[0]
+  const { idpId } = getIdsFromAccountId(accountId)
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])

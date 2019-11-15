@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Text, Platform } from "react-native"
 import i18n from "../../utils/i18n"
-import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr } from "../../utils/toolbox"
+import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId } from "../../utils/toolbox"
 import { Link } from "../routers/react-router"
 
 import Dialog from "./Dialog"
@@ -60,7 +60,7 @@ const BookImporter = ({
     () => {
       if(!open) return
 
-      const idpId = accountId.split(':')[0]
+      const { idpId } = getIdsFromAccountId(accountId)
       const { cookie } = accounts[accountId]
 
       const path = `${getDataOrigin(idps[idpId])}/importbook.json`

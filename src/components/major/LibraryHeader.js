@@ -6,7 +6,7 @@ import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import { OverflowMenu } from "react-native-ui-kitten"
 
-// import { debounce } from "../../utils/toolbox"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import { setSort, toggleView } from "../../redux/actions"
 
@@ -32,7 +32,7 @@ const LibraryHeader = ({
   }
 
   if(accounts[scope]) {
-    title = idps[scope.split(':')[0]].idpName
+    title = idps[getIdsFromAccountId(scope).idpId].idpName
     subtitle = accounts[scope].email
   }
 

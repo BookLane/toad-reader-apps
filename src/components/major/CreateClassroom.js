@@ -7,6 +7,7 @@ import uuidv4 from 'uuid/v4'
 import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
 import i18n from "../../utils/i18n"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -31,7 +32,7 @@ const CreateClassroom = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const userId = Number(accountId.split(':')[1])
+  const { userId } = getIdsFromAccountId(accountId)
 
   const createNewClassroom = useCallback(
     () => {

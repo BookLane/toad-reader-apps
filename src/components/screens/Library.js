@@ -28,7 +28,7 @@ import Login from "../major/Login"
 import WebView from "../major/WebView"
 
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 
@@ -171,7 +171,7 @@ const Library = ({
   const updateBooks = useCallback(
     async ({ accountId }) => {
 
-      const [ idpId ] = accountId.split(':')
+      const { idpId } = getIdsFromAccountId(accountId)
 
       const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
       let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
@@ -224,7 +224,7 @@ const Library = ({
         for(let accountId in accounts) {
           try {
 
-            const [ idpId ] = accountId.split(':')
+            const { idpId } = getIdsFromAccountId(accountId)
 
             // no need to get the library listing if we already have it
             if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
@@ -320,7 +320,7 @@ const Library = ({
     : (scope == 'device'
       ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
       : library.bookList.filter(bookId => (
-        Object.keys(books[bookId].accounts).some(accountId => accountId.split(':')[0] == scope.split(':')[0])
+        Object.keys(books[bookId].accounts).some(accountId => getIdsFromAccountId(accountId).idpId === getIdsFromAccountId(scope).idpId)
       ))
     )
 

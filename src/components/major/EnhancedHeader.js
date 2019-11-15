@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import i18n from "../../utils/i18n"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
 const styles = StyleSheet.create({
   container: {
@@ -32,7 +33,7 @@ const EnhancedHeader = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const [ idpId, userId ] = accountId.split(':').map(Number)
+  const { idpId, userId } = getIdsFromAccountId(accountId)
 
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const bookVersion = Object.values(book.accounts)[0].version

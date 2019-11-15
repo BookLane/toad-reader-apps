@@ -442,3 +442,12 @@ export const createAccessCode = () => {
     .map(() => digitOptions[parseInt(Math.random() * digitOptions.length, 10)])
     .join('')
 }
+
+export const getIdsFromAccountId = accountId => {
+  const [ idpId, userId ] = accountId.split(':').map(Number)
+
+  return {
+    idpId,
+    userId,
+  }
+}

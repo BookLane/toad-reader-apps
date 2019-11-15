@@ -8,6 +8,7 @@ import Dialog from "./Dialog"
 import CreateClassroom from "./CreateClassroom"
 import ConnectToAClassroom from "./ConnectToAClassroom"
 import i18n from "../../utils/i18n"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -41,7 +42,7 @@ const ChangeClassroom = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const idpId = accountId.split(':')[0]
+  const { idpId } = getIdsFromAccountId(accountId)
 
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const classroomUids = classrooms.map(({ uid }) => uid)

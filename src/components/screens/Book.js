@@ -19,7 +19,7 @@ import CustomKeepAwake from "../basic/CustomKeepAwake"
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getSpineAndPage, getToolbarHeight, getPageSize,
-         isIPhoneX, setStatusBarHidden, showXapiConsent } from "../../utils/toolbox"
+         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useDimensions from "../../hooks/useDimensions"
@@ -272,7 +272,7 @@ const Book = React.memo(({
     
           const accountId = Object.keys(books[bookId].accounts)[0]
           const account = accounts[accountId]
-          const idpId = accountId.split(':')[0]
+          const { idpId } = getIdsFromAccountId(accountId)
           const idp = idps[idpId]
     
           const { toc, spines, success } = await parseEpub({ bookId, idp, account })

@@ -1,6 +1,6 @@
 import { Platform, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin } from "./toolbox"
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -22,7 +22,7 @@ const setAndGetLatestInfo = info => {
 }
 
 const getAccountInfo = ({ idps, accountId }) => {
-  const [ idpId, userId ] = accountId.split(':').map(Number)
+  const { idpId, userId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
   const { serverTimeOffset=0 } = latestInfo.accounts[accountId]
 

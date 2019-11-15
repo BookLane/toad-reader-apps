@@ -14,7 +14,7 @@ import BookInfoDetails from "./BookInfoDetails"
 import i18n from "../../utils/i18n"
 import Dialog from "../major/Dialog"
 
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId } from '../../utils/toolbox'
 
 import { deleteBook } from "../../redux/actions"
 
@@ -75,7 +75,7 @@ const BookInfo = ({
 
     if(isAdmin) {
       adminInfo = {
-        idpId: accountId.split(':')[0],
+        idpId: getIdsFromAccountId(accountId).idpId,
         cookie,
       }
       return true

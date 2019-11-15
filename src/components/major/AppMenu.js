@@ -8,6 +8,7 @@ import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } fr
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
 import i18n from "../../utils/i18n"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
@@ -85,7 +86,7 @@ const AppMenu = ({
   const confirmLogOut = useCallback(
     () => {
       const accountId = Object.keys(accounts)[0] || ""
-      const idpId = accountId.split(':')[0]
+      const { idpId } = getIdsFromAccountId(accountId)
 
       if(!idpId || !idps[idpId]) return
 
@@ -120,7 +121,7 @@ const AppMenu = ({
   const reLogin = useCallback(
     async () => {
       const accountId = Object.keys(accounts)[0] || ""
-      const idpId = accountId.split(':')[0]
+      const { idpId } = getIdsFromAccountId(accountId)
 
       if(!idpId || !idps[idpId]) return
       
@@ -168,7 +169,7 @@ const AppMenu = ({
 
   const accountIdpIds = []
   const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
-    const idpId = accountId.split(':')[0]
+    const { idpId } = getIdsFromAccountId(accountId)
     if(accountIdpIds.includes(idpId)) return true
     accountIdpIds.push(idpId)
   })

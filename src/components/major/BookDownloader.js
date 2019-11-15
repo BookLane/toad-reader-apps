@@ -7,7 +7,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from '../../hooks/useRouterState'
 
-import { getBooksDir, getDataOrigin } from "../../utils/toolbox"
+import { getBooksDir, getDataOrigin, getIdsFromAccountId } from "../../utils/toolbox"
 import { fetchZipAndAssets } from "../../utils/zipDownloader"
 import parseEpub from "../../utils/parseEpub"
 
@@ -72,8 +72,9 @@ const BookDownloader = ({
     }
 
     let throttleLastRan = 0
+    const { idpId } = getIdsFromAccountId(accountId)
     const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl: `${getDataOrigin(idps[accountId.split(':')[0]])}/epub_content/book_${bookId}/book.epub`,
+      zipUrl: `${getDataOrigin(idps[idpId])}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
       progressCallback: progress => {

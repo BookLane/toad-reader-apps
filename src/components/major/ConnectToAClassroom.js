@@ -8,7 +8,7 @@ import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
 import i18n from "../../utils/i18n"
 import { refreshUserData } from "../../utils/syncUserData"
-import { getDataOrigin, getReqOptionsWithAdditions, JSON_to_URLEncoded } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, JSON_to_URLEncoded, getIdsFromAccountId } from '../../utils/toolbox'
 
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
@@ -42,7 +42,7 @@ const ConnectToAClassroom = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const idpId = accountId.split(':')[0]
+  const { idpId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
 
   const connectToAClassroom = useCallback(

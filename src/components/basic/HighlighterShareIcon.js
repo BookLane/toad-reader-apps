@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import i18n from "../../utils/i18n"
 
-import { getFullName, getDataOrigin } from '../../utils/toolbox'
+import { getFullName, getDataOrigin, getIdsFromAccountId } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   share: {
@@ -29,7 +29,7 @@ const HighlighterShareIcon = React.memo(({
     () => {
       const book = books[bookId] || {}
       const accountId = Object.keys(book.accounts)[0] || ""
-      const idpId = accountId.split(':')[0]
+      const { idpId } = getIdsFromAccountId(accountId)
       const idp = idps[idpId]
       const { latest_location } = (userDataByBookId[bookId] || {})
       const fullname = getFullName(accounts[accountId])
