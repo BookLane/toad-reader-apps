@@ -31,7 +31,7 @@ const CreateClassroom = React.memo(({
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
-  const userId = accountId.split(':')[1]
+  const userId = Number(accountId.split(':')[1])
 
   const createNewClassroom = useCallback(
     () => {
@@ -65,7 +65,7 @@ const CreateClassroom = React.memo(({
       <Dialog
         open={!!open}
         type="confirm"
-        title={i18n("Create new classroom")}
+        title={i18n("Create a new classroom")}
         message={(
           <DialogInput
             value={name}

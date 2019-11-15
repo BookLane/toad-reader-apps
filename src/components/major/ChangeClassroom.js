@@ -113,7 +113,7 @@ const ChangeClassroom = React.memo(({
             styles.button,
           ]}
         >
-          {i18n("Create new classroom")}
+          {i18n("Create a new classroom")}
         </Button>
       }
       {['INSTRUCTOR', 'ENHANCED'].includes(bookVersion) &&
