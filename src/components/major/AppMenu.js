@@ -132,8 +132,10 @@ const AppMenu = ({
       // login process again, but hidden.
 
       history.goBack()
-      historyReplace("/", {
-        refreshLibraryAccountId: accountId,
+      setTimeout(() => {
+        historyReplace("/", {
+          refreshLibraryAccountId: accountId,
+        })
       })
     },
     [ accounts, idps, history ],
