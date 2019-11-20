@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import { Button } from "react-native-ui-kitten"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"
 

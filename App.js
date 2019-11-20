@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react"
+import Constants from 'expo-constants'
 import './src/themes/style'
 // import * as Font from 'expo-font'
 
@@ -22,7 +23,14 @@ import customMapping from "./src/themes/custom-mapping"
 import updateDataStructure from "./src/utils/updateDataStructure"
 import { patch, reportReadings } from "./src/utils/syncUserData"
 
+import { i18nSetup } from "inline-i18n"
+import translations from "./src/utils/translations/current.json"
+
 import Library from "./src/components/screens/Library"
+
+const {
+  LANGUAGE_CODE='en',
+} = Constants.manifest.extra
 
 const patchMiddleware = store => next => action => {
   const result = next(action)
@@ -72,6 +80,11 @@ const App = () => {
       (async () => {
         
         await updateDataStructure()  // needs to be after the persistStore call above
+
+        await i18nSetup({
+          locales: [ LANGUAGE_CODE ],
+          fetchLocale: async locale => translations,
+        })
 
         setIsReady(true)
 

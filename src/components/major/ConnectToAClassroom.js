@@ -6,7 +6,7 @@ import { withRouter } from "react-router"
 
 import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import { refreshUserData } from "../../utils/syncUserData"
 import { getDataOrigin, getReqOptionsWithAdditions, JSON_to_URLEncoded, getIdsFromAccountId } from '../../utils/toolbox'
 

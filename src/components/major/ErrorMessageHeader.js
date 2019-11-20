@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from "react"
 // import { StyleSheet, Platform } from "react-native"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"

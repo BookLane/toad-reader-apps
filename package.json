@@ -16,7 +16,7 @@
     "push-to-staging": "(npm run confirm -s && npm run push-web-to-staging && expo publish --release-channel staging) || true",
     "push-web-to-staging": "expo build:web && node ./scripts/pushWebToStaging.js && rm register-service-worker.js",
     "push-web-to-production": "expo build:web && node ./scripts/pushWebToProduction.js && rm register-service-worker.js",
-    "setup-translation": "node ./scripts/makeTranslationFiles.js",
+    "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json'",
     "start": "expo start -w"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "expo": "^35.0.0",
     "expo-asset": "^7.0.0",
     "find-in-files": "^0.5.0",
+    "inline-i18n": "github:educational-resources-and-services/inline-i18n#a98d2547345ef73486f930e6b8e737b6b0c14f39",
     "jszip": "3.1.5",
     "node-libs-browser": "2.1.0",
     "react": "16.8.3",

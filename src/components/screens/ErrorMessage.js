@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { Updates } from "expo"
 import { StyleSheet, View, Text } from "react-native"
 import SafeLayout from "../basic/SafeLayout"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 import ErrorMessageHeader from "../major/ErrorMessageHeader"
 import useSetTimeout from "../../hooks/useSetTimeout"

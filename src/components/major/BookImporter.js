@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Text, Platform } from "react-native"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId } from "../../utils/toolbox"
 import { Link } from "../routers/react-router"
 

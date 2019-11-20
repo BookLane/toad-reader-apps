@@ -6,7 +6,7 @@ import { withRouter } from "react-router"
 
 // import { debounce, getBooksDir } from "../../utils/toolbox"
 import { confirmRemoveEPub } from "../../utils/removeEpub"
-// import i18n from "../../utils/i18n"
+// import { i18n } from "inline-i18n"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
 

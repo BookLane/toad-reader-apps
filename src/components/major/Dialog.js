@@ -1,7 +1,7 @@
 import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Modal, Button } from "react-native-ui-kitten"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({

@@ -7,7 +7,7 @@ import { StyleSheet, View } from "react-native"
 import Dialog from "./Dialog"
 import CreateClassroom from "./CreateClassroom"
 import ConnectToAClassroom from "./ConnectToAClassroom"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import BackFunction from '../basic/BackFunction'

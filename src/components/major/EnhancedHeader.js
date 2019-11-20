@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import { getIdsFromAccountId } from "../../utils/toolbox"
 
 const styles = StyleSheet.create({

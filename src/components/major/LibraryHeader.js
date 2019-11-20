@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import { OverflowMenu } from "react-native-ui-kitten"

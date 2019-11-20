@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Linking, Platform, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"

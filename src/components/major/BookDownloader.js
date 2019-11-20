@@ -2,7 +2,7 @@ import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from '../../hooks/useRouterState'

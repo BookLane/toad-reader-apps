@@ -6,7 +6,7 @@ import { StyleSheet, Text, View } from "react-native"
 
 import Dialog from "./Dialog"
 import Icon from "../basic/Icon"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 import BackFunction from '../basic/BackFunction'
 

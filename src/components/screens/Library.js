@@ -9,7 +9,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SideMenu from "react-native-side-menu"
 import SafeLayout from "../basic/SafeLayout"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 

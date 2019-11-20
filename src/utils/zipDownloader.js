@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system'
 import JSZip from "jszip"
 import { fetchWithProgress, encodeBase64 } from './toolbox'
-import i18n from "./i18n"
+import { i18n } from "inline-i18n"
 
 export const binaryExtensionToMimeTypeMap = {
   aac: 'audio/aac',

@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import i18n from "./i18n"
+// import { i18n } from "inline-i18n"
 import { AsyncStorage, Platform } from "react-native"
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox"
@@ -76,12 +76,9 @@ export const confirmRemoveEPub = ({ books, bookId, removeFromBookDownloadQueue, 
   //     ],
   //     destructiveButtonIndex: 0,
   //     cancelButtonIndex: 1,
-  //     title: i18n(
-  //       'Are you sure you want to remove "{{book_title}}" from this device?',
-  //       {
+  //     title: i18n("Are you sure you want to remove “{{book_title}}” from this device?", {
   //         book_title: books[bookId].title,
-  //       }
-  //     ),
+  //     }),
   //   },
   //   async buttonIndex => {
   //     if(buttonIndex == 0) {

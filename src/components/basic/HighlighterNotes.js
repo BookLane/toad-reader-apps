@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TextInput } from "react-native"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 
 const styles = StyleSheet.create({
   textinput: {

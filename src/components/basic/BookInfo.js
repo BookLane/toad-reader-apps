@@ -11,7 +11,7 @@ import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
 import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
-import i18n from "../../utils/i18n"
+import { i18n } from "inline-i18n"
 import Dialog from "../major/Dialog"
 
 import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId } from '../../utils/toolbox'
