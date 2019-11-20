@@ -17,6 +17,8 @@
     "push-web-to-staging": "expo build:web && node ./scripts/pushWebToStaging.js && rm register-service-worker.js",
     "push-web-to-production": "expo build:web && node ./scripts/pushWebToProduction.js && rm register-service-worker.js",
     "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json'",
+    "translate-convert-csv-to-json": "node node_modules/inline-i18n/scripts/convertTranslationCSVtoJSON.js --translations-dir='./src/utils/translations'",
+    "translate-convert-json-to-csv": "node node_modules/inline-i18n/scripts/convertTranslationJSONtoCSV.js --translations-dir='./src/utils/translations'",
     "start": "expo start -w"
   },
   "dependencies": {
