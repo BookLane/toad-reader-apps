@@ -79,6 +79,7 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
+      if(Platform.OS === 'web') return
       if(spineIdRef == null || pageIndexInSpine == null) return
       if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
       // the prevPageIndexInSpine === -1 check is to ensure that it previously did not have snapshots
