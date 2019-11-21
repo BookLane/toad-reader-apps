@@ -87,6 +87,7 @@ const LibraryHeader = ({
           selectedIndex={moreKeys.indexOf(library.sort)}
           onSelect={selectSort}
           onBackdropPress={toggleShowOptions}
+          placement='bottom end'
         >
           <HeaderIcon
             name="md-more"

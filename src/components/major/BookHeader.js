@@ -173,6 +173,7 @@ const BookHeader = React.memo(({
         selectedIndex={currentClassroom ? 0 : null}
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
+        placement='bottom end'
       >
         <HeaderIcon
           name="md-more"
