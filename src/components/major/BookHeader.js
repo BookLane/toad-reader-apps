@@ -174,6 +174,7 @@ const BookHeader = React.memo(({
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
         placement='bottom end'
+        style={{ width: 300 }}
       >
         <HeaderIcon
           name="md-more"
