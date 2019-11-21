@@ -9,9 +9,9 @@ import { getFullName, getDataOrigin, getIdsFromAccountId } from '../../utils/too
 
 const styles = StyleSheet.create({
   share: {
-    padding: 4,
-    fontSize: 22,
-    lineHeight: 26,
+    padding: 8,
+    fontSize: 21,
+    lineHeight: 21,
   },
 })
 
@@ -72,7 +72,7 @@ const HighlighterShareIcon = React.memo(({
       onPress={goShare}
     >
       <Ionicons
-        name="share"
+        name="md-share"
         style={styles.share}
       />
     </TouchableOpacity>

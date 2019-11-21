@@ -13,6 +13,7 @@ import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUse
 const styles = StyleSheet.create({
   container: {
     padding: Platform.OS === 'android' ? 25 : 15,
+    paddingRight: 10,
     flexDirection: 'row',
     maxWidth: '100%',
   },
@@ -37,7 +38,8 @@ const styles = StyleSheet.create({
     width: 29,
     textAlign: 'center',
     display: 'flex',
-    paddingTop: Platform.OS === 'ios' ? 2 : 0,
+    paddingTop: [ 'ios', 'web' ].includes(Platform.OS) ? 2 : 0,
+    paddingLeft: 8,
   },
   highlight1: {
     backgroundColor: 'rgba(28,96,171,.2)',
@@ -152,7 +154,7 @@ const HighlighterLabel = React.memo(({
           onPress={toggleHighlight1}
         >
           <Ionicons
-            name="trash"
+            name="md-trash"
             style={styles.trash}
           />
         </TouchableComponent>
