@@ -1,6 +1,8 @@
 import React from "react"
 import { StyleSheet, View, Text } from "react-native"
-import { Modal, Button } from "react-native-ui-kitten"
+import { Button } from "react-native-ui-kitten"
+// import { Modal, Button } from "react-native-ui-kitten"
+import { Modal } from "../ui-fixes/Modal"
 import { i18n } from "inline-i18n"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
