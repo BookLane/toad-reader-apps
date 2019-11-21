@@ -10,7 +10,7 @@ export default function(state = initialState, action) {
   let classrooms = [ ...(userDataForThisBook.classrooms || []) ]
   const now = Date.now()
 
-  const retainFilter = items => items.filter(({ updated_at, _delete }) => updated_at > action.lastSuccessfulPatch && !_delete)
+  const retainFilter = items => (items || []).filter(({ updated_at, _delete }) => updated_at > action.lastSuccessfulPatch && !_delete)
 
   switch (action.type) {
 
@@ -47,7 +47,7 @@ export default function(state = initialState, action) {
       })
 
       // insert in members and tools
-      classrooms.forEach(({ uid, members={}, tools={} }) => {
+      classrooms.forEach(({ uid, members=[], tools=[] }) => {
         const membersToRetain = retainFilter(members)
         const toolsToRetain = retainFilter(tools)
 
