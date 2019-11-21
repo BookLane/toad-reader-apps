@@ -58,8 +58,8 @@ const Highlighter = React.memo(({
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
     thisBooksHighlights.some(h => {
-      if(h.spineIdRef === selectionInfo.spineIdRef && h.cfi === selectionInfo.cfi && !h._delete) {
-        highlight.current = h
+      if(h.spineIdRef === selectionInfo.spineIdRef && h.cfi === selectionInfo.cfi) {
+        highlight.current = h._delete ? undefined : h
         return true
       }
     })
@@ -73,11 +73,11 @@ const Highlighter = React.memo(({
       const { spineIdRef, cfi } = selectionInfo || {}
 
       if(editingNote) {
-        updateNoteInEdit(highlight.note)
+        updateNoteInEdit(highlight.current.note)
 
       } else {
         setHighlight({
-          ...highlight,
+          ...highlight.current,
           bookId,
           note: noteInEdit,
           patchInfo: {
@@ -95,7 +95,7 @@ const Highlighter = React.memo(({
         })
       }
     },
-    [ bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText, highlight, userDataByBookId, updateAccount, updateBookAccount ],
+    [ bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText, highlight.current, userDataByBookId, updateAccount, updateBookAccount ],
   )
 
   const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])
@@ -117,14 +117,14 @@ const Highlighter = React.memo(({
       <HighlighterLabel
         selectionInfo={selectionInfo}
         bookId={bookId}
-        highlight={highlight}
+        highlight={highlight.current}
         // setSelectionText={setSelectionText}
         isEditingNote={isEditingNote}
         endEditingNote={endEditingNote}
       />
-      {!!highlight && 
+      {!!highlight.current && 
         <HighlighterNotes
-          note={isEditingNote ? noteInEdit : highlight.note}
+          note={isEditingNote ? noteInEdit : highlight.current.note}
           updateNoteInEdit={updateNoteInEdit}
           setEditingNote={setEditingNote}
           noteTextInputRef={noteTextInputRef}

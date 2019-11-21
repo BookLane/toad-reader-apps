@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     flexDirection: 'row',
     maxWidth: '100%',
+    lineHeight: 37,
   },
   emptySpace: {
     flexGrow: 1,
@@ -58,14 +59,12 @@ const styles = StyleSheet.create({
   deletedMessageCont: {
     flexShrink: 1,
     flexDirection: 'row',
-    padding: 16,
-    margin: -8,
+  },
+  deletedMessage: {
+    lineHeight: 37,
+    marginRight: 8,
   },
   undoButton: {
-    marginTop: -11,
-    marginBottom: -13,
-    marginLeft: 20,
-    marginRight: 20,
   },
   doneButton: {
     marginTop: -6,
@@ -85,6 +84,8 @@ const HighlighterLabel = React.memo(({
   deleteHighlight,
   isEditingNote,
   endEditingNote,
+
+  userDataByBookId,
 }) => {
 
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
@@ -95,6 +96,8 @@ const HighlighterLabel = React.memo(({
     () => setShowDeletedMsgAndUndo(false),
     [ JSON.stringify(selectionInfo) ],
   )
+
+  const toggleHighlightDependencies = [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight, userDataByBookId ]
 
   const toggleHighlight = useCallback(
     color => {
@@ -111,7 +114,9 @@ const HighlighterLabel = React.memo(({
           bookId,
           spineIdRef,
           cfi,
-          patchInfo: this.props,
+          patchInfo: {
+            userDataByBookId,
+          },
         })
 
         setShowDeletedMsgAndUndo(true)
@@ -123,16 +128,18 @@ const HighlighterLabel = React.memo(({
           cfi,
           color,
           note,
-          patchInfo: this.props,
+          patchInfo: {
+            userDataByBookId,
+          },
         })
 
         setShowDeletedMsgAndUndo(false)
       }
     },
-    [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight ],
+    toggleHighlightDependencies,
   )
 
-  const toggleHighlight1 = useCallback(() => toggleHighlight(1), [])
+  const toggleHighlight1 = useCallback(() => toggleHighlight(1), toggleHighlightDependencies)
 
   const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
@@ -165,14 +172,16 @@ const HighlighterLabel = React.memo(({
   if(showDeletedMsgAndUndo) {
     highlightButton = (
       <View style={styles.deletedMessageCont}>
-        <Text>
+        <Text style={styles.deletedMessage}>
           {i18n("Highlight deleted.")}
         </Text>
-        <Button primary light
+        <Button
           style={styles.undoButton}
           onPress={toggleHighlight1}
+          size="small"
+          status="basic"
         >
-          <Text>{i18n("Undo")}</Text>
+          {i18n("Undo")}
         </Button>
       </View>
     )
@@ -199,11 +208,13 @@ const HighlighterLabel = React.memo(({
         />
       }
       {!!isEditingNote &&
-        <Button primary
+        <Button
           style={styles.doneButton}
           onPress={endEditingNote}
+          size="small"
+          status="basic"
         >
-          <Text>{i18n("Done")}</Text>
+          {i18n("Done")}
         </Button>
       }
       {/* <View style={styles.smallEmptySpace} /> */}
@@ -219,7 +230,8 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = ({}) => ({
+const mapStateToProps = ({ userDataByBookId }) => ({
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
