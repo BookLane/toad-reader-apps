@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from "react"
 import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { getToolbarHeight } from '../../utils/toolbox'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
   containerTop: {
     bottom: 'auto',
     top: 0,
+    paddingTop: getToolbarHeight() - 1,
   },
 })
 
