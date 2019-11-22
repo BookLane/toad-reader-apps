@@ -6,15 +6,21 @@ import { Modal } from "../ui-fixes/Modal"
 import { i18n } from "inline-i18n"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
+import useDimensions from "../../hooks/useDimensions"
+
 const styles = StyleSheet.create({
   modalBackdrop: {
     backgroundColor: "black",
     opacity: 0.5,
   },
   container: {
-    width: 300,
+    minWidth: 280,
+    maxWidth: 500,
+    marginLeft: 'auto',
+    marginRight: 'auto',
     paddingBottom: 10,
     backgroundColor: "white",
+    overflow: 'auto',
   },
   title: {
     fontSize: 18,
@@ -52,6 +58,7 @@ const Dialog = ({
   type="info",  // options: info, (edit), confirm
   title,
   message,
+  style,
   submitting,
 
   // specific to type="info"
@@ -75,6 +82,7 @@ const Dialog = ({
 }) => {
   
   // TODO: do fullscreen if small device size
+  const { width, height } = useDimensions().window
 
   const titles = {
     info: i18n("Note"),
@@ -136,37 +144,42 @@ const Dialog = ({
       allowBackdrop={true}
       backdropStyle={styles.modalBackdrop}
     >
-      <View style={styles.container}>
-        <Text style={styles.title}>{title || titles[type]}</Text>
-        {!!message &&
-          <View style={styles.messageContainer}>
-            {(message instanceof Array ? message : [message]).map((paragraph, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.messageParagraph,
-                  idx === 0 ? styles.messageFirstParagraph : null,
-                ]}
-              >
-                <Text
+      <View style={{ width }}>
+        <View style={[
+          styles.container,
+          style,
+        ]}>
+          <Text style={styles.title}>{title || titles[type]}</Text>
+          {!!message &&
+            <View style={styles.messageContainer}>
+              {(message instanceof Array ? message : [message]).map((paragraph, idx) => (
+                <View
+                  key={idx}
                   style={[
-                    styles.messageText,
-                    paragraph.textStyle,
+                    styles.messageParagraph,
+                    idx === 0 ? styles.messageFirstParagraph : null,
                   ]}
                 >
-                  {paragraph.text || paragraph}
-                </Text>
-              </View>
-            ))}
-          </View>
-        }
-        {!message && content}
-        {buttons.length > 0 &&
-          <View style={styles.buttonContainer}>
-            {buttons}
-          </View>
-        }
-        {!!submitting && <CoverAndSpin />}
+                  <Text
+                    style={[
+                      styles.messageText,
+                      paragraph.textStyle,
+                    ]}
+                  >
+                    {paragraph.text || paragraph}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          }
+          {!message && content}
+          {buttons.length > 0 &&
+            <View style={styles.buttonContainer}>
+              {buttons}
+            </View>
+          }
+          {!!submitting && <CoverAndSpin />}
+        </View>
       </View>
     </Modal>
   )
