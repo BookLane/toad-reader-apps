@@ -26,7 +26,6 @@ import {
 import { Size } from 'react-native-ui-kitten/ui/popover/type';
 import { ModalPresentingBased } from 'react-native-ui-kitten/ui/support/typings';
 
-const initialWindowSize: Size = Dimensions.get('screen');
 const TAG_CHILD: string = 'Modal';
 const initialContentSize: Size = { width: 0, height: 0 };
 export const baseModalTestId: string = '@modal/base';
@@ -247,12 +246,17 @@ export class Modal extends React.Component<ModalProps> {
   private renderModal = (): React.ReactElement => {
     const { backdropStyle } = this.props;
     const modal: React.ReactElement<ViewProps> = this.renderBaseModal();
+    const windowSize: Size = Dimensions.get('window');
+    const windowDimensions = {
+      width: windowSize.width,
+      height: windowSize.height,
+    };
 
     return backdropStyle ? (
       <React.Fragment>
         <View
           pointerEvents='box-none'
-          style={[styles.backdrop, backdropStyle]}/>
+          style={[windowDimensions, backdropStyle]}/>
         {modal}
       </React.Fragment>
     ) : modal;
@@ -284,8 +288,6 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     position: 'absolute',
-    width: initialWindowSize.width,
-    height: initialWindowSize.height,
   },
   hiddenModal: {
     opacity: 0,
