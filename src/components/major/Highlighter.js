@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   containerTop: {
     bottom: 'auto',
     top: 0,
-    paddingTop: getToolbarHeight() - 1,
+    paddingTop: Platform.OS === 'web' ? getToolbarHeight() - 1 : 0,
   },
 })
 
