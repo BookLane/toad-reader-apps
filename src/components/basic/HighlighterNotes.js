@@ -18,8 +18,8 @@ const HighlighterNotes = React.memo(({
   setEditingNote,
 }) => {
 
-  const onFocus = useCallback(() => setEditingNote(true), [])
-  const onBlur = useCallback(() => setEditingNote(false), [])
+  const onFocus = useCallback(() => setEditingNote(true), [ setEditingNote ])
+  const onBlur = useCallback(() => setEditingNote(false), [ setEditingNote ])
 
   return (
     <TextInput
