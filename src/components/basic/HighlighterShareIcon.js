@@ -120,7 +120,7 @@ const HighlighterShareIcon = React.memo(({
         message={
           <View style={styles.shareMessage}>
             <Iframe
-              src={getUrl()}
+              src={`${getUrl()}&editing=1`}
               style={styles.iframe}
             />
           </View>
