@@ -12,7 +12,7 @@ import BookPageMessage from "../basic/BookPageMessage"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
@@ -44,6 +44,7 @@ const BookPage = React.memo(props => {
     books,
     temporarilyPauseProcessing,
     history,
+    location,
     startRecordReading,
     endRecordReading,
     requestHideSettings,
@@ -63,7 +64,7 @@ const BookPage = React.memo(props => {
   const webView = useRef()
   const view = useRef()
 
-  const { historyPush } = useRouterState({ history })
+  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
 
   useDidUpdate(
     () => {
@@ -111,19 +112,22 @@ const BookPage = React.memo(props => {
         case 'pageChanged':
 
           const { newSpineIdRef, newCfi } = data.payload
+          const latestLocation = {
+            spineIdRef: newSpineIdRef,
+            cfi: newCfi,
+          }
 
           setLatestLocation({
             bookId,
-            latestLocation: {
-              spineIdRef: newSpineIdRef,
-              cfi: newCfi,
-            },
+            latestLocation,
             patchInfo: {
               books,
               updateAccount,
               updateBookAccount,
             },
           })
+
+          historyReplace(null, latestLocation)
 
           if(newSpineIdRef !== spineIdRef) {
             endRecordReading({
@@ -169,7 +173,7 @@ const BookPage = React.memo(props => {
           return true
       }
     },
-    [ bookId, books, spineIdRef, indicateLoaded, requestShowPages, history ],
+    [ bookId, books, spineIdRef, indicateLoaded, requestShowPages, location ],
   )
 
   const setSelectionText = useCallback(
@@ -196,6 +200,10 @@ const BookPage = React.memo(props => {
 
   const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
+  const initialLocation = routerState.spineIdRef
+    ? latestLocationToStr(routerState)
+    : latest_location
+
   return (
     <View style={styles.container}>
       <PageWebView
@@ -203,7 +211,7 @@ const BookPage = React.memo(props => {
         bookId={bookId}
         webViewRef={webView}
         onMessage={onMessageEvent}
-        initialLocation={latest_location}
+        initialLocation={initialLocation}
         initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
         viewRef={view}
       />
