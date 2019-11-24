@@ -82,7 +82,7 @@ const Library = ({
 }) => {
 
   const [ downloadPaused, setDownloadPaused ] = useState(false)
-  const [ showLogin, setShowLogin ] = useState(false)
+  const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ importingBooks, setImportingBooks ] = useState(false)
 
   const JSUpdateReady = useRef(false)
@@ -325,7 +325,7 @@ const Library = ({
     )
 
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
-  
+
   if(showLogin) {
     return (
       <Login
@@ -362,6 +362,8 @@ const Library = ({
     )
   }
 
+  const doingInitialFetch = fetchingBooks && bookList.length == 0
+
   return (
     <SideMenu
       menu={<AppMenu onImportBooks={openImportBooks} />}
@@ -373,14 +375,14 @@ const Library = ({
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
-        <Route path="/book/:id" component={Book} />
+        {!doingInitialFetch && <Route path="/book/:id" component={Book} />}
         <Route>
 
           <SafeLayout>
             <LibraryHeader
               scope={scope}
             />
-            {fetchingBooks && bookList.length == 0
+            {doingInitialFetch
               ? (
                 <View style={styles.spinnerContainer}>
                   <Spin />
