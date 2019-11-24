@@ -62,12 +62,14 @@ const Highlighter = React.memo(({
 
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
-    thisBooksHighlights.some(h => {
+    if(!thisBooksHighlights.some(h => {
       if(h.spineIdRef === selectionInfo.spineIdRef && h.cfi === selectionInfo.cfi) {
         highlight.current = h._delete ? undefined : h
         return true
       }
-    })
+    })) {
+      highlight.current = undefined
+    }
 
   }
 
