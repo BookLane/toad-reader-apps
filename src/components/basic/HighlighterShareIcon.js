@@ -13,6 +13,8 @@ import Dialog from "../major/Dialog"
 const styles = StyleSheet.create({
   share: {
     padding: 8,
+    paddingTop: 6,
+    paddingBottom: 6,
     fontSize: 21,
     lineHeight: 21,
   },

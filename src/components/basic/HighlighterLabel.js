@@ -13,39 +13,39 @@ import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUse
 const styles = StyleSheet.create({
   container: {
     padding: Platform.OS === 'android' ? 25 : 15,
-    paddingRight: 10,
     flexDirection: 'row',
     maxWidth: '100%',
-    lineHeight: 37,
+    lineHeight: 34,
   },
   emptySpace: {
     flexGrow: 1,
     minWidth: 30,
   },
   iconAndText: {
-    padding: 8,
     flexShrink: 1,
     flexDirection: 'row',
   },
   trash: {
-    marginLeft: 10,
-    marginTop: -4,
-    marginRight: -4,
-    marginBottom: -4,
+    marginRight: 4,
+    marginTop: 4,
+    marginBottom: 4,
     fontSize: 18,
     backgroundColor: 'rgba(0,0,0,.1)',
-    height: 29,
-    lineHeight: 24,
-    width: 29,
+    height: 26,
+    width: 26,
+    lineHeight: 20,
     textAlign: 'center',
     display: 'flex',
     paddingTop: [ 'ios', 'web' ].includes(Platform.OS) ? 2 : 0,
-    paddingLeft: 8,
+    paddingLeft: 7,
   },
   highlight1: {
     backgroundColor: 'rgba(28,96,171,.2)',
   },
   highlightText: {
+    lineHeight: 34,
+    paddingLeft: 8,
+    paddingRight: 8,
     flexShrink: 1,
   },
   // smallEmptySpace: {
@@ -61,17 +61,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   deletedMessage: {
-    lineHeight: 37,
+    lineHeight: 34,
     marginRight: 8,
   },
-  undoButton: {
-  },
-  doneButton: {
-    marginTop: -6,
-    marginBottom: -18,
-    marginLeft: 0,
-    marginRight: 0,
-  },
+  // undoButton: {
+  // },
+  // doneButton: {
+  // },
 })
 
 const notesForUndo = {}
@@ -176,7 +172,7 @@ const HighlighterLabel = React.memo(({
           {i18n("Highlight deleted.")}
         </Text>
         <Button
-          style={styles.undoButton}
+          // style={styles.undoButton}
           onPress={toggleHighlight1}
           size="small"
           status="basic"
@@ -209,7 +205,7 @@ const HighlighterLabel = React.memo(({
       }
       {!!isEditingNote &&
         <Button
-          style={styles.doneButton}
+          // style={styles.doneButton}
           onPress={endEditingNote}
           size="small"
           status="basic"
