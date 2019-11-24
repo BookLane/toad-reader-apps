@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const Dialog = ({
+const Dialog = React.memo(({
   open=true,
   type="info",  // options: info, (edit), confirm
   title,
@@ -183,6 +183,6 @@ const Dialog = ({
       </View>
     </Modal>
   )
-}
+})
 
 export default Dialog

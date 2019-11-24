@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { StyleSheet, View, createElement } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import CoverAndSpin from '../basic/CoverAndSpin'
+import Iframe from '../basic/Iframe'
 
 const styles = StyleSheet.create({
   container: {
@@ -14,13 +15,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
 })
-
-const IFrame = ({
-  forwardRef,
-  ...otherProps
- }) => (
-   createElement('iframe', { ...otherProps, ref: forwardRef })
- )
 
 const WebView = ({
   source={},  // Need to support uri and headers keys
@@ -160,7 +154,7 @@ const WebView = ({
 
   return (
     <View style={styles.container}>
-      <IFrame
+      <Iframe
         forwardRef={frameRef}
         src={source.uri}
         srcDoc={source.html}
