@@ -4,14 +4,14 @@ import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import { parseString } from "xml2js"
 
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions } from "./toolbox"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 
 const getXmlAsObj = async ({ url, account }) => {
   const urlWithoutHash = url.replace(/#.*$/, '')
 
   const xml = /^https?:\/\//.test(urlWithoutHash)
     ? (
-      await fetch(urlWithoutHash, getReqOptionsWithAdditions({
+      await safeFetch(urlWithoutHash, getReqOptionsWithAdditions({
         "x-cookie-override": account.cookie,
       })).then(response => response.text())
     )

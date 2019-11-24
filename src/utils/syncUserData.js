@@ -1,6 +1,6 @@
 import { Platform, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId } from "./toolbox"
+import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -188,7 +188,7 @@ export const patch = info => setTimeout(() => {
 
           currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = true
 
-          fetch(path, getReqOptionsWithAdditions({
+          safeFetch(path, getReqOptionsWithAdditions({
             method: 'PATCH',
             headers: {
               "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -293,7 +293,7 @@ export const reportReadings = info => setTimeout(() => {
 
     console.log(`Sending to ${path}`, readingRecords);
 
-    fetch(path, getReqOptionsWithAdditions({
+    safeFetch(path, getReqOptionsWithAdditions({
       method: 'POST',
       headers: {
         "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -369,7 +369,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
 
   currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`] = true
   
-  fetch(path, getReqOptionsWithAdditions({
+  safeFetch(path, getReqOptionsWithAdditions({
     headers: {
       "x-cookie-override": accounts[accountId].cookie,
     },

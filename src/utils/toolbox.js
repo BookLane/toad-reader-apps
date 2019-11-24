@@ -451,3 +451,20 @@ export const getIdsFromAccountId = accountId => {
     userId,
   }
 }
+
+const identicalFetchDelayFactor = 100
+const identicalFetchMaxDelay = 1000 * 60 * 5
+const fetchRequests = {}
+export const safeFetch = async (uri, options={}) => {
+  const delayTime = fetchRequests[uri] || 0
+
+  fetchRequests[uri] = Math.min((delayTime * 2) || identicalFetchDelayFactor, identicalFetchMaxDelay)
+
+  const addedTime = fetchRequests[uri] - delayTime
+
+  setTimeout(() => fetchRequests[uri] -= addedTime, addedTime)
+
+  await new Promise(resolve => setTimeout(resolve, delayTime))
+
+  return fetch(uri, options)
+}

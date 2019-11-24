@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
-import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId } from "../../utils/toolbox"
+import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
 import { Link } from "../routers/react-router"
 
 import Dialog from "./Dialog"
@@ -109,7 +109,7 @@ const BookImporter = ({
           fileInfo.status = 'uploading'
           setFiles(cloneObj(files))
 
-          const result = await fetch(path, getReqOptionsWithAdditions({
+          const result = await safeFetch(path, getReqOptionsWithAdditions({
             method: 'POST',
             headers: {
               "x-cookie-override": cookie,

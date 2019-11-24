@@ -28,7 +28,7 @@ import Login from "../major/Login"
 import WebView from "../major/WebView"
 
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 
@@ -174,7 +174,7 @@ const Library = ({
       const { idpId } = getIdsFromAccountId(accountId)
 
       const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
-      let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
+      let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
         headers: {
           "x-cookie-override": accounts[accountId].cookie,
         },

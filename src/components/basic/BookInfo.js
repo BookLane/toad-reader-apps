@@ -14,7 +14,7 @@ import BookInfoDetails from "./BookInfoDetails"
 import { i18n } from "inline-i18n"
 import Dialog from "../major/Dialog"
 
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 
 import { deleteBook } from "../../redux/actions"
 
@@ -93,7 +93,7 @@ const BookInfo = ({
 
       const path = `${getDataOrigin(idps[adminInfo.idpId])}/book/${bookId}`
 
-      const result = await fetch(path, getReqOptionsWithAdditions({
+      const result = await safeFetch(path, getReqOptionsWithAdditions({
         method: 'DELETE',
         headers: {
           "x-cookie-override": adminInfo.cookie,
