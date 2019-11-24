@@ -241,6 +241,11 @@ export default function(state = initialState, action) {
       return newState
     }
 
+    case "REMOVE_ACCOUNT": {
+      // TODO: If I enable multiple accounts at once, this will need to be changed.
+      return {}
+    }
+
   }
 
   return state

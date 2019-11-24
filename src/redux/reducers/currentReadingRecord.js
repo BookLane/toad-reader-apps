@@ -4,7 +4,7 @@ export default function(state = initialState, action) {
 
   switch (action.type) {
 
-    case "START_RECORD_READING":
+    case "START_RECORD_READING": {
       if(state) {
         // Should not normally get here unless the app crashed.
         console.log('ERROR: Reading record unended.', state)
@@ -19,7 +19,14 @@ export default function(state = initialState, action) {
       }
 
       return newState
-      
+
+    }
+
+    case "REMOVE_ACCOUNT": {
+      // TODO: If I enable multiple accounts at once, this will need to be changed.
+      return null
+    }
+
   }
 
   return state
