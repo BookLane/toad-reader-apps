@@ -4,7 +4,7 @@ import './src/themes/style'
 // import * as Font from 'expo-font'
 
 import { AppLoading } from "expo"
-import { AsyncStorage } from "react-native"
+import { AsyncStorage, Platform } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
@@ -61,6 +61,8 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
+
+window.baseHashInHistory = (Platform.OS === 'web' && location.hash) || '#/'
 
 const App = () => {
 

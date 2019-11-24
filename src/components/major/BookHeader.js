@@ -140,7 +140,14 @@ const BookHeader = React.memo(({
   )
 
   const onBackPress = useCallback(
-    () => history.goBack(),
+    () => {
+      if(window.baseHashInHistory === '#/') {
+        history.goBack()
+      } else {
+        history.replace('/')
+        window.baseHashInHistory = '#/'
+      }
+    },
     [ history ],
   )
 
