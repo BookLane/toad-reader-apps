@@ -13,13 +13,11 @@ import BookPageMessage from "../basic/BookPageMessage"
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
 import { getDisplaySettingsObj, getFirstBookLinkInfo } from "../../utils/toolbox"
-import useInstanceValue from "../../hooks/useInstanceValue"
 import useDidUpdate from "../../hooks/useDidUpdate"
-import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 
-import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
+import { setLatestLocation, updateAccount, updateBookAccount,
          startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
 
 const styles = StyleSheet.create({
@@ -64,10 +62,6 @@ const BookPage = React.memo(props => {
   const doAfterLoaded = useRef()
   const webView = useRef()
   const view = useRef()
-
-  const getNoteInEdit = useInstanceValue(noteInEdit)
-
-  const [ setUnselectTimeout, clearUnselectTimeout ] = useSetTimeout()
 
   const { historyPush } = useRouterState({ history })
 
@@ -170,21 +164,7 @@ const BookPage = React.memo(props => {
           return true
 
         case 'textUnselected':
-          // I tried to find a way to catch the initial tap on the text
-          // area so as to prevent the textUnselected before focus issue
-          // without using a timeout, but was unable to. This is less
-          // graceful, but it works.
-          if(getNoteInEdit() == null) {
-            setUnselectTimeout(() => {
-              if(getNoteInEdit() == null) {
-                setSelectionInfo(data.payload)
-              }
-            }, 200)
-          }
-          return true
-
         case 'textSelected':
-          clearUnselectTimeout()
           setSelectionInfo(data.payload)
           return true
       }
@@ -259,7 +239,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
   updateAccount,
   updateBookAccount,
-  setUserData,
   startRecordReading,
   endRecordReading,
   flushReadingRecords,

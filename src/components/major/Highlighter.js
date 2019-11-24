@@ -8,7 +8,9 @@ import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
 
-import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions"
+import useUnmount from "react-use/lib/useUnmount"
+
+import { setHighlight, updateAccount, updateBookAccount } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   clearCover: {
@@ -54,6 +56,7 @@ const Highlighter = React.memo(({
   // We do not use a simple local variable here, because we sometimes want it to 
   // not change from the previous value.
   const highlight = useRef()
+  const isEditingNote = noteInEdit != null 
 
   if(noteInEdit == null) {
 
@@ -71,13 +74,13 @@ const Highlighter = React.memo(({
   const noteTextInputRef = useRef()
 
   const setEditingNote = useCallback(
-    editingNote => {
+    (editingNote, skipSetSelectionText) => {
       const { spineIdRef, cfi } = selectionInfo || {}
 
       if(editingNote) {
         updateNoteInEdit(highlight.current.note)
 
-      } else {
+      } else if(isEditingNote) {
         setHighlight({
           ...highlight.current,
           bookId,
@@ -91,19 +94,21 @@ const Highlighter = React.memo(({
 
         updateNoteInEdit(null)
 
-        setSelectionText({
-          spineIdRef,
-          cfi,
-        })
+        if(!skipSetSelectionText) {
+          setSelectionText({
+            spineIdRef,
+            cfi,
+          })
+        }
       }
     },
-    [ bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText, highlight.current, userDataByBookId, updateAccount, updateBookAccount ],
+    [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current, userDataByBookId ],
   )
 
   const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])
-  
-  const isEditingNote = noteInEdit != null 
 
+  useUnmount(() => setEditingNote(false, true))
+  
   return [
     ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
     <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
@@ -123,7 +128,6 @@ const Highlighter = React.memo(({
         highlight={highlight.current}
         // setSelectionText={setSelectionText}
         isEditingNote={isEditingNote}
-        endEditingNote={endEditingNote}
       />
       {!!highlight.current && 
         <HighlighterNotes
@@ -145,7 +149,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
   updateAccount,
   updateBookAccount,
-  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)

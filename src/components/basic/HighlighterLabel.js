@@ -79,7 +79,6 @@ const HighlighterLabel = React.memo(({
   setHighlight,
   deleteHighlight,
   isEditingNote,
-  endEditingNote,
 
   userDataByBookId,
 }) => {
@@ -206,7 +205,7 @@ const HighlighterLabel = React.memo(({
       {!!isEditingNote &&
         <Button
           // style={styles.doneButton}
-          onPress={endEditingNote}
+          // onPress={() => {}}  // unneeded since blur does the same
           size="small"
           status="basic"
         >
