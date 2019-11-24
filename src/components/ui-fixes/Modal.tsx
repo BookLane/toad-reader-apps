@@ -22,7 +22,7 @@ import {
   MeasureNodeProps,
   MeasuringElementProps,
   MeasureResult,
-} from 'react-native-ui-kitten/ui/popover/measure.component';
+} from './measure.component';
 import { Size } from 'react-native-ui-kitten/ui/popover/type';
 import { ModalPresentingBased } from 'react-native-ui-kitten/ui/support/typings';
 
