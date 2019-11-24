@@ -36,6 +36,8 @@ const BookPage = React.memo(props => {
     displaySettings,
     hrefToGoTo,
     showSettings,
+    selectionInfo,
+    setSelectionInfo,
     // capturingSnapshots,
     setLatestLocation,
     bookId,
@@ -56,7 +58,6 @@ const BookPage = React.memo(props => {
   const prevSpineIdRef = usePrevious(spineIdRef)
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
 
-  const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ noteInEdit, setNoteInEdit ] = useState(null)
 
   const loaded = useRef(false)

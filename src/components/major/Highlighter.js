@@ -113,6 +113,7 @@ const Highlighter = React.memo(({
         styles.container,
         (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
       ]}
+      data-id="highlighter"
       keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
       behavior="padding"
     >

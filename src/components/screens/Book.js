@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, StatusBar, View, Platform, Dimensions, AppState } from "react-native"
+import { StyleSheet, StatusBar, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -154,6 +154,7 @@ const Book = React.memo(({
   const [ capturingSnapshots, setCapturingSnapshots ] = useState(false)
   const [ processingPaused, setProcessingPaused ] = useState(true)
   const [ currentAppState, setCurrentAppState ] = useState('active')
+  const [ selectionInfo, setSelectionInfo ] = useState(null)
 
   const [{
     bookLoaded,
@@ -541,6 +542,16 @@ const Book = React.memo(({
     [],
   )
 
+  const blurSelection = useCallback(
+    ({ nativeEvent: { target } }) => {
+      // TODO: This will not work on native apps  
+      if(!target.closest('[data-id=highlighter]')) {
+        setSelectionInfo(undefined)
+      }
+    },
+    [],
+  )
+
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
@@ -560,7 +571,10 @@ const Book = React.memo(({
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
       {mode === 'page' && <CustomKeepAwake />}
-      <View style={styles.panels}>
+      <View
+        style={styles.panels}
+        onStartShouldSetResponderCapture={blurSelection}
+      >
         <View style={[
           styles.mainPanel,
           mode !== 'contents' ? showStyles : null,
@@ -602,6 +616,8 @@ const Book = React.memo(({
               hrefToGoTo={hrefToGoTo}
               capturingSnapshots={capturingSnapshots}
               temporarilyPauseProcessing={temporarilyPauseProcessing}
+              selectionInfo={selectionInfo}
+              setSelectionInfo={setSelectionInfo}
             />
           </View>
           <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
