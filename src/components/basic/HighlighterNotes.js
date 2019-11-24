@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     padding: 15,
     paddingTop: 0,
+    outlineWidth: 0,
   },
 })
 
