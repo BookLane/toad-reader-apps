@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
   faded: {
     opacity: .35,
   },
+  selected: {
+    opacity: 1,
+  },
 })
 
 const BookHeader = React.memo(({
@@ -33,6 +36,7 @@ const BookHeader = React.memo(({
 
   books,
   userDataByBookId,
+  sidePanelSettings,
 
   removeFromBookDownloadQueue,
   setDownloadStatus,
@@ -167,7 +171,10 @@ const BookHeader = React.memo(({
     <HeaderIcon
       name="md-list"
       onPress={wideMode ? toggleSidePanelOpen : backToReading}
-      style={wideMode ? styles.faded : {}}
+      style={[
+        wideMode ? styles.faded : {},
+        (wideMode && sidePanelSettings.open) ? styles.selected : null,
+      ]}
     />,
     ...(!(wideMode && Platform.OS !== 'web') ? [] : [
       <HeaderIcon
@@ -180,7 +187,6 @@ const BookHeader = React.memo(({
       <HeaderIcon
         name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
         onPress={toggleBookView}
-        style={wideMode ? styles.faded : {}}
       />
     ]),
     ...(moreOptions.length === 0 ? [] : [
@@ -227,9 +233,10 @@ const BookHeader = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
   books,
   userDataByBookId,
+  sidePanelSettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
