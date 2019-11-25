@@ -25,11 +25,14 @@ import { patch, reportReadings } from "./src/utils/syncUserData"
 
 import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
+import { getDataOrigin } from './src/utils/toolbox'
 
 import Library from "./src/components/screens/Library"
+import CoverAndSpin from "./src/components/basic/CoverAndSpin"
 
 const {
   LANGUAGE_CODE='en',
+  IDPS,
 } = Constants.manifest.extra
 
 const patchMiddleware = store => next => action => {
@@ -80,7 +83,37 @@ const App = () => {
   useEffect(
     () => {
       (async () => {
+
+        // re-route old links
+        if(Platform.OS === 'web' && !/^\/?$/.test(location.pathname)) {
+          if(/^\/book\/[0-9]+$/.test(location.pathname)) {
+            const query = {}
         
+            location.search.substring(1)
+              .split('&')
+              .filter(Boolean)
+              .forEach(param => {
+                const paramPieces = param.split("=")
+                if(paramPieces[0]) {
+                  query[decodeURI(paramPieces[0])] = decodeURI(paramPieces.slice(1))
+                }
+              })
+        
+            if(query.highlight) {  // it is a share quote
+              location.href = `${getDataOrigin(Object.values(IDPS)[0])}${location.pathname}${location.search}`
+            } else if(query.goto) {
+              location.href = `${location.origin}/#${location.pathname}#${query.goto.replace('idref', 'spineIdRef').replace('elementCfi', 'cfi')}`
+            } else {
+              location.href = `${location.origin}/#${location.pathname}`
+            }
+        
+          } else {
+            location.href = `${location.origin}/#/`
+          }
+
+          return
+        }
+
         await updateDataStructure()  // needs to be after the persistStore call above
 
         await i18nSetup({
@@ -98,8 +131,10 @@ const App = () => {
     [],
   )
 
+  const Loading = Platform.OS === 'web' ? CoverAndSpin : AppLoading
+
   if(!isReady) {
-    return <AppLoading />
+    return <Loading />
   }
 
   return (
@@ -113,7 +148,7 @@ const App = () => {
           <Provider store={store}>
             <PersistGate 
               persistor={persistor} 
-              loading={<AppLoading />}
+              loading={<Loading />}
             >
               <Library changeTheme={changeTheme} />
             </PersistGate>
