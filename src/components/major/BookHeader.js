@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { Platform, Linking } from "react-native"
+import { StyleSheet, Platform, Linking } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -15,6 +15,12 @@ import { confirmRemoveEPub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, getIdsFromAccountId } from "../../utils/toolbox"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
+
+const styles = StyleSheet.create({
+  faded: {
+    opacity: .35,
+  },
+})
 
 const BookHeader = React.memo(({
   bookId,
@@ -156,21 +162,25 @@ const BookHeader = React.memo(({
       name="format-size"
       pack="material"
       onPress={showDisplaySettings}
+      style={wideMode ? styles.faded : {}}
     />,
     <HeaderIcon
       name="md-list"
       onPress={wideMode ? toggleSidePanelOpen : backToReading}
+      style={wideMode ? styles.faded : {}}
     />,
     ...(!(wideMode && Platform.OS !== 'web') ? [] : [
       <HeaderIcon
         name="md-apps"
         onPress={toggleBookView}
+        style={wideMode ? styles.faded : {}}
       />
     ]),
     ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
       <HeaderIcon
         name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
         onPress={toggleBookView}
+        style={wideMode ? styles.faded : {}}
       />
     ]),
     ...(moreOptions.length === 0 ? [] : [
@@ -186,6 +196,7 @@ const BookHeader = React.memo(({
         <HeaderIcon
           name="md-more"
           onPress={toggleShowOptions}
+          style={wideMode ? styles.faded : {}}
         />
       </OverflowMenu>,
     ]),
@@ -201,9 +212,11 @@ const BookHeader = React.memo(({
           <HeaderIcon
             name="md-arrow-back"
             onPress={onBackPress}
+            style={wideMode ? styles.faded : {}}
           />
         }
         rightControls={rightControls}
+        titleStyle={wideMode ? styles.faded : {}}
       />
       <ManageClassrooms
         open={showManageClassrooms}

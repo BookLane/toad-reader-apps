@@ -32,6 +32,7 @@ const AppHeader = ({
   subtitle,
   leftControl,
   rightControls=[],
+  titleStyle,
   ...topNavigationProps
 }) => {
 
@@ -47,7 +48,10 @@ const AppHeader = ({
       <View style={styles.titleView}>
         <Text
           numberOfLines={1}
-          style={styles.title}
+          style={[
+            styles.title,
+            titleStyle,
+          ]}
         >
           {title}
         </Text>
