@@ -55,6 +55,8 @@ else
       cp -R "tenants/$TENANT_TO_SWITCH_TO/$TENANT_ITEM" ./$TENANT_ITEM || exit 1;
     done
 
+    cp -f "tenants/$TENANT_TO_SWITCH_TO/favicon.ico" "web-build-overrides/favicon.ico"
+
     # copy contents of standard-assets to assets
     # cp -R "standard-assets/"* "./assets/" || exit 1;
 
