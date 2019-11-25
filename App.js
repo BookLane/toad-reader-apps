@@ -95,7 +95,7 @@ const App = () => {
               .forEach(param => {
                 const paramPieces = param.split("=")
                 if(paramPieces[0]) {
-                  query[decodeURI(paramPieces[0])] = decodeURI(paramPieces.slice(1))
+                  query[decodeURIComponent(paramPieces[0])] = decodeURIComponent(paramPieces.slice(1))
                 }
               })
         
