@@ -173,7 +173,7 @@ const Book = React.memo(({
   })
 
 
-  const { historyPush } = useRouterState({ history })
+  const { historyPush, historyReplace } = useRouterState({ history, location })
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
@@ -197,6 +197,8 @@ const Book = React.memo(({
 
   useEffect(
     () => {
+      if(!books[bookId]) return
+
       // get fresh user data
       Object.keys(books[bookId].accounts).forEach(accountId => {
         refreshUserData({
@@ -267,6 +269,8 @@ const Book = React.memo(({
 
   useEffect(
     () => {
+      if(!books[bookId]) return
+
       const getTocForWeb = async waitSecsOnFail => {
         // get toc for web
         if(Platform.OS === 'web' && books[bookId].toc === undefined) {
@@ -556,7 +560,17 @@ const Book = React.memo(({
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
   const { title } = (books && books[bookId]) || {}
-    
+
+  if(!books[bookId]) {
+    // direct load to invalid book
+    historyReplace('/')
+    historyPush("/error", {
+      title: i18n("Book not found"),
+      message: i18n("Either this book does not exist, or you do not have accesss to it."),
+    })
+    return null
+  }
+
   if(Platform.OS !== 'web' && readerStatus !== 'ready') {
     return (
       <SafeLayout>
