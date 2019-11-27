@@ -65,7 +65,7 @@ const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
 
-window.baseHashInHistory = (Platform.OS === 'web' && location.hash) || '#/'
+window.baseHashInHistory = (Platform.OS === 'web' && window.location.hash) || '#/'
 
 const App = () => {
 
@@ -85,11 +85,11 @@ const App = () => {
       (async () => {
 
         // re-route old links
-        if(Platform.OS === 'web' && !/^\/?$/.test(location.pathname)) {
-          if(/^\/book\/[0-9]+$/.test(location.pathname)) {
+        if(Platform.OS === 'web' && !/^\/?$/.test(window.location.pathname)) {
+          if(/^\/book\/[0-9]+$/.test(window.location.pathname)) {
             const query = {}
         
-            location.search.substring(1)
+            window.location.search.substring(1)
               .split('&')
               .filter(Boolean)
               .forEach(param => {
@@ -100,15 +100,28 @@ const App = () => {
               })
         
             if(query.highlight) {  // it is a share quote
-              location.href = `${getDataOrigin(Object.values(IDPS)[0])}${location.pathname}${location.search}`
+              window.location.href = `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`
+
             } else if(query.goto) {
-              location.href = `${location.origin}/#${location.pathname}#${query.goto.replace('idref', 'spineIdRef').replace('elementCfi', 'cfi')}`
+              try {
+                const { idref: spineIdRef, elementCfi: cfi } = JSON.parse(query.goto)
+
+                query.latestLocation = {
+                  spineIdRef,
+                  cfi,
+                }
+              } catch(e) {}
+
+              delete query.goto
+
+              window.location.href = `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`
+
             } else {
-              location.href = `${location.origin}/#${location.pathname}`
+              window.location.href = `${window.location.origin}/#${window.location.pathname}`
             }
-        
+
           } else {
-            location.href = `${location.origin}/#/`
+            window.location.href = `${window.location.origin}/#/`
           }
 
           return

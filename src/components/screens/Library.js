@@ -28,7 +28,7 @@ import Login from "../major/Login"
 import WebView from "../major/WebView"
 
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 
@@ -88,12 +88,31 @@ const Library = ({
   const JSUpdateReady = useRef(false)
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
-  const { logOutAccountId, refreshLibraryAccountId } = routerState
+  const { widget, parent_domain, logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
 
   const getLocationPathname = useInstanceValue(location.pathname)
+
+  useEffect(
+    () => {
+      if(widget && parent_domain) {
+        // check to see if we should redirect to a different domain
+        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
+          .then(result => result.json())
+          .then(({ redirectToDomain }) => {
+            if(redirectToDomain) {
+              if(isStaging) {
+                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+              }
+              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
+            }
+          })
+      }
+    },
+    [],
+  )
 
   useEffect(
     () => {
@@ -375,7 +394,7 @@ const Library = ({
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
-        {!doingInitialFetch && <Route path="/book/:id" component={Book} />}
+        {!doingInitialFetch && <Route path="/book/:bookId" component={Book} />}
         <Route>
 
           <SafeLayout>

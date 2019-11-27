@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { StyleSheet, View, Dimensions, Platform } from "react-native"
+import { StyleSheet, View, Platform } from "react-native"
+import { withRouter } from "react-router"
 import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
@@ -9,6 +10,7 @@ import { postMessage } from "../../utils/postMessage"
 import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
 import getReaderCode from '../../../getReaderCode'
 
 const styles = StyleSheet.create({
@@ -66,9 +68,12 @@ const PageWebView = ({
     bookId,
     initialLocation,
     initialDisplaySettings,
+    initialAddlParams,
     viewRef,
     webViewRef,
     style,
+
+    location,
   
     idps,
     accounts,
@@ -83,8 +88,11 @@ const PageWebView = ({
   let { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
+  const { routerState } = useRouterState({ location })
+  const { widget } = routerState
+
   if(wideMode) height -= (getToolbarHeight() - 30)
-  if(wideMode && sidePanelSettings.open) width -= sidePanelSettings.width
+  if(wideMode && sidePanelSettings.open && !widget) width -= sidePanelSettings.width
 
   useEffect(() => () => webView.current.unmounted = true, [])
 
@@ -183,9 +191,15 @@ const PageWebView = ({
     initialQueryStringParams.settings = JSON.stringify(initialDisplaySettings)
   }
 
+  if(initialAddlParams) {
+    for(let key in initialAddlParams) {
+      initialQueryStringParams[key] = JSON.stringify(initialAddlParams[key])
+    }
+  }
+
   const source = {
     uri: Platform.OS === 'web'
-      ? location.origin
+      ? window.location.origin
       : (
         `${FileSystem.documentDirectory}reader/index.html?${
           Object.keys(initialQueryStringParams)
@@ -204,7 +218,7 @@ const PageWebView = ({
           <script>
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
-            window.parentOriginForPostMessage = ${JSON.stringify(location.origin)};
+            window.parentOriginForPostMessage = ${JSON.stringify(window.location.origin)};
             window.epubFileFetchHeaders = ${JSON.stringify(getReqOptionsWithAdditions({
               "x-cookie-override": Object.values(accounts)[0].cookie,
             }))};
@@ -265,4 +279,4 @@ const mapStateToProps = ({ idps, accounts, userDataByBookId, sidePanelSettings }
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(PageWebView)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(PageWebView))

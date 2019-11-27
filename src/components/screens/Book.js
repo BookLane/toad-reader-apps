@@ -123,13 +123,11 @@ const styles = StyleSheet.create({
   },
 })
 
-const getBookId = ({ pathname }) => pathname.split('/').pop()
-
 const Book = React.memo(({
 
   history,
   location,
-  // match,
+  match,
 
   idps,
   accounts,
@@ -173,14 +171,15 @@ const Book = React.memo(({
   })
 
 
-  const { historyPush, historyReplace } = useRouterState({ history, location })
+  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { widget } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
   const [ setGetTOCTimeout ] = useSetTimeout()
   const [ setTemporarilyPauseProcessingTimeout, clearTemporarilyPauseProcessingTimeout ] = useSetTimeout()
 
-  const bookId = getBookId(location)
+  const { bookId } = match.params
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
@@ -293,6 +292,31 @@ const Book = React.memo(({
       getTocForWeb(5000)
     },
     [ books, bookId, accounts, idps ],
+  )
+
+  useEffect(
+    () => {
+      if(!books[bookId]) {
+        // direct load to invalid book
+        const message = i18n("Either this book does not exist, or you do not have accesss to it.")
+
+        if(widget) {
+          parent.postMessage({
+            action: 'forbidden',
+            iframeid: window.name,
+            payload: message,
+          }, '*');
+
+        } else {
+          historyReplace('/')
+          historyPush("/error", {
+            title: i18n("Book not found"),
+            message,
+          })
+        }
+      }
+    },
+    [ books, bookId ],
   )
 
   const zoomToPage = useCallback(
@@ -563,11 +587,6 @@ const Book = React.memo(({
 
   if(!books[bookId]) {
     // direct load to invalid book
-    historyReplace('/')
-    historyPush("/error", {
-      title: i18n("Book not found"),
-      message: i18n("Either this book does not exist, or you do not have accesss to it."),
-    })
     return null
   }
 
@@ -593,15 +612,17 @@ const Book = React.memo(({
           styles.mainPanel,
           mode !== 'contents' ? showStyles : null,
         ]}>
-          <BookHeader
-            bookId={bookId}
-            title={title}
-            mode={mode}
-            toggleBookView={toggleBookView}
-            backToReading={backToReading}
-            showDisplaySettings={showDisplaySettings}
-            width={width}  // By sending this as a prop, I force a rerender
-          />
+          {!widget &&
+            <BookHeader
+              bookId={bookId}
+              title={title}
+              mode={mode}
+              toggleBookView={toggleBookView}
+              backToReading={backToReading}
+              showDisplaySettings={showDisplaySettings}
+              width={width}  // By sending this as a prop, I force a rerender
+            />
+          }
           {Platform.OS !== 'web' &&
             <View style={styles.pages}>
               <BookPages
@@ -648,17 +669,19 @@ const Book = React.memo(({
             />
           </View>
         </View>
-        <View style={[
-          mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
-          wideMode ? styles.sidePanel : null,
-          (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
-        ]}>
-          <BookContents
-            goToHref={goToHref}
-            toc={bookLoaded && books[bookId].toc}
-            bookId={bookId}
-          />
-        </View>
+        {!widget &&
+          <View style={[
+            mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
+            wideMode ? styles.sidePanel : null,
+            (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
+          ]}>
+            <BookContents
+              goToHref={goToHref}
+              toc={bookLoaded && books[bookId].toc}
+              bookId={bookId}
+            />
+          </View>
+        }
         <View />
       </View>
 

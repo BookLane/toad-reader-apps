@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react"
+import React, { useEffect, useCallback, useRef, useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Linking, Platform, StyleSheet } from "react-native"
@@ -65,6 +65,35 @@ const BookPage = React.memo(props => {
   const view = useRef()
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { latestLocation, widget, textsize, textspacing, theme } = routerState
+
+  useEffect(
+    () => {
+      if(widget) {
+        // pass ref info to widget_setup
+        const { title, author, spines } = books[bookId]
+        
+        let spineLabel = ''
+        ;(spines || []).some(({ idref, label }) => {
+          if(idref === latestLocation.spineIdRef) {
+            spineLabel = label
+            return true
+          }
+        })
+
+        parent.postMessage({
+          action: 'setReference',
+          iframeid: window.name,
+          payload: {
+            spineLabel,
+            title,
+            author,
+          },
+        }, '*')
+      }
+    },
+    [ books, bookId ],
+  )
 
   useDidUpdate(
     () => {
@@ -107,7 +136,7 @@ const BookPage = React.memo(props => {
   const onMessageEvent = useCallback(
     async (webView2, data) => {
       if(webView2 !== webView.current) return // just in case
-      
+
       switch(data.identifier) {
         case 'pageChanged':
 
@@ -127,7 +156,10 @@ const BookPage = React.memo(props => {
             },
           })
 
-          historyReplace(null, latestLocation)
+          historyReplace(null, {
+            ...routerState,
+            latestLocation,
+          })
 
           if(newSpineIdRef !== spineIdRef) {
             endRecordReading({
@@ -171,6 +203,21 @@ const BookPage = React.memo(props => {
         case 'textSelected':
           setSelectionInfo(data.payload)
           return true
+
+        case 'setHeight':
+        case 'forbidden':
+        case 'loading': {
+          if(widget) {
+            // pass these on to widget_setup
+            parent.postMessage({
+              action: data.identifier,
+              iframeid: window.name,
+              payload: data.payload,
+            }, '*');
+          }
+          return true
+        }
+
       }
     },
     [ bookId, books, spineIdRef, indicateLoaded, requestShowPages, location ],
@@ -200,9 +247,14 @@ const BookPage = React.memo(props => {
 
   const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
-  const initialLocation = routerState.spineIdRef
-    ? latestLocationToStr(routerState)
+  const initialLocation = latestLocation
+    ? latestLocationToStr(latestLocation)
     : latest_location
+
+  const initialDisplaySettings = getDisplaySettingsObj(displaySettings)
+  if(textsize) initialDisplaySettings.textSize = textsize
+  if(textspacing) initialDisplaySettings.textSpacing = textspacing
+  if(theme) initialDisplaySettings.textsize = theme
 
   return (
     <View style={styles.container}>
@@ -212,7 +264,8 @@ const BookPage = React.memo(props => {
         webViewRef={webView}
         onMessage={onMessageEvent}
         initialLocation={initialLocation}
-        initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+        initialDisplaySettings={initialDisplaySettings}
+        initialAddlParams={widget ? { widget } : null}
         viewRef={view}
       />
       <DisplaySettings

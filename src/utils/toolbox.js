@@ -136,7 +136,7 @@ export const getSnapshotURI = params => {
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
 
-export const getBooksDir = () => Platform.OS === 'web' ? `${location.origin}/book/` : `${FileSystem.documentDirectory}books/`
+export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
 export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
@@ -396,9 +396,17 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
 
 }
 
-const dashifyDomain = domain => domain
+export const dashifyDomain = domain => domain
   .replace(/-/g, '--')
   .replace(/\./g, '-')
+
+export const isStaging = () => (
+  Constants.manifest.releaseChannel === 'staging'
+  || (
+    Platform.OS === 'web'
+    && /\.staging\.toadreader\.com$/.test(window.location.hostname)
+  )
+)
 
 export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
@@ -407,13 +415,7 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
     return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
   }
 
-  if(
-    Constants.manifest.releaseChannel === 'staging'
-    || (
-      Platform.OS === 'web'
-      && /\.staging\.toadreader\.com$/.test(location.hostname)
-    )
-  ) {
+  if(isStaging()) {
     // staging environment
     return `${protocol}://${dashifyDomain(domain)}.data.staging.toadreader.com`
   }
