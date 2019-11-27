@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from "react"
 import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions, View } from "react-native"
+import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { getToolbarHeight } from '../../utils/toolbox'
@@ -8,6 +9,8 @@ import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
 
+import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
 import useUnmount from "react-use/lib/useUnmount"
 
 import { setHighlight, updateAccount, updateBookAccount } from "../../redux/actions"
@@ -36,6 +39,8 @@ const styles = StyleSheet.create({
   containerTop: {
     bottom: 'auto',
     top: 0,
+  },
+  containerTopWideMode: {
     paddingTop: Platform.OS === 'web' ? getToolbarHeight() - 1 : 0,
   },
 })
@@ -45,9 +50,12 @@ const Highlighter = React.memo(({
   selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
   userDataByBookId,
   bookId,
-  setHighlight,
-  updateNoteInEdit,
   setSelectionText,
+  updateNoteInEdit,
+
+  location,
+
+  setHighlight,
   updateAccount,
   updateBookAccount,
 }) => {
@@ -72,6 +80,11 @@ const Highlighter = React.memo(({
     }
 
   }
+
+  const { routerState } = useRouterState({ location })
+  const { widget } = routerState
+
+  const wideMode = useWideMode()
 
   const noteTextInputRef = useRef()
 
@@ -119,6 +132,7 @@ const Highlighter = React.memo(({
       style={[
         styles.container,
         (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
+        (selectionInfo.copyTooltipInLowerHalf && wideMode && !widget && styles.containerTopWideMode),
       ]}
       data-id="highlighter"
       keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
@@ -153,4 +167,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateBookAccount,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Highlighter))
