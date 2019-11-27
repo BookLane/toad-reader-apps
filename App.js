@@ -65,8 +65,6 @@ const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
 
-window.baseHashInHistory = (Platform.OS === 'web' && window.location.hash) || '#/'
-
 const App = () => {
 
   const [ isReady, setIsReady ] = useState(false)

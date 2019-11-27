@@ -149,18 +149,6 @@ const BookHeader = React.memo(({
     [ currentClassroom, defaultClassroomUid, bookVersion, classrooms, toggleShowManageClassrooms, bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
-  const onBackPress = useCallback(
-    () => {
-      if(window.baseHashInHistory === '#/') {
-        history.goBack()
-      } else {
-        history.replace('/')
-        window.baseHashInHistory = '#/'
-      }
-    },
-    [ history ],
-  )
-
   const rightControls = [
     <HeaderIcon
       name="format-size"
@@ -217,7 +205,7 @@ const BookHeader = React.memo(({
         leftControl={
           <HeaderIcon
             name="md-arrow-back"
-            onPress={onBackPress}
+            onPress={history.goBack}
             style={wideMode ? styles.faded : {}}
           />
         }

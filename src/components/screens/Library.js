@@ -97,6 +97,19 @@ const Library = ({
 
   useEffect(
     () => {
+      // If it is a direct load to something other than the Library, then add
+      // the Library to the browser history so that calling back on the router
+      // works properly.
+      if(location.pathname !== '/') {
+        historyReplace('/')
+        historyPush(location.pathname, routerState)
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
       if(widget && parent_domain) {
         // check to see if we should redirect to a different domain
         safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)

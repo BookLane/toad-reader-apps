@@ -308,10 +308,11 @@ const Book = React.memo(({
           }, '*');
 
         } else {
-          historyReplace('/')
-          historyPush("/error", {
-            title: i18n("Book not found"),
-            message,
+          setTimeout(() => {
+            historyReplace("/error", {
+              title: i18n("Book not found"),
+              message,
+            })
           })
         }
       }
