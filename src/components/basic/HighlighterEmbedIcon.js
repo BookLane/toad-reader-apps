@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { i18n } from "inline-i18n"
 
 import { getIdsFromAccountId, isStaging, dashifyDomain } from '../../utils/toolbox'
+import Toast from "../../utils/Toast"
 
 const styles = StyleSheet.create({
   embed: {
@@ -54,7 +55,11 @@ const HighlighterEmbedIcon = React.memo(({
       `.replace(/^\n+|\n+$/, '').replace(/^ +/gm, '')
 
       Clipboard.setString(embedCode)
-      alert("Copied embed code to clipboard.")
+      Toast.show({
+        text: i18n("Embed code copied"),
+        duration: 4000,
+      })
+
 
     },
     [ bookId, selectionInfo, books, idps ],
