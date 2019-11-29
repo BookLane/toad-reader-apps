@@ -7,6 +7,7 @@ import { Button } from "react-native-ui-kitten"
 import { i18n } from "inline-i18n"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"
+import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
 
 import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions"
 
@@ -195,6 +196,12 @@ const HighlighterLabel = React.memo(({
     <View style={styles.container}>
       {highlightButton}
       <View style={styles.emptySpace} />
+      {!highlight &&
+        <HighlighterEmbedIcon
+          bookId={bookId}
+          selectionInfo={selectionInfo}
+        />
+      }
       {!!(highlight && !isEditingNote) &&
         <HighlighterShareIcon
           bookId={bookId}
