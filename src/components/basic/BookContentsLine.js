@@ -8,6 +8,9 @@ const styles = StyleSheet.create({
   listItem: {
     backgroundColor: 'transparent',
   },
+  selected: {
+    backgroundColor: 'rgb(199, 211, 234)',
+  },
 })
 
 const BookContentsLine = ({
@@ -18,6 +21,7 @@ const BookContentsLine = ({
   goToHref,
   href,
   setToolUidInEdit,
+  toolUidInEdit,
 }) => {
 
   const onPress = useCallback(
@@ -31,12 +35,17 @@ const BookContentsLine = ({
     [ href ],
   )
 
+  const selected = toolType
+    ? (uid === toolUidInEdit)
+    : false
+
   return (
     <ListItem
       style={[
         styles.listItem,
         { paddingLeft: indentLevel * 20 },
         toolType ? { paddingTop: 3, paddingBottom: 3 } : null,
+        selected ? styles.selected : null,
       ]}
       onPress={!toolType ? onPress : null}
     >

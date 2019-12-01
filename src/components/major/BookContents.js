@@ -83,7 +83,7 @@ const BookContents = React.memo(({
       <BookContentsLine
         {...item}
         goToHref={goToHref}
-        selected={item.uid === toolUidInEdit}
+        toolUidInEdit={toolUidInEdit}
         setToolUidInEdit={setToolUidInEdit}
       />
     ),
