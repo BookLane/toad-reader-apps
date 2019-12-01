@@ -42,7 +42,7 @@ const BookContents = React.memo(({
   const defaultClassroomUid = `${idpId}-${bookId}`
   const classroomUid = currentClassroomUid || defaultClassroomUid
   const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
-  const { tools } = classroom || []
+  const { tools=[] } = classroom || {}
 
   const getListItems = (toc, indentLevel=0) => {
     let listItems = []

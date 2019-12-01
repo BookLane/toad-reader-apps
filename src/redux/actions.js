@@ -80,6 +80,22 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   patchInfo,
 })
 
+export const updateTool = ({ bookId, classroomId, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, patchInfo }) => ({
+  type: "UPDATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  spineIdRef,
+  cfi,
+  ordering,
+  name,
+  toolType,
+  data,
+  due_at,
+  closes_at,
+  patchInfo,
+})
+
 export const pushToBookDownloadQueue = ({ bookId }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,

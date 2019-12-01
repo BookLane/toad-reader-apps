@@ -281,6 +281,55 @@ export default function(state = initialState, action) {
 
     }
 
+    case "UPDATE_TOOL": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const tools = [ ...(classroom.tools || []) ]
+
+          return tools.some((tool, idx2) => {
+            if(tool.uid === action.uid) {
+              tools[idx2] = tool = { ...tool }
+
+              [
+                'spineIdRef',
+                'cfi',
+                'ordering',
+                'name',
+                'toolType',
+                'data',
+                'due_at',
+                'closes_at'
+              ].forEach(param => {
+                if(action[param] !== undefined) {
+                  tool[param] = action[param]
+                }
+              })
+
+              classrooms[idx] = {
+                ...classroom,
+                tools,
+              }
+  
+              return true
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
     case "REMOVE_ACCOUNT": {
       // TODO: If I enable multiple accounts at once, this will need to be changed.
       return {}

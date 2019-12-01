@@ -11,6 +11,7 @@ import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
+import EditTool from "../major/EditTool"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -670,6 +671,10 @@ const Book = React.memo(({
               pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
             />
           </View>
+          <EditTool
+            bookId={bookId}
+            toolUidInEdit={toolUidInEdit}
+          />
         </View>
         {!widget &&
           <View style={[
