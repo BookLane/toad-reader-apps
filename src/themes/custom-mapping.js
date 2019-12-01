@@ -78,6 +78,7 @@ const mapping = {
     },
     HeaderIcon: getCustomComponentSetup(),
     FAB: getCustomComponentSetup({ defaultKey: 'filled' }),
+    ToolChip: getCustomComponentSetup({ defaultKey: 'filled' }),
   },
   
   // TODO: I need to lay this over top at each level of the object

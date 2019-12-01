@@ -21,9 +21,10 @@ const styles = StyleSheet.create({
 })
 
 const BookContents = React.memo(({
-  toc,
   goToHref,
   bookId,
+  toolUidInEdit,
+  setToolUidInEdit,
 
   books,
   userDataByBookId,
@@ -33,12 +34,13 @@ const BookContents = React.memo(({
 }) => {
 
   const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts)[0] || ""
+  const { toc, accounts, currentClassroomUid } = book
+  const accountId = Object.keys(accounts)[0] || ""
   const { idpId } = getIdsFromAccountId(accountId)
 
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
-  const classroomUid = book.currentClassroomUid || defaultClassroomUid
+  const classroomUid = currentClassroomUid || defaultClassroomUid
   const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
   const { tools } = classroom || []
 
@@ -48,6 +50,17 @@ const BookContents = React.memo(({
     ;(toc || []).forEach(tocItem => {
       listItems = [
         ...listItems,
+        ...(
+          tools
+            .filter(({ spineIdRef, cfi }) => (spineIdRef === tocItem.spineIdRef && !cfi))
+            .map(({ uid, name, toolType }) => ({
+              key: uid,
+              uid,
+              indentLevel,
+              label: name,
+              toolType,
+            }))
+        ),
         {
           ...tocItem,
           indentLevel,
@@ -62,23 +75,19 @@ const BookContents = React.memo(({
 
   const data = useMemo(
     () => getListItems(toc),
-    [ toc ],
+    [ toc, tools ],
   )
 
   const renderItem = useCallback(
-    ({ item }) => {
-      const { href, indentLevel, label } = item
-
-      return (
-        <BookContentsLine
-          indentLevel={indentLevel}
-          goToHref={goToHref}
-          href={href}
-          label={label}
-        />
-      )
-    },
-    [ goToHref ],
+    ({ item }) => (
+      <BookContentsLine
+        {...item}
+        goToHref={goToHref}
+        selected={item.uid === toolUidInEdit}
+        setToolUidInEdit={setToolUidInEdit}
+      />
+    ),
+    [ goToHref, toolUidInEdit, setToolUidInEdit ],
   )
 
   const createNewTool = useCallback(

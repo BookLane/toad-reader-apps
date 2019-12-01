@@ -90,20 +90,24 @@
         {
           "label": "Part 1",
           "href": "part1.xhtml",
+          "spineIdRef": "part1",
           "subNav": [
             {
               "label": "Chapter 1",
-              "href": "chapter1.xhtml"
+              "href": "chapter1.xhtml",
+              "spineIdRef": "chapter1"
             },
             {
               "label": "Chapter 2",
-              "href": "chapter2.xhtml"
+              "href": "chapter2.xhtml",
+              "spineIdRef": "chapter2"
             }
           ]
         },
         {
           "label": "Part 2",
-          "href": "part2.xhtml"
+          "href": "part2.xhtml",
+          "spineIdRef": "part2"
         }
       ],
       "spines": [

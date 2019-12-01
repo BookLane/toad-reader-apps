@@ -59,7 +59,8 @@ export default async ({ bookId, idp, account }) => {
   let
     opfRelativeUri,
     opfObj,
-    opfManifestItems = {}
+    opfManifestItemsByIdref = {},
+    opfManifestItemsByHref = {}
 
   try {
 
@@ -72,7 +73,8 @@ export default async ({ bookId, idp, account }) => {
     // load manifest into an object keyed by ids
     ;(opfObj.package.manifest[0].item || []).forEach(item => {
       if(item.$ && item.$.id) {
-        opfManifestItems[item.$.id] = item
+        opfManifestItemsByIdref[item.$.id] = item
+        opfManifestItemsByHref[item.$.href] = item
       }
     })
     
@@ -118,8 +120,8 @@ export default async ({ bookId, idp, account }) => {
 
       if(!navRelativeUri) {
         (opfObj.package.spine[0].itemref || []).some(itemref => {
-          if(((itemref.$ && itemref.$.properties) || "").split(" ").includes('nav') && opfManifestItems[itemref.$.idref]) {
-            navRelativeUri = `${opfDir}${opfManifestItems[itemref.$.idref].$.href}`
+          if(((itemref.$ && itemref.$.properties) || "").split(" ").includes('nav') && opfManifestItemsByIdref[itemref.$.idref]) {
+            navRelativeUri = `${opfDir}${opfManifestItemsByIdref[itemref.$.idref].$.href}`
             return true
           }
         })
@@ -143,11 +145,14 @@ export default async ({ bookId, idp, account }) => {
             
             if(!label || !href) return null
 
+            const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
+
             setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
               href,
+              spineIdRef,
             }
 
             if(li.ol) {
@@ -176,7 +181,7 @@ export default async ({ bookId, idp, account }) => {
     
     try {
       
-      const navRelativeUri = `${opfDir}${opfManifestItems[opfObj.package.spine[0].$.toc].$.href}`
+      const navRelativeUri = `${opfDir}${opfManifestItemsByIdref[opfObj.package.spine[0].$.toc].$.href}`
       const navObj = await getXmlAsObj({ url: `${baseUri}${navRelativeUri}`, account })
   
       const getEpub2TocObjInfo = cont => (
@@ -197,11 +202,14 @@ export default async ({ bookId, idp, account }) => {
 
             tocLabelsByHref[href] = label
 
+            const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
+
             setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
               href,
+              spineIdRef,
             }
 
             if(navPoint.navPoint) {
@@ -234,9 +242,9 @@ export default async ({ bookId, idp, account }) => {
       return {
         idref,
         label: (
-          opfManifestItems[idref] 
-          && opfManifestItems[idref].$
-          && tocLabelsByHref[opfManifestItems[idref].$.href]
+          opfManifestItemsByIdref[idref] 
+          && opfManifestItemsByIdref[idref].$
+          && tocLabelsByHref[opfManifestItemsByIdref[idref].$.href]
         ) || "",
       }
     })

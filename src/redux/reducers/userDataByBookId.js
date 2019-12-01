@@ -242,10 +242,10 @@ export default function(state = initialState, action) {
     }
 
     case "CREATE_TOOL": {
-      if(classrooms.some(({ uid, tools }, idx) => {
-        if(uid === action.classroomUid) {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
 
-          const tools = [ ...(tools || []) ]
+          const tools = [ ...(classroom.tools || []) ]
 
           tools.push({
             uid: action.uid,
@@ -260,7 +260,7 @@ export default function(state = initialState, action) {
           })
 
           classrooms[idx] = {
-            ...classrooms[idx],
+            ...classroom,
             tools,
           }
 

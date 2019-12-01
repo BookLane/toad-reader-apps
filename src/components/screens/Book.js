@@ -153,6 +153,7 @@ const Book = React.memo(({
   const [ processingPaused, setProcessingPaused ] = useState(true)
   const [ currentAppState, setCurrentAppState ] = useState('active')
   const [ selectionInfo, setSelectionInfo ] = useState(null)
+  const [ toolUidInEdit, setToolUidInEdit ] = useState()
 
   const [{
     bookLoaded,
@@ -678,8 +679,9 @@ const Book = React.memo(({
           ]}>
             <BookContents
               goToHref={goToHref}
-              toc={bookLoaded && books[bookId].toc}
               bookId={bookId}
+              toolUidInEdit={toolUidInEdit}
+              setToolUidInEdit={setToolUidInEdit}
             />
           </View>
         }
