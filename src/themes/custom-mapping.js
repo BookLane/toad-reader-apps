@@ -5,19 +5,19 @@ const {
   MAPPING_CUSTOMIZATION={},
 } = Constants.manifest.extra
 
-const getCustomComponentSetup = () => cloneObj({
+const getCustomComponentSetup = ({ defaultKey='default' }={}) => cloneObj({
   meta: {
     parameters: {},
     variantGroups: {},
     states: {},
     appearances: {
-      default: {
+      [defaultKey]: {
         default: true,
       },
     },
   },
   appearances: {
-    default: {},
+    [defaultKey]: {},
   },
 })
 
@@ -77,6 +77,7 @@ const mapping = {
       },
     },
     HeaderIcon: getCustomComponentSetup(),
+    FAB: getCustomComponentSetup({ defaultKey: 'filled' }),
   },
   
   // TODO: I need to lay this over top at each level of the object

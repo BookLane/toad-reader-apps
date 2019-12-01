@@ -16,7 +16,7 @@ const Icon = ({
 }) => {
 
   const IconComponent = packs[pack]
-  const adjustedStyle = style instanceof Array ? StyleSheet.flatten(style) : { ...style }
+  const adjustedStyle = { ...StyleSheet.flatten(style) }
 
   adjustedStyle.fontSize = adjustedStyle.height
   adjustedStyle.width = 'auto'

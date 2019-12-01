@@ -4,6 +4,7 @@ import { List } from "react-native-ui-kitten"
 
 import BookContentsLine from "../basic/BookContentsLine"
 import EnhancedHeader from "./EnhancedHeader"
+import FAB from "../basic/FAB"
 
 const styles = StyleSheet.create({
   list: {
@@ -68,6 +69,11 @@ const BookContents = React.memo(({
         style={styles.list}
         data={data}
         renderItem={renderItem}
+      />
+      <FAB
+        iconName="md-add"
+        status="primary"
+        onPress={() => alert('go')}
       />
     </>
   )
