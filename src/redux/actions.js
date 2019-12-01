@@ -67,6 +67,19 @@ export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
   patchInfo,
 })
 
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, patchInfo }) => ({
+  type: "CREATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  spineIdRef,
+  cfi,
+  ordering,
+  name,
+  toolType,
+  patchInfo,
+})
+
 export const pushToBookDownloadQueue = ({ bookId }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,

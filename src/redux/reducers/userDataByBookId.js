@@ -241,6 +241,46 @@ export default function(state = initialState, action) {
       return newState
     }
 
+    case "CREATE_TOOL": {
+      if(classrooms.some(({ uid, tools }, idx) => {
+        if(uid === action.classroomUid) {
+
+          const tools = [ ...(tools || []) ]
+
+          tools.push({
+            uid: action.uid,
+            spineIdRef: action.spineIdRef,
+            cfi: action.cfi,
+            ordering: action.ordering,
+            name: action.name,
+            toolType: action.toolType || 'NOTES_INSERT',
+            undo_array: [],
+            data: {},
+            updated_at: now,
+          })
+
+          classrooms[idx] = {
+            ...classrooms[idx],
+            tools,
+          }
+
+          return true
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
     case "REMOVE_ACCOUNT": {
       // TODO: If I enable multiple accounts at once, this will need to be changed.
       return {}
