@@ -8,7 +8,7 @@ import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
 import { i18n } from "inline-i18n"
 import { refreshUserData } from "../../utils/syncUserData"
-import { getDataOrigin, getReqOptionsWithAdditions, JSON_to_URLEncoded, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
@@ -56,10 +56,10 @@ const ConnectToAClassroom = React.memo(({
         response = await safeFetch(path, getReqOptionsWithAdditions({
           method: 'POST',
           headers: {
-            "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+            "Content-Type": 'application/json',
             "x-cookie-override": accounts[accountId].cookie,
           },
-          body: JSON_to_URLEncoded({ code }),
+          body: JSON.stringify({ code }),
         }))
       } catch(e) {}
 

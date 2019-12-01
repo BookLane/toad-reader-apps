@@ -1,6 +1,6 @@
 import { Platform, AppState } from 'react-native'
 
-import { JSON_to_URLEncoded, getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "./toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -191,10 +191,10 @@ export const patch = info => setTimeout(() => {
           safeFetch(path, getReqOptionsWithAdditions({
             method: 'PATCH',
             headers: {
-              "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+              "Content-Type": 'application/json',
               "x-cookie-override": accounts[accountId].cookie,
             },
-            body: JSON_to_URLEncoded(bookUserData),
+            body: JSON.stringify(bookUserData),
           }))
             .then(response => {
 
@@ -296,10 +296,10 @@ export const reportReadings = info => setTimeout(() => {
     safeFetch(path, getReqOptionsWithAdditions({
       method: 'POST',
       headers: {
-        "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+        "Content-Type": 'application/json',
         "x-cookie-override": accounts[accountId].cookie,
       },
-      body: JSON_to_URLEncoded({ readingRecords }),
+      body: JSON.stringify({ readingRecords }),
     }))
       .then(response => {
 

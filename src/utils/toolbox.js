@@ -189,17 +189,6 @@ export const isPhoneSize = () => {
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 
-export const JSON_to_URLEncoded = (element, key, list) => {
-  var list = list || []
-  if(typeof(element)=='object') {
-    for(var idx in element)
-      JSON_to_URLEncoded(element[idx], key?key+'['+idx+']':idx, list)
-  } else {
-    list.push(key + '=' + encodeURIComponent(element))
-  }
-  return list.join('&')
-}
-
 // This was used with react-navigation where a double tap caused double navigation. I'm not sure if it is still needed.
 // let lastDebounce
 // export const debounce = (func, ...params) => {
