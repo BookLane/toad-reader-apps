@@ -52,7 +52,7 @@ const BookContents = React.memo(({
         ...listItems,
         ...(
           tools
-            .filter(({ spineIdRef, cfi }) => (spineIdRef === tocItem.spineIdRef && !cfi))
+            .filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === tocItem.spineIdRef && !cfi && !_delete))
             .map(({ uid, name, toolType }) => ({
               key: uid,
               uid,

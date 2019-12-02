@@ -80,7 +80,7 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   patchInfo,
 })
 
-export const updateTool = ({ bookId, classroomId, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, patchInfo }) => ({
+export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, patchInfo }) => ({
   type: "UPDATE_TOOL",
   bookId,
   classroomUid,
@@ -93,6 +93,15 @@ export const updateTool = ({ bookId, classroomId, uid, spineIdRef, cfi, ordering
   data,
   due_at,
   closes_at,
+  patchInfo,
+})
+
+export const deleteTool = ({ bookId, classroomUid, uid, patchInfo }) => ({
+  type: "UPDATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  _delete: true,
   patchInfo,
 })
 

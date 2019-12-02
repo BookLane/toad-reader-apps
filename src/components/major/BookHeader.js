@@ -152,7 +152,7 @@ const BookHeader = React.memo(({
   const rightControls = [
     <HeaderIcon
       name="format-size"
-      pack="material"
+      pack="materialCommunity"
       onPress={showDisplaySettings}
       style={wideMode ? styles.faded : {}}
     />,

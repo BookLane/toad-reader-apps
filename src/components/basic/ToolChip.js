@@ -29,12 +29,17 @@ const ToolChip = ({
 
   const defaultLabelsByToolType = {
     'NOTES_INSERT': i18n("Notes"),
+    'QUIZ': i18n("Quiz"),
   }
 
   const iconNameAndPackByToolType = {
     'NOTES_INSERT': {
       name: 'note',
-      pack: 'simpleLineIcons',
+      pack: 'simpleLine',
+    },
+    'QUIZ': {
+      name: 'assessment',
+      pack: 'material',
     },
   }
 
@@ -48,7 +53,7 @@ const ToolChip = ({
         ]}
       />
     ),
-    [],
+    [ toolType ],
   )
 
   return (

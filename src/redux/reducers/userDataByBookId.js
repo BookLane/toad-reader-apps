@@ -291,7 +291,7 @@ export default function(state = initialState, action) {
             if(tool.uid === action.uid) {
               tools[idx2] = tool = { ...tool }
 
-              [
+              ;[
                 'spineIdRef',
                 'cfi',
                 'ordering',
@@ -299,12 +299,15 @@ export default function(state = initialState, action) {
                 'toolType',
                 'data',
                 'due_at',
-                'closes_at'
+                'closes_at',
+                '_delete',
               ].forEach(param => {
                 if(action[param] !== undefined) {
                   tool[param] = action[param]
                 }
               })
+
+              tool.updated_at = now
 
               classrooms[idx] = {
                 ...classroom,
