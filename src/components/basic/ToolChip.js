@@ -4,7 +4,7 @@ import { styled, Button } from 'react-native-ui-kitten'
 import { i18n } from "inline-i18n"
 
 import Icon from "./Icon"
-import { getToolInfo } from "../../utils/toolbox"
+import { getToolInfo } from "../../utils/toolInfo"
 
 const styles = StyleSheet.create({
   icon: {
@@ -28,7 +28,7 @@ const ToolChip = ({
   themedStyle,
 }) => {
 
-  const { toolInfoByType } = getToolInfo(i18n)
+  const { toolInfoByType } = getToolInfo()
 
   const ButtonIcon = useCallback(
     iconStyle => (
