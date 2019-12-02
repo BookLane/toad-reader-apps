@@ -4,6 +4,7 @@ import { styled, Button } from 'react-native-ui-kitten'
 import { i18n } from "inline-i18n"
 
 import Icon from "./Icon"
+import { getToolInfo } from "../../utils/toolbox"
 
 const styles = StyleSheet.create({
   icon: {
@@ -27,26 +28,12 @@ const ToolChip = ({
   themedStyle,
 }) => {
 
-  const defaultLabelsByToolType = {
-    'NOTES_INSERT': i18n("Notes"),
-    'QUIZ': i18n("Quiz"),
-  }
-
-  const iconNameAndPackByToolType = {
-    'NOTES_INSERT': {
-      name: 'note',
-      pack: 'simpleLine',
-    },
-    'QUIZ': {
-      name: 'assessment',
-      pack: 'material',
-    },
-  }
+  const { toolInfoByType } = getToolInfo(i18n)
 
   const ButtonIcon = useCallback(
     iconStyle => (
       <Icon
-        {...iconNameAndPackByToolType[toolType]}
+        {...toolInfoByType[toolType]}
         style={[
           styles.icon,
           // iconStyle,
@@ -68,7 +55,7 @@ const ToolChip = ({
       iconStyle={iconStyle}
       onPress={onPress}
     >
-      {label || defaultLabelsByToolType[toolType]}
+      {label || toolInfoByType[toolType].text}
     </Button>
   )
 }

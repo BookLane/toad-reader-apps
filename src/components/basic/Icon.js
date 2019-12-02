@@ -1,13 +1,13 @@
 import React from "react"
 import { StyleSheet } from "react-native"
 
-import { Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons"
+import { Ionicons, MaterialCommunityIcons, MaterialIcons, FontAwesome } from "@expo/vector-icons"
 
 const packs = {
   ion: Ionicons,
   materialCommunity: MaterialCommunityIcons,
   material: MaterialIcons,
-  simpleLine: SimpleLineIcons,
+  fontAwesome: FontAwesome,
 }
 
 const Icon = ({

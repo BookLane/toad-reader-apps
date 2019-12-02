@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Input, Select } from "react-native-ui-kitten"
 
 import { i18n } from "inline-i18n"
-import { getIdsFromAccountId, getToolbarHeight } from '../../utils/toolbox'
+import { getIdsFromAccountId, getToolbarHeight, getToolInfo } from '../../utils/toolbox'
 import StatusAndActions from "./StatusAndActions"
 
 import useWideMode from "../../hooks/useWideMode"
@@ -71,6 +71,8 @@ const BookContents = React.memo(({
   updateTool,
 }) => {
 
+  const { toolTypes } = getToolInfo(i18n)
+
   const book = books[bookId] || {}
   const { accounts, currentClassroomUid } = book
   const accountId = Object.keys(accounts)[0] || ""
@@ -118,17 +120,6 @@ const BookContents = React.memo(({
     },
     [ updateTool, bookId, classroomUid, toolUidInEdit ],
   )
-
-  const toolTypes = [
-    {
-      toolType: 'NOTES_INSERT',
-      text: i18n("Notes insert"),
-    },
-    {
-      toolType: 'QUIZ',
-      text: i18n("Quiz"),
-    },
-  ]
 
   const onSelectToolType = useCallback(
     ({ toolType }) => {
