@@ -59,6 +59,7 @@ const StatusAndActions = React.memo(({
 
   const onDelete = useCallback(
     () => {
+      if(!confirm("Are you sure?")) return
       deleteTool({
         bookId,
         classroomUid,
