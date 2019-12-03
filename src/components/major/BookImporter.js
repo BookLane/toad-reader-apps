@@ -5,6 +5,7 @@ import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
 import { Link } from "../routers/react-router"
+import * as DocumentPicker from 'expo-document-picker'
 
 import Dialog from "./Dialog"
 import CoverAndSpin from "../basic/CoverAndSpin"
@@ -62,14 +63,7 @@ const BookImporter = ({
 
       const { idpId } = getIdsFromAccountId(accountId)
       const { cookie } = accounts[accountId]
-
       const path = `${getDataOrigin(idps[idpId])}/importbook.json`
-
-      const fileInput = document.createElement('input')
-      fileInput.type = 'file'
-      fileInput.multiple = true
-      fileInput.accept = 'application/epub+zip'
-      fileInput.click()
 
       const checkForCancel = () => {
         // There is no straight forward way to detect the file selection was
@@ -82,13 +76,28 @@ const BookImporter = ({
 
       window.addEventListener('focus', checkForCancel)
 
-      fileInput.onchange = async () => {
+      ;(async () => {
+
+        setMode('selecting')
+        setFiles([])
+        filesSelected.current = false
+
+
+        const { type, output } = await DocumentPicker.getDocumentAsync({
+          // copyToCacheDirectory: false,
+          type: 'application/epub+zip',
+          multiple: true,
+        })
+
+        if(type === 'cancel') {
+          onClose()
+        }
 
         filesSelected.current = true
 
         const files = []
-        for(let idx=0; idx<fileInput.files.length; idx++) {
-          const file = fileInput.files[idx]
+        for(let idx=0; idx<output.length; idx++) {
+          const file = output[idx]
           files.push({
             file,
             size: file.size,
@@ -125,14 +134,10 @@ const BookImporter = ({
         setMode('refreshing')
 
         await updateBooks({ accountId })
-  
+
         setMode('complete')
 
-      }
-
-      setMode('selecting')
-      setFiles([])
-      filesSelected.current = false
+      })()
 
       return () => window.removeEventListener('focus', checkForCancel)
     },
