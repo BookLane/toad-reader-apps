@@ -2,7 +2,9 @@ import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Input, Select } from "react-native-ui-kitten"
+import { Select } from "react-native-ui-kitten"
+
+import Input from "../basic/Input"
 
 import { i18n } from "inline-i18n"
 import { getIdsFromAccountId, getToolbarHeight } from '../../utils/toolbox'
@@ -14,6 +16,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 import { updateTool } from "../../redux/actions"
+import EditToolData from "./EditToolData"
 
 const styles = StyleSheet.create({
   container: {
@@ -38,22 +41,6 @@ const styles = StyleSheet.create({
     width: 350,
     marginBottom: 10,
   },
-  input: {
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
-  inputText: {
-    outlineWidth: 0,
-    color: 'rgb(34, 43, 69)',
-  },
-  inputLabel: {
-    fontSize: 15,
-    left: -4,
-    position: 'relative',
-    marginBottom: 8,
-  },
-  select: {
-  },
   bottomSection: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
@@ -62,7 +49,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const BookContents = React.memo(({
+const EditTool = React.memo(({
   bookId,
   toolUidInEdit,
 
@@ -101,40 +88,35 @@ const BookContents = React.memo(({
 
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
 
-  const onToolNameChange = useCallback(
-    name => {
-      setNameInEdit(name)
-      setToolNameSaveTimeout(
-        () => {
-          updateTool({
-            bookId,
-            classroomUid,
-            uid: toolUidInEdit,
-            name,
-            patchInfo: {
-              userDataByBookId: getUserDataByBookId(),
-            },
-          })
-        },
-        300,
-      )
-    },
-    [ updateTool, bookId, classroomUid, toolUidInEdit ],
-  )
-
-  const onSelectToolType = useCallback(
-    ({ toolType }) => {
+  const goUpdateTool = useCallback(
+    updates => {
       updateTool({
         bookId,
         classroomUid,
         uid: toolUidInEdit,
-        toolType,
+        ...updates,
         patchInfo: {
           userDataByBookId: getUserDataByBookId(),
         },
       })
     },
     [ updateTool, bookId, classroomUid, toolUidInEdit ],
+  )
+
+  const onToolNameChange = useCallback(
+    name => {
+      setNameInEdit(name)
+      setToolNameSaveTimeout(
+        () => goUpdateTool({ name }),
+        300,
+      )
+    },
+    [ goUpdateTool ],
+  )
+
+  const onSelectToolType = useCallback(
+    ({ toolType }) => goUpdateTool({ toolType, data: {} }),
+    [ goUpdateTool ],
   )
 
   if(!toolInEdit) return null
@@ -155,9 +137,6 @@ const BookContents = React.memo(({
         <View style={styles.basicDetails}>
           <View style={styles.basicDetailLine}>
             <Input
-              style={styles.input}
-              textStyle={styles.inputText}
-              labelStyle={styles.inputLabel}
               placeholder={i18n("Unnamed")}
               label={i18n("Tool name")}
               value={nameInEdit}
@@ -166,7 +145,6 @@ const BookContents = React.memo(({
           </View>
           <View style={styles.basicDetailLine}>
             <Select
-              controlStyle={styles.select}
               label={i18n("Tool type")}
               data={toolTypes}
               selectedOption={toolTypes.filter(({ toolType }) => toolType === toolInEdit.toolType)[0]}
@@ -185,7 +163,12 @@ const BookContents = React.memo(({
           wideMode ? styles.bottomSectionWideMode : null,
         ]}
       >
-        {/* {toolInfoByType[toolInEdit.toolType]} */}
+        <EditToolData
+          toolUidInEdit={toolUidInEdit}
+          dataStructure={toolInfoByType[toolInEdit.toolType].dataStructure}
+          data={toolInEdit.data}
+          goUpdateTool={goUpdateTool}
+        />
       </View>
     </View>
   )
@@ -200,4 +183,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateTool,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookContents)
+export default connect(mapStateToProps, matchDispatchToProps)(EditTool)
