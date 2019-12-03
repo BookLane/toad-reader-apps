@@ -1,38 +1,11 @@
-import React, { useState, useEffect, useRef } from "react"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
-import { StyleSheet, View, Text, Platform } from "react-native"
+import React, { useCallback } from "react"
+import { StyleSheet, Text } from "react-native"
 import { i18n } from "inline-i18n"
-import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
 import { Link } from "../routers/react-router"
-import * as DocumentPicker from 'expo-document-picker'
 
-import Dialog from "./Dialog"
-import CoverAndSpin from "../basic/CoverAndSpin"
+import FileImporter from "./FileImporter"
 
 const styles = StyleSheet.create({
-  line: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-  uploadingLine: {
-    backgroundColor: "rgba(0,0,0,.1)",
-  },
-  name: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 3,
-  },
-  size: {
-    fontWeight: "normal",
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  uploading: {
-    color: "red",
-  },
   failed: {
     fontWeight: "bold",
     color: "red",
@@ -49,169 +22,68 @@ const BookImporter = ({
   accountId,
   updateBooks,
   onClose,
-  accounts,
-  idps,
 }) => {
 
-  const [ mode, setMode ] = useState()
-  const [ files, setFiles ] = useState([])
-  const filesSelected = useRef()
-
-  useEffect(
-    () => {
-      if(!open) return
-
-      const { idpId } = getIdsFromAccountId(accountId)
-      const { cookie } = accounts[accountId]
-      const path = `${getDataOrigin(idps[idpId])}/importbook.json`
-
-      const checkForCancel = () => {
-        // There is no straight forward way to detect the file selection was
-        // cancelled. So I do it this way, with a 300 ms delay to allow 
-        // fileInput.onchange to first fire.
-        setTimeout(() => {
-          if(!filesSelected.current) onClose()
-        }, 300)
-      }
-
-      window.addEventListener('focus', checkForCancel)
-
-      ;(async () => {
-
-        setMode('selecting')
-        setFiles([])
-        filesSelected.current = false
-
-
-        const { type, output } = await DocumentPicker.getDocumentAsync({
-          // copyToCacheDirectory: false,
-          type: 'application/epub+zip',
-          multiple: true,
-        })
-
-        if(type === 'cancel') {
-          onClose()
-        }
-
-        filesSelected.current = true
-
-        const files = []
-        for(let idx=0; idx<output.length; idx++) {
-          const file = output[idx]
-          files.push({
-            file,
-            size: file.size,
-            name: file.name,
-            status: 'queued',
-          })
-        }
-
-        setMode('uploading')
-        setFiles(cloneObj(files))
-
-        for(let idx in files) {
-
-          const fileInfo = files[idx]
-          const body = new FormData()
-          body.append("file", fileInfo.file)
-
-          fileInfo.status = 'uploading'
-          setFiles(cloneObj(files))
-
-          const result = await safeFetch(path, getReqOptionsWithAdditions({
-            method: 'POST',
-            headers: {
-              "x-cookie-override": cookie,
-            },
-            body,
-          }))
-
-          fileInfo.result = await result.json()
-          fileInfo.status = 'done'
-          setFiles(cloneObj(files))
-        }
-
-        setMode('refreshing')
-
-        await updateBooks({ accountId })
-
-        setMode('complete')
-
-      })()
-
-      return () => window.removeEventListener('focus', checkForCancel)
+  const getFileLink = useCallback(
+    ({ mode, name, result }) => {
+      return (
+        !!(mode === 'complete' && (result || {}).bookId)
+          ? (
+            <Link
+              to={`/book/${(result || {}).bookId}`}
+            >
+              {name}
+            </Link>
+          )
+          : name
+      )
     },
-    [ open ],
+    [],
   )
 
-  if(Platform.OS !== 'web') return null
+  const getResultText = useCallback(
+    ({ status, result }) => {
+      return (
+        <>
+          {status === 'done' && !result.success &&
+            <Text style={styles.failed}>{i18n("Failed.")}</Text>
+          }
+          {!!(result || {}).success &&
+            <Text style={styles.result}>
+              {(result || {}).note === 'already-associated'
+                ? i18n("Already in the library.")
+                : i18n("Imported successfully.")
+              }
+            </Text>
+          }
+          {!!(result || {}).success &&
+            <Text style={styles.bookId}>{i18n("Book id: {{id}}", { id: result.bookId })}</Text>
+          }
+        </>
+      )
+    },
+    [],
+  )
+
+  const refresh = useCallback(
+    () => updateBooks({ accountId }),
+    [ accountId ],
+  )
 
   return (
-    <Dialog
-      open={!!open}
+    <FileImporter
+      open={open}
       title={i18n("Importing books")}
-      content={
-        <View>
-          {files.length === 0 &&
-            <View style={styles.line}>
-              <Text>{i18n("Select files to import.")}</Text>
-            </View>
-          }
-          {files.map(({ name, size, status, result }, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.line,
-                status === 'uploading' ? styles.uploadingLine : null,
-              ]}
-            >
-              <Text style={styles.name}>
-                {!!(mode === 'complete' && (result || {}).bookId)
-                  ? (
-                    <Link
-                      to={`/book/${(result || {}).bookId}`}
-                    >
-                      {name}
-                    </Link>
-                  )
-                  : name
-                }
-                <Text style={styles.size}>{getMBSizeStr(size)}</Text>
-              </Text>
-              {status === 'uploading' &&
-                <Text style={styles.uploading}>{i18n("Uploading...")}</Text>
-              }
-              {status === 'done' && !result.success &&
-                <Text style={styles.failed}>{i18n("Failed.")}</Text>
-              }
-              {!!(result || {}).success &&
-                <Text style={styles.result}>
-                  {(result || {}).note === 'already-associated'
-                    ? i18n("Already in the library.")
-                    : i18n("Imported successfully.")
-                  }
-                </Text>
-              }
-              {!!(result || {}).success &&
-                <Text style={styles.bookId}>{i18n("Book id: {{id}}", { id: result.bookId })}</Text>
-              }
-            </View>
-          ))}
-          {mode === 'refreshing' && <CoverAndSpin />}
-        </View>
-      }
-      buttons={mode === 'complete' ? null : []}
+      fileType='application/epub+zip'
+      multiple={true}
+      relativePath='/importbook.json'
+      accountId={accountId}
+      getFileLink={getFileLink}
+      getResultText={getResultText}
+      refresh={refresh}
       onClose={onClose}
     />
   )
 }
 
-const mapStateToProps = ({ accounts, idps }) => ({
-  accounts,
-  idps,
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(BookImporter)
+export default BookImporter
