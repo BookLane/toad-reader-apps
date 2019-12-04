@@ -42,8 +42,8 @@ const FileImporter = ({
   relativePath,
   accountId,
   getFileLink,
-  getResultText,
-  refresh,
+  getSuccessText,
+  onSuccess,
   onClose,
 
   accounts,
@@ -60,7 +60,7 @@ const FileImporter = ({
 
       const { idpId } = getIdsFromAccountId(accountId)
       const { cookie } = accounts[accountId]
-      const path = `${getDataOrigin(idps[idpId])}${relativePath || `/importfile.json`}`
+      const path = `${getDataOrigin(idps[idpId])}${relativePath}`
 
       const checkForCancel = () => {
         // There is no straight forward way to detect the file selection was
@@ -130,7 +130,7 @@ const FileImporter = ({
 
         setMode('refreshing')
 
-        refresh && await refresh()
+        onSuccess && await onSuccess(files)
 
         setMode('complete')
 
@@ -177,7 +177,18 @@ const FileImporter = ({
               {status === 'uploading' &&
                 <Text style={styles.uploading}>{i18n("Uploading...")}</Text>
               }
-              {getResultText({ status, result })}
+              {status === 'done' && !result.success &&
+                <Text style={styles.failed}>{i18n("Failed.")}</Text>
+              }
+              {getSuccessText
+                ? getSuccessText({ result })
+                : (
+                  !!(result || {}).success &&
+                    <Text style={styles.result}>
+                      {i18n("Imported successfully.")}
+                    </Text>
+                )
+              }
             </View>
           ))}
           {mode === 'refreshing' && <CoverAndSpin />}

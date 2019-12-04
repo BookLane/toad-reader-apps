@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, View } from "react-native"
-// import { i18n } from "inline-i18n"
-import { cloneObj } from '../../utils/toolbox'
+import { StyleSheet, View, Text } from "react-native"
+import { i18n } from "inline-i18n"
+import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
 
+import { Button } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
+import FileImporter from "./FileImporter"
 
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
@@ -14,12 +16,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   dataLine: {
-    width: 350,
+    maxWidth: 900,
     marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
   },
   input: {
     paddingLeft: 4,
     paddingRight: 4,
+  },
+  shortInput: {
+    width: 200,
   },
   inputText: {
     outlineWidth: 0,
@@ -31,16 +39,31 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 8,
   },
+  file: {
+    marginBottom: 30,
+  },
+  fileName: {
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  size: {
+    fontSize: 15,
+    color: 'rgba(0,0,0,.5)',
+    marginBottom: 8,
+  },
 })
 
 const EditToolData = React.memo(({
+  classroomUid,
   toolUidInEdit,
+  accountId,
   dataStructure,
   data,
   goUpdateTool,
 }) => {
 
   const [ dataInEdit, setDataInEdit ] = useState({})
+  const [ fileImportInfo, setFileImportInfo ] = useState({})
 
   useEffect(
     () => {
@@ -53,7 +76,7 @@ const EditToolData = React.memo(({
   const [ setToolDataSaveTimeout ] = useSetTimeout()
 
   const onChangeInfo = useCallback(
-    ({ id, text, checked }) => {
+    ({ id, value }) => {
       const data = cloneObj(getDataInEdit())
 
       const dataNameStack = id.split('.').slice(1)
@@ -73,11 +96,7 @@ const EditToolData = React.memo(({
 
       const dataSegmentKey = dataNameStack[0]
 
-      dataSegment[dataSegmentKey] = (
-        (text !== undefined && text)
-        || (checked !== undefined && checked)
-        || undefined
-      )
+      dataSegment[dataSegmentKey] = value
 
       setDataInEdit(data)
       setToolDataSaveTimeout(
@@ -90,6 +109,8 @@ const EditToolData = React.memo(({
     [ goUpdateTool ],
   )
 
+  const onDoneImportingFile = useCallback(() => setFileImportInfo({}), [])
+
   if(!dataStructure || !data) return null
 
   const getDataStructureSet = ({ dataStructure, dataSegment, dataNameStack=[] }) => (
@@ -97,6 +118,8 @@ const EditToolData = React.memo(({
       {dataStructure.map(({
         name,
         type,
+        variant,
+        fileTypes,
         label,
         placeholder,
       }) => {
@@ -114,6 +137,7 @@ const EditToolData = React.memo(({
                   label={label}
                   value={dataSegment[name] || ""}
                   onChangeInfo={onChangeInfo}
+                  style={variant === 'short' ? styles.shortInput : null}
                 />
               </View>
             )
@@ -132,6 +156,144 @@ const EditToolData = React.memo(({
               </View>
             )
           }
+
+          case 'file': {
+            return (
+              <View key={id} style={styles.dataLine}>
+                {!!dataSegment[name] && 
+                  <React.Fragment>
+                    <Text style={styles.fileName}>
+                      {i18n("File name: {{name}}", dataSegment[name])}
+                    </Text>
+                    <Text style={styles.size}>
+                      {i18n("Size: {{size}}", { size: getMBSizeStr(dataSegment[name].size) })}
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <Button
+                        // style={styles.undoButton}
+                        status="basic"
+                        size="small"
+                        onPress={() => onChangeInfo({ id })}
+                      >
+                        {i18n("Remove")}
+                      </Button>
+                    </View>
+                  </React.Fragment>
+                }
+                {!dataSegment[name] && 
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      // style={styles.undoButton}
+                      status="primary"
+                      onPress={() => {
+                        setFileImportInfo({
+                          open: true,
+                          fileType: fileTypes.join(','),
+                          classroomUid,
+                          onSuccess: ([{ name, size, result: { filename } }]) => {
+                            onChangeInfo({
+                              id,
+                              value: {
+                                name,
+                                size,
+                                filename,
+                              },
+                            })
+                          }
+                        })
+                      }}
+                    >
+                      {i18n("Upload file")}
+                    </Button>
+                  </View>
+                }
+              </View>
+            )
+          }
+
+          case 'files': {
+            return (
+              <View key={id} style={styles.dataLine}>
+                {(dataSegment[name] || []).map((file, idx) => (
+                  <View key={file.filename} style={styles.file}>
+                    <Text style={styles.fileName}>
+                      {i18n("File name: {{name}}", file)}
+                    </Text>
+                    <Text style={styles.size}>
+                      {i18n("Size: {{size}}", { size: getMBSizeStr(file.size) })}
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <Button
+                        // style={styles.undoButton}
+                        status="basic"
+                        size="small"
+                        onPress={() => {
+                          onChangeInfo({
+                            id,
+                            value: [
+                              ...dataSegment[name].slice(0, idx),
+                              ...dataSegment[name].slice(idx+1),
+                            ],
+                          })
+                        }}
+                      >
+                        {i18n("Remove")}
+                      </Button>
+                    </View>
+                  </View>
+                ))}
+                <View style={styles.buttonContainer}>
+                  <Button
+                    // style={styles.undoButton}
+                    status="primary"
+                    onPress={() => {
+                      setFileImportInfo({
+                        open: true,
+                        fileType: fileTypes.join(','),
+                        multiple: true,
+                        classroomUid,
+                        onSuccess: files => {
+                          onChangeInfo({
+                            id,
+                            value: [
+                              ...(dataSegment[name] || []),
+                              ...files.map(({ name, size, result: { filename } }) => ({
+                                name,
+                                size,
+                                filename,
+                              })),
+                            ],
+                          })
+                        },
+                      })
+                    }}
+                  >
+                    {i18n("Upload files")}
+                  </Button>
+                </View>
+              </View>
+            )
+          }
+
+          // case 'files': {
+          //   return (
+          //     <View key={id} style={styles.dataLine}>
+          //       Files
+          //         File name: ljsdf.jpg
+          //         Size: lkjsdf MB
+          //         Remove
+
+          //       Upload files
+          //       <CheckBox
+          //         id={id}
+          //         // style={styles.checkbox}
+          //         text={label}
+          //         checked={!!dataSegment[name]}
+          //         onChangeInfo={onChangeInfo}
+          //       />
+          //     </View>
+          //   )
+          // }
 
           default: {  // should be an array
 
@@ -236,6 +398,15 @@ const EditToolData = React.memo(({
   return (
     <View style={styles.container}>
       {getDataStructureSet({ dataStructure, dataSegment: dataInEdit })}
+      <FileImporter
+        open={!!fileImportInfo.open}
+        fileType={fileImportInfo.fileType}
+        multiple={!!fileImportInfo.multiple}
+        accountId={accountId}
+        relativePath={`/importfile/${classroomUid}`}
+        onClose={onDoneImportingFile}
+        onSuccess={fileImportInfo.onSuccess}
+      />
     </View>
   )
 

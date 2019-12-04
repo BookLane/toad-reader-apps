@@ -164,7 +164,9 @@ const EditTool = React.memo(({
         ]}
       >
         <EditToolData
+          classroomUid={classroomUid}
           toolUidInEdit={toolUidInEdit}
+          accountId={accountId}
           dataStructure={toolInfoByType[toolInEdit.toolType].dataStructure}
           data={toolInEdit.data}
           goUpdateTool={goUpdateTool}

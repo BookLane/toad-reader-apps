@@ -94,12 +94,14 @@ export const getToolInfo = () => {
         {
           name: 'startTime',
           type: 'string',
+          variant: 'short',
           label: i18n("Start time (optional)"),
           placeholder: 'Eg. 3:12',
         },
         {
           name: 'endTime',
           type: 'string',
+          variant: 'short',
           label: i18n("End time (optional)"),
           placeholder: 'Eg. 12:14',
         },

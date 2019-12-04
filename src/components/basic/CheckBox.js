@@ -13,9 +13,9 @@ const CheckBox = React.memo(({
  }) => {
 
   const customOnChange = useCallback(
-    checked => {
-      onChange && onChange(checked)
-      onChangeInfo && onChangeInfo({ id, checked })
+    value => {
+      onChange && onChange(value)
+      onChangeInfo && onChangeInfo({ id, value })
     },
     [ id ],
   )

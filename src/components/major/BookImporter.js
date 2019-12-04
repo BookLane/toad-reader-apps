@@ -41,13 +41,10 @@ const BookImporter = ({
     [],
   )
 
-  const getResultText = useCallback(
-    ({ status, result }) => {
+  const getSuccessText = useCallback(
+    ({ result }) => {
       return (
         <>
-          {status === 'done' && !result.success &&
-            <Text style={styles.failed}>{i18n("Failed.")}</Text>
-          }
           {!!(result || {}).success &&
             <Text style={styles.result}>
               {(result || {}).note === 'already-associated'
@@ -79,8 +76,8 @@ const BookImporter = ({
       relativePath='/importbook.json'
       accountId={accountId}
       getFileLink={getFileLink}
-      getResultText={getResultText}
-      refresh={refresh}
+      getSuccessText={getSuccessText}
+      onSuccess={refresh}
       onClose={onClose}
     />
   )
