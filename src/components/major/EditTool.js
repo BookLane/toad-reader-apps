@@ -145,6 +145,7 @@ const EditTool = React.memo(({
           </View>
           <View style={styles.basicDetailLine}>
             <Select
+              key={toolUidInEdit}
               label={i18n("Tool type")}
               data={toolTypes}
               selectedOption={toolTypes.filter(({ toolType }) => toolType === toolInEdit.toolType)[0]}
