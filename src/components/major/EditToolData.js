@@ -170,7 +170,6 @@ const EditToolData = React.memo(({
                     </Text>
                     <View style={styles.buttonContainer}>
                       <Button
-                        // style={styles.undoButton}
                         status="basic"
                         size="small"
                         onPress={() => onChangeInfo({ id })}
@@ -183,7 +182,6 @@ const EditToolData = React.memo(({
                 {!dataSegment[name] && 
                   <View style={styles.buttonContainer}>
                     <Button
-                      // style={styles.undoButton}
                       status="primary"
                       onPress={() => {
                         setFileImportInfo({
@@ -224,7 +222,6 @@ const EditToolData = React.memo(({
                     </Text>
                     <View style={styles.buttonContainer}>
                       <Button
-                        // style={styles.undoButton}
                         status="basic"
                         size="small"
                         onPress={() => {
@@ -244,7 +241,6 @@ const EditToolData = React.memo(({
                 ))}
                 <View style={styles.buttonContainer}>
                   <Button
-                    // style={styles.undoButton}
                     status="primary"
                     onPress={() => {
                       setFileImportInfo({
@@ -274,26 +270,6 @@ const EditToolData = React.memo(({
               </View>
             )
           }
-
-          // case 'files': {
-          //   return (
-          //     <View key={id} style={styles.dataLine}>
-          //       Files
-          //         File name: ljsdf.jpg
-          //         Size: lkjsdf MB
-          //         Remove
-
-          //       Upload files
-          //       <CheckBox
-          //         id={id}
-          //         // style={styles.checkbox}
-          //         text={label}
-          //         checked={!!dataSegment[name]}
-          //         onChangeInfo={onChangeInfo}
-          //       />
-          //     </View>
-          //   )
-          // }
 
           default: {  // should be an array
 
