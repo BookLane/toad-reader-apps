@@ -52,7 +52,7 @@ const BookHeader = React.memo(({
   const wideMode = useWideMode()
 
   const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts)[0] || ""
+  const accountId = Object.keys(book.accounts || {})[0] || ""
   const { idpId } = getIdsFromAccountId(accountId)
 
   const bookLinkInfo = getFirstBookLinkInfo(book)

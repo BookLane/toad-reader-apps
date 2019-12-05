@@ -34,7 +34,7 @@ const HighlighterEmbedIcon = React.memo(({
       const { idpId } = getIdsFromAccountId(accountId)
       let { domain } = idps[idpId]
 
-      if(isStaging) {
+      if(isStaging()) {
         domain = `${dashifyDomain(domain)}.staging.toadreader.com`
       }
 

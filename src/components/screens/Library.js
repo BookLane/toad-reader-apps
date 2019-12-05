@@ -115,8 +115,8 @@ const Library = ({
         safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
           .then(result => result.json())
           .then(({ redirectToDomain }) => {
-            if(redirectToDomain) {
-              if(isStaging) {
+            if(redirectToDomain && redirectToDomain !== location.host) {
+              if(isStaging()) {
                 redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
               }
               window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
