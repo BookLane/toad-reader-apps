@@ -300,7 +300,7 @@ const Book = React.memo(({
     () => {
       if(!books[bookId]) {
         // direct load to invalid book
-        const message = i18n("Either this book does not exist, or you do not have accesss to it.")
+        const message = i18n("Either this book does not exist, or you do not have access to it.")
 
         if(widget) {
           parent.postMessage({
