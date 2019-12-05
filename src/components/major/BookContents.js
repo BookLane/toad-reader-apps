@@ -36,13 +36,23 @@ const BookContents = React.memo(({
   const book = books[bookId] || {}
   const { toc, accounts, currentClassroomUid } = book
   const accountId = Object.keys(accounts)[0] || ""
-  const { idpId } = getIdsFromAccountId(accountId)
+  const { idpId, userId } = getIdsFromAccountId(accountId)
 
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
   const classroomUid = currentClassroomUid || defaultClassroomUid
   const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
   const { tools=[] } = classroom || {}
+
+  const bookVersion = Object.values(book.accounts)[0].version
+  const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
+  const showAddToolButton = (
+    (
+      bookVersion === 'INSTRUCTOR'
+      && myRole === 'INSTRUCTOR'
+    )
+    || bookVersion === 'PUBLISHER'
+  )
 
   const getListItems = (toc, indentLevel=0) => {
     let listItems = []
@@ -134,11 +144,13 @@ const BookContents = React.memo(({
         data={data}
         renderItem={renderItem}
       />
-      <FAB
-        iconName="md-add"
-        status="primary"
-        onPress={createNewTool}
-      />
+      {showAddToolButton &&
+        <FAB
+          iconName="md-add"
+          status="primary"
+          onPress={createNewTool}
+        />
+      }
     </>
   )
 })
