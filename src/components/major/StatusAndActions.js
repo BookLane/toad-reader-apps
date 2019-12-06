@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
 const StatusAndActions = React.memo(({
   bookId,
   toolUidInEdit,
+  setToolUidInEdit,
 
   books,
   userDataByBookId,
@@ -68,8 +69,9 @@ const StatusAndActions = React.memo(({
           userDataByBookId: getUserDataByBookId(),
         },
       })
+      setToolUidInEdit()
     },
-    [ deleteTool, bookId, classroomUid, toolUidInEdit ],
+    [ deleteTool, bookId, classroomUid, toolUidInEdit, setToolUidInEdit ],
   )
 
   return (

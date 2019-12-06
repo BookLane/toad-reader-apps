@@ -573,11 +573,14 @@ const Book = React.memo(({
     [],
   )
 
-  const blurSelection = useCallback(
+  const blurEvents = useCallback(
     ({ nativeEvent: { target } }) => {
       // TODO: This will not work on native apps  
       if(!target.closest('[data-id=highlighter]')) {
-        setSelectionInfo(undefined)
+        setSelectionInfo()
+      }
+      if(!target.closest('[data-id=toolEditor]')) {
+        setToolUidInEdit()
       }
     },
     [],
@@ -609,7 +612,7 @@ const Book = React.memo(({
       {mode === 'page' && <CustomKeepAwake />}
       <View
         style={styles.panels}
-        onStartShouldSetResponderCapture={blurSelection}
+        onStartShouldSetResponderCapture={blurEvents}
       >
         <View style={[
           styles.mainPanel,
@@ -674,6 +677,7 @@ const Book = React.memo(({
           <EditTool
             bookId={bookId}
             toolUidInEdit={toolUidInEdit}
+            setToolUidInEdit={setToolUidInEdit}
           />
         </View>
         {!widget &&

@@ -144,7 +144,7 @@ const BookContents = React.memo(({
         data={data}
         renderItem={renderItem}
       />
-      {showAddToolButton &&
+      {showAddToolButton && !toolUidInEdit &&
         <FAB
           iconName="md-add"
           status="primary"

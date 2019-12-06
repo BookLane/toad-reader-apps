@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
 const EditTool = React.memo(({
   bookId,
   toolUidInEdit,
+  setToolUidInEdit,
 
   books,
   userDataByBookId,
@@ -123,6 +124,7 @@ const EditTool = React.memo(({
 
   return (
     <View
+      data-id="toolEditor"
       style={[
         styles.container,
         wideMode ? styles.constainerWideMode : null,
@@ -156,6 +158,7 @@ const EditTool = React.memo(({
         <StatusAndActions
           bookId={bookId}
           toolUidInEdit={toolUidInEdit}
+          setToolUidInEdit={setToolUidInEdit}
         />
       </View>
       <View
