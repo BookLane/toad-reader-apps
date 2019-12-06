@@ -46,6 +46,7 @@
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
       "author": "John Piper",
       "epubSizeInMB": 3,
+      "version": "PUBLISHER",
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
       "accounts": {
@@ -63,6 +64,7 @@
       "title": "God is the Gospel",
       "author": "John Piper",
       "epubSizeInMB": 5,
+      "version": "BASE",
       "totalCharacterCount": 231004,
       "coverFilename": "cover.png",
       "accounts": {
@@ -74,6 +76,7 @@
       "title": "Bloodlines",
       "author": "John Piper",
       "epubSizeInMB": 10,
+      "version": "INSTRUCTOR",
       "totalCharacterCount": 383021,
       "coverFilename": "cover.jpg",
       "accounts": {

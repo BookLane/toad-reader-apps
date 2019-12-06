@@ -29,6 +29,7 @@ export default function(state = initialState, action) {
           title: book.title,
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
+          version: book.version,
           totalCharacterCount: book.totalCharacterCount,
           coverHref: book.coverHref,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
