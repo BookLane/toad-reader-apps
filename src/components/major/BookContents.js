@@ -15,8 +15,8 @@ import { createTool } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   list: {
-    padding: 20,
     paddingTop: 12,
+    paddingBottom: 20,
   },
 })
 

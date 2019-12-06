@@ -1,12 +1,17 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Text } from "react-native"
-import { ListItem } from 'react-native-ui-kitten'
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 
 import ToolChip from './ToolChip'
 
 const styles = StyleSheet.create({
   listItem: {
-    backgroundColor: 'transparent',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+  listItemWithTool: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    flexDirection: 'row',
   },
   selected: {
     backgroundColor: 'rgb(199, 211, 234)',
@@ -39,29 +44,40 @@ const BookContentsLine = ({
     ? (uid === toolUidInEdit)
     : false
 
+  const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
+
+  if(toolType) {
+    return (
+      <View
+        style={[
+          styles.listItemWithTool,
+          indentStyle,
+          selected ? styles.selected : null,
+        ]}
+      >
+        <ToolChip
+          label={label}
+          toolType={toolType}
+          onPress={onPress}
+        />
+      </View>
+    )
+  }
+
   return (
-    <ListItem
-      style={[
-        styles.listItem,
-        { paddingLeft: indentLevel * 20 },
-        toolType ? { paddingTop: 3, paddingBottom: 3 } : null,
-        selected ? styles.selected : null,
-      ]}
+    <TouchableOpacity
       onPress={!toolType ? onPress : null}
     >
-      {!!toolType
-        ? (
-          <ToolChip
-            label={label}
-            toolType={toolType}
-            onPress={onPress}
-          />
-        )
-        : (
-          <Text>{label}</Text>
-        )
-      }
-    </ListItem>
+      <View
+        style={[
+          styles.listItem,
+          indentStyle,
+          selected ? styles.selected : null,
+        ]}
+      >
+        <Text>{label}</Text>
+      </View>
+    </TouchableOpacity>
   )
 }
 

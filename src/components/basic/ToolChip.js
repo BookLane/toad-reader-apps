@@ -7,9 +7,14 @@ import Icon from "./Icon"
 import { getToolInfo } from "../../utils/toolInfo"
 
 const styles = StyleSheet.create({
+  text: {
+    fontWeight: 400,
+    fontSize: 12,
+  },
   icon: {
-    // backgroundColor: 'transparent',
-    // height: 14,
+    tintColor: 'rgb(149, 174, 224)',
+    height: 13,
+    marginRight: 0,
   },
   button: {
     backgroundColor: 'black',
@@ -53,6 +58,7 @@ const ToolChip = ({
       size='tiny'
       icon={ButtonIcon}
       iconStyle={iconStyle}
+      textStyle={styles.text}
       onPress={onPress}
     >
       {label || toolInfoByType[toolType].text}
