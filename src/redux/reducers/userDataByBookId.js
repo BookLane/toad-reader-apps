@@ -1,4 +1,5 @@
 import { latestLocationToStr, createAccessCode } from '../../utils/toolbox'
+import { getToolInfo } from "../../utils/toolInfo"
 
 const initialState = {}
 
@@ -253,7 +254,7 @@ export default function(state = initialState, action) {
             cfi: action.cfi,
             ordering: action.ordering,
             name: action.name,
-            toolType: action.toolType || 'NOTES_INSERT',
+            toolType: action.toolType || getToolInfo().toolTypes[0].toolType,
             undo_array: [],
             data: {},
             updated_at: now,
