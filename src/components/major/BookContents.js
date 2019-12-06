@@ -54,16 +54,20 @@ const BookContents = React.memo(({
     || bookVersion === 'PUBLISHER'
   )
 
-  const getListItems = (toc, indentLevel=0) => {
+  const getListItems = (toc, indentLevel=0, insertedToolUidObj={}) => {
     let listItems = []
 
     ;(toc || []).forEach(tocItem => {
+      const toolsToInsert = tools
+        .filter(({ uid, spineIdRef, cfi, _delete }) => (spineIdRef === tocItem.spineIdRef && !cfi && !_delete && !insertedToolUidObj[uid]))
+
+      toolsToInsert.forEach(({ uid }) => {
+        insertedToolUidObj[uid] = true
+      })
+  
       listItems = [
         ...listItems,
-        ...(
-          tools
-            .filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === tocItem.spineIdRef && !cfi && !_delete))
-            .map(({ uid, name, toolType }) => ({
+        ...(toolsToInsert.map(({ uid, name, toolType }) => ({
               key: uid,
               uid,
               indentLevel,
@@ -76,7 +80,7 @@ const BookContents = React.memo(({
           indentLevel,
           key: `${tocItem.label}-${tocItem.href}`,
         },
-        ...getListItems(tocItem.subNav, indentLevel+1),
+        ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj),
       ]
     })
 
