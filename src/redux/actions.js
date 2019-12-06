@@ -229,6 +229,11 @@ export const setReaderStatus = ({ readerStatus }) => ({
   readerStatus,
 })
 
+export const setSyncStatus = syncStatus => ({
+  type: "SET_SYNC_STATUS",
+  syncStatus,
+})
+
 export const startRecordReading = ({ bookId, spineIdRef }) => ({
   type: "START_RECORD_READING",
   bookId,

@@ -231,5 +231,6 @@
   "highlights": {
     "onlyShowColor": null
   },
-  "readerStatus": "ready"
+  "readerStatus": "ready",
+  "syncStatus": "synced"
 }

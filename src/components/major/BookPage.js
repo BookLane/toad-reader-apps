@@ -17,8 +17,7 @@ import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 
-import { setLatestLocation, updateAccount, updateBookAccount,
-         startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
+import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -49,8 +48,6 @@ const BookPage = React.memo(props => {
     endRecordReading,
     requestHideSettings,
     latest_location,
-    updateAccount,
-    updateBookAccount,
     flushReadingRecords,
   } = props
 
@@ -149,11 +146,7 @@ const BookPage = React.memo(props => {
           setLatestLocation({
             bookId,
             latestLocation,
-            patchInfo: {
-              books,
-              updateAccount,
-              updateBookAccount,
-            },
+            patchInfo: {},
           })
 
           historyReplace(null, {
@@ -298,8 +291,6 @@ const mapStateToProps = ({ books, displaySettings }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
-  updateAccount,
-  updateBookAccount,
   startRecordReading,
   endRecordReading,
   flushReadingRecords,

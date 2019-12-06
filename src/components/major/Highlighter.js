@@ -13,7 +13,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
 import useUnmount from "react-use/lib/useUnmount"
 
-import { setHighlight, updateAccount, updateBookAccount } from "../../redux/actions"
+import { setHighlight } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   clearCover: {
@@ -56,8 +56,6 @@ const Highlighter = React.memo(({
   location,
 
   setHighlight,
-  updateAccount,
-  updateBookAccount,
 }) => {
 
   // We do not use useState here, because we don't want to wait until the next render.
@@ -102,8 +100,6 @@ const Highlighter = React.memo(({
           note: noteInEdit,
           patchInfo: {
             userDataByBookId,
-            updateAccount,
-            updateBookAccount,
           },
         })
 
@@ -163,8 +159,6 @@ const mapStateToProps = ({ userDataByBookId }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
-  updateAccount,
-  updateBookAccount,
 }, dispatch)
 
 export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Highlighter))

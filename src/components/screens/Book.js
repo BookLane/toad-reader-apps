@@ -28,7 +28,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useSetState from "react-use/lib/useSetState"
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines } from "../../redux/actions"
+         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines, setSyncStatus } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -147,6 +147,7 @@ const Book = React.memo(({
   flushReadingRecords,
   setXapiConsentShown,
   setTocAndSpines,
+  setSyncStatus,
 
 }) => {
 
@@ -212,6 +213,8 @@ const Book = React.memo(({
             userDataByBookId,
             updateAccount,
             setUserData,
+            updateBookAccount,
+            setSyncStatus,
           },
         })
       })
@@ -361,12 +364,7 @@ const Book = React.memo(({
               bookId,
               latestLocation: zoomToInfo,
               patchInfo: {
-                idps,
-                accounts,
-                books,
                 userDataByBookId,
-                updateAccount,
-                updateBookAccount,
               },
             })
 
@@ -729,6 +727,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   flushReadingRecords,
   setXapiConsentShown,
   setTocAndSpines,
+  setSyncStatus,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

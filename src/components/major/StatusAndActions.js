@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   button: {
     marginRight: 10,
@@ -42,6 +43,7 @@ const StatusAndActions = React.memo(({
 
   books,
   userDataByBookId,
+  syncStatus,
 
   deleteTool,
 }) => {
@@ -74,6 +76,13 @@ const StatusAndActions = React.memo(({
     [ deleteTool, bookId, classroomUid, toolUidInEdit, setToolUidInEdit ],
   )
 
+  const syncStatusMessages = {
+    synced: i18n("Saved."),
+    patching: i18n("Saving to server..."),
+    refreshing: i18n("Saving to server..."),
+    error: i18n("Unable to save to server."),
+  }
+
   return (
     <View
       style={[
@@ -102,15 +111,18 @@ const StatusAndActions = React.memo(({
           wideMode ? styles.statusWideMode : null,
         ]}
       >
+        {syncStatusMessages[syncStatus]}
+        {" "}
         {i18n("Not yet published.")}
       </Text>
     </View>
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
   books,
   userDataByBookId,
+  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

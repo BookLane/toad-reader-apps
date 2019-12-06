@@ -61,9 +61,9 @@ const reportResponseError = ({ message, response, error, retry }) => {
 export const patch = info => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount } = setAndGetLatestInfo(info)
+  const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount, setSyncStatus } = setAndGetLatestInfo(info)
 
-  if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount) return
+  if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount || !setSyncStatus) return
   
   if(!connectionInfo.online) return
 
@@ -157,6 +157,8 @@ export const patch = info => setTimeout(() => {
 
     if(somethingToPatch) {
 
+      setSyncStatus("patching")
+
       // send necessary patch requests
       Object.keys(newUserData).forEach(bookId => {
         const bookUserData = newUserData[bookId]
@@ -223,7 +225,8 @@ export const patch = info => setTimeout(() => {
                   response,
                   retry: patch,
                 })
-  
+                setSyncStatus("error")
+
               } else if(response.status === 412) {
                 console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
   
@@ -239,6 +242,7 @@ export const patch = info => setTimeout(() => {
                   response,
                   retry: patch,
                 })
+                setSyncStatus("error")
               }
 
             })
@@ -251,10 +255,14 @@ export const patch = info => setTimeout(() => {
                 error,
                 retry: patch,
               })
+              setSyncStatus("error")
             
             })
         }
       })
+
+    } else {
+      setSyncStatus("synced")
     }
   })
 })
@@ -351,9 +359,9 @@ export const reportReadings = info => setTimeout(() => {
 export const refreshUserData = ({ accountId, bookId, info }) => new Promise(resolve => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, userDataByBookId, updateAccount, setUserData } = setAndGetLatestInfo(info)
+  const { idps, accounts, books, userDataByBookId, updateAccount, setUserData, setSyncStatus } = setAndGetLatestInfo(info)
   
-  if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData) return resolve()
+  if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData || !setSyncStatus) return resolve()
   if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return resolve()
   if(!books[bookId].accounts[accountId]) return resolve()
 
@@ -364,6 +372,8 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
   if(!connectionInfo.online) return resolve()
+
+  setSyncStatus("refreshing")
 
   const path = `${getDataOrigin(idp)}/users/${userId}/books/${bookId}.json`
 
@@ -395,6 +405,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
                 response,
                 retry: () => refreshUserData({ accountId, bookId }),
               })
+              setSyncStatus("error")
               return resolve()
             }
 
@@ -415,6 +426,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
               response,
               retry: () => refreshUserData({ accountId, bookId }),
             })
+            setSyncStatus("error")
             resolve()
           })
 
@@ -432,6 +444,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
+        setSyncStatus("error")
         resolve()
 
       } else {
@@ -440,6 +453,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
+        setSyncStatus("error")
         resolve()
       }
 
@@ -453,6 +467,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
         error,
         retry: () => refreshUserData({ accountId, bookId }),
       })
+      setSyncStatus("error")
 
       resolve()
 

@@ -13,7 +13,7 @@ import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFet
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
 
-import { updateAccount, setUserData, setCurrentClassroom } from "../../redux/actions"
+import { setCurrentClassroom } from "../../redux/actions"
 
 // const styles = StyleSheet.create({
 // })
@@ -28,8 +28,6 @@ const ConnectToAClassroom = React.memo(({
   books,
   userDataByBookId,
 
-  updateAccount,
-  setUserData,
   setCurrentClassroom,
 
   history,
@@ -76,12 +74,7 @@ const ConnectToAClassroom = React.memo(({
         accountId,
         bookId,
         info: {
-          idps,
-          accounts,
-          books,
           userDataByBookId,
-          updateAccount,
-          setUserData,
         },
       }) || {}
 
@@ -139,8 +132,6 @@ const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  updateAccount,
-  setUserData,
   setCurrentClassroom,
 }, dispatch)
 
