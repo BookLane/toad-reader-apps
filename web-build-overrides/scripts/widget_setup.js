@@ -147,6 +147,8 @@
                 var el = els[0];
                 var attrs = el.attributes;
 
+                console.log('Setting up eReader iframe widget', el.outerHTML);
+
                 var queryParamObj = Object.assign({}, settings);
                 for (var j = 0; j < attrs.length; j++) {
                     var attr = attrs[j].nodeName;
