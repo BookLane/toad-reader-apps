@@ -296,7 +296,15 @@ const Library = ({
   )
 
   const logOutUrlOnLoad = useCallback(
-    () => {
+    async () => {
+      // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
+      const logOutCallbackUrl = `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout/callback?noredirect=1`
+      await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": accounts[logOutAccountId || refreshLibraryAccountId].cookie,
+        },
+      }))
+
       if(refreshLibraryAccountId) {
         updateAccount({
           accountId: refreshLibraryAccountId,
@@ -311,7 +319,7 @@ const Library = ({
         historyReplace()
       }
     },
-    [ logOutAccountId, refreshLibraryAccountId ],
+    [ idps, accounts, logOutAccountId, refreshLibraryAccountId ],
   )
 
   const sideMenuOnChange = useCallback(
