@@ -2,61 +2,61 @@ import { i18n } from "inline-i18n"
 
 export const getToolInfo = () => {
   const toolTypes = [
-    {
-      toolType: 'NOTES_INSERT',
-      name: 'lead-pencil',
-      pack: 'materialCommunity',
-      text: i18n("Notes insert"),
-      dataStructure: [
-        {
-          name: 'content',
-          type: 'flip',
-        },
-      ],
-    },
-    {
-      toolType: 'QUIZ',
-      name: 'md-checkbox',
-      text: i18n("Quiz"),
-      dataStructure: [
-        {
-          name: 'questions',
-          type: [
-            {
-              name: 'question',
-              type: 'string',
-              label: i18n("Question"),
-            },
-            {
-              name: 'choices',
-              type: [
-                {
-                  name: 'choice',
-                  type: 'string',
-                  label: i18n("Choice"),
-                },
-                {
-                  name: 'isRightAnswer',
-                  type: 'boolean',
-                  label: i18n("This is a correct answer"),
-                },
-              ],
-              label: i18n("Choices"),
-            },
-            {
-              name: 'shuffle',
-              type: 'boolean',
-              label: i18n("Shuffle answers on each attempt"),
-            },
-          ],
-        },
-        {
-          name: 'shuffle',
-          type: 'boolean',
-          label: i18n("Shuffle questions on each attempt"),
-        },
-      ],
-    },
+    // {
+    //   toolType: 'NOTES_INSERT',
+    //   name: 'lead-pencil',
+    //   pack: 'materialCommunity',
+    //   text: i18n("Notes insert"),
+    //   dataStructure: [
+    //     {
+    //       name: 'content',
+    //       type: 'flip',
+    //     },
+    //   ],
+    // },
+    // {
+    //   toolType: 'QUIZ',
+    //   name: 'md-checkbox',
+    //   text: i18n("Quiz"),
+    //   dataStructure: [
+    //     {
+    //       name: 'questions',
+    //       type: [
+    //         {
+    //           name: 'question',
+    //           type: 'string',
+    //           label: i18n("Question"),
+    //         },
+    //         {
+    //           name: 'choices',
+    //           type: [
+    //             {
+    //               name: 'choice',
+    //               type: 'string',
+    //               label: i18n("Choice"),
+    //             },
+    //             {
+    //               name: 'isRightAnswer',
+    //               type: 'boolean',
+    //               label: i18n("This is a correct answer"),
+    //             },
+    //           ],
+    //           label: i18n("Choices"),
+    //         },
+    //         {
+    //           name: 'shuffle',
+    //           type: 'boolean',
+    //           label: i18n("Shuffle answers on each attempt"),
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       name: 'shuffle',
+    //       type: 'boolean',
+    //       label: i18n("Shuffle questions on each attempt"),
+    //     },
+    //   ],
+    // },
     {
       toolType: 'LTI',
       name: 'wrench',
@@ -107,19 +107,19 @@ export const getToolInfo = () => {
         },
       ],
     },
-    {
-      toolType: 'DISCUSSION_QUESTION',
-      name: 'question-answer',
-      pack: 'material',
-      text: i18n("Discussion question"),
-      dataStructure: [
-        {
-          name: 'question',
-          type: 'string',
-          label: i18n("Question"),
-        },
-      ],
-    },
+    // {
+    //   toolType: 'DISCUSSION_QUESTION',
+    //   name: 'question-answer',
+    //   pack: 'material',
+    //   text: i18n("Discussion question"),
+    //   dataStructure: [
+    //     {
+    //       name: 'question',
+    //       type: 'string',
+    //       label: i18n("Question"),
+    //     },
+    //   ],
+    // },
     {
       toolType: 'REFLECTION_QUESTION',
       name: 'comment-question',
@@ -133,78 +133,78 @@ export const getToolInfo = () => {
         },
       ],
     },
-    {
-      toolType: 'POLL',
-      name: 'poll',
-      pack: 'materialCommunity',
-      text: i18n("Poll question"),
-      dataStructure: [
-        {
-          name: 'questions',
-          type: [
-            {
-              name: 'question',
-              type: 'string',
-              label: i18n("Question"),
-            },
-            {
-              name: 'choices',
-              type: ['string'],
-              label: i18n("Choices"),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      toolType: 'DOCUMENT',
-      name: 'md-document',
-      text: i18n("Document"),
-      dataStructure: [
-        {
-          name: 'filename',
-          type: 'file',
-          fileTypes: [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          ],
-        },
-      ],
-    },
-    {
-      toolType: 'IMAGES',
-      name: 'md-image',
-      text: i18n("Images"),
-      dataStructure: [
-        {
-          name: 'filenames',
-          type: 'files',
-          fileTypes: [
-            'image/png',
-            'image/jpeg',
-            'image/gif',
-            'image/svg+xml',
-            'image/webp',
-          ],
-        },
-      ],
-    },
-    {
-      toolType: 'AUDIO',
-      name: 'audiotrack',
-      pack: 'material',
-      text: i18n("Audio"),
-      dataStructure: [
-        {
-          name: 'filename',
-          type: 'file',
-          fileTypes: [
-            'audio/mpeg',
-          ],
-        },
-      ],
-    },
+    // {
+    //   toolType: 'POLL',
+    //   name: 'poll',
+    //   pack: 'materialCommunity',
+    //   text: i18n("Poll question"),
+    //   dataStructure: [
+    //     {
+    //       name: 'questions',
+    //       type: [
+    //         {
+    //           name: 'question',
+    //           type: 'string',
+    //           label: i18n("Question"),
+    //         },
+    //         {
+    //           name: 'choices',
+    //           type: ['string'],
+    //           label: i18n("Choices"),
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   toolType: 'DOCUMENT',
+    //   name: 'md-document',
+    //   text: i18n("Document"),
+    //   dataStructure: [
+    //     {
+    //       name: 'filename',
+    //       type: 'file',
+    //       fileTypes: [
+    //         'application/pdf',
+    //         'application/msword',
+    //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   toolType: 'IMAGES',
+    //   name: 'md-image',
+    //   text: i18n("Images"),
+    //   dataStructure: [
+    //     {
+    //       name: 'filenames',
+    //       type: 'files',
+    //       fileTypes: [
+    //         'image/png',
+    //         'image/jpeg',
+    //         'image/gif',
+    //         'image/svg+xml',
+    //         'image/webp',
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   toolType: 'AUDIO',
+    //   name: 'audiotrack',
+    //   pack: 'material',
+    //   text: i18n("Audio"),
+    //   dataStructure: [
+    //     {
+    //       name: 'filename',
+    //       type: 'file',
+    //       fileTypes: [
+    //         'audio/mpeg',
+    //       ],
+    //     },
+    //   ],
+    // },
   ]
 
   const toolInfoByType = {}
