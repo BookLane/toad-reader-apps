@@ -148,6 +148,8 @@ export const patch = info => setTimeout(() => {
         }
         
         if(classroomHasUpdate) {
+          if(classroomToPush.members.length === 0) delete classroomToPush.members
+          if(classroomToPush.tools.length === 0) delete classroomToPush.tools
           newUserData[bookId].classrooms.push(classroomToPush)
           somethingToPatch = true
         }
