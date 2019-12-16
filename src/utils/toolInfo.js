@@ -14,49 +14,39 @@ export const getToolInfo = () => {
     //     },
     //   ],
     // },
-    // {
-    //   toolType: 'QUIZ',
-    //   name: 'md-checkbox',
-    //   text: i18n("Quiz"),
-    //   dataStructure: [
-    //     {
-    //       name: 'questions',
-    //       type: [
-    //         {
-    //           name: 'question',
-    //           type: 'string',
-    //           label: i18n("Question"),
-    //         },
-    //         {
-    //           name: 'choices',
-    //           type: [
-    //             {
-    //               name: 'choice',
-    //               type: 'string',
-    //               label: i18n("Choice"),
-    //             },
-    //             {
-    //               name: 'isRightAnswer',
-    //               type: 'boolean',
-    //               label: i18n("This is a correct answer"),
-    //             },
-    //           ],
-    //           label: i18n("Choices"),
-    //         },
-    //         {
-    //           name: 'shuffle',
-    //           type: 'boolean',
-    //           label: i18n("Shuffle answers on each attempt"),
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       name: 'shuffle',
-    //       type: 'boolean',
-    //       label: i18n("Shuffle questions on each attempt"),
-    //     },
-    //   ],
-    // },
+    {
+      toolType: 'QUIZ',
+      name: 'md-checkbox',
+      text: i18n("Quiz"),
+      dataStructure: [
+        {
+          name: 'questions',
+          type: [
+            {
+              name: 'question',
+              type: 'string',
+              label: i18n("Question"),
+            },
+            {
+              name: 'choices',
+              type: ['choice'],
+              label: i18n("Choices"),
+            },
+            {
+              name: 'shuffle',
+              type: 'boolean',
+              label: i18n("Shuffle answers on each attempt"),
+            },
+          ],
+          addLabel: i18n("Add a question"),
+        },
+        {
+          name: 'shuffle',
+          type: 'boolean',
+          label: i18n("Shuffle questions on each attempt"),
+        },
+      ],
+    },
     {
       toolType: 'LTI',
       name: 'wrench',

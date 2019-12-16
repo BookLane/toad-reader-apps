@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
 
 const Input = React.memo(({
   id,
+  info,
   onChangeText,
   onChangeInfo,
   style,
@@ -32,9 +33,9 @@ const Input = React.memo(({
   const customOnChangeText = useCallback(
     value => {
       onChangeText && onChangeText(value)
-      onChangeInfo && onChangeInfo({ id, value })
+      onChangeInfo && onChangeInfo({ id, value, info })
     },
-    [ id ],
+    [ id, info ],
   )
 
   return (

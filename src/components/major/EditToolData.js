@@ -3,7 +3,8 @@ import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
 
-import { Button } from 'react-native-ui-kitten'
+// import Icon from "../basic/Icon"
+import { Button, RadioGroup, Radio } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
   },
   dataLine: {
     maxWidth: 900,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -29,14 +30,9 @@ const styles = StyleSheet.create({
   shortInput: {
     width: 200,
   },
-  inputText: {
-    outlineWidth: 0,
-    color: 'rgb(34, 43, 69)',
-  },
-  inputLabel: {
+  label: {
+    color: 'rgb(143, 155, 179)',
     fontSize: 15,
-    left: -4,
-    position: 'relative',
     marginBottom: 8,
   },
   file: {
@@ -50,6 +46,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'rgba(0,0,0,.5)',
     marginBottom: 8,
+  },
+  arrayGroup: {
+    // marginBottom: 15,
+  },
+  componentSetInArray: {
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(8, 37, 125, 0.15)',
+    padding: 15,
+    paddingBottom: 5,
+  },
+  choiceContainer: {
+    flexDirection: 'row',
+  },
+  choiceInput: {
+    flex: 1,
+  },
+  radio: {
+    paddingBottom: 4,
+    paddingHorizontal: 10,
+    height: '100%',
   },
 })
 
@@ -76,7 +93,7 @@ const EditToolData = React.memo(({
   const [ setToolDataSaveTimeout ] = useSetTimeout()
 
   const onChangeInfo = useCallback(
-    ({ id, value }) => {
+    ({ id, value, info }) => {
       const data = cloneObj(getDataInEdit())
 
       const dataNameStack = id.split('.').slice(1)
@@ -98,6 +115,17 @@ const EditToolData = React.memo(({
 
       dataSegment[dataSegmentKey] = value
 
+      if(info === 'choice') {
+        let spliceFrom = dataSegment.length
+        for(let i=dataSegment.length - 1; i>=0; i--) {
+          if(dataSegment[i].trim() !== '') {
+            break
+          }
+          spliceFrom = i
+        }
+        dataSegment.splice(spliceFrom, dataSegment.length)
+      }
+
       setDataInEdit(data)
       setToolDataSaveTimeout(
         () => {
@@ -111,6 +139,17 @@ const EditToolData = React.memo(({
 
   const onDoneImportingFile = useCallback(() => setFileImportInfo({}), [])
 
+  // const AddButtonIcon = useCallback(
+  //   style => (
+  //     <Icon
+  //       name="add"
+  //       pack="material"
+  //       style={styles.addIcon}
+  //     />
+  //   ),
+  //   [],
+  // )
+
   if(!dataStructure || !data) return null
 
   const getDataStructureSet = ({ dataStructure, dataSegment, dataNameStack=[] }) => (
@@ -121,6 +160,7 @@ const EditToolData = React.memo(({
         variant,
         fileTypes,
         label,
+        addLabel,
         placeholder,
       }) => {
 
@@ -143,16 +183,41 @@ const EditToolData = React.memo(({
             )
           }
 
+          case 'choice': {
+            return (
+              <View key={id} style={styles.dataLine}>
+                <View style={styles.choiceContainer}>
+                  <RadioGroup
+                    selectedIndex={-1}
+                    onChange={() => alert('change')}>
+                    <Radio style={styles.radio} />
+                  </RadioGroup>
+                  <Input
+                    id={id}
+                    info={type}
+                    placeholder={placeholder}
+                    label={label}
+                    value={dataSegment[name] || ""}
+                    onChangeInfo={onChangeInfo}
+                    style={variant === 'short' ? styles.shortInput : styles.choiceInput}
+                  />
+                </View>
+              </View>
+            )
+          }
+
           case 'boolean': {
             return (
               <View key={id} style={styles.dataLine}>
-                <CheckBox
-                  id={id}
-                  // style={styles.checkbox}
-                  text={label}
-                  checked={!!dataSegment[name]}
-                  onChangeInfo={onChangeInfo}
-                />
+                <View style={styles.buttonContainer}>
+                  <CheckBox
+                    id={id}
+                    // style={styles.checkbox}
+                    text={label}
+                    checked={!!dataSegment[name]}
+                    onChangeInfo={onChangeInfo}
+                  />
+                </View>
               </View>
             )
           }
@@ -275,8 +340,15 @@ const EditToolData = React.memo(({
 
             if(type instanceof Array) {
               
-              // const simpleArray = type.length === 1 && typeof type[0] === 'string'
-              // const dataArray = dataSegment[name] || [simpleArray ? "" : {}]
+              const simpleArray = type.length === 1 && typeof type[0] === 'string'
+              const dataArray = dataSegment[name]
+                ? [...dataSegment[name]]
+                : [simpleArray ? "" : {}]
+
+              if(simpleArray && type[0] === 'choice') {
+                // Always have a blank option at the bottom
+                dataArray.push("")
+              }
 
               // const getActionIcons = ({ idx }) => (
               //   <ArrayItemActionsContainer
@@ -311,58 +383,58 @@ const EditToolData = React.memo(({
               //   </ArrayItemActionsContainer>
               // )
 
-              // return (
-              //   <ArrayGroup key={id}>
-              //     {!!label &&
-              //       <ArrayGroupLabel>
-              //         {label}
-              //       </ArrayGroupLabel>
-              //     }
-              //     {simpleArray
-              //       ? (
-              //         dataArray.map((x, idx) => (
-              //           <SimpleArrayContainer key={idx}>
-              //             {getDataStructureSet({
-              //               dataStructure: [{
-              //                 name: idx,
-              //                 type: type[0],
-              //                 placeholder,
-              //                 inputVariant,
-              //                 inputOptions,
-              //               }],
-              //               dataSegment: dataArray,
-              //               dataNameStack: [ ...dataNameStack, name ],
-              //             })}
-              //             {getActionIcons({ idx })}
-              //           </SimpleArrayContainer>
-              //         ))
-              //       )
-              //       : (
-              //         dataArray.map((item, idx) => (
-              //           <ComponentSetInArray key={idx}>
-              //             {getDataStructureSet({
-              //               dataStructure: type,
-              //               dataSegment: item,
-              //               dataNameStack: [ ...dataNameStack, name, idx ],
-              //             })}
-              //             {getActionIcons({ idx })}
-              //           </ComponentSetInArray>
-              //         ))
-              //       )
-              //     }
-              //     {!bindNumber &&
-              //       <AddIconContainer>
-              //         <IconButton
-              //           data-itemid={id}
-              //           data-issimple={simpleArray ? `1` : ``}
-              //           onClick={this.onAddArrayItem}
-              //         >
-              //           <Icon>add</Icon>
-              //         </IconButton>
-              //       </AddIconContainer>
-              //     }
-              //   </ArrayGroup>
-              // )
+              return (
+                <View key={id} style={styles.arrayGroup}>
+                  {!!label &&
+                    <Text style={styles.label}>
+                      {label}
+                    </Text>
+                  }
+                  {simpleArray
+                    ? (
+                      dataArray.map((x, idx) => (
+                        <View key={idx} style={styles.simpleArrayContainer}>
+                          {getDataStructureSet({
+                            dataStructure: [{
+                              name: idx,
+                              type: type[0],
+                              placeholder,
+                            }],
+                            dataSegment: dataArray,
+                            dataNameStack: [ ...dataNameStack, name ],
+                          })}
+                          {/* {getActionIcons({ idx })} */}
+                        </View>
+                      ))
+                    )
+                    : (
+                      dataArray.map((item, idx) => (
+                        <View key={idx} style={styles.componentSetInArray}>
+                          {getDataStructureSet({
+                            dataStructure: type,
+                            dataSegment: item,
+                            dataNameStack: [ ...dataNameStack, name, idx ],
+                          })}
+                          {/* {getActionIcons({ idx })} */}
+                        </View>
+                      ))
+                    )
+                  }
+                  {!!addLabel &&
+                    <View style={styles.dataLine}>
+                      <View style={styles.buttonContainer}>
+                        <Button
+                          status="basic"
+                          size="small"
+                          onPress={() => alert('add')}
+                        >
+                          {addLabel}
+                        </Button>
+                      </View>
+                    </View>
+                  }
+                </View>
+              )
             }
           }
 
