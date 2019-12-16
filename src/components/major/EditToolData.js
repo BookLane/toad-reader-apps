@@ -3,8 +3,9 @@ import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
 
-// import Icon from "../basic/Icon"
-import { Button, RadioGroup, Radio } from 'react-native-ui-kitten'
+import Icon from "../basic/Icon"
+import Radio from "../basic/Radio"
+import { Button } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"
@@ -66,7 +67,18 @@ const styles = StyleSheet.create({
   radio: {
     paddingBottom: 4,
     paddingHorizontal: 10,
-    height: '100%',
+  },
+  trashIcon: {
+    height: 20,
+  },
+  disabledTrashButton: {
+    backgroundColor: 'transparent',
+  },
+  trashButton: {
+    borderRadius: '50%',
+    width: 48,
+    height: 48,
+    borderColor: 'transparent',
   },
 })
 
@@ -99,6 +111,10 @@ const EditToolData = React.memo(({
       const dataNameStack = id.split('.').slice(1)
       let dataSegment = data
 
+      const choiceSelectionIndex = info === 'choiceSelection'
+        ? parseInt(dataNameStack.pop(), 10)
+        : null
+
       while(dataNameStack.length > 1) {
         let structureSegment = dataNameStack.shift()
         let defaultValue = []
@@ -113,7 +129,13 @@ const EditToolData = React.memo(({
 
       const dataSegmentKey = dataNameStack[0]
 
-      dataSegment[dataSegmentKey] = value
+      if(info === 'choiceSelection') {
+        dataSegment[`${dataSegmentKey}Selection`] = choiceSelectionIndex
+      } else if(value._delete) {
+        dataSegment.splice(dataSegmentKey, 1)
+      } else {
+        dataSegment[dataSegmentKey] = value
+      }
 
       if(info === 'choice') {
         let spliceFrom = dataSegment.length
@@ -139,20 +161,25 @@ const EditToolData = React.memo(({
 
   const onDoneImportingFile = useCallback(() => setFileImportInfo({}), [])
 
-  // const AddButtonIcon = useCallback(
-  //   style => (
-  //     <Icon
-  //       name="add"
-  //       pack="material"
-  //       style={styles.addIcon}
-  //     />
-  //   ),
-  //   [],
-  // )
+  const TrashButtonIcon = useCallback(
+    style => (
+      <Icon
+        name="md-trash"
+        style={styles.trashIcon}
+      />
+    ),
+    [],
+  )
 
   if(!dataStructure || !data) return null
 
-  const getDataStructureSet = ({ dataStructure, dataSegment, dataNameStack=[] }) => (
+  const getDataStructureSet = ({
+    dataStructure,
+    dataSegment,
+    dataNameStack=[],
+    dataSegmentParent,
+    dataSegmentKey,
+  }) => (
     <View style={styles.set}>
       {dataStructure.map(({
         name,
@@ -184,14 +211,18 @@ const EditToolData = React.memo(({
           }
 
           case 'choice': {
+            const disabled = name === dataSegment.length - 1
+
             return (
               <View key={id} style={styles.dataLine}>
                 <View style={styles.choiceContainer}>
-                  <RadioGroup
-                    selectedIndex={-1}
-                    onChange={() => alert('change')}>
-                    <Radio style={styles.radio} />
-                  </RadioGroup>
+                  <Radio
+                    id={id}
+                    info="choiceSelection"
+                    style={styles.radio}
+                    checked={name === dataSegmentParent[`${dataSegmentKey}Selection`]}
+                    onChange={onChangeInfo}
+                  />
                   <Input
                     id={id}
                     info={type}
@@ -201,6 +232,27 @@ const EditToolData = React.memo(({
                     onChangeInfo={onChangeInfo}
                     style={variant === 'short' ? styles.shortInput : styles.choiceInput}
                   />
+                  {/* <Button
+                    style={[
+                      styles.trashButton,
+                      disabled ? styles.disabledTrashButton : null,
+                    ]}
+                    appearance="ghost"
+                    status="basic"
+                    icon={TrashButtonIcon}
+                    disabled={disabled}
+                    onPress={() => {
+                      if(typeof name !== 'number') {
+                        console.log('SETUP ERROR: “choice” always expected to be in a simple array.')
+                        return
+                      }
+                      onChangeInfo({
+                        id,
+                        value: { _delete: true },
+                        info: type,
+                      })
+                    }}
+                  /> */}
                 </View>
               </View>
             )
@@ -237,7 +289,7 @@ const EditToolData = React.memo(({
                       <Button
                         status="basic"
                         size="small"
-                        onPress={() => onChangeInfo({ id })}
+                        onPress={() => onChangeInfo({ id, info: type })}
                       >
                         {i18n("Remove")}
                       </Button>
@@ -261,6 +313,7 @@ const EditToolData = React.memo(({
                                 size,
                                 filename,
                               },
+                              info: type,
                             })
                           }
                         })
@@ -296,6 +349,7 @@ const EditToolData = React.memo(({
                               ...dataSegment[name].slice(0, idx),
                               ...dataSegment[name].slice(idx+1),
                             ],
+                            info: type,
                           })
                         }}
                       >
@@ -324,6 +378,7 @@ const EditToolData = React.memo(({
                                 filename,
                               })),
                             ],
+                            info: type,
                           })
                         },
                       })
@@ -402,6 +457,8 @@ const EditToolData = React.memo(({
                             }],
                             dataSegment: dataArray,
                             dataNameStack: [ ...dataNameStack, name ],
+                            dataSegmentParent: dataSegment,
+                            dataSegmentKey: name,
                           })}
                           {/* {getActionIcons({ idx })} */}
                         </View>

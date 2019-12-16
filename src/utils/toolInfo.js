@@ -28,7 +28,7 @@ export const getToolInfo = () => {
               label: i18n("Question"),
             },
             {
-              name: 'choices',
+              name: 'answers',
               type: ['choice'],
               label: i18n("Answers"),
             },
