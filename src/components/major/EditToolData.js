@@ -426,7 +426,16 @@ const EditToolData = React.memo(({
                         <Button
                           status="basic"
                           size="small"
-                          onPress={() => alert('add')}
+                          onPress={() => {
+                            onChangeInfo({
+                              id,
+                              value: [
+                                ...(dataSegment[name] || [{}]),
+                                {},
+                              ],
+                              info: type,
+                            })
+                          }}
                         >
                           {addLabel}
                         </Button>

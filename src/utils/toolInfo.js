@@ -30,7 +30,7 @@ export const getToolInfo = () => {
             {
               name: 'choices',
               type: ['choice'],
-              label: i18n("Choices"),
+              label: i18n("Answers"),
             },
             {
               name: 'shuffle',

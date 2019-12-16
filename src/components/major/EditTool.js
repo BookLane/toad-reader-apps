@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
   bottomSection: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
+    flex: 1,
+    overflow: 'auto',
   },
   bottomSectionWideMode: {
   },
