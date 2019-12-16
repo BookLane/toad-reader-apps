@@ -154,6 +154,7 @@ const EditTool = React.memo(({
               data={toolTypes}
               selectedOption={toolTypes.filter(({ toolType }) => toolType === toolInEdit.toolType)[0]}
               onSelect={onSelectToolType}
+              disabled={!(!toolInEdit.data || Object.keys(toolInEdit.data).length === 0)}
             />
           </View>
         </View>
