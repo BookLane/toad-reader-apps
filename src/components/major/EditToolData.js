@@ -18,6 +18,8 @@ const trashButtonStyles = {
   borderRadius: '50%',
   width: 40,
   height: 40,
+  marginTop: 'auto',
+  marginBottom: 4,
   borderColor: 'transparent',
 }
 
@@ -66,10 +68,10 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 5,
   },
-  choiceContainer: {
+  inputContainer: {
     flexDirection: 'row',
   },
-  choiceInput: {
+  input: {
     flex: 1,
   },
   radio: {
@@ -188,6 +190,7 @@ const EditToolData = React.memo(({
     dataNameStack=[],
     dataSegmentParent,
     dataSegmentKey,
+    dataSegmentParentIsComplexArray,
   }) => (
     <View style={styles.set}>
       {dataStructure.map(({
@@ -198,7 +201,7 @@ const EditToolData = React.memo(({
         label,
         addLabel,
         placeholder,
-      }) => {
+      }, dataStructureIndex) => {
 
         const id = ['tooldata', ...dataNameStack, name].join('.')
 
@@ -207,14 +210,26 @@ const EditToolData = React.memo(({
           case 'string': {
             return (
               <View key={id} style={styles.dataLine}>
-                <Input
-                  id={id}
-                  placeholder={placeholder}
-                  label={label}
-                  value={dataSegment[name] || ""}
-                  onChangeInfo={onChangeInfo}
-                  style={variant === 'short' ? styles.shortInput : null}
-                />
+                <View style={styles.inputContainer}>
+                  <Input
+                    id={id}
+                    placeholder={placeholder}
+                    label={label}
+                    value={dataSegment[name] || ""}
+                    onChangeInfo={onChangeInfo}
+                    style={variant === 'short' ? styles.shortInput : styles.input}
+                  />
+                  {!!dataSegmentParentIsComplexArray && dataStructureIndex === 0 &&
+                    <MemoButton
+                      id={['tooldata', ...dataNameStack].join('.')}
+                      style={styles.trashButton}
+                      appearance="ghost"
+                      status="basic"
+                      icon={TrashButtonIcon}
+                      onPress={onDeleteArrayItem}
+                    />
+                  }
+                </View>
               </View>
             )
           }
@@ -224,7 +239,7 @@ const EditToolData = React.memo(({
 
             return (
               <View key={id} style={styles.dataLine}>
-                <View style={styles.choiceContainer}>
+                <View style={styles.inputContainer}>
                   <Radio
                     id={id}
                     info="choiceSelection"
@@ -239,7 +254,7 @@ const EditToolData = React.memo(({
                     label={label}
                     value={dataSegment[name] || ""}
                     onChangeInfo={onChangeInfo}
-                    style={variant === 'short' ? styles.shortInput : styles.choiceInput}
+                    style={variant === 'short' ? styles.shortInput : styles.input}
                   />
                   <MemoButton
                     id={id}
@@ -403,39 +418,6 @@ const EditToolData = React.memo(({
                 dataArray.push("")
               }
 
-              // const getActionIcons = ({ idx }) => (
-              //   <ArrayItemActionsContainer
-              //     simpleArray={simpleArray}
-              //   >
-              //     {!bindNumber &&
-              //       <IconButton
-              //         data-itemid={`${id}.${idx}`}
-              //         onClick={this.onDeleteArrayItem}
-              //       >
-              //         <Icon>delete</Icon>
-              //       </IconButton>
-              //     }
-              //     {!(hideChildReorderWhen && hideChildReorderWhen({ componentData: this.props.data, childData: dataArray[idx] })) &&
-              //       <React.Fragment>
-              //         <IconButton
-              //           data-itemid={`${id}.${idx}`}
-              //           onClick={this.onArrayItemUp}
-              //           disabled={idx === 0}
-              //         >
-              //           <Icon>arrow_upward</Icon>
-              //         </IconButton>
-              //         <IconButton
-              //           data-itemid={`${id}.${idx}`}
-              //           onClick={this.onArrayItemDown}
-              //           disabled={idx === dataArray.length - 1}
-              //         >
-              //           <Icon>arrow_downward</Icon>
-              //         </IconButton>
-              //       </React.Fragment>
-              //     }
-              //   </ArrayItemActionsContainer>
-              // )
-
               return (
                 <View key={id} style={styles.arrayGroup}>
                   {!!label &&
@@ -469,6 +451,7 @@ const EditToolData = React.memo(({
                             dataStructure: type,
                             dataSegment: item,
                             dataNameStack: [ ...dataNameStack, name, idx ],
+                            dataSegmentParentIsComplexArray: true,
                           })}
                           {/* {getActionIcons({ idx })} */}
                         </View>
