@@ -5,6 +5,7 @@ import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
 
 import Icon from "../basic/Icon"
 import Radio from "../basic/Radio"
+import { default as MemoButton } from "../basic/Button"
 import { Button } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
@@ -12,6 +13,13 @@ import FileImporter from "./FileImporter"
 
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
+
+const trashButtonStyles = {
+  borderRadius: '50%',
+  width: 40,
+  height: 40,
+  borderColor: 'transparent',
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -71,14 +79,10 @@ const styles = StyleSheet.create({
   trashIcon: {
     height: 20,
   },
+  trashButton: trashButtonStyles,
   disabledTrashButton: {
+    ...trashButtonStyles,
     backgroundColor: 'transparent',
-  },
-  trashButton: {
-    borderRadius: '50%',
-    width: 48,
-    height: 48,
-    borderColor: 'transparent',
   },
 })
 
@@ -159,6 +163,11 @@ const EditToolData = React.memo(({
     [ goUpdateTool ],
   )
 
+  const onDeleteArrayItem = useCallback(
+    params => onChangeInfo({ ...params, value: { _delete: true } }),
+    [ onChangeInfo ],
+  )
+
   const onDoneImportingFile = useCallback(() => setFileImportInfo({}), [])
 
   const TrashButtonIcon = useCallback(
@@ -232,27 +241,16 @@ const EditToolData = React.memo(({
                     onChangeInfo={onChangeInfo}
                     style={variant === 'short' ? styles.shortInput : styles.choiceInput}
                   />
-                  {/* <Button
-                    style={[
-                      styles.trashButton,
-                      disabled ? styles.disabledTrashButton : null,
-                    ]}
+                  <MemoButton
+                    id={id}
+                    info={type}
+                    style={disabled ? styles.disabledTrashButton : styles.trashButton}
                     appearance="ghost"
                     status="basic"
                     icon={TrashButtonIcon}
                     disabled={disabled}
-                    onPress={() => {
-                      if(typeof name !== 'number') {
-                        console.log('SETUP ERROR: “choice” always expected to be in a simple array.')
-                        return
-                      }
-                      onChangeInfo({
-                        id,
-                        value: { _delete: true },
-                        info: type,
-                      })
-                    }}
-                  /> */}
+                    onPress={onDeleteArrayItem}
+                  />
                 </View>
               </View>
             )

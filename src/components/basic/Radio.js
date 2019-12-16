@@ -4,7 +4,6 @@ import { Radio as UIKittenRadio } from "react-native-ui-kitten"
 const Radio = React.memo(({
   id,
   info,
-  checked,
   onChange,
   ...otherProps
  }) => {
@@ -19,7 +18,6 @@ const Radio = React.memo(({
   return (
     <UIKittenRadio
       {...otherProps}
-      checked={checked}
       onChange={customOnChange}
     />
   )
