@@ -36,13 +36,12 @@ const getAccountInfo = ({ idps, accountId }) => {
 
 const adjustAllUpdatedAts = (objOrAry, msAdjustment) => {
   ;(objOrAry instanceof Array ? objOrAry : [objOrAry]).forEach(obj => {
+    if(!obj || typeof obj !== 'object') return
     if(obj.updated_at) {
       obj.updated_at = obj.updated_at + msAdjustment
     }
     Object.values(obj).forEach(val => {
-      if(val && typeof val === 'object') {
-        adjustAllUpdatedAts(val, msAdjustment);
-      }
+      adjustAllUpdatedAts(val, msAdjustment);
     })
   })
 }
@@ -274,6 +273,7 @@ export const reportReadings = info => setTimeout(() => {
 
   const { idps, accounts, books, readingRecordsByAccountId, flushReadingRecords } = setAndGetLatestInfo(info)
 
+  if(__DEV__) return
   if(!idps || !accounts || !books || !readingRecordsByAccountId || !flushReadingRecords) return
   if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
   
