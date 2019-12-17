@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     // marginBottom: 15,
   },
   componentSetInArray: {
+    maxWidth: 900,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: 'rgba(8, 37, 125, 0.15)',
