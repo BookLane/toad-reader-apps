@@ -2,18 +2,18 @@ import { i18n } from "inline-i18n"
 
 export const getToolInfo = () => {
   const toolTypes = [
-    // {
-    //   toolType: 'NOTES_INSERT',
-    //   name: 'lead-pencil',
-    //   pack: 'materialCommunity',
-    //   text: i18n("Notes insert"),
-    //   dataStructure: [
-    //     {
-    //       name: 'content',
-    //       type: 'flip',
-    //     },
-    //   ],
-    // },
+    {
+      toolType: 'NOTES_INSERT',
+      name: 'lead-pencil',
+      pack: 'materialCommunity',
+      text: i18n("Notes insert"),
+      dataStructure: [
+        {
+          name: 'content',
+          type: 'text',
+        },
+      ],
+    },
     {
       toolType: 'QUIZ',
       name: 'md-checkbox',

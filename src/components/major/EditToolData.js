@@ -8,6 +8,7 @@ import Radio from "../basic/Radio"
 import { default as MemoButton } from "../basic/Button"
 import { Button } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
+import TextInput from "../basic/TextInput"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"
 
@@ -26,6 +27,7 @@ const trashButtonStyles = {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    flex: 1,
   },
   dataLine: {
     maxWidth: 900,
@@ -40,6 +42,12 @@ const styles = StyleSheet.create({
   },
   shortInput: {
     width: 200,
+  },
+  textEditor: {
+    outlineWidth: 0,
+    flex: 1,
+    margin: -20,
+    padding: 20,
   },
   label: {
     color: 'rgb(143, 155, 179)',
@@ -193,165 +201,285 @@ const EditToolData = React.memo(({
     dataSegmentKey,
     dataSegmentParentIsComplexArray,
   }) => (
-    <View style={styles.set}>
-      {dataStructure.map(({
-        name,
-        type,
-        variant,
-        fileTypes,
-        label,
-        addLabel,
-        placeholder,
-      }, dataStructureIndex) => {
+    dataStructure.map(({
+      name,
+      type,
+      variant,
+      fileTypes,
+      label,
+      addLabel,
+      placeholder,
+    }, dataStructureIndex) => {
 
-        const id = ['tooldata', ...dataNameStack, name].join('.')
+      const id = ['tooldata', ...dataNameStack, name].join('.')
 
-        switch(type) {
+      switch(type) {
 
-          case 'string': {
-            return (
-              <View key={id} style={styles.dataLine}>
-                <View style={styles.inputContainer}>
-                  <Input
-                    id={id}
-                    placeholder={placeholder}
-                    label={label}
-                    value={dataSegment[name] || ""}
-                    onChangeInfo={onChangeInfo}
-                    style={variant === 'short' ? styles.shortInput : styles.input}
-                  />
-                  {!!dataSegmentParentIsComplexArray && dataStructureIndex === 0 &&
-                    <MemoButton
-                      id={['tooldata', ...dataNameStack].join('.')}
-                      style={styles.trashButton}
-                      appearance="ghost"
-                      status="basic"
-                      icon={TrashButtonIcon}
-                      onPress={onDeleteArrayItem}
-                    />
-                  }
-                </View>
-              </View>
-            )
-          }
-
-          case 'choice': {
-            const disabled = name === dataSegment.length - 1
-
-            return (
-              <View key={id} style={styles.dataLine}>
-                <View style={styles.inputContainer}>
-                  <Radio
-                    id={id}
-                    info="choiceSelection"
-                    style={styles.radio}
-                    checked={name === dataSegmentParent[`${dataSegmentKey}Selection`]}
-                    onChange={onChangeInfo}
-                  />
-                  <Input
-                    id={id}
-                    info={type}
-                    placeholder={placeholder}
-                    label={label}
-                    value={dataSegment[name] || ""}
-                    onChangeInfo={onChangeInfo}
-                    style={variant === 'short' ? styles.shortInput : styles.input}
-                  />
+        case 'string': {
+          return (
+            <View key={id} style={styles.dataLine}>
+              <View style={styles.inputContainer}>
+                <Input
+                  id={id}
+                  placeholder={placeholder}
+                  label={label}
+                  value={dataSegment[name] || ""}
+                  onChangeInfo={onChangeInfo}
+                  style={variant === 'short' ? styles.shortInput : styles.input}
+                />
+                {!!dataSegmentParentIsComplexArray && dataStructureIndex === 0 &&
                   <MemoButton
-                    id={id}
-                    info={type}
-                    style={disabled ? styles.disabledTrashButton : styles.trashButton}
+                    id={['tooldata', ...dataNameStack].join('.')}
+                    style={styles.trashButton}
                     appearance="ghost"
                     status="basic"
                     icon={TrashButtonIcon}
-                    disabled={disabled}
                     onPress={onDeleteArrayItem}
                   />
-                </View>
-              </View>
-            )
-          }
-
-          case 'boolean': {
-            return (
-              <View key={id} style={styles.dataLine}>
-                <View style={styles.buttonContainer}>
-                  <CheckBox
-                    id={id}
-                    // style={styles.checkbox}
-                    text={label}
-                    checked={!!dataSegment[name]}
-                    onChangeInfo={onChangeInfo}
-                  />
-                </View>
-              </View>
-            )
-          }
-
-          case 'file': {
-            return (
-              <View key={id} style={styles.dataLine}>
-                {!!dataSegment[name] && 
-                  <React.Fragment>
-                    <Text style={styles.fileName}>
-                      {i18n("File name: {{name}}", dataSegment[name])}
-                    </Text>
-                    <Text style={styles.size}>
-                      {i18n("Size: {{size}}", { size: getMBSizeStr(dataSegment[name].size) })}
-                    </Text>
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        status="basic"
-                        size="small"
-                        onPress={() => onChangeInfo({ id, info: type })}
-                      >
-                        {i18n("Remove")}
-                      </Button>
-                    </View>
-                  </React.Fragment>
                 }
-                {!dataSegment[name] && 
+              </View>
+            </View>
+          )
+        }
+
+        case 'choice': {
+          const disabled = name === dataSegment.length - 1
+
+          return (
+            <View key={id} style={styles.dataLine}>
+              <View style={styles.inputContainer}>
+                <Radio
+                  id={id}
+                  info="choiceSelection"
+                  style={styles.radio}
+                  checked={name === dataSegmentParent[`${dataSegmentKey}Selection`]}
+                  onChange={onChangeInfo}
+                />
+                <Input
+                  id={id}
+                  info={type}
+                  placeholder={placeholder}
+                  label={label}
+                  value={dataSegment[name] || ""}
+                  onChangeInfo={onChangeInfo}
+                  style={variant === 'short' ? styles.shortInput : styles.input}
+                />
+                <MemoButton
+                  id={id}
+                  info={type}
+                  style={disabled ? styles.disabledTrashButton : styles.trashButton}
+                  appearance="ghost"
+                  status="basic"
+                  icon={TrashButtonIcon}
+                  disabled={disabled}
+                  onPress={onDeleteArrayItem}
+                />
+              </View>
+            </View>
+          )
+        }
+
+        case 'boolean': {
+          return (
+            <View key={id} style={styles.dataLine}>
+              <View style={styles.buttonContainer}>
+                <CheckBox
+                  id={id}
+                  // style={styles.checkbox}
+                  text={label}
+                  checked={!!dataSegment[name]}
+                  onChangeInfo={onChangeInfo}
+                />
+              </View>
+            </View>
+          )
+        }
+
+        case 'text': {
+          return (
+            <TextInput
+              id={id}
+              placeholder={placeholder}
+              multiline
+              value={dataSegment[name] || ""}
+              onChangeInfo={onChangeInfo}
+              style={styles.textEditor}
+            />
+          )
+        }
+        case 'file': {
+          return (
+            <View key={id} style={styles.dataLine}>
+              {!!dataSegment[name] &&
+                <React.Fragment>
+                  <Text style={styles.fileName}>
+                    {i18n("File name: {{name}}", dataSegment[name])}
+                  </Text>
+                  <Text style={styles.size}>
+                    {i18n("Size: {{size}}", { size: getMBSizeStr(dataSegment[name].size) })}
+                  </Text>
                   <View style={styles.buttonContainer}>
                     <Button
-                      status="primary"
+                      status="basic"
+                      size="small"
+                      onPress={() => onChangeInfo({ id, info: type })}
+                    >
+                      {i18n("Remove")}
+                    </Button>
+                  </View>
+                </React.Fragment>
+              }
+              {!dataSegment[name] &&
+                <View style={styles.buttonContainer}>
+                  <Button
+                    status="primary"
+                    onPress={() => {
+                      setFileImportInfo({
+                        open: true,
+                        fileType: fileTypes.join(','),
+                        classroomUid,
+                        onSuccess: ([{ name, size, result: { filename } }]) => {
+                          onChangeInfo({
+                            id,
+                            value: {
+                              name,
+                              size,
+                              filename,
+                            },
+                            info: type,
+                          })
+                        }
+                      })
+                    }}
+                  >
+                    {i18n("Upload file")}
+                  </Button>
+                </View>
+              }
+            </View>
+          )
+        }
+
+        case 'files': {
+          return (
+            <View key={id} style={styles.dataLine}>
+              {(dataSegment[name] || []).map((file, idx) => (
+                <View key={file.filename} style={styles.file}>
+                  <Text style={styles.fileName}>
+                    {i18n("File name: {{name}}", file)}
+                  </Text>
+                  <Text style={styles.size}>
+                    {i18n("Size: {{size}}", { size: getMBSizeStr(file.size) })}
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      status="basic"
+                      size="small"
                       onPress={() => {
-                        setFileImportInfo({
-                          open: true,
-                          fileType: fileTypes.join(','),
-                          classroomUid,
-                          onSuccess: ([{ name, size, result: { filename } }]) => {
-                            onChangeInfo({
-                              id,
-                              value: {
-                                name,
-                                size,
-                                filename,
-                              },
-                              info: type,
-                            })
-                          }
+                        onChangeInfo({
+                          id,
+                          value: [
+                            ...dataSegment[name].slice(0, idx),
+                            ...dataSegment[name].slice(idx+1),
+                          ],
+                          info: type,
                         })
                       }}
                     >
-                      {i18n("Upload file")}
+                      {i18n("Remove")}
                     </Button>
                   </View>
-                }
+                </View>
+              ))}
+              <View style={styles.buttonContainer}>
+                <Button
+                  status="primary"
+                  onPress={() => {
+                    setFileImportInfo({
+                      open: true,
+                      fileType: fileTypes.join(','),
+                      multiple: true,
+                      classroomUid,
+                      onSuccess: files => {
+                        onChangeInfo({
+                          id,
+                          value: [
+                            ...(dataSegment[name] || []),
+                            ...files.map(({ name, size, result: { filename } }) => ({
+                              name,
+                              size,
+                              filename,
+                            })),
+                          ],
+                          info: type,
+                        })
+                      },
+                    })
+                  }}
+                >
+                  {i18n("Upload files")}
+                </Button>
               </View>
-            )
-          }
+            </View>
+          )
+        }
 
-          case 'files': {
+        default: {  // should be an array
+
+          if(type instanceof Array) {
+
+            const simpleArray = type.length === 1 && typeof type[0] === 'string'
+            const dataArray = dataSegment[name]
+              ? [...dataSegment[name]]
+              : [simpleArray ? "" : {}]
+
+            if(simpleArray && type[0] === 'choice') {
+              // Always have a blank option at the bottom
+              dataArray.push("")
+            }
+
             return (
-              <View key={id} style={styles.dataLine}>
-                {(dataSegment[name] || []).map((file, idx) => (
-                  <View key={file.filename} style={styles.file}>
-                    <Text style={styles.fileName}>
-                      {i18n("File name: {{name}}", file)}
-                    </Text>
-                    <Text style={styles.size}>
-                      {i18n("Size: {{size}}", { size: getMBSizeStr(file.size) })}
-                    </Text>
+              <View key={id} style={styles.arrayGroup}>
+                {!!label &&
+                  <Text style={styles.label}>
+                    {label}
+                  </Text>
+                }
+                {simpleArray
+                  ? (
+                    dataArray.map((x, idx) => (
+                      <View key={idx} style={styles.simpleArrayContainer}>
+                        {getDataStructureSet({
+                          dataStructure: [{
+                            name: idx,
+                            type: type[0],
+                            placeholder,
+                          }],
+                          dataSegment: dataArray,
+                          dataNameStack: [ ...dataNameStack, name ],
+                          dataSegmentParent: dataSegment,
+                          dataSegmentKey: name,
+                        })}
+                        {/* {getActionIcons({ idx })} */}
+                      </View>
+                    ))
+                  )
+                  : (
+                    dataArray.map((item, idx) => (
+                      <View key={idx} style={styles.componentSetInArray}>
+                        {getDataStructureSet({
+                          dataStructure: type,
+                          dataSegment: item,
+                          dataNameStack: [ ...dataNameStack, name, idx ],
+                          dataSegmentParentIsComplexArray: true,
+                        })}
+                        {/* {getActionIcons({ idx })} */}
+                      </View>
+                    ))
+                  )
+                }
+                {!!addLabel &&
+                  <View style={styles.dataLine}>
                     <View style={styles.buttonContainer}>
                       <Button
                         status="basic"
@@ -360,135 +488,25 @@ const EditToolData = React.memo(({
                           onChangeInfo({
                             id,
                             value: [
-                              ...dataSegment[name].slice(0, idx),
-                              ...dataSegment[name].slice(idx+1),
+                              ...(dataSegment[name] || [{}]),
+                              {},
                             ],
                             info: type,
                           })
                         }}
                       >
-                        {i18n("Remove")}
+                        {addLabel}
                       </Button>
                     </View>
                   </View>
-                ))}
-                <View style={styles.buttonContainer}>
-                  <Button
-                    status="primary"
-                    onPress={() => {
-                      setFileImportInfo({
-                        open: true,
-                        fileType: fileTypes.join(','),
-                        multiple: true,
-                        classroomUid,
-                        onSuccess: files => {
-                          onChangeInfo({
-                            id,
-                            value: [
-                              ...(dataSegment[name] || []),
-                              ...files.map(({ name, size, result: { filename } }) => ({
-                                name,
-                                size,
-                                filename,
-                              })),
-                            ],
-                            info: type,
-                          })
-                        },
-                      })
-                    }}
-                  >
-                    {i18n("Upload files")}
-                  </Button>
-                </View>
+                }
               </View>
             )
           }
-
-          default: {  // should be an array
-
-            if(type instanceof Array) {
-              
-              const simpleArray = type.length === 1 && typeof type[0] === 'string'
-              const dataArray = dataSegment[name]
-                ? [...dataSegment[name]]
-                : [simpleArray ? "" : {}]
-
-              if(simpleArray && type[0] === 'choice') {
-                // Always have a blank option at the bottom
-                dataArray.push("")
-              }
-
-              return (
-                <View key={id} style={styles.arrayGroup}>
-                  {!!label &&
-                    <Text style={styles.label}>
-                      {label}
-                    </Text>
-                  }
-                  {simpleArray
-                    ? (
-                      dataArray.map((x, idx) => (
-                        <View key={idx} style={styles.simpleArrayContainer}>
-                          {getDataStructureSet({
-                            dataStructure: [{
-                              name: idx,
-                              type: type[0],
-                              placeholder,
-                            }],
-                            dataSegment: dataArray,
-                            dataNameStack: [ ...dataNameStack, name ],
-                            dataSegmentParent: dataSegment,
-                            dataSegmentKey: name,
-                          })}
-                          {/* {getActionIcons({ idx })} */}
-                        </View>
-                      ))
-                    )
-                    : (
-                      dataArray.map((item, idx) => (
-                        <View key={idx} style={styles.componentSetInArray}>
-                          {getDataStructureSet({
-                            dataStructure: type,
-                            dataSegment: item,
-                            dataNameStack: [ ...dataNameStack, name, idx ],
-                            dataSegmentParentIsComplexArray: true,
-                          })}
-                          {/* {getActionIcons({ idx })} */}
-                        </View>
-                      ))
-                    )
-                  }
-                  {!!addLabel &&
-                    <View style={styles.dataLine}>
-                      <View style={styles.buttonContainer}>
-                        <Button
-                          status="basic"
-                          size="small"
-                          onPress={() => {
-                            onChangeInfo({
-                              id,
-                              value: [
-                                ...(dataSegment[name] || [{}]),
-                                {},
-                              ],
-                              info: type,
-                            })
-                          }}
-                        >
-                          {addLabel}
-                        </Button>
-                      </View>
-                    </View>
-                  }
-                </View>
-              )
-            }
-          }
-
         }
-      })}
-    </View>
+
+      }
+    })
   )
 
   return (
