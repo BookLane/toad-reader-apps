@@ -11,6 +11,7 @@ export const getToolInfo = () => {
         {
           name: 'content',
           type: 'text',
+          placeholder: i18n("Enter your notes here."),
         },
       ],
     },
