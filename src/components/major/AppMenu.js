@@ -236,7 +236,8 @@ const AppMenu = ({
     {
       title: i18n("Refresh book list"),
       // icon: refreshIcon,
-      onSelect: online ? reLogin : null,
+      onSelect: confirmLogOut,
+      // onSelect: online ? reLogin : null,
       disabled: !online,
     },
     ...(Platform.OS === 'web' ? [] : [

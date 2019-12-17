@@ -401,15 +401,18 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
         response.json()
           .then(userData => {
             // put into redux
-            if(!userData.latest_location || !userData.updated_at || !userData.highlights) {
-              reportResponseError({
-                message: `Incomplete response to user data fetch (${path}).`,
-                response,
-                retry: () => refreshUserData({ accountId, bookId }),
-              })
-              setSyncStatus("error")
-              return resolve()
-            }
+
+            // Following code no longer valid as (1) it might be their first visit and so latest_location is
+            // undefined, and (2) in the future I will be sending back only data updated after a certain time.
+            // if(!userData.latest_location || !userData.updated_at || !userData.highlights) {
+            //   reportResponseError({
+            //     message: `Incomplete response to user data fetch (${path}).`,
+            //     response,
+            //     retry: () => refreshUserData({ accountId, bookId }),
+            //   })
+            //   setSyncStatus("error")
+            //   return resolve()
+            // }
 
             // convert user data updated_at times to local device per server time offset
             adjustAllUpdatedAts(userData, serverTimeOffset * -1);
