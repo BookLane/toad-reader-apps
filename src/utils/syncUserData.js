@@ -268,12 +268,13 @@ export const patch = info => setTimeout(() => {
   })
 })
 
+let idpXapiOffOnServer = false
 export const reportReadings = info => setTimeout(() => {
   // the setTimeout ensures this is async
 
   const { idps, accounts, books, readingRecordsByAccountId, flushReadingRecords } = setAndGetLatestInfo(info)
 
-  if(__DEV__) return
+  if(idpXapiOffOnServer) return
   if(!idps || !accounts || !books || !readingRecordsByAccountId || !flushReadingRecords) return
   if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
   
@@ -311,11 +312,19 @@ export const reportReadings = info => setTimeout(() => {
       },
       body: JSON.stringify({ readingRecords }),
     }))
-      .then(response => {
+      .then(async response => {
 
         currentlyReportingReadingsByAccountId[accountId] = false
 
         if(response.status < 400) {
+          try {
+            if((await response.json()).off) {
+              console.log(`reportReading canceled due to xapi being turned off on the server.`)
+              idpXapiOffOnServer = true
+              return
+            }
+          } catch(err) {}
+
           console.log(`reportReading successful (userId: ${userId}, path: ${path}).`)
 
           // remove these reading records from readingRecordsByAccountId in the state
