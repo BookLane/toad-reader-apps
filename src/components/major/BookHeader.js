@@ -201,6 +201,7 @@ const BookHeader = React.memo(({
         hide={mode === 'page' && !wideMode}
         title={title}
         subtitle={subtitle}
+        titleCentered={true}
         leftControl={
           <HeaderIcon
             name="md-arrow-back"

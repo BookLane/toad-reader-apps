@@ -2,6 +2,14 @@ import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { getToolbarHeight } from '../../utils/toolbox'
 
+import useWideMode from "../../hooks/useWideMode"
+
+const controlsGroup = {
+  flexBasis: 300,
+  flexDirection: 'row',
+  flexShrink: 9999999999,
+}
+
 const styles = StyleSheet.create({
   container: {
     zIndex: 3,
@@ -12,8 +20,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   titleView: {
-    flex: 1,
+    flexShrink: 1,
     justifyContent: 'center',
+  },
+  titleViewCentered: {
+    justifyContent: 'center',
+    flexShrink: 1,
+    maxWidth: '50%',
   },
   title: {
     fontSize: 19,
@@ -23,29 +36,44 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
   },
-
+  controlsGroupLeft: {
+    ...controlsGroup,
+  },
+  controlsGroupRight: {
+    ...controlsGroup,
+    justifyContent: 'flex-end',
+  },
+  flex1: {
+    flex: 99999,
+  },
 })
 
 const AppHeader = ({
   hide,
   title,
   subtitle,
+  titleCentered,
   leftControl,
   rightControls=[],
   titleStyle,
   ...topNavigationProps
 }) => {
 
+  const wideMode = useWideMode()
+
   if(hide) return null
+
+  titleCentered = titleCentered && wideMode
 
   return (
     <View style={styles.container}>
       {!!leftControl &&
-        <View>
+        <View style={titleCentered ? styles.controlsGroupLeft : null}>
           {leftControl}
         </View>
       }
-      <View style={styles.titleView}>
+      {!!titleCentered && <View style={styles.flex1} />}
+      <View style={titleCentered ? styles.titleViewCentered : styles.titleView}>
         <Text
           numberOfLines={1}
           style={[
@@ -64,11 +92,14 @@ const AppHeader = ({
           </Text>
         }
       </View>
-      {rightControls.map((rightControl, idx) => (
-        <View key={idx}>
-          {rightControl}
-        </View>
-      ))}
+      <View style={styles.flex1} />
+      <View style={titleCentered ? styles.controlsGroupRight : null}>
+        {rightControls.map((rightControl, idx) => (
+          <View key={idx}>
+            {rightControl}
+          </View>
+        ))}
+      </View>
     </View>
   )
 }
