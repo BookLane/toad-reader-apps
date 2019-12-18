@@ -642,14 +642,14 @@ const Book = React.memo(({
 
       for(let type in toolSpots.current) {
         const { styles, spots } = toolSpots.current[type]
-        spots.some(({ x, ...info }) => {
-          const xAdjustedToScroll = x - getBookContentsScrollY()
-          if(xAdjustedToScroll > top) {
+        spots.some(({ y, ...info }) => {
+          const adjustedY = y - getBookContentsScrollY()
+          if(adjustedY + 4 > top) {  // the 4 relates to the paddingVertical of listItemWithTool in BookContentsLine
             moveInfo = {
               ...info,
               spotStyle: {
                 ...styles,
-                top: xAdjustedToScroll,
+                top: adjustedY,
               },
             }
             return true

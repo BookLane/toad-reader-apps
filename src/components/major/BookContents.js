@@ -124,13 +124,13 @@ const BookContents = React.memo(({
             ...data.map(({ lineHeight=0, spineIdRef }, idx) => {
               accumulatedHeight += lineHeight
               return {
-                x: accumulatedHeight - lineHeight,
+                y: accumulatedHeight - lineHeight,
                 classroomUid,
                 spineIdRef,
               }
             }),
             {
-              x: accumulatedHeight,
+              y: accumulatedHeight,
               classroomUid,
               spineIdRef: 'AFTER LAST SPINE',
             },
