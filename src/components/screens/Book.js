@@ -676,7 +676,7 @@ const Book = React.memo(({
 
   const onToolRelease = useCallback(
     () => {
-      const { spineIdRef, cfi, classroomUid, uid } = getToolMoveInfo()
+      const { spineIdRef, cfi, ordering, classroomUid, uid } = getToolMoveInfo()
 
       if(spineIdRef) {
         updateTool({
@@ -685,6 +685,7 @@ const Book = React.memo(({
           uid,
           spineIdRef,
           cfi,
+          ordering,
           patchInfo: {
             userDataByBookId: getUserDataByBookId(),
           },

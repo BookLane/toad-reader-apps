@@ -76,13 +76,15 @@ const BookContents = React.memo(({
   
       listItems = [
         ...listItems,
-        ...(toolsToInsert.map(({ uid, name, toolType }) => ({
-              key: uid,
-              uid,
-              indentLevel,
-              label: name,
-              toolType,
-            }))
+        ...(toolsToInsert.map(({ uid, name, toolType, spineIdRef, ordering }) => ({
+            key: uid,
+            uid,
+            indentLevel,
+            label: name,
+            toolType,
+            spineIdRef,
+            ordering,
+          }))
         ),
         {
           ...tocItem,
@@ -114,6 +116,7 @@ const BookContents = React.memo(({
 
       setReportSpotsTimeout(() => {
         let accumulatedHeight = getOffsetY() + paddingTop
+        let accumulatedOrdering = 0
         reportSpots({
           type: 'BookContents',
           styles: {
@@ -121,13 +124,18 @@ const BookContents = React.memo(({
             right: 0,
           },
           spots: [
-            ...data.map(({ lineHeight=0, spineIdRef }, idx) => {
-              accumulatedHeight += lineHeight
-              return {
-                y: accumulatedHeight - lineHeight,
+            ...data.map(({ lineHeight=0, spineIdRef, ordering }, idx) => {
+              const info = {
+                y: accumulatedHeight,
                 classroomUid,
                 spineIdRef,
+                ordering: ordering !== undefined ? ordering : accumulatedOrdering,
               }
+
+              accumulatedHeight += lineHeight
+              accumulatedOrdering = ordering !== undefined ? ordering + 1 : 0
+
+              return info
             }),
             {
               y: accumulatedHeight,

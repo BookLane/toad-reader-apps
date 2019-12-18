@@ -3,6 +3,48 @@ import { getToolInfo } from "../../utils/toolInfo"
 
 const initialState = {}
 
+const getPlacementKey = ({ spineIdRef, cfi=null }) => JSON.stringify({ spineIdRef, cfi })
+
+const fixToolOrdering = ({
+  tools,
+  modifiedTool,
+  now,
+}) => {
+
+  const modifiedToolPlacementKey = getPlacementKey(modifiedTool)
+
+  // adjust ordering key of other tools with same spineIdRef/cfi combo
+  const ordering = {
+    [modifiedToolPlacementKey]: modifiedTool.ordering === 0 ? 1 : 0,
+  }
+
+  tools.forEach((tool, idx) => {
+    if(tool._delete) return
+    if(tool.uid === modifiedTool.uid) return
+
+    const placementKey = getPlacementKey(tool)
+    const properOrdering = ordering[placementKey] || 0
+
+    if(tool.ordering !== properOrdering) {
+      tools[idx] = tool = { ...tool }
+      tool.ordering = properOrdering
+      tool.updated_at = now
+    }
+
+    ordering[placementKey] = properOrdering + 1
+    if(
+      placementKey === modifiedToolPlacementKey
+      && ordering[placementKey] === modifiedTool.ordering
+    ) {
+      ordering[placementKey]++
+    }
+  })
+
+  // sort properly
+  tools.sort((a, b) => a.ordering - b.ordering)
+
+}
+
 export default function(state = initialState, action) {
     
   const newState = {...state}
@@ -248,7 +290,7 @@ export default function(state = initialState, action) {
 
           const tools = [ ...(classroom.tools || []) ]
 
-          tools.push({
+          const newTool = {
             uid: action.uid,
             spineIdRef: action.spineIdRef,
             cfi: action.cfi,
@@ -258,6 +300,14 @@ export default function(state = initialState, action) {
             undo_array: [],
             data: {},
             updated_at: now,
+          }
+
+          tools.push(newTool)
+
+          fixToolOrdering({
+            tools,
+            modifiedTool: newTool,
+            now,
           })
 
           classrooms[idx] = {
@@ -292,6 +342,16 @@ export default function(state = initialState, action) {
             if(tool.uid === action.uid) {
               tools[idx2] = tool = { ...tool }
 
+              // If I'm moving a tool down in the same spineIdRef/cfi, take into
+              // account that it will be moving out of the way.
+              if(
+                (action.spineIdRef || tool.spineIdRef) === tool.spineIdRef
+                && (action.cfi || tool.cfi) == tool.cfi
+                && action.ordering > tool.ordering
+              ) {
+                action.ordering--
+              }
+
               ;[
                 'spineIdRef',
                 'cfi',
@@ -309,6 +369,12 @@ export default function(state = initialState, action) {
               })
 
               tool.updated_at = now
+
+              fixToolOrdering({
+                tools,
+                modifiedTool: tool,
+                now,
+              })
 
               classrooms[idx] = {
                 ...classroom,
