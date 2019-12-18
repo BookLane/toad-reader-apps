@@ -66,27 +66,30 @@ const BookContents = React.memo(({
   const getListItems = (toc, indentLevel=0, insertedToolUidObj={}) => {
     let listItems = []
 
-    ;(toc || []).forEach(tocItem => {
+    const findToolsToInsert = spineIdRefToFind => {
       const toolsToInsert = tools
-        .filter(({ uid, spineIdRef, cfi, _delete }) => (spineIdRef === tocItem.spineIdRef && !cfi && !_delete && !insertedToolUidObj[uid]))
+        .filter(({ uid, spineIdRef, cfi, _delete }) => (spineIdRef === spineIdRefToFind && !cfi && !_delete && !insertedToolUidObj[uid]))
 
       toolsToInsert.forEach(({ uid }) => {
         insertedToolUidObj[uid] = true
       })
-  
+
+      return toolsToInsert.map(({ uid, name, toolType, spineIdRef, ordering }) => ({
+        key: uid,
+        uid,
+        indentLevel,
+        label: name,
+        toolType,
+        spineIdRef,
+        ordering,
+        isTool: true,
+      }))
+    }
+
+    ;(toc || []).forEach(tocItem => {
       listItems = [
         ...listItems,
-        ...(toolsToInsert.map(({ uid, name, toolType, spineIdRef, ordering }) => ({
-            key: uid,
-            uid,
-            indentLevel,
-            label: name,
-            toolType,
-            spineIdRef,
-            ordering,
-            isTool: true,
-          }))
-        ),
+        ...findToolsToInsert(tocItem.spineIdRef),
         {
           ...tocItem,
           indentLevel,
@@ -95,6 +98,13 @@ const BookContents = React.memo(({
         ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj),
       ]
     })
+
+    if(indentLevel === 0) {
+      listItems = [
+        ...listItems,
+        ...findToolsToInsert('AFTER LAST SPINE'),
+      ]
+    }
 
     return listItems
   }
@@ -150,6 +160,7 @@ const BookContents = React.memo(({
               y: accumulatedHeight,
               classroomUid,
               spineIdRef: 'AFTER LAST SPINE',
+              ordering: accumulatedOrdering,
             },
           ],
         })
