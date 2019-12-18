@@ -84,6 +84,7 @@ const BookContents = React.memo(({
             toolType,
             spineIdRef,
             ordering,
+            isTool: true,
           }))
         ),
         {
@@ -117,6 +118,7 @@ const BookContents = React.memo(({
       setReportSpotsTimeout(() => {
         let accumulatedHeight = getOffsetY() + paddingTop
         let accumulatedOrdering = 0
+        const usedSpineIdRefsObj = {}
         reportSpots({
           type: 'BookContents',
           styles: {
@@ -124,19 +126,26 @@ const BookContents = React.memo(({
             right: 0,
           },
           spots: [
-            ...data.map(({ lineHeight=0, spineIdRef, ordering }, idx) => {
+            ...data.map(({ lineHeight=0, spineIdRef, isTool, ordering }) => {
               const info = {
                 y: accumulatedHeight,
                 classroomUid,
                 spineIdRef,
-                ordering: ordering !== undefined ? ordering : accumulatedOrdering,
+                ordering: isTool ? ordering : accumulatedOrdering,
               }
 
               accumulatedHeight += lineHeight
-              accumulatedOrdering = ordering !== undefined ? ordering + 1 : 0
+              accumulatedOrdering = isTool ? ordering + 1 : 0
+
+              if(!isTool) {
+                if(usedSpineIdRefsObj[spineIdRef]) {
+                  return false
+                }
+                usedSpineIdRefsObj[spineIdRef] = true
+              }
 
               return info
-            }),
+            }).filter(Boolean),
             {
               y: accumulatedHeight,
               classroomUid,
