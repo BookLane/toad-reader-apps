@@ -129,6 +129,10 @@ const styles = StyleSheet.create({
   movingToolChipContainer: {
     flexDirection: 'row',
   },
+  movingToolCover: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+  },
   toolSpotMarker: {
     position: 'absolute',
     height: 2,
@@ -812,15 +816,18 @@ const Book = React.memo(({
       </View>
 
       {!!toolMoveInfo &&
-        <View style={styles.movingToolChipContainer}>
+        <>
           <View
             style={[
               styles.toolSpotMarker,
               toolMoveInfo.spotStyle,
             ]}
           />
-          <ToolChip {...toolMoveInfo.chipProps} />
-        </View>
+          <View style={styles.movingToolCover} />
+          <View style={styles.movingToolChipContainer}>
+            <ToolChip {...toolMoveInfo.chipProps} />
+          </View>
+        </>
       }
 
       {Platform.OS !== 'web' &&
