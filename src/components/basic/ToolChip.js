@@ -1,10 +1,11 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Text } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { styled, Button } from 'react-native-ui-kitten'
-import { i18n } from "inline-i18n"
 
 import Icon from "./Icon"
 import { getToolInfo } from "../../utils/toolInfo"
+
+const onMoveShouldSetResponderCapture = () => true
 
 const styles = StyleSheet.create({
   text: {
@@ -29,6 +30,8 @@ const ToolChip = ({
   onPress,
   style,
   iconStyle,
+  onResponderMove,
+  onResponderRelease,
 
   themedStyle,
 }) => {
@@ -49,20 +52,27 @@ const ToolChip = ({
   )
 
   return (
-    <Button
-      style={[
-        styles.button,
-        themedStyle,
-        style,
-      ]}
-      size='tiny'
-      icon={ButtonIcon}
-      iconStyle={iconStyle}
-      textStyle={styles.text}
-      onPress={onPress}
+    <View
+      onMoveShouldSetResponderCapture={onMoveShouldSetResponderCapture}
+      onResponderMove={onResponderMove}
+      onResponderRelease={onResponderRelease}
+      onResponderTerminate={onResponderRelease}
     >
-      {label || toolInfoByType[toolType].text}
-    </Button>
+      <Button
+        style={[
+          styles.button,
+          themedStyle,
+          style,
+        ]}
+        size='tiny'
+        icon={ButtonIcon}
+        iconStyle={iconStyle}
+        textStyle={styles.text}
+        onPress={onPress}
+      >
+        {label || toolInfoByType[toolType].text}
+      </Button>
+    </View>
   )
 }
 

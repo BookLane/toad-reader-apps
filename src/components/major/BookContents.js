@@ -10,12 +10,17 @@ import EnhancedHeader from "./EnhancedHeader"
 import FAB from "../basic/FAB"
 
 import { getIdsFromAccountId, getSpineAndPage } from '../../utils/toolbox'
+import useSetTimeout from '../../hooks/useSetTimeout'
+import useInstanceValue from '../../hooks/useInstanceValue'
+import { useLayout } from 'react-native-hooks'
 
 import { createTool } from "../../redux/actions"
 
+const paddingTop = 12
+
 const styles = StyleSheet.create({
   list: {
-    paddingTop: 12,
+    paddingTop,
     paddingBottom: 20,
   },
 })
@@ -25,6 +30,10 @@ const BookContents = React.memo(({
   bookId,
   toolUidInEdit,
   setToolUidInEdit,
+  reportSpots,
+  onToolMove,
+  onToolRelease,
+  onScroll,
 
   books,
   userDataByBookId,
@@ -92,16 +101,60 @@ const BookContents = React.memo(({
     [ toc, tools ],
   )
 
+  const { onLayout, width, y: offsetY } = useLayout()
+
+  const getWidth = useInstanceValue(width)
+  const getOffsetY = useInstanceValue(offsetY)
+
+  const [ setReportSpotsTimeout ] = useSetTimeout()
+
+  const reportLineHeight = useCallback(
+    ({ index, height }) => {
+      data[index].lineHeight = height
+
+      setReportSpotsTimeout(() => {
+        let accumulatedHeight = getOffsetY() + paddingTop
+        reportSpots({
+          type: 'BookContents',
+          styles: {
+            width: getWidth(),
+            right: 0,
+          },
+          spots: [
+            ...data.map(({ lineHeight=0, spineIdRef }, idx) => {
+              accumulatedHeight += lineHeight
+              return {
+                x: accumulatedHeight - lineHeight,
+                classroomUid,
+                spineIdRef,
+              }
+            }),
+            {
+              x: accumulatedHeight,
+              classroomUid,
+              spineIdRef: 'AFTER LAST SPINE',
+            },
+          ],
+        })
+      })
+    },
+    [ data, reportSpots, classroomUid ],
+  )
+
   const renderItem = useCallback(
-    ({ item }) => (
+    ({ item }, index) => (
       <BookContentsLine
         {...item}
         goToHref={goToHref}
         toolUidInEdit={toolUidInEdit}
         setToolUidInEdit={setToolUidInEdit}
+        reportLineHeight={reportLineHeight}
+        index={index}
+        onToolMove={onToolMove}
+        onToolRelease={onToolRelease}
       />
     ),
-    [ goToHref, toolUidInEdit, setToolUidInEdit ],
+    [ goToHref, toolUidInEdit, setToolUidInEdit, reportLineHeight ],
   )
 
   const createNewTool = useCallback(
@@ -147,6 +200,8 @@ const BookContents = React.memo(({
         style={styles.list}
         data={data}
         renderItem={renderItem}
+        onLayout={onLayout}
+        onScroll={onScroll}
       />
       {showAddToolButton && !toolUidInEdit &&
         <FAB

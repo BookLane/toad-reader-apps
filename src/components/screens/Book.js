@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
 import { StyleSheet, StatusBar, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
@@ -16,6 +16,7 @@ import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
+import ToolChip from "../basic/ToolChip"
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
@@ -26,9 +27,12 @@ import useRouterState from "../../hooks/useRouterState"
 import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useSetState from "react-use/lib/useSetState"
+import useInstanceValue from "../../hooks/useInstanceValue"
+import useScroll from '../../hooks/useScroll'
 
-import { setLatestLocation, updateAccount, updateBookAccount, setUserData, startRecordReading,
-         endRecordReading, flushReadingRecords, setXapiConsentShown, setTocAndSpines, setSyncStatus } from "../../redux/actions"
+import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
+         startRecordReading, endRecordReading, flushReadingRecords, setXapiConsentShown,
+         setTocAndSpines, setSyncStatus, updateTool } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -122,6 +126,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 0,
   },
+  movingToolChipContainer: {
+    flexDirection: 'row',
+  },
+  toolSpotMarker: {
+    position: 'absolute',
+    height: 2,
+    backgroundColor: 'rgb(51, 102, 255)',
+  },
 })
 
 const Book = React.memo(({
@@ -148,6 +160,7 @@ const Book = React.memo(({
   setXapiConsentShown,
   setTocAndSpines,
   setSyncStatus,
+  updateTool,
 
 }) => {
 
@@ -156,6 +169,7 @@ const Book = React.memo(({
   const [ currentAppState, setCurrentAppState ] = useState('active')
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolUidInEdit, setToolUidInEdit ] = useState()
+  const [ toolMoveInfo, setToolMoveInfo ] = useState()
 
   const [{
     bookLoaded,
@@ -173,6 +187,11 @@ const Book = React.memo(({
     snapshotZoomed: true,
   })
 
+  const getToolMoveInfo = useInstanceValue(toolMoveInfo)
+  const getUserDataByBookId = useInstanceValue(userDataByBookId)
+
+  const toolSpots = useRef({})
+  const movingToolOffsets = useRef()
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { widget } = routerState
@@ -586,6 +605,98 @@ const Book = React.memo(({
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
 
+  const reportSpots = useCallback(
+    ({ type, ...info }) => {
+      toolSpots.current[type] = info
+    },
+    [],
+  )
+
+  const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
+  const getBookContentsScrollY = useInstanceValue(bookContentsScrollY)
+
+  const onToolMove = useCallback(
+    ({ nativeEvent, label, toolType, uid }) => {
+      if(!movingToolOffsets.current) {
+        if(Platform.OS === 'web' && nativeEvent.target.closest('[data-focusable]')) {
+          const { x, y } = nativeEvent.target.closest('[data-focusable]').getBoundingClientRect()
+          movingToolOffsets.current = {
+            x: nativeEvent.pageX - x,
+            y: nativeEvent.pageY - y,
+          }
+        } else {
+          movingToolOffsets.current = {
+            x: nativeEvent.locationX,
+            y: nativeEvent.locationY,
+          }
+        }
+      }
+
+      const top = nativeEvent.pageY - parseInt(movingToolOffsets.current.y, 10)
+      const left = nativeEvent.pageX - parseInt(movingToolOffsets.current.x, 10)
+      let moveInfo = {
+        spotStyle: {
+          display: 'none',
+        },
+      }
+
+      for(let type in toolSpots.current) {
+        const { styles, spots } = toolSpots.current[type]
+        spots.some(({ x, ...info }) => {
+          const xAdjustedToScroll = x - getBookContentsScrollY()
+          if(xAdjustedToScroll > top) {
+            moveInfo = {
+              ...info,
+              spotStyle: {
+                ...styles,
+                top: xAdjustedToScroll,
+              },
+            }
+            return true
+          }
+        })
+
+      }
+
+      setToolMoveInfo({
+        ...moveInfo,
+        chipProps: {
+          style: {
+            left,
+            top,
+          },
+          toolType,
+          label,
+        },
+        uid,
+      })
+    },
+    [],
+  )
+
+  const onToolRelease = useCallback(
+    () => {
+      const { spineIdRef, cfi, classroomUid, uid } = getToolMoveInfo()
+
+      if(spineIdRef) {
+        updateTool({
+          bookId,
+          classroomUid,
+          uid,
+          spineIdRef,
+          cfi,
+          patchInfo: {
+            userDataByBookId: getUserDataByBookId(),
+          },
+        })
+      }
+
+      setToolMoveInfo()
+      movingToolOffsets.current = undefined
+    },
+    [ bookId ],
+  )
+
   const pageCfisKey = getPageCfisKey({ displaySettings })
   const { title } = (books && books[bookId]) || {}
 
@@ -689,11 +800,27 @@ const Book = React.memo(({
               bookId={bookId}
               toolUidInEdit={toolUidInEdit}
               setToolUidInEdit={setToolUidInEdit}
+              reportSpots={reportSpots}
+              onToolMove={onToolMove}
+              onToolRelease={onToolRelease}
+              onScroll={onBookContentsScroll}
             />
           </View>
         }
         <View />
       </View>
+
+      {!!toolMoveInfo &&
+        <View style={styles.movingToolChipContainer}>
+          <View
+            style={[
+              styles.toolSpotMarker,
+              toolMoveInfo.spotStyle,
+            ]}
+          />
+          <ToolChip {...toolMoveInfo.chipProps} />
+        </View>
+      }
 
       {Platform.OS !== 'web' &&
         <PageCaptureManager
@@ -728,6 +855,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setXapiConsentShown,
   setTocAndSpines,
   setSyncStatus,
+  updateTool,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

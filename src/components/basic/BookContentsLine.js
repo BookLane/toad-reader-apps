@@ -1,7 +1,9 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 
 import ToolChip from './ToolChip'
+
+import { useLayout } from 'react-native-hooks'
 
 const styles = StyleSheet.create({
   listItem: {
@@ -16,6 +18,9 @@ const styles = StyleSheet.create({
   selected: {
     backgroundColor: 'rgb(199, 211, 234)',
   },
+  hide: {
+    opacity: 0,
+  },
 })
 
 const BookContentsLine = ({
@@ -27,7 +32,13 @@ const BookContentsLine = ({
   href,
   setToolUidInEdit,
   toolUidInEdit,
+  reportLineHeight,
+  index,
+  onToolMove,
+  onToolRelease,
 }) => {
+
+  const [ hideTool, setHideTool ] = useState(false)
 
   const onPress = useCallback(
     () => {
@@ -40,6 +51,31 @@ const BookContentsLine = ({
     [ href ],
   )
 
+  const onResponderMove = useCallback(
+    ({ nativeEvent }) => {
+      setHideTool(true)
+      onToolMove({
+        nativeEvent,
+        uid,
+        label,
+        toolType,
+      })
+    },
+    [ onToolMove, uid, label, toolType ],
+  )
+
+  const onResponderRelease = useCallback(
+    () => {
+      setHideTool(false)
+      onToolRelease()
+    },
+    [ onToolRelease ],
+  )
+
+  const { onLayout, height } = useLayout()
+
+  reportLineHeight({ index, height })
+
   const selected = toolType
     ? (uid === toolUidInEdit)
     : false
@@ -49,16 +85,20 @@ const BookContentsLine = ({
   if(toolType) {
     return (
       <View
+        onLayout={onLayout}
         style={[
           styles.listItemWithTool,
           indentStyle,
           selected ? styles.selected : null,
+          hideTool ? styles.hide : null,
         ]}
       >
         <ToolChip
           label={label}
           toolType={toolType}
           onPress={onPress}
+          onResponderMove={onResponderMove}
+          onResponderRelease={onResponderRelease}
         />
       </View>
     )
@@ -66,6 +106,7 @@ const BookContentsLine = ({
 
   return (
     <TouchableOpacity
+      onLayout={onLayout}
       onPress={!toolType ? onPress : null}
     >
       <View
