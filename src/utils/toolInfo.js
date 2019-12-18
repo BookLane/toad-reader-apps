@@ -57,17 +57,7 @@ export const getToolInfo = () => {
         {
           name: 'url',
           type: 'string',
-          label: i18n("URL"),
-        },
-        {
-          name: 'secret',
-          type: 'string',
-          label: i18n("Secret"),
-        },
-        {
-          name: 'key',
-          type: 'string',
-          label: i18n("Key"),
+          label: i18n("Launch URL"),
         },
       ],
     },
