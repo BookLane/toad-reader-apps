@@ -188,18 +188,18 @@ const BookPage = React.memo(props => {
           const { toolSpots } = data.payload
 
           reportSpots({
-              type: 'BookPage',
-              styles: {
-                width: getWidth(),
-                left: 0,
-              },
-              spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
-                y: y + getToolbarHeight() - (cfi === 'AT THE END' ? 0 : 2),
-                spineIdRef,
-                cfi,
-                ordering,
-              })),
-            })
+            type: 'BookPage',
+            styles: {
+              width: getWidth(),
+              left: 0,
+            },
+            spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
+              y: y + getToolbarHeight() - (cfi === 'AT THE END' ? 0 : 2),
+              spineIdRef,
+              cfi,
+              ordering,
+            })),
+          })
   
           return true
         }
