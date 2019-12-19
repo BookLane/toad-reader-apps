@@ -68,6 +68,7 @@ const PageWebView = ({
     bookId,
     initialLocation,
     initialDisplaySettings,
+    initialToolCfiCountsInThisSpine,
     initialAddlParams,
     viewRef,
     webViewRef,
@@ -218,7 +219,7 @@ const PageWebView = ({
         .replace(/(<head>)/i, `
           $1
           <script>
-            window.initialToolSpotsObjFromWebView = ${JSON.stringify(initialToolSpotsInThisSpine)};
+            window.initialToolCfiCountsObjFromWebView = ${JSON.stringify(initialToolCfiCountsInThisSpine)};
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
             window.parentOriginForPostMessage = ${JSON.stringify(window.location.origin)};

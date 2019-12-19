@@ -38,7 +38,7 @@ const BookPage = React.memo(props => {
     selectionInfo,
     setSelectionInfo,
     reportSpots,
-    triggerInsertTools,
+    toolCfiCounts,
     // capturingSnapshots,
     setLatestLocation,
     bookId,
@@ -110,13 +110,11 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      if(triggerInsertTools) {
-        postMessage(webView.current, 'insertTools', {
-          toolSpots: [],
-        })
-      }
+      postMessage(webView.current, 'insertTools', {
+        toolCfiCounts,
+      })
     },
-    [ triggerInsertTools ],
+    [ toolCfiCounts ],
   )
 
   useDidUpdate(
@@ -197,7 +195,8 @@ const BookPage = React.memo(props => {
         }
 
         case 'reportToolSpots': {
-          const { toolSpots, offsetX } = data.payload
+          const { toolSpots, offsetX, offsetY } = data.payload
+          const wideModeShift = getToolbarHeight() - 30
 
           reportSpots({
             type: 'BookPage',
@@ -207,7 +206,7 @@ const BookPage = React.memo(props => {
             },
             offsetX,
             spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
-              y: y + getToolbarHeight() - (cfi === 'AT THE END' ? 0 : 2),
+              y: y + offsetY + wideModeShift,
               spineIdRef,
               cfi,
               ordering,
@@ -311,6 +310,7 @@ const BookPage = React.memo(props => {
         onMessage={onMessageEvent}
         initialLocation={initialLocation}
         initialDisplaySettings={initialDisplaySettings}
+        initialToolCfiCountsInThisSpine={toolCfiCounts}
         initialAddlParams={widget ? { widget } : null}
         viewRef={view}
       />

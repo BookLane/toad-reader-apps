@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react"
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { StyleSheet, StatusBar, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
@@ -219,6 +219,23 @@ const Book = React.memo(({
 
   const { classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
   const getTools = useInstanceValue(tools)
+
+  const toolCfiCounts = useMemo(
+    () => {
+      const countsByCfi = {}
+
+      tools.forEach(({ cfi, ...tool }) => {
+        if(tool.spineIdRef !== spineIdRef) return
+        if(!countsByCfi[cfi]) {
+          countsByCfi[cfi] = 0
+        }
+        countsByCfi[cfi]++
+      })
+
+      return countsByCfi
+    },
+    [ tools ],
+  )
 
   const reportReadingsInfo = {
     idps,
@@ -625,34 +642,39 @@ const Book = React.memo(({
         const spineToolsByCfi = {}
         getTools().forEach(tool => {
           if(tool.spineIdRef === spineIdRef && tool.cfi) {
-            spineToolsByCfi[tool.cfi] = tool
+            if(!spineToolsByCfi[tool.cfi]) {
+              spineToolsByCfi[tool.cfi] = []
+            }
+            spineToolsByCfi[tool.cfi].push(tool)
           }
         })
 
-        setToolsToOverlayOnThisPage(
-          (info.spots || [])
-            .filter(({ cfi }) => spineToolsByCfi[cfi])
-            .map(({ cfi, y }) => {
-              const { uid, toolType, name } = spineToolsByCfi[cfi]
+        const toolsToOverlayOnThisPage = []
 
-              return (
-                <View key={uid} style={styles.toolChipContainer}>
-                  <ToolChip
-                    style={{
-                      left: info.offsetX,
-                      top: y,
-                    }}
-                    toolType={toolType}
-                    label={name}
-                  />
-                </View>
-              )
-            })
-        )
+        ;(info.spots || []).forEach(({ cfi, y }) => {
+          ;(spineToolsByCfi[cfi] || []).forEach(({ uid, toolType, name, ordering }) => {
+            console.log('hihihi2', ordering)
+
+            toolsToOverlayOnThisPage.push(
+              <View key={uid} style={styles.toolChipContainer}>
+                <ToolChip
+                  style={{
+                    left: info.offsetX,
+                    top: y + 3 + (ordering * 34),  // the 3 matches the top/bottom padding when the chip is in the toc
+                  }}
+                  toolType={toolType}
+                  label={name}
+                />
+              </View>
+            )
+          })
+        })
+
+        setToolsToOverlayOnThisPage(toolsToOverlayOnThisPage)
 
       }
     },
-    [],
+    [ spineIdRef ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -690,7 +712,7 @@ const Book = React.memo(({
         if(styles.right === 0 && width - nativeEvent.pageX > styles.width) continue
 
         spots.some(({ y, ...info }) => {
-          const adjustedY = y - getBookContentsScrollY()
+          const adjustedY = y - (type === 'BookPage' ? 2 : getBookContentsScrollY())
           if(adjustedY + 4 > top) {  // the 4 relates to the paddingVertical of listItemWithTool in BookContentsLine
             moveInfo = {
               ...info,
@@ -817,7 +839,7 @@ const Book = React.memo(({
               selectionInfo={selectionInfo}
               setSelectionInfo={setSelectionInfo}
               reportSpots={reportSpots}
-              triggerInsertTools={!toolMoveInfo}
+              toolCfiCounts={toolCfiCounts}
             />
             {toolsToOverlayOnThisPage}
           </View>
