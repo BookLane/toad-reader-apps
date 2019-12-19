@@ -185,7 +185,7 @@ const BookPage = React.memo(props => {
         }
 
         case 'reportToolSpots': {
-          const { toolSpots } = data.payload
+          const { toolSpots, offsetX } = data.payload
 
           reportSpots({
             type: 'BookPage',
@@ -193,6 +193,7 @@ const BookPage = React.memo(props => {
               width: getWidth(),
               left: 0,
             },
+            offsetX,
             spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
               y: y + getToolbarHeight() - (cfi === 'AT THE END' ? 0 : 2),
               spineIdRef,
@@ -201,6 +202,13 @@ const BookPage = React.memo(props => {
             })),
           })
   
+          return true
+        }
+
+        case 'reportPageTurnStart': {
+          reportSpots({
+            type: 'BookPage',
+          })
           return true
         }
 

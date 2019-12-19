@@ -127,8 +127,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 0,
   },
-  movingToolChipContainer: {
-    flexDirection: 'row',
+  toolChipContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   movingToolCover: {
     ...StyleSheet.absoluteFillObject,
@@ -175,6 +177,7 @@ const Book = React.memo(({
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolUidInEdit, setToolUidInEdit ] = useState()
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
+  const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
 
   const [{
     bookLoaded,
@@ -214,7 +217,7 @@ const Book = React.memo(({
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
-  const { classroomUid } = useClassroomInfo({ books, bookId })
+  const { classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const reportReadingsInfo = {
     idps,
@@ -615,8 +618,40 @@ const Book = React.memo(({
   const reportSpots = useCallback(
     ({ type, ...info }) => {
       toolSpots.current[type] = info
+
+      if(type === 'BookPage') {
+
+        const spineToolsByCfi = {}
+        tools.forEach(tool => {
+          if(tool.spineIdRef === spineIdRef && tool.cfi) {
+            spineToolsByCfi[tool.cfi] = tool
+          }
+        })
+
+        setToolsToOverlayOnThisPage(
+          (info.spots || [])
+            .filter(({ cfi }) => spineToolsByCfi[cfi])
+            .map(({ cfi, y }) => {
+              const { uid, toolType, name } = spineToolsByCfi[cfi]
+
+              return (
+                <View key={uid} style={styles.toolChipContainer}>
+                  <ToolChip
+                    style={{
+                      left: info.offsetX,
+                      top: y,
+                    }}
+                    toolType={toolType}
+                    label={name}
+                  />
+                </View>
+              )
+            })
+        )
+
+      }
     },
-    [],
+    [ tools ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -782,6 +817,7 @@ const Book = React.memo(({
               setSelectionInfo={setSelectionInfo}
               reportSpots={reportSpots}
             />
+            {toolsToOverlayOnThisPage}
           </View>
           <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
             <ZoomPage
@@ -832,7 +868,7 @@ const Book = React.memo(({
             ]}
           />
           <View style={styles.movingToolCover} />
-          <View style={styles.movingToolChipContainer}>
+          <View style={styles.toolChipContainer}>
             <ToolChip {...toolMoveInfo.chipProps} />
           </View>
         </>

@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const ToolChip = ({
+const ToolChip = React.memo(({
   label,
   toolType,
   onPress,
@@ -74,7 +74,7 @@ const ToolChip = ({
       </Button>
     </View>
   )
-}
+})
 
 ToolChip.styledComponentName = 'ToolChip'
 
