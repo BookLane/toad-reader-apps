@@ -218,6 +218,7 @@ const Book = React.memo(({
   const wideMode = useWideMode()
 
   const { classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const getTools = useInstanceValue(tools)
 
   const reportReadingsInfo = {
     idps,
@@ -622,7 +623,7 @@ const Book = React.memo(({
       if(type === 'BookPage') {
 
         const spineToolsByCfi = {}
-        tools.forEach(tool => {
+        getTools().forEach(tool => {
           if(tool.spineIdRef === spineIdRef && tool.cfi) {
             spineToolsByCfi[tool.cfi] = tool
           }
@@ -651,7 +652,7 @@ const Book = React.memo(({
 
       }
     },
-    [ tools ],
+    [],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -816,6 +817,7 @@ const Book = React.memo(({
               selectionInfo={selectionInfo}
               setSelectionInfo={setSelectionInfo}
               reportSpots={reportSpots}
+              triggerInsertTools={!toolMoveInfo}
             />
             {toolsToOverlayOnThisPage}
           </View>

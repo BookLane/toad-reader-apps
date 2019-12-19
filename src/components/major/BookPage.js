@@ -38,6 +38,7 @@ const BookPage = React.memo(props => {
     selectionInfo,
     setSelectionInfo,
     reportSpots,
+    triggerInsertTools,
     // capturingSnapshots,
     setLatestLocation,
     bookId,
@@ -105,6 +106,17 @@ const BookPage = React.memo(props => {
       postMessage(webView.current, 'setDisplaySettings', getDisplaySettingsObj(displaySettings))
     },
     [ displaySettings ],
+  )
+
+  useDidUpdate(
+    () => {
+      if(triggerInsertTools) {
+        postMessage(webView.current, 'insertTools', {
+          toolSpots: [],
+        })
+      }
+    },
+    [ triggerInsertTools ],
   )
 
   useDidUpdate(
