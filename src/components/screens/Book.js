@@ -651,9 +651,10 @@ const Book = React.memo(({
 
         const toolsToOverlayOnThisPage = []
 
-        ;(info.spots || []).forEach(({ cfi, y }) => {
+        ;(info.spots || []).forEach(({ cfi, y, ordering: spotOrdering }) => {
+          if(spotOrdering !== 0) return
+
           ;(spineToolsByCfi[cfi] || []).forEach(({ uid, toolType, name, ordering }) => {
-            console.log('hihihi2', ordering)
 
             toolsToOverlayOnThisPage.push(
               <View key={uid} style={styles.toolChipContainer}>
