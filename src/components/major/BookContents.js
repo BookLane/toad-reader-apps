@@ -9,9 +9,10 @@ import BookContentsLine from "../basic/BookContentsLine"
 import EnhancedHeader from "./EnhancedHeader"
 import FAB from "../basic/FAB"
 
-import { getIdsFromAccountId, getSpineAndPage } from '../../utils/toolbox'
+import { getSpineAndPage } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { useLayout } from 'react-native-hooks'
 
 import { createTool } from "../../redux/actions"
@@ -42,16 +43,7 @@ const BookContents = React.memo(({
   createTool,
 }) => {
 
-  const book = books[bookId] || {}
-  const { toc, accounts, currentClassroomUid } = book
-  const accountId = Object.keys(accounts)[0] || ""
-  const { idpId, userId } = getIdsFromAccountId(accountId)
-
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  const classroomUid = currentClassroomUid || defaultClassroomUid
-  const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
-  const { tools=[] } = classroom || {}
+  const { book, toc, userId, classroomUid, classroom, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
@@ -139,7 +131,6 @@ const BookContents = React.memo(({
             ...data.map(({ lineHeight=0, spineIdRef, isTool, ordering }) => {
               const info = {
                 y: accumulatedHeight,
-                classroomUid,
                 spineIdRef,
                 ordering: isTool ? ordering : accumulatedOrdering,
               }
@@ -158,7 +149,6 @@ const BookContents = React.memo(({
             }).filter(Boolean),
             {
               y: accumulatedHeight,
-              classroomUid,
               spineIdRef: 'AFTER LAST SPINE',
               ordering: accumulatedOrdering,
             },
@@ -166,7 +156,7 @@ const BookContents = React.memo(({
         })
       })
     },
-    [ data, reportSpots, classroomUid ],
+    [ data, reportSpots ],
   )
 
   const renderItem = useCallback(

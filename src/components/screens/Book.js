@@ -29,6 +29,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useSetState from "react-use/lib/useSetState"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
          startRecordReading, endRecordReading, flushReadingRecords, setXapiConsentShown,
@@ -212,6 +213,8 @@ const Book = React.memo(({
   const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -10)
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
+
+  const { classroomUid } = useClassroomInfo({ books, bookId })
 
   const reportReadingsInfo = {
     idps,
@@ -646,6 +649,10 @@ const Book = React.memo(({
 
       for(let type in toolSpots.current) {
         const { styles, spots } = toolSpots.current[type]
+
+        if(styles.left === 0 && nativeEvent.pageX > styles.width) continue
+        if(styles.right === 0 && width - nativeEvent.pageX > styles.width) continue
+
         spots.some(({ y, ...info }) => {
           const adjustedY = y - getBookContentsScrollY()
           if(adjustedY + 4 > top) {  // the 4 relates to the paddingVertical of listItemWithTool in BookContentsLine
@@ -675,12 +682,12 @@ const Book = React.memo(({
         uid,
       })
     },
-    [],
+    [ width ],
   )
 
   const onToolRelease = useCallback(
     () => {
-      const { spineIdRef, cfi, ordering, classroomUid, uid } = getToolMoveInfo()
+      const { spineIdRef, cfi, ordering, uid } = getToolMoveInfo()
 
       if(spineIdRef) {
         updateTool({
@@ -699,7 +706,7 @@ const Book = React.memo(({
       setToolMoveInfo()
       movingToolOffsets.current = undefined
     },
-    [ bookId ],
+    [ bookId, classroomUid ],
   )
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
@@ -773,6 +780,7 @@ const Book = React.memo(({
               temporarilyPauseProcessing={temporarilyPauseProcessing}
               selectionInfo={selectionInfo}
               setSelectionInfo={setSelectionInfo}
+              reportSpots={reportSpots}
             />
           </View>
           <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>

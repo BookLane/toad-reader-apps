@@ -5,10 +5,11 @@ import { connect } from "react-redux"
 import { Button } from "react-native-ui-kitten"
 
 import { i18n } from "inline-i18n"
-import { getIdsFromAccountId } from '../../utils/toolbox'
+// import {  } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useInstanceValue from '../../hooks/useInstanceValue'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { deleteTool } from "../../redux/actions"
 
@@ -48,13 +49,7 @@ const StatusAndActions = React.memo(({
   deleteTool,
 }) => {
 
-  const book = books[bookId] || {}
-  const { accounts, currentClassroomUid } = book
-  const accountId = Object.keys(accounts)[0] || ""
-  const { idpId } = getIdsFromAccountId(accountId)
-
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  const classroomUid = currentClassroomUid || defaultClassroomUid
+  const { classroomUid } = useClassroomInfo({ books, bookId })
 
   const wideMode = useWideMode()
 

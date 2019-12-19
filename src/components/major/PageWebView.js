@@ -171,6 +171,8 @@ const PageWebView = ({
     highlights: getHighlightsObj(state),
   })
 
+  const initialToolSpotsInThisSpine = []
+
   // Special containers needed because otherwise the iOS status bar pushes the view down.
   // However, on iphoneX, we want it pushed down.
   const doPushDownPreventionTrick = Platform.OS === 'ios' && !isIPhoneX
@@ -216,6 +218,7 @@ const PageWebView = ({
         .replace(/(<head>)/i, `
           $1
           <script>
+            window.initialToolSpotsObjFromWebView = ${JSON.stringify(initialToolSpotsInThisSpine)};
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
             window.parentOriginForPostMessage = ${JSON.stringify(window.location.origin)};

@@ -12,10 +12,12 @@ import BookPageMessage from "../basic/BookPageMessage"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
+import useInstanceValue from '../../hooks/useInstanceValue'
+import { useLayout } from 'react-native-hooks'
 
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
 
@@ -35,6 +37,7 @@ const BookPage = React.memo(props => {
     showSettings,
     selectionInfo,
     setSelectionInfo,
+    reportSpots,
     // capturingSnapshots,
     setLatestLocation,
     bookId,
@@ -63,6 +66,11 @@ const BookPage = React.memo(props => {
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
+
+  // const { onLayout, width, y: offsetY } = useLayout()
+  const { onLayout, width } = useLayout()
+  const getWidth = useInstanceValue(width)
+  // const getOffsetY = useInstanceValue(offsetY)
 
   useEffect(
     () => {
@@ -135,7 +143,7 @@ const BookPage = React.memo(props => {
       if(webView2 !== webView.current) return // just in case
 
       switch(data.identifier) {
-        case 'pageChanged':
+        case 'pageChanged': {
 
           const { newSpineIdRef, newCfi } = data.payload
           const latestLocation = {
@@ -174,8 +182,29 @@ const BookPage = React.memo(props => {
           // await this.doTakeSnapshot()
 
           return false  // i.e. still process pageChanged in the general PageWebView component
+        }
 
-        case 'openURL':
+        case 'reportToolSpots': {
+          const { toolSpots } = data.payload
+
+          reportSpots({
+              type: 'BookPage',
+              styles: {
+                width: getWidth(),
+                left: 0,
+              },
+              spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
+                y: y + getToolbarHeight() - (cfi === 'AT THE END' ? 0 : 2),
+                spineIdRef,
+                cfi,
+                ordering,
+              })),
+            })
+  
+          return true
+        }
+
+        case 'openURL': {
           Linking.openURL(data.payload.url).catch(err => {
             console.log('ERROR: Request to open URL failed.', err)
             historyPush("/error", {
@@ -183,19 +212,23 @@ const BookPage = React.memo(props => {
             })
           })
           return true
+        }
 
-        case 'requestPauseProcessing':
+        case 'requestPauseProcessing': {
           temporarilyPauseProcessing()
           return true
+        }
 
-        case 'showPageListView':
+        case 'showPageListView': {
           requestShowPages()
           return true
+        }
 
         case 'textUnselected':
-        case 'textSelected':
+        case 'textSelected': {
           setSelectionInfo(data.payload)
           return true
+        }
 
         case 'setHeight':
         case 'forbidden':
@@ -250,7 +283,7 @@ const BookPage = React.memo(props => {
   if(theme) initialDisplaySettings.textsize = theme
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <PageWebView
         key={bookId}
         bookId={bookId}
