@@ -132,6 +132,7 @@ const BookContents = React.memo(({
               const info = {
                 y: accumulatedHeight,
                 spineIdRef,
+                cfi: null,
                 ordering: isTool ? ordering : accumulatedOrdering,
               }
 
@@ -150,6 +151,7 @@ const BookContents = React.memo(({
             {
               y: accumulatedHeight,
               spineIdRef: 'AFTER LAST SPINE',
+              cfi: null,
               ordering: accumulatedOrdering,
             },
           ],

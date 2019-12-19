@@ -665,6 +665,16 @@ const Book = React.memo(({
                   }}
                   toolType={toolType}
                   label={name}
+                  onPress={() => setToolUidInEdit(uid)}
+                  onResponderMove={({ nativeEvent }) => {
+                    onToolMove({
+                      nativeEvent,
+                      uid,
+                      label: name,
+                      toolType,
+                    })              
+                  }}
+                  onResponderRelease={onToolRelease}        
                 />
               </View>
             )
