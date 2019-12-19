@@ -18,9 +18,6 @@ const styles = StyleSheet.create({
   selected: {
     backgroundColor: 'rgb(199, 211, 234)',
   },
-  hide: {
-    opacity: 0,
-  },
 })
 
 const BookContentsLine = ({
@@ -38,8 +35,6 @@ const BookContentsLine = ({
   onToolRelease,
 }) => {
 
-  const [ hideTool, setHideTool ] = useState(false)
-
   const onPress = useCallback(
     () => {
       if(toolType) {
@@ -49,27 +44,6 @@ const BookContentsLine = ({
       }
     },
     [ href ],
-  )
-
-  const onResponderMove = useCallback(
-    ({ nativeEvent }) => {
-      setHideTool(true)
-      onToolMove({
-        nativeEvent,
-        uid,
-        label,
-        toolType,
-      })
-    },
-    [ onToolMove, uid, label, toolType ],
-  )
-
-  const onResponderRelease = useCallback(
-    () => {
-      setHideTool(false)
-      onToolRelease()
-    },
-    [ onToolRelease ],
   )
 
   const { onLayout, height } = useLayout()
@@ -90,15 +64,15 @@ const BookContentsLine = ({
           styles.listItemWithTool,
           indentStyle,
           selected ? styles.selected : null,
-          hideTool ? styles.hide : null,
         ]}
       >
         <ToolChip
+          uid={uid}
           label={label}
           toolType={toolType}
           onPress={onPress}
-          onResponderMove={onResponderMove}
-          onResponderRelease={onResponderRelease}
+          onToolMove={onToolMove}
+          onToolRelease={onToolRelease}
         />
       </View>
     )

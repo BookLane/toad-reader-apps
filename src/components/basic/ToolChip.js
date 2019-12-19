@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View } from "react-native"
 import { styled, Button } from 'react-native-ui-kitten'
 
@@ -22,21 +22,47 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderRadius: 17,
   },
+  hide: {
+    opacity: 0,
+  },
 })
 
 const ToolChip = React.memo(({
+  uid,
   label,
   toolType,
   onPress,
+  onToolMove,
+  onToolRelease,
   style,
   iconStyle,
-  onResponderMove,
-  onResponderRelease,
 
   themedStyle,
 }) => {
 
+  const [ hideTool, setHideTool ] = useState(false)
   const { toolInfoByType } = getToolInfo()
+
+  const onResponderMove = useCallback(
+    ({ nativeEvent }) => {
+      setHideTool(true)
+      onToolMove({
+        nativeEvent,
+        uid,
+        label,
+        toolType,
+      })
+    },
+    [ onToolMove, uid, label, toolType ],
+  )
+
+  const onResponderRelease = useCallback(
+    () => {
+      setHideTool(false)
+      onToolRelease()
+    },
+    [ onToolRelease ],
+  )
 
   const ButtonIcon = useCallback(
     iconStyle => (
@@ -53,10 +79,13 @@ const ToolChip = React.memo(({
 
   return (
     <View
-      onMoveShouldSetResponderCapture={onMoveShouldSetResponderCapture}
-      onResponderMove={onResponderMove}
-      onResponderRelease={onResponderRelease}
-      onResponderTerminate={onResponderRelease}
+      {...(!onToolMove ? {} : {
+        onMoveShouldSetResponderCapture: onMoveShouldSetResponderCapture,
+        onResponderMove: onResponderMove,
+        onResponderRelease: onResponderRelease,
+        onResponderTerminate: onResponderRelease,
+        style: hideTool ? styles.hide : null,
+      })}
     >
       <Button
         style={[

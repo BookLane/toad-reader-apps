@@ -663,18 +663,12 @@ const Book = React.memo(({
                     left: info.offsetX,
                     top: y + 3 + (ordering * 34),  // the 3 matches the top/bottom padding when the chip is in the toc
                   }}
-                  toolType={toolType}
+                  uid={uid}
                   label={name}
+                  toolType={toolType}
                   onPress={() => setToolUidInEdit(uid)}
-                  onResponderMove={({ nativeEvent }) => {
-                    onToolMove({
-                      nativeEvent,
-                      uid,
-                      label: name,
-                      toolType,
-                    })              
-                  }}
-                  onResponderRelease={onToolRelease}        
+                  onToolMove={onToolMove}
+                  onToolRelease={onToolRelease}        
                 />
               </View>
             )
