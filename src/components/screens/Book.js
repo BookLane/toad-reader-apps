@@ -224,7 +224,8 @@ const Book = React.memo(({
     () => {
       const countsByCfi = {}
 
-      tools.forEach(({ cfi, ...tool }) => {
+      tools.forEach(({ cfi, _delete, ...tool }) => {
+        if(_delete) return
         if(tool.spineIdRef !== spineIdRef) return
         if(!countsByCfi[cfi]) {
           countsByCfi[cfi] = 0
@@ -641,7 +642,7 @@ const Book = React.memo(({
 
         const spineToolsByCfi = {}
         getTools().forEach(tool => {
-          if(tool.spineIdRef === spineIdRef && tool.cfi) {
+          if(tool.spineIdRef === spineIdRef && tool.cfi && !tool._delete) {
             if(!spineToolsByCfi[tool.cfi]) {
               spineToolsByCfi[tool.cfi] = []
             }
