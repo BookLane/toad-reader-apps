@@ -32,6 +32,7 @@ export const getToolInfo = () => {
               name: 'answers',
               type: ['choice'],
               label: i18n("Answers"),
+              maxItems: 10,
             },
             {
               name: 'shuffle',
@@ -40,6 +41,7 @@ export const getToolInfo = () => {
             },
           ],
           addLabel: i18n("Add a question"),
+          maxItems: 50,
         },
         {
           name: 'shuffle',

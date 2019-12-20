@@ -208,6 +208,7 @@ const EditToolData = React.memo(({
       fileTypes,
       label,
       addLabel,
+      maxItems,
       placeholder,
     }, dataStructureIndex) => {
 
@@ -433,7 +434,7 @@ const EditToolData = React.memo(({
               ? [...dataSegment[name]]
               : [simpleArray ? "" : {}]
 
-            if(simpleArray && type[0] === 'choice') {
+            if(simpleArray && type[0] === 'choice' && dataArray.length < maxItems) {
               // Always have a blank option at the bottom
               dataArray.push("")
             }
@@ -484,6 +485,7 @@ const EditToolData = React.memo(({
                       <Button
                         status="basic"
                         size="small"
+                        disabled={dataArray.length >= maxItems}
                         onPress={() => {
                           onChangeInfo({
                             id,
