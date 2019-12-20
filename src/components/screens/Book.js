@@ -625,11 +625,11 @@ const Book = React.memo(({
       if(!target.closest('[data-id=highlighter]')) {
         setSelectionInfo()
       }
-      if(!target.closest('[data-id=toolEditor]')) {
+      if(!target.closest('[data-id=BookLeft]') && toolUidInEdit) {
         setToolUidInEdit()
       }
     },
-    [],
+    [ toolUidInEdit ],
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
@@ -777,6 +777,11 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
+  const onBackPress = useCallback(
+    () => (toolUidInEdit ? setToolUidInEdit : history.goBack)(),
+    [ toolUidInEdit ],
+  )
+
   const pageCfisKey = getPageCfisKey({ displaySettings })
   const { title } = (books && books[bookId]) || {}
 
@@ -803,10 +808,13 @@ const Book = React.memo(({
         style={styles.panels}
         onStartShouldSetResponderCapture={blurEvents}
       >
-        <View style={[
-          styles.mainPanel,
-          mode !== 'contents' ? showStyles : null,
-        ]}>
+        <View
+          style={[
+            styles.mainPanel,
+            mode !== 'contents' ? showStyles : null,
+          ]}
+          data-id="BookLeft"
+        >
           {!widget &&
             <BookHeader
               bookId={bookId}
@@ -816,6 +824,8 @@ const Book = React.memo(({
               backToReading={backToReading}
               showDisplaySettings={showDisplaySettings}
               width={width}  // By sending this as a prop, I force a rerender
+              hideOptions={!!toolUidInEdit}
+              onBackPress={onBackPress}
             />
           }
           {Platform.OS !== 'web' &&

@@ -33,6 +33,8 @@ const BookHeader = React.memo(({
   showDisplaySettings,
   toggleBookView,
   backToReading,
+  hideOptions,
+  onBackPress,
 
   books,
   userDataByBookId,
@@ -205,11 +207,11 @@ const BookHeader = React.memo(({
         leftControl={
           <HeaderIcon
             name="md-arrow-back"
-            onPress={history.goBack}
+            onPress={onBackPress}
             style={wideMode ? styles.faded : {}}
           />
         }
-        rightControls={rightControls}
+        rightControls={!hideOptions ? rightControls : []}
         titleStyle={wideMode ? styles.faded : {}}
       />
       <ManageClassrooms

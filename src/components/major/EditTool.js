@@ -118,7 +118,6 @@ const EditTool = React.memo(({
 
   return (
     <View
-      data-id="toolEditor"
       style={[
         styles.container,
         wideMode ? styles.constainerWideMode : null,
