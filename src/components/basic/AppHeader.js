@@ -4,7 +4,7 @@ import { getToolbarHeight } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 
-const controlsGroup = {
+const titleCenteredControlsGroup = {
   flexBasis: 300,
   flexDirection: 'row',
   flexShrink: 9999999999,
@@ -36,11 +36,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "400",
   },
-  controlsGroupLeft: {
-    ...controlsGroup,
-  },
   controlsGroupRight: {
-    ...controlsGroup,
+    flexDirection: 'row',
+  },
+  titleCenteredControlsGroupLeft: {
+    ...titleCenteredControlsGroup,
+  },
+  titleCenteredControlsGroupRight: {
+    ...titleCenteredControlsGroup,
     justifyContent: 'flex-end',
   },
   flex1: {
@@ -68,7 +71,7 @@ const AppHeader = ({
   return (
     <View style={styles.container}>
       {!!leftControl &&
-        <View style={titleCentered ? styles.controlsGroupLeft : null}>
+        <View style={titleCentered ? styles.titleCenteredControlsGroupLeft : null}>
           {leftControl}
         </View>
       }
@@ -93,7 +96,7 @@ const AppHeader = ({
         }
       </View>
       <View style={styles.flex1} />
-      <View style={titleCentered ? styles.controlsGroupRight : null}>
+      <View style={titleCentered ? styles.titleCenteredControlsGroupRight : styles.controlsGroupRight}>
         {rightControls.map((rightControl, idx) => (
           <View key={idx}>
             {rightControl}
