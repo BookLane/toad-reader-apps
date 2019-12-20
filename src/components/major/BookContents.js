@@ -55,7 +55,24 @@ const BookContents = React.memo(({
     || bookVersion === 'PUBLISHER'
   )
 
-  const getListItems = (toc, indentLevel=0, insertedToolUidObj={}) => {
+  const numToolsWithinBySpineIdRef = useMemo(
+    () => {
+      const countsBySpineIdRef = {}
+
+      tools.forEach(({ spineIdRef, cfi, _delete }) => {
+        if(_delete || !cfi) return
+        if(!countsBySpineIdRef[spineIdRef]) {
+          countsBySpineIdRef[spineIdRef] = 0
+        }
+        countsBySpineIdRef[spineIdRef]++
+      })
+
+      return countsBySpineIdRef
+    },
+    [ tools ],
+  )
+
+  const getListItems = (toc, indentLevel=0, insertedToolUidObj={}, insertedNumSpineIdRefObj={}) => {
     let listItems = []
 
     const findToolsToInsert = spineIdRefToFind => {
@@ -79,6 +96,8 @@ const BookContents = React.memo(({
     }
 
     ;(toc || []).forEach(tocItem => {
+      const numToolsWithin = (!insertedNumSpineIdRefObj[tocItem.spineIdRef] && numToolsWithinBySpineIdRef[tocItem.spineIdRef]) || 0
+      insertedNumSpineIdRefObj[tocItem.spineIdRef] = true
       listItems = [
         ...listItems,
         ...findToolsToInsert(tocItem.spineIdRef),
@@ -86,8 +105,9 @@ const BookContents = React.memo(({
           ...tocItem,
           indentLevel,
           key: `${tocItem.label}-${tocItem.href}`,
+          numToolsWithin,
         },
-        ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj),
+        ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj, insertedNumSpineIdRefObj),
       ]
     })
 

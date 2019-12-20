@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 
 import ToolChip from './ToolChip'
@@ -9,6 +9,8 @@ const styles = StyleSheet.create({
   listItem: {
     paddingVertical: 8,
     paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   listItemWithTool: {
     paddingVertical: 3,
@@ -18,6 +20,24 @@ const styles = StyleSheet.create({
   selected: {
     backgroundColor: 'rgb(199, 211, 234)',
   },
+  label: {
+    flexShrink: 1,
+  },
+  numWithin: {
+    backgroundColor: 'rgb(0, 0, 0)',
+    borderRadius: '50%',
+    color: 'white',
+    width: 19,
+    height: 19,
+    flexShrink: 0,
+    lineHeight: 18,
+    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: 600,
+    marginVertical: -6,
+    marginLeft: 8,
+    paddingRight: 1, // not sure why I need this
+  },
 })
 
 const BookContentsLine = ({
@@ -25,6 +45,7 @@ const BookContentsLine = ({
   uid,
   label,
   toolType,
+  numToolsWithin,
   goToHref,
   href,
   setToolUidInEdit,
@@ -90,7 +111,8 @@ const BookContentsLine = ({
           selected ? styles.selected : null,
         ]}
       >
-        <Text>{label}</Text>
+        <Text style={styles.label}>{label}</Text>
+        {!!numToolsWithin && <Text style={styles.numWithin}>{numToolsWithin}</Text>}
       </View>
     </TouchableOpacity>
   )
