@@ -234,7 +234,7 @@ const Book = React.memo(({
 
       return countsByCfi
     },
-    [ tools ],
+    [ tools, spineIdRef ],
   )
 
   const reportReadingsInfo = {
@@ -452,7 +452,7 @@ const Book = React.memo(({
         bookId,
         spineIdRef,
         // Starts a reading record with current spineIdRef, not necessarily that
-        // of the href. If it turns out they are one an the same, this function
+        // of the href. If it turns out they are one and the same, this function
         // call was needed. If the href brings them to a new spine, then this 
         // reading record will be stopped once that loads and the new one will
         // be initiated.
@@ -676,6 +676,10 @@ const Book = React.memo(({
         })
 
         setToolsToOverlayOnThisPage(toolsToOverlayOnThisPage)
+
+        if(info.spots) {
+          setState({ hrefToGoTo: undefined })
+        }
 
       }
     },

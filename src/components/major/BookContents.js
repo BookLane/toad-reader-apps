@@ -113,6 +113,14 @@ const BookContents = React.memo(({
 
   const [ setReportSpotsTimeout ] = useSetTimeout()
 
+  const goToHrefAndClearToolSpots = useCallback(
+    params => {
+      goToHref(params)
+      reportSpots({ type: 'BookPage' })  // immediately clear the tools from BookPage
+    },
+    [ goToHref, reportSpots ],
+  )
+
   const reportLineHeight = useCallback(
     ({ index, height }) => {
       data[index].lineHeight = height
@@ -165,7 +173,7 @@ const BookContents = React.memo(({
     ({ item }, index) => (
       <BookContentsLine
         {...item}
-        goToHref={goToHref}
+        goToHref={goToHrefAndClearToolSpots}
         toolUidInEdit={toolUidInEdit}
         setToolUidInEdit={setToolUidInEdit}
         reportLineHeight={reportLineHeight}

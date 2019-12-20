@@ -110,9 +110,7 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      postMessage(webView.current, 'insertTools', {
-        toolCfiCounts,
-      })
+      postMessage(webView.current, 'insertTools', { toolCfiCounts })
     },
     [ toolCfiCounts ],
   )
@@ -217,9 +215,7 @@ const BookPage = React.memo(props => {
         }
 
         case 'reportPageTurnStart': {
-          reportSpots({
-            type: 'BookPage',
-          })
+          reportSpots({ type: 'BookPage' })
           return true
         }
 
