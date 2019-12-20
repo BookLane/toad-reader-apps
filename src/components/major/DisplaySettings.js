@@ -65,6 +65,8 @@ const styles = StyleSheet.create({
 
 const DisplaySettings = React.memo(({
   open,
+  reportSpots,
+
   displaySettings,
   setTextSize,
   requestHide,
@@ -78,16 +80,18 @@ const DisplaySettings = React.memo(({
   const increaseTextSize = useCallback(
     () => {
       setTextSize({ textSize: textSize + 10 })
+      reportSpots({ type: 'BookPage' })
     },
-    [ textSize, setTextSize ],
+    [ textSize, setTextSize, reportSpots ],
   )
 
   const decreaseTextSize = useCallback(
     () => {
       const { textSize } = displaySettings
       setTextSize({ textSize: textSize - 10 })
+      reportSpots({ type: 'BookPage' })
     },
-    [ textSize, setTextSize ],
+    [ textSize, setTextSize, reportSpots ],
   )
 
   // increaseTextSpacing = () => {

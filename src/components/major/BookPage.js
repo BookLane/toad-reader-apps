@@ -313,6 +313,7 @@ const BookPage = React.memo(props => {
       <DisplaySettings
         open={showSettings}
         requestHide={requestHideSettings}
+        reportSpots={reportSpots}
       />
       {!!selectionInfo &&
         <Highlighter
