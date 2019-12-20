@@ -235,7 +235,7 @@ const Book = React.memo(({
 
       return countsByCfi
     },
-    [ tools, spineIdRef ],
+    [ JSON.stringify(tools), spineIdRef ],
   )
 
   const reportReadingsInfo = {
