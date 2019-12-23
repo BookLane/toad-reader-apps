@@ -35,6 +35,8 @@ const BookContents = React.memo(({
   onToolMove,
   onToolRelease,
   onScroll,
+  inEditMode,
+  toggleInEditMode,
 
   books,
   userDataByBookId,
@@ -243,6 +245,8 @@ const BookContents = React.memo(({
     <>
       <EnhancedHeader
         bookId={bookId}
+        inEditMode={inEditMode}
+        toggleInEditMode={toggleInEditMode}
       />
       <List
         style={styles.list}

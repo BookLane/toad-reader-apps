@@ -12,6 +12,7 @@ import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import EditTool from "../major/EditTool"
+import Tool from "../major/Tool"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -178,6 +179,7 @@ const Book = React.memo(({
   const [ toolUidInEdit, setToolUidInEdit ] = useState()
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
+  const [ inEditMode, setInEditMode ] = useState(false)
 
   const [{
     bookLoaded,
@@ -194,6 +196,11 @@ const Book = React.memo(({
     showSettings: false,
     snapshotZoomed: true,
   })
+
+  const toggleInEditMode = useCallback(
+    () => console.log(inEditMode) || setInEditMode(!inEditMode),
+    [ inEditMode ],
+  )
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
@@ -625,7 +632,11 @@ const Book = React.memo(({
       if(!target.closest('[data-id=highlighter]')) {
         setSelectionInfo()
       }
-      if(!target.closest('[data-id=BookLeft]') && toolUidInEdit) {
+      if(
+        !target.closest('[data-id=BookLeft]')
+        && !target.closest('[data-id=EnhancedHeader]')
+        && toolUidInEdit
+      ) {
         setToolUidInEdit()
       }
     },
@@ -878,9 +889,15 @@ const Book = React.memo(({
           </View>
           <EditTool
             bookId={bookId}
-            toolUidInEdit={toolUidInEdit}
+            toolUidInEdit={inEditMode ? toolUidInEdit : null}
             setToolUidInEdit={setToolUidInEdit}
           />
+          {!inEditMode &&
+            <Tool
+              bookId={bookId}
+              toolUid={toolUidInEdit}
+            />
+          }
         </View>
         {!widget &&
           <View style={[
@@ -897,6 +914,8 @@ const Book = React.memo(({
               onToolMove={onToolMove}
               onToolRelease={onToolRelease}
               onScroll={onBookContentsScroll}
+              inEditMode={inEditMode}
+              toggleInEditMode={toggleInEditMode}
             />
           </View>
         }
