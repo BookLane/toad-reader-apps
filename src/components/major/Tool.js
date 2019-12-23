@@ -1,11 +1,13 @@
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 // import { i18n } from "inline-i18n"
 import { getToolbarHeight } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
+
+import NotesInsertTool from './NotesInsertTool'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -23,16 +25,15 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 10,
   },
-  topSectionWideMode: {
-    flexDirection: 'row',
-  },
   bottomSection: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
     flex: 1,
     overflow: 'auto',
   },
-  bottomSectionWideMode: {
+  name: {
+    fontWeight: 600,
+    fontSize: 18,
   },
 })
 
@@ -53,6 +54,16 @@ const EditTool = React.memo(({
 
   if(!tool) return null
 
+  const { toolType, name, data } = tool
+
+  let ToolComponent = View
+
+  switch(toolType) {
+    case 'NOTES_INSERT': {
+      ToolComponent = NotesInsertTool
+    }
+  }
+
   return (
     <View
       style={[
@@ -60,19 +71,13 @@ const EditTool = React.memo(({
         wideMode ? styles.constainerWideMode : null,
       ]}
     >
-      <View
-        style={[
-          styles.topSection,
-          wideMode ? styles.topSectionWideMode : null,
-        ]}
-      >
+      <View style={styles.topSection}>
+        <Text style={styles.name}>
+          {name || toolInfoByType[toolType].text}
+        </Text>
       </View>
-      <View
-        style={[
-          styles.bottomSection,
-          wideMode ? styles.bottomSectionWideMode : null,
-        ]}
-      >
+      <View style={styles.bottomSection}>
+        <ToolComponent {...data} />
       </View>
     </View>
   )

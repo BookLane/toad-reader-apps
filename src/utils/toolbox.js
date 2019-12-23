@@ -1,4 +1,5 @@
-import { Platform, Dimensions, StatusBar } from "react-native"
+import React from "react"
+import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
@@ -458,4 +459,37 @@ export const safeFetch = async (uri, options={}) => {
   await new Promise(resolve => setTimeout(resolve, delayTime))
 
   return fetch(uri, options)
+}
+
+
+export const textToReactNative = text => {
+
+  if(!text) return null
+
+  const linksRegEx = /((?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.#]+)/g
+  const linkWithSchemeRegEx = /^(?:https?|ftp):\/\//
+
+  const linksToReactNative = text => (
+    text
+      .split(linksRegEx)
+      .map((piece, idx) => (
+        <React.Fragment key={idx}>
+          {linksRegEx.test(piece)
+            ? (
+              <Text
+                style={{ color: 'blue' }}
+                onPress={() => {
+                  Linking.openURL(linkWithSchemeRegEx.test(piece) ? piece : `https://${piece}`)
+                }}
+              >
+                {piece}
+              </Text>
+            )
+            : piece
+          }
+        </React.Fragment>
+      ))
+  )
+
+  return linksToReactNative(text)
 }
