@@ -45,13 +45,14 @@ const ToolChip = React.memo(({
 
   const onResponderMove = useCallback(
     ({ nativeEvent }) => {
-      setHideTool(true)
-      onToolMove({
+      if(onToolMove({
         nativeEvent,
         uid,
         label,
         toolType,
-      })
+      })) {
+        setHideTool(true)
+      }
     },
     [ onToolMove, uid, label, toolType ],
   )

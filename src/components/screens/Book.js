@@ -204,6 +204,7 @@ const Book = React.memo(({
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
+  const getInEditMode = useInstanceValue(inEditMode)
 
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
@@ -703,6 +704,8 @@ const Book = React.memo(({
 
   const onToolMove = useCallback(
     ({ nativeEvent, label, toolType, uid }) => {
+      if(!getInEditMode()) return false
+
       if(!movingToolOffsets.current) {
         if(Platform.OS === 'web' && nativeEvent.target.closest('[data-focusable]')) {
           const { x, y } = nativeEvent.target.closest('[data-focusable]').getBoundingClientRect()
@@ -760,13 +763,15 @@ const Book = React.memo(({
         },
         uid,
       })
+
+      return true
     },
     [ width ],
   )
 
   const onToolRelease = useCallback(
     () => {
-      const { spineIdRef, cfi, ordering, uid } = getToolMoveInfo()
+      const { spineIdRef, cfi, ordering, uid } = getToolMoveInfo() || {}
 
       if(spineIdRef) {
         updateTool({

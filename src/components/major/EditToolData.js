@@ -300,6 +300,7 @@ const EditToolData = React.memo(({
           return (
             <TextInput
               id={id}
+              key={id}
               placeholder={placeholder}
               multiline
               value={dataSegment[name] || ""}

@@ -255,7 +255,7 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && !toolUidInEdit &&
+      {showAddToolButton && !toolUidInEdit && inEditMode &&
         <FAB
           iconName="md-add"
           status="primary"
