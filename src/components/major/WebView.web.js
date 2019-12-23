@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 const WebView = ({
   source={},  // Need to support uri and headers keys
   forwardRef,
+  containerStyle,
   style,
   onMessage,  // Need custom code in readium-js-viewer
   onError,
@@ -153,7 +154,7 @@ const WebView = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={containerStyle || styles.container}>
       <Iframe
         forwardRef={frameRef}
         src={source.uri}

@@ -8,6 +8,7 @@ import { getToolbarHeight } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
 
 import NotesInsertTool from './NotesInsertTool'
+import VideoTool from './VideoTool'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -61,6 +62,11 @@ const EditTool = React.memo(({
   switch(toolType) {
     case 'NOTES_INSERT': {
       ToolComponent = NotesInsertTool
+      break
+    }
+    case 'VIDEO': {
+      ToolComponent = VideoTool
+      break
     }
   }
 

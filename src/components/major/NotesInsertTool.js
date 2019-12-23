@@ -11,9 +11,7 @@ const styles = StyleSheet.create({
 
 const NotesInsertTool = React.memo(({
   content,
-  ...other
 }) => {
-  console.log('other', other)
 
   return (
     <View style={styles.container}>
