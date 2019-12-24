@@ -72,10 +72,27 @@ const ReflectionQuestionTool = React.memo(({
 
   // const { isDefaultClassroom } = useClassroomInfo({ books, bookId })
 
-  questions = (questions || []).map((question, origQuestionIdx) => ({ question, origQuestionIdx }))
-  if(shuffle) {
-    questions = shuffleArray(questions)
+  const executeShuffles = returnResult => {
+    let preppedQs = (questions || []).map((question, origQuestionIdx) => ({ question, origQuestionIdx }))
+    if(shuffle) {
+      preppedQs = shuffleArray(preppedQs)
+    }
+
+    preppedQs.forEach(q => {
+      q.question = {
+        ...q.question,
+        answers: (q.question.answers || []).map((answer, origAnswerIdx) => ({ answer, origAnswerIdx })),
+      }
+      if(shuffle) {
+        q.question.answers = shuffleArray(q.question.answers)
+      }
+    })
+
+    if(returnResult) return preppedQs
+    setPreppedQuestions(preppedQs)
   }
+
+  const [ preppedQuestions, setPreppedQuestions ] = useState(executeShuffles(true))
 
   return (
     <>
@@ -89,54 +106,44 @@ const ReflectionQuestionTool = React.memo(({
           selectedIndex={pageIndex}
           // onSelect={setSelectedIndex}
         >
-          {questions.map(({ question: { question, answers, shuffle }, origQuestionIdx }, pageIdx) => {
-
-            answers = (answers || []).map((answer, origAnswerIdx) => ({ answer, origAnswerIdx }))
-            if(shuffle) {
-              answers = shuffleArray(answers)
-            }
-
-            const selectedIndex = answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)
-
-            return (
-              <View
-                key={origQuestionIdx}
-                style={styles.page}
-              >
-                <View style={styles.questionContainer}>
-                  <View style={styles.question}>
-                    <Text style={styles.questionText}>{question}</Text>
-                    <RadioGroup
-                      style={styles.choices}
-                      selectedIndex={selectedIndex}
-                      onChange={chosenIndex => console.log('chosenIndex', chosenIndex) || setSelectedAnswers({
-                        ...selectedAnswers,
-                        [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
-                      })}
+          {preppedQuestions.map(({ question: { question, answers }, origQuestionIdx }, pageIdx) => (
+            <View
+              key={origQuestionIdx}
+              style={styles.page}
+            >
+              <View style={styles.questionContainer}>
+                <View style={styles.question}>
+                  <Text style={styles.questionText}>{question}</Text>
+                  <RadioGroup
+                    style={styles.choices}
+                    selectedIndex={answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)}
+                    onChange={chosenIndex => console.log('chosenIndex', chosenIndex) || setSelectedAnswers({
+                      ...selectedAnswers,
+                      [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
+                    })}
+                  >
+                    {answers.map(({ answer, origAnswerIdx }) => (
+                      <Radio
+                        key={`${origQuestionIdx}-${origAnswerIdx}`}
+                        style={styles.radio}
+                        textStyle={styles.choice}
+                        text={answer}
+                      />
+                    ))}
+                  </RadioGroup>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      style={styles.nextButton}
+                      onPress={() => console.log('hi') || setPageIndex(pageIdx + 1)}
+                      size="small"
                     >
-                      {answers.map(({ answer, origAnswerIdx }) => (
-                        <Radio
-                          key={`${origQuestionIdx}-${origAnswerIdx}`}
-                          style={styles.radio}
-                          textStyle={styles.choice}
-                          text={answer}
-                        />
-                      ))}
-                    </RadioGroup>
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        style={styles.nextButton}
-                        onPress={() => console.log('hi') || setPageIndex(pageIdx + 1)}
-                        size="small"
-                      >
-                        {i18n("Next")}
-                      </Button>
-                    </View>
+                      {i18n("Next")}
+                    </Button>
                   </View>
                 </View>
               </View>
-            )
-          })}
+            </View>
+          ))}
         </ViewPager>
       </View>
       <View style={styles.spacerAfterPage} />
