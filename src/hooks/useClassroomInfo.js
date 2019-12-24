@@ -10,6 +10,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
   const classroomUid = currentClassroomUid || defaultClassroomUid
+  const isDefaultClassroom = !currentClassroomUid
   const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
   const { tools=[] } = classroom || {}
 
@@ -23,6 +24,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
     classrooms,  // requires userDataByBookId to be sent in
     classroomUid,
     currentClassroomUid,
+    isDefaultClassroom,
     defaultClassroomUid,
     classroom,  // requires userDataByBookId to be sent in
     tools,  // requires userDataByBookId to be sent in

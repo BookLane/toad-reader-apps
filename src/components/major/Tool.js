@@ -9,6 +9,7 @@ import { getToolInfo } from '../../utils/toolInfo'
 
 import NotesInsertTool from './NotesInsertTool'
 import VideoTool from './VideoTool'
+import ReflectionQuestionTool from './ReflectionQuestionTool'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -46,9 +47,9 @@ const EditTool = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { toolTypes, toolInfoByType } = getToolInfo()
+  const { toolInfoByType } = getToolInfo()
 
-  const { classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { tools } = useClassroomInfo({ books, bookId, userDataByBookId })
   const tool = tools.filter(({ uid }) => uid === toolUid)[0]
 
   const wideMode = useWideMode()
@@ -68,6 +69,10 @@ const EditTool = React.memo(({
       ToolComponent = VideoTool
       break
     }
+    case 'REFLECTION_QUESTION': {
+      ToolComponent = ReflectionQuestionTool
+      break
+    }
   }
 
   return (
@@ -83,7 +88,10 @@ const EditTool = React.memo(({
         </Text>
       </View>
       <View style={styles.bottomSection}>
-        <ToolComponent {...data} />
+        <ToolComponent
+          bookId={bookId}
+          {...data}
+        />
       </View>
     </View>
   )
