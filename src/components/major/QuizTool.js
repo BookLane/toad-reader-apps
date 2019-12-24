@@ -9,6 +9,11 @@ import { i18n } from "inline-i18n"
 import { shuffleArray } from '../../utils/toolbox'
 // import useClassroomInfo from '../../hooks/useClassroomInfo'
 
+const radio = {
+  borderWidth: 1,
+  borderColor: 'transparent',
+}
+
 const styles = StyleSheet.create({
   container: {
     maxHeight: '100%',
@@ -40,11 +45,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   choices: {
-    marginLeft: 10,
-    marginBottom: 20,
+    marginLeft: 2,
   },
   radio: {
-    marginVertical: 8,
+    ...radio,
+    margin: 10,
+  },
+  correctRadio: {
+    ...radio,
+    padding: 10,
+    backgroundColor: 'rgb(231, 236, 246)',
+    borderRadius: 4,
+    borderColor: 'rgb(51, 102, 255)',
   },
   choice: {
     fontSize: 15,
@@ -53,6 +65,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    minWidth: 200,
+  },
+  feedback: {
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    fontSize: 15,
+    fontWeight: 700,
+  },
+  feedbackCorrect: {
+    color: 'rgb(255, 61, 113)',
   },
 })
 
@@ -69,6 +92,7 @@ const ReflectionQuestionTool = React.memo(({
 
   const [ pageIndex, setPageIndex ] = useState("")
   const [ selectedAnswers, setSelectedAnswers ] = useState("")
+  const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
 
   // const { isDefaultClassroom } = useClassroomInfo({ books, bookId })
 
@@ -106,7 +130,7 @@ const ReflectionQuestionTool = React.memo(({
           selectedIndex={pageIndex}
           // onSelect={setSelectedIndex}
         >
-          {preppedQuestions.map(({ question: { question, answers }, origQuestionIdx }, pageIdx) => (
+          {preppedQuestions.map(({ question: { question, answers, answersSelection }, origQuestionIdx }, pageIdx) => (
             <View
               key={origQuestionIdx}
               style={styles.page}
@@ -117,29 +141,74 @@ const ReflectionQuestionTool = React.memo(({
                   <RadioGroup
                     style={styles.choices}
                     selectedIndex={answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)}
-                    onChange={chosenIndex => console.log('chosenIndex', chosenIndex) || setSelectedAnswers({
-                      ...selectedAnswers,
-                      [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
-                    })}
+                    onChange={chosenIndex => {
+                      if(currentQuestionSubmitted) return
+                      setSelectedAnswers({
+                        ...selectedAnswers,
+                        [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
+                      })
+                    }}
                   >
-                    {answers.map(({ answer, origAnswerIdx }) => (
-                      <Radio
-                        key={`${origQuestionIdx}-${origAnswerIdx}`}
-                        style={styles.radio}
-                        textStyle={styles.choice}
-                        text={answer}
-                      />
-                    ))}
+                    {answers.map(({ answer, origAnswerIdx }) => {
+                      const submittedAndCorrect = currentQuestionSubmitted && answersSelection === origAnswerIdx
+                      return (
+                        <Radio
+                          key={`${origQuestionIdx}-${origAnswerIdx}`}
+                          style={submittedAndCorrect ? styles.correctRadio : styles.radio}
+                          textStyle={styles.choice}
+                          text={answer}
+                          disabled={currentQuestionSubmitted && answersSelection !== origAnswerIdx}
+                        />
+                      )
+                  })}
                   </RadioGroup>
-                  <View style={styles.buttonContainer}>
-                    <Button
-                      style={styles.nextButton}
-                      onPress={() => console.log('hi') || setPageIndex(pageIdx + 1)}
-                      size="small"
-                    >
-                      {i18n("Next")}
-                    </Button>
-                  </View>
+                  <Text style={styles.feedback}>
+                    {currentQuestionSubmitted && (
+                      answersSelection === selectedAnswers[origQuestionIdx]
+                        ? i18n("Correct!")
+                        : (
+                          <Text style={styles.feedbackCorrect}>
+                            {i18n("Whoops. That’s incorrect.")}
+                          </Text>
+                        )
+                    )}
+                  </Text>
+                  {!currentQuestionSubmitted &&
+                    <View style={styles.buttonContainer}>
+                      <Button
+                        style={styles.button}
+                        disabled={selectedAnswers[origQuestionIdx] == null}
+                        onPress={() => setCurrentQuestionSubmitted(true)}
+                      >
+                        {i18n("Check my answer")}
+                      </Button>
+                    </View>
+                  }
+                  {currentQuestionSubmitted && pageIdx !== preppedQuestions.length - 1 &&
+                    <View style={styles.buttonContainer}>
+                      <Button
+                        style={styles.button}
+                        onPress={() => {
+                          setCurrentQuestionSubmitted(false)
+                          setPageIndex(pageIdx + 1)
+                        }}
+                      >
+                        {i18n("Go to next question")}
+                      </Button>
+                    </View>
+                  }
+                  {currentQuestionSubmitted && pageIdx === preppedQuestions.length - 1 &&
+                    <View style={styles.buttonContainer}>
+                      <Button
+                        style={styles.button}
+                        onPress={() => {
+                          
+                        }}
+                      >
+                        {i18n("View my score")}
+                      </Button>
+                    </View>
+                  }
                 </View>
               </View>
             </View>
