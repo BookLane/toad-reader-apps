@@ -19,6 +19,7 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clea
 const styles = StyleSheet.create({
   faded: {
     opacity: .35,
+    fontWeight: 200,
   },
   selected: {
     opacity: 1,
