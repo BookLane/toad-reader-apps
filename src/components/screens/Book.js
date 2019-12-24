@@ -636,6 +636,7 @@ const Book = React.memo(({
       if(
         !target.closest('[data-id=BookLeft]')
         && !target.closest('[data-id=EnhancedHeader]')
+        && !target.closest('[data-id=FAB_addTool]')
         && toolUidInEdit
       ) {
         setToolUidInEdit()

@@ -46,6 +46,7 @@ const BookContents = React.memo(({
 }) => {
 
   const { book, toc, userId, classroomUid, classroom, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const toolInEdit = tools.filter(({ uid }) => uid === toolUidInEdit)[0]
 
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
@@ -211,15 +212,19 @@ const BookContents = React.memo(({
     () => {
 
       const uid = uuidv4()
+      let spineIdRef, ordering
 
-      const { latest_location } = userDataByBookId[bookId] || {}
-      const { spineIdRef, cfi, pageIndexInSpine } = getSpineAndPage({ latest_location, book, displaySettings })
+      if(toolInEdit) {
+        spineIdRef = toolInEdit.spineIdRef
+        ordering =  toolInEdit.ordering + 1
 
-      const ordering = tools.filter(tool => tool.spineIdRef === spineIdRef).length
-
-      // TODO:
-      // If they are on the last page of the spine (and not the first), then put the tool after this spine.
-      // If they are on neither the first nor the last page of the spine, put the tool inline at the first spot.
+      } else {
+        const { latest_location } = userDataByBookId[bookId] || {}
+        const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+        const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
+        spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
+        ordering = tools.filter(tool => tool.spineIdRef === spineIdRef).length
+      }
 
       createTool({
         bookId,
@@ -235,8 +240,9 @@ const BookContents = React.memo(({
         },
       })
 
+      setToolUidInEdit(uid)
     },
-    [ bookId, classroomUid, book, displaySettings, tools ],
+    [ bookId, classroomUid, book, displaySettings, tools, toolInEdit ],
   )
 
   if(!toc) return null
@@ -255,8 +261,9 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && !toolUidInEdit && inEditMode &&
+      {showAddToolButton && inEditMode &&
         <FAB
+          data-id="FAB_addTool"
           iconName="md-add"
           status="primary"
           onPress={createNewTool}
