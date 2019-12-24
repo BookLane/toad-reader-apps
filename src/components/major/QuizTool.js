@@ -102,7 +102,6 @@ const ReflectionQuestionTool = React.memo(({
   const [ pageIndex, setPageIndex ] = useState("")
   const [ selectedAnswers, setSelectedAnswers ] = useState({})
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
-  const [ creatorViewingResults, setCreatorViewingResults ] = useState(false)
 
   // const { isDefaultClassroom } = useClassroomInfo({ books, bookId })
 
@@ -128,35 +127,9 @@ const ReflectionQuestionTool = React.memo(({
 
   const [ preppedQuestions, setPreppedQuestions ] = useState(executeShuffles(true))
 
-  if(creatorViewingResults) {
-    const numAnsweredCorrectly = preppedQuestions.filter(({ origQuestionIdx, question: { answersSelection } }) => (
-      answersSelection === selectedAnswers[origQuestionIdx]
-    )).length
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.score}>
-          {i18n("Score: {{percent}}%", {
-            percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
-          })}
-        </Text>
-        <View style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            onPress={() => {
-              setCreatorViewingResults(false)
-              setCurrentQuestionSubmitted(false)
-              setSelectedAnswers({})
-              setPageIndex(0)
-              executeShuffles()
-            }}
-          >
-            {i18n("Retake this quiz")}
-          </Button>
-        </View>
-      </View>
-    )
-  }
+  const numAnsweredCorrectly = preppedQuestions.filter(({ origQuestionIdx, question: { answersSelection } }) => (
+    answersSelection === selectedAnswers[origQuestionIdx]
+  )).length
 
   return (
     <>
@@ -225,7 +198,7 @@ const ReflectionQuestionTool = React.memo(({
                       </Button>
                     </View>
                   }
-                  {currentQuestionSubmitted && pageIdx !== preppedQuestions.length - 1 &&
+                  {currentQuestionSubmitted &&
                     <View style={styles.buttonContainer}>
                       <Button
                         style={styles.button}
@@ -234,19 +207,10 @@ const ReflectionQuestionTool = React.memo(({
                           setPageIndex(pageIdx + 1)
                         }}
                       >
-                        {i18n("Go to next question")}
-                      </Button>
-                    </View>
-                  }
-                  {currentQuestionSubmitted && pageIdx === preppedQuestions.length - 1 &&
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        style={styles.button}
-                        onPress={() => {
-                          setCreatorViewingResults(true)
-                        }}
-                      >
-                        {i18n("View my score")}
+                        {pageIdx === preppedQuestions.length - 1
+                          ? i18n("View my score")
+                          : i18n("Go to next question")
+                        }
                       </Button>
                     </View>
                   }
@@ -255,6 +219,25 @@ const ReflectionQuestionTool = React.memo(({
               </View>
             </View>
           ))}
+          <View style={styles.container}>
+            <Text style={styles.score}>
+              {i18n("Score: {{percent}}%", {
+                percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
+              })}
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                style={styles.button}
+                onPress={() => {
+                  setSelectedAnswers({})
+                  setPageIndex(0)
+                  executeShuffles()
+                }}
+              >
+                {i18n("Retake this quiz")}
+              </Button>
+            </View>
+          </View>
         </ViewPager>
       </View>
       <View style={styles.spacerAfterPage} />
