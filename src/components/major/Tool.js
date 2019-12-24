@@ -10,6 +10,7 @@ import { getToolInfo } from '../../utils/toolInfo'
 import NotesInsertTool from './NotesInsertTool'
 import VideoTool from './VideoTool'
 import ReflectionQuestionTool from './ReflectionQuestionTool'
+import QuizTool from './QuizTool'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -71,6 +72,10 @@ const EditTool = React.memo(({
     }
     case 'REFLECTION_QUESTION': {
       ToolComponent = ReflectionQuestionTool
+      break
+    }
+    case 'QUIZ': {
+      ToolComponent = QuizTool
       break
     }
   }
