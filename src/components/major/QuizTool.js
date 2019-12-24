@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   },
   choices: {
     marginLeft: 2,
+    marginBottom: 20,
   },
   radio: {
     ...radio,
@@ -69,13 +70,21 @@ const styles = StyleSheet.create({
   },
   feedback: {
     textAlign: 'center',
-    marginTop: 20,
     marginBottom: 20,
     fontSize: 15,
     fontWeight: 700,
+    height: 20,
+    lineHeight: 20,
   },
   feedbackCorrect: {
     color: 'rgb(255, 61, 113)',
+  },
+  score: {
+    textAlign: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+    fontSize: 18,
+    fontWeight: 700,
   },
 })
 
@@ -91,8 +100,9 @@ const ReflectionQuestionTool = React.memo(({
 }) => {
 
   const [ pageIndex, setPageIndex ] = useState("")
-  const [ selectedAnswers, setSelectedAnswers ] = useState("")
+  const [ selectedAnswers, setSelectedAnswers ] = useState({})
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
+  const [ creatorViewingResults, setCreatorViewingResults ] = useState(false)
 
   // const { isDefaultClassroom } = useClassroomInfo({ books, bookId })
 
@@ -117,6 +127,36 @@ const ReflectionQuestionTool = React.memo(({
   }
 
   const [ preppedQuestions, setPreppedQuestions ] = useState(executeShuffles(true))
+
+  if(creatorViewingResults) {
+    const numAnsweredCorrectly = preppedQuestions.filter(({ origQuestionIdx, question: { answersSelection } }) => (
+      answersSelection === selectedAnswers[origQuestionIdx]
+    )).length
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.score}>
+          {i18n("Score: {{percent}}%", {
+            percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
+          })}
+        </Text>
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.button}
+            onPress={() => {
+              setCreatorViewingResults(false)
+              setCurrentQuestionSubmitted(false)
+              setSelectedAnswers({})
+              setPageIndex(0)
+              executeShuffles()
+            }}
+          >
+            {i18n("Retake this quiz")}
+          </Button>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <>
@@ -162,17 +202,18 @@ const ReflectionQuestionTool = React.memo(({
                       )
                   })}
                   </RadioGroup>
-                  <Text style={styles.feedback}>
-                    {currentQuestionSubmitted && (
-                      answersSelection === selectedAnswers[origQuestionIdx]
+                  {currentQuestionSubmitted && (
+                    <Text style={styles.feedback}>
+                      {answersSelection === selectedAnswers[origQuestionIdx]
                         ? i18n("Correct!")
                         : (
                           <Text style={styles.feedbackCorrect}>
                             {i18n("Whoops. That’s incorrect.")}
                           </Text>
                         )
-                    )}
-                  </Text>
+                      }
+                    </Text>
+                  )}
                   {!currentQuestionSubmitted &&
                     <View style={styles.buttonContainer}>
                       <Button
@@ -202,13 +243,14 @@ const ReflectionQuestionTool = React.memo(({
                       <Button
                         style={styles.button}
                         onPress={() => {
-                          
+                          setCreatorViewingResults(true)
                         }}
                       >
                         {i18n("View my score")}
                       </Button>
                     </View>
                   }
+                  {!currentQuestionSubmitted && <Text style={styles.feedback} />}
                 </View>
               </View>
             </View>
