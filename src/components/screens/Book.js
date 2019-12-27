@@ -11,7 +11,7 @@ import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
-import Tool from "../major/Tool"
+import ToolFlipper from "../major/ToolFlipper"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   sidePanel: {
     backgroundColor: '#fff',
     width: 0,
+    zIndex: 6,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -694,7 +695,10 @@ const Book = React.memo(({
                   uid={uid}
                   label={name}
                   toolType={toolType}
-                  onPress={unselectTool}
+                  onPress={() => setSelectedToolUid({
+                    bookId,
+                    uid,
+                  })}
                   onToolMove={onToolMove}
                   onToolRelease={onToolRelease}        
                 />
@@ -711,7 +715,7 @@ const Book = React.memo(({
 
       }
     },
-    [ unselectTool, spineIdRef ],
+    [ bookId, spineIdRef ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()

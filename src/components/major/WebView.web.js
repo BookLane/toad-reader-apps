@@ -87,7 +87,7 @@ const WebView = ({
         // check that it is the right iframe sending the postmessage
         if(frameRef.current.contentWindow !== nativeEvent.source) return
 
-        onMessage({ nativeEvent })
+        onMessage && onMessage({ nativeEvent })
       }
 
       window.addEventListener('message', onMessageWrapper, true)
