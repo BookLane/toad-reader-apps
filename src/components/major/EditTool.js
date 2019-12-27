@@ -7,7 +7,6 @@ import { Select } from "react-native-ui-kitten"
 import Input from "../basic/Input"
 
 import { i18n } from "inline-i18n"
-import { getToolbarHeight } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
 import StatusAndActions from "./StatusAndActions"
 
@@ -20,14 +19,6 @@ import { updateTool } from "../../redux/actions"
 import EditToolData from "./EditToolData"
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
-    zIndex: 5,
-  },
-  constainerWideMode: {
-    top: getToolbarHeight(),
-  },
   topSection: {
     padding: 20,
     paddingBottom: 10,
@@ -54,6 +45,7 @@ const styles = StyleSheet.create({
 
 const EditTool = React.memo(({
   bookId,
+  tool,
 
   books,
   userDataByBookId,
@@ -63,7 +55,7 @@ const EditTool = React.memo(({
 
   const { toolTypes, toolInfoByType } = getToolInfo()
 
-  const { accountId, classroomUid, selectedToolUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroomUid } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -73,9 +65,9 @@ const EditTool = React.memo(({
 
   useEffect(
     () => {
-      setNameInEdit((selectedTool || {}).name || '')
+      setNameInEdit((tool || {}).name || '')
     },
-    [ selectedTool ],
+    [ tool ],
   )
 
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
@@ -85,14 +77,14 @@ const EditTool = React.memo(({
       updateTool({
         bookId,
         classroomUid,
-        uid: selectedToolUid,
+        uid: tool.uid,
         ...updates,
         patchInfo: {
           userDataByBookId: getUserDataByBookId(),
         },
       })
     },
-    [ updateTool, bookId, classroomUid, selectedToolUid ],
+    [ updateTool, bookId, classroomUid, tool.uid ],
   )
 
   const onToolNameChange = useCallback(
@@ -111,15 +103,8 @@ const EditTool = React.memo(({
     [ goUpdateTool ],
   )
 
-  if(!selectedTool) return null
-
   return (
-    <View
-      style={[
-        styles.container,
-        wideMode ? styles.constainerWideMode : null,
-      ]}
-    >
+    <>
       <View
         style={[
           styles.topSection,
@@ -137,12 +122,12 @@ const EditTool = React.memo(({
           </View>
           <View style={styles.basicDetailLine}>
             <Select
-              key={selectedTool.uid}
+              key={tool.uid}
               label={i18n("Tool type")}
               data={toolTypes}
-              selectedOption={toolTypes.filter(({ toolType }) => toolType === selectedTool.toolType)[0]}
+              selectedOption={toolTypes.filter(({ toolType }) => toolType === tool.toolType)[0]}
               onSelect={onSelectToolType}
-              disabled={Object.keys(selectedTool.data || {}).length > 0}
+              disabled={Object.keys(tool.data || {}).length > 0}
             />
           </View>
         </View>
@@ -158,14 +143,14 @@ const EditTool = React.memo(({
       >
         <EditToolData
           classroomUid={classroomUid}
-          selectedToolUid={selectedToolUid}
+          toolUid={tool.uid}
           accountId={accountId}
-          dataStructure={toolInfoByType[selectedTool.toolType].dataStructure}
-          data={selectedTool.data}
+          dataStructure={toolInfoByType[tool.toolType].dataStructure}
+          data={tool.data}
           goUpdateTool={goUpdateTool}
         />
       </View>
-    </View>
+    </>
   )
 })
 

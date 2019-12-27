@@ -907,7 +907,7 @@ const Book = React.memo(({
               pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
             />
           </View>
-          <Tool
+          <ToolFlipper
             bookId={bookId}
             inEditMode={inEditMode}
           />

@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 
 const EditToolData = React.memo(({
   classroomUid,
-  selectedToolUid,
+  toolUid,
   accountId,
   dataStructure,
   data,
@@ -113,7 +113,7 @@ const EditToolData = React.memo(({
     () => {
       setDataInEdit(data)
     },
-    [ selectedToolUid ],
+    [ toolUid ],
   )
 
   const getDataInEdit = useInstanceValue(dataInEdit)
