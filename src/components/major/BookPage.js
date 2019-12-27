@@ -73,7 +73,7 @@ const BookPage = React.memo(props => {
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  const { tools, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { tools, spines, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
   const getTools = useInstanceValue(tools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
@@ -201,15 +201,29 @@ const BookPage = React.memo(props => {
         }
 
         case 'flipToNewSpine': {
-          const { newSpineIdRef } = data.payload
+          const { newSpineIdRef } = data.payload || {}
           const spineIdRefs = spines.map(({ idref }) => idref)
+          const tocSpineIdRefs = toc.map(({ spineIdRef }) => spineIdRef)
 
           const prevSpineIndex = spineIdRefs.indexOf(spineIdRef)
           const newSpineIndex = spineIdRefs.indexOf(newSpineIdRef)
+          const prevTocSpineIndex = tocSpineIdRefs.indexOf(spineIdRef)
+          const pagedToBeginning = newSpineIdRef === undefined && prevTocSpineIndex === 0
+          const pagedToEnd = newSpineIdRef === undefined && prevSpineIndex === spineIdRefs.length - 1
 
-          if(prevSpineIndex !== -1 && newSpineIndex !== -1) {
-            const pagedForward = newSpineIndex > prevSpineIndex
-            const laterSpineIdRef = pagedForward ? newSpineIdRef : spineIdRef
+          if(prevSpineIndex !== -1 && (newSpineIndex !== -1 || pagedToBeginning || pagedToEnd)) {
+            const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
+            const laterSpineIdRef = pagedToEnd
+              ? "AFTER LAST SPINE"
+              : (
+                pagedToBeginning
+                  ? spineIdRef
+                  : (
+                    pagedForward
+                      ? newSpineIdRef
+                      : spineIdRef
+                  )
+              )
 
             const toolsBeforeLaterSpine = getTools().filter(({ spineIdRef, cfi, _delete }) => (
               spineIdRef === laterSpineIdRef
@@ -299,7 +313,7 @@ const BookPage = React.memo(props => {
 
       }
     },
-    [ bookId, books, spines, spineIdRef, indicateLoaded, requestShowPages, location ],
+    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, location ],
   )
 
   const setSelectionText = useCallback(
