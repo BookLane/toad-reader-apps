@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
 const ToolFlipper = React.memo(({
   bookId,
   inEditMode,
+  goTo,
 
   books,
   userDataByBookId,
@@ -76,7 +77,7 @@ const ToolFlipper = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { selectedTool, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { selectedTool, tools, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -97,12 +98,21 @@ const ToolFlipper = React.memo(({
 
   const onPageChange = useCallback(
     pageIdx => {
+      const { uid } = toolSet[pageIdx - 1] || {}
+
       setSelectedToolUid({
         bookId,
-        uid: (toolSet[pageIdx - 1] || {}).uid,
+        uid,
       })
+
+      if(!uid) {
+        const followingSpineIndex = spines.map(({ idref }) => idref).indexOf(toolSet[0].spineIdRef)
+        const spineIdRef = spines[pageIdx === 0 ? followingSpineIndex - 1 : followingSpineIndex].idref
+
+        goTo({ spineIdRef })
+      }
     },
-    [ toolSet, bookId ],
+    [ toolSet, bookId, spines, goTo ],
   )
 
   const LeftButtonIcon = useCallback(

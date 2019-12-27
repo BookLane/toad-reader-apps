@@ -186,6 +186,7 @@ const Book = React.memo(({
     mode,
     showSettings,
     hrefToGoTo,
+    cfiToGoTo,
     zoomToInfo,
     snapshotCoords,
     snapshotZoomed,
@@ -445,32 +446,39 @@ const Book = React.memo(({
     [ spineIdRef, cfi, idps, accounts, books, userDataByBookId ],
   )
 
-  const goToHref = useCallback(
-    ({ href, spineIdRef }) => {
+  const goTo = useCallback(
+    info => {
       pauseProcessing()
 
-      if(spineIdRef) {
+      // immediately clear the tools from BookPage
+      reportSpots({ type: 'BookPage' })
+
+      if(info.spineIdRef) {
         // This is to make the toc selection show there immediately
         setLatestLocation({
           bookId,
           latestLocation: {
-            spineIdRef,
+            spineIdRef: info.spineIdRef,
           },
         })
       }
 
+      const goToInfo = info.href
+        ? { hrefToGoTo: info.href }
+        : { cfiToGoTo: info }
+
       setState({
         mode: 'page',
         snapshotZoomed: true,
-        hrefToGoTo: href,
+        ...goToInfo,
       })
       
       setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
       startRecordReading({
         bookId,
-        spineIdRef,
-        // Starts a reading record with current spineIdRef, not necessarily that
+        spineIdRef: info.spineIdRef || spineIdRef,
+        // May start a reading record with current spineIdRef, not necessarily that
         // of the href. If it turns out they are one and the same, this function
         // call was needed. If the href brings them to a new spine, then this 
         // reading record will be stopped once that loads and the new one will
@@ -710,7 +718,7 @@ const Book = React.memo(({
         setToolsToOverlayOnThisPage(toolsToOverlayOnThisPage)
 
         if(info.spots) {
-          setState({ hrefToGoTo: undefined })
+          setState({ hrefToGoTo: undefined, cfiToGoTo: undefined })
         }
 
       }
@@ -889,6 +897,7 @@ const Book = React.memo(({
               requestHideSettings={requestHideSettings}
               indicateLoaded={indicateLoaded}
               hrefToGoTo={hrefToGoTo}
+              cfiToGoTo={cfiToGoTo}
               capturingSnapshots={capturingSnapshots}
               temporarilyPauseProcessing={temporarilyPauseProcessing}
               selectionInfo={selectionInfo}
@@ -914,6 +923,7 @@ const Book = React.memo(({
           <ToolFlipper
             bookId={bookId}
             inEditMode={inEditMode}
+            goTo={goTo}
           />
         </View>
         {!widget &&
@@ -923,7 +933,7 @@ const Book = React.memo(({
             (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
           ]}>
             <BookContents
-              goToHref={goToHref}
+              goTo={goTo}
               bookId={bookId}
               reportSpots={reportSpots}
               onToolMove={onToolMove}

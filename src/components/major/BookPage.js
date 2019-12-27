@@ -34,6 +34,7 @@ const BookPage = React.memo(props => {
     spineIdRef,
     pageIndexInSpine,
     hrefToGoTo,
+    cfiToGoTo,
     showSettings,
     selectionInfo,
     setSelectionInfo,
@@ -144,6 +145,14 @@ const BookPage = React.memo(props => {
       }
     },
     [ spineIdRef, pageIndexInSpine ],
+  )
+
+  useDidUpdate(
+    () => {
+      if(!cfiToGoTo) return
+      postMessage(webView.current, 'goToCfi', cfiToGoTo)
+    },
+    [ cfiToGoTo ],
   )
 
   useDidUpdate(

@@ -53,7 +53,7 @@ const BookContentsLine = ({
   label,
   toolType,
   numToolsWithin,
-  goToHref,
+  goTo,
   href,
   spineIdRef,
   reportLineHeight,
@@ -79,10 +79,10 @@ const BookContentsLine = ({
           uid,
         })
       } else {
-        goToHref({ href, spineIdRef })
+        goTo({ href, spineIdRef })
       }
     },
-    [ href, bookId ],
+    [ href, bookId, goTo ],
   )
 
   const { onLayout, height } = useLayout()

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 })
 
 const BookContents = React.memo(({
-  goToHref,
+  goTo,
   bookId,
   reportSpots,
   onToolMove,
@@ -134,14 +134,6 @@ const BookContents = React.memo(({
 
   const [ setReportSpotsTimeout ] = useSetTimeout()
 
-  const goToHrefAndClearToolSpots = useCallback(
-    params => {
-      goToHref(params)
-      reportSpots({ type: 'BookPage' })  // immediately clear the tools from BookPage
-    },
-    [ goToHref, reportSpots ],
-  )
-
   const reportLineHeight = useCallback(
     ({ index, height }) => {
       data[index].lineHeight = height
@@ -195,14 +187,14 @@ const BookContents = React.memo(({
       <BookContentsLine
         {...item}
         bookId={bookId}
-        goToHref={goToHrefAndClearToolSpots}
+        goTo={goTo}
         reportLineHeight={reportLineHeight}
         index={index}
         onToolMove={onToolMove}
         onToolRelease={onToolRelease}
       />
     ),
-    [ bookId, goToHref, reportLineHeight ],
+    [ bookId, goTo, reportLineHeight ],
   )
 
   const createNewTool = useCallback(
