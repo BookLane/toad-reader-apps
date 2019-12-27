@@ -11,7 +11,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
-import { deleteTool } from "../../redux/actions"
+import { deleteTool, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -39,17 +39,16 @@ const styles = StyleSheet.create({
 
 const StatusAndActions = React.memo(({
   bookId,
-  toolUidInEdit,
-  setToolUidInEdit,
 
   books,
   userDataByBookId,
   syncStatus,
 
   deleteTool,
+  setSelectedToolUid,
 }) => {
 
-  const { classroomUid } = useClassroomInfo({ books, bookId })
+  const { classroomUid, selectedToolUid } = useClassroomInfo({ books, bookId })
 
   const wideMode = useWideMode()
 
@@ -61,14 +60,14 @@ const StatusAndActions = React.memo(({
       deleteTool({
         bookId,
         classroomUid,
-        uid: toolUidInEdit,
+        uid: selectedToolUid,
         patchInfo: {
           userDataByBookId: getUserDataByBookId(),
         },
       })
-      setToolUidInEdit()
+      setSelectedToolUid({ bookId })
     },
-    [ deleteTool, bookId, classroomUid, toolUidInEdit, setToolUidInEdit ],
+    [ deleteTool, bookId, classroomUid, selectedToolUid ],
   )
 
   const syncStatusMessages = {
@@ -122,6 +121,7 @@ const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   deleteTool,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(StatusAndActions)

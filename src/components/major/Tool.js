@@ -11,6 +11,7 @@ import NotesInsertTool from './NotesInsertTool'
 import VideoTool from './VideoTool'
 import ReflectionQuestionTool from './ReflectionQuestionTool'
 import QuizTool from './QuizTool'
+import EditTool from "./EditTool"
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -40,9 +41,9 @@ const styles = StyleSheet.create({
   },
 })
 
-const EditTool = React.memo(({
+const Tool = React.memo(({
   bookId,
-  toolUid,
+  inEditMode,
 
   books,
   userDataByBookId,
@@ -50,14 +51,19 @@ const EditTool = React.memo(({
 
   const { toolInfoByType } = getToolInfo()
 
-  const { tools } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const tool = tools.filter(({ uid }) => uid === toolUid)[0]
+  const { selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
-  if(!tool) return null
+  if(!selectedTool) return null
 
-  const { toolType, name, data } = tool
+  if(inEditMode) {
+    return (
+      <EditTool bookId={bookId} />
+    )
+  }
+
+  const { toolType, name, data } = selectedTool
 
   let ToolComponent = View
 
@@ -110,4 +116,4 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(EditTool)
+export default connect(mapStateToProps, matchDispatchToProps)(Tool)

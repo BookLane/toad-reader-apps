@@ -15,7 +15,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { useLayout } from 'react-native-hooks'
 
-import { createTool } from "../../redux/actions"
+import { createTool, setSelectedToolUid } from "../../redux/actions"
 
 const paddingTop = 12
 
@@ -29,8 +29,6 @@ const styles = StyleSheet.create({
 const BookContents = React.memo(({
   goToHref,
   bookId,
-  toolUidInEdit,
-  setToolUidInEdit,
   reportSpots,
   onToolMove,
   onToolRelease,
@@ -43,10 +41,10 @@ const BookContents = React.memo(({
   displaySettings,
 
   createTool,
+  setSelectedToolUid
 }) => {
 
-  const { book, toc, userId, classroomUid, classroom, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const toolInEdit = tools.filter(({ uid }) => uid === toolUidInEdit)[0]
+  const { book, toc, userId, classroomUid, classroom, tools, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
@@ -196,16 +194,15 @@ const BookContents = React.memo(({
     ({ item }, index) => (
       <BookContentsLine
         {...item}
+        bookId={bookId}
         goToHref={goToHrefAndClearToolSpots}
-        toolUidInEdit={toolUidInEdit}
-        setToolUidInEdit={setToolUidInEdit}
         reportLineHeight={reportLineHeight}
         index={index}
         onToolMove={onToolMove}
         onToolRelease={onToolRelease}
       />
     ),
-    [ goToHref, toolUidInEdit, setToolUidInEdit, reportLineHeight ],
+    [ bookId, goToHref, reportLineHeight ],
   )
 
   const createNewTool = useCallback(
@@ -214,9 +211,9 @@ const BookContents = React.memo(({
       const uid = uuidv4()
       let spineIdRef, ordering
 
-      if(toolInEdit) {
-        spineIdRef = toolInEdit.spineIdRef
-        ordering =  toolInEdit.ordering + 1
+      if(selectedTool) {
+        spineIdRef = selectedTool.spineIdRef
+        ordering =  selectedTool.ordering + 1
 
       } else {
         const { latest_location } = userDataByBookId[bookId] || {}
@@ -240,9 +237,12 @@ const BookContents = React.memo(({
         },
       })
 
-      setToolUidInEdit(uid)
+      setSelectedToolUid({
+        bookId,
+        uid,
+      })
     },
-    [ bookId, classroomUid, book, displaySettings, tools, toolInEdit ],
+    [ bookId, classroomUid, book, displaySettings, tools, selectedTool ],
   )
 
   if(!toc) return null
@@ -281,6 +281,7 @@ const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   createTool,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookContents)

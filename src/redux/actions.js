@@ -58,6 +58,12 @@ export const setCurrentClassroom = ({ bookId, uid }) => ({
   uid,
 })
 
+export const setSelectedToolUid = ({ bookId, uid }) => ({
+  type: "SET_SELECTED_TOOL_UID",
+  bookId,
+  uid,
+})
+
 export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
   type: "CREATE_CLASSROOM",
   uid,

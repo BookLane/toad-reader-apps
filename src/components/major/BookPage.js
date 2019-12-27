@@ -18,8 +18,9 @@ import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import { useLayout } from 'react-native-hooks'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions"
+import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -32,7 +33,6 @@ const BookPage = React.memo(props => {
   const {
     spineIdRef,
     pageIndexInSpine,
-    displaySettings,
     hrefToGoTo,
     showSettings,
     selectionInfo,
@@ -40,19 +40,24 @@ const BookPage = React.memo(props => {
     reportSpots,
     toolCfiCounts,
     // capturingSnapshots,
-    setLatestLocation,
     bookId,
     indicateLoaded,
     requestShowPages,
-    books,
     temporarilyPauseProcessing,
     history,
     location,
-    startRecordReading,
-    endRecordReading,
     requestHideSettings,
     latest_location,
+
+    books,
+    userDataByBookId,
+    displaySettings,
+
+    setLatestLocation,
+    startRecordReading,
+    endRecordReading,
     flushReadingRecords,
+    setSelectedToolUid,
   } = props
 
   const prevSpineIdRef = usePrevious(spineIdRef)
@@ -67,6 +72,9 @@ const BookPage = React.memo(props => {
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
+
+  const { tools, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const getTools = useInstanceValue(tools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
   const { onLayout, width } = useLayout()
@@ -192,6 +200,36 @@ const BookPage = React.memo(props => {
           return false  // i.e. still process pageChanged in the general PageWebView component
         }
 
+        case 'flipToNewSpine': {
+          const { newSpineIdRef } = data.payload
+          const spineIdRefs = spines.map(({ idref }) => idref)
+
+          const prevSpineIndex = spineIdRefs.indexOf(spineIdRef)
+          const newSpineIndex = spineIdRefs.indexOf(newSpineIdRef)
+
+          if(prevSpineIndex !== -1 && newSpineIndex !== -1) {
+            const pagedForward = newSpineIndex > prevSpineIndex
+            const laterSpineIdRef = pagedForward ? newSpineIdRef : spineIdRef
+
+            const toolsBeforeLaterSpine = getTools().filter(({ spineIdRef, cfi, _delete }) => (
+              spineIdRef === laterSpineIdRef
+              && !cfi
+              && !_delete
+            ))
+
+            if(toolsBeforeLaterSpine.length > 0) {
+              toolsBeforeLaterSpine.sort((a, b) => a.ordering - b.ordering)
+
+              setSelectedToolUid({
+                bookId,
+                uid: (pagedForward ? toolsBeforeLaterSpine[0] : toolsBeforeLaterSpine.pop()).uid,
+              })
+            }
+          }
+
+          return true
+        }
+
         case 'reportToolSpots': {
           const { toolSpots, offsetX, offsetY } = data.payload
           const wideModeShift = getToolbarHeight() - 30
@@ -261,7 +299,7 @@ const BookPage = React.memo(props => {
 
       }
     },
-    [ bookId, books, spineIdRef, indicateLoaded, requestShowPages, location ],
+    [ bookId, books, spines, spineIdRef, indicateLoaded, requestShowPages, location ],
   )
 
   const setSelectionText = useCallback(
@@ -334,8 +372,9 @@ const BookPage = React.memo(props => {
   )
 })
 
-const mapStateToProps = ({ books, displaySettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
   books,
+  userDataByBookId,
   displaySettings,
 })
 
@@ -344,6 +383,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   startRecordReading,
   endRecordReading,
   flushReadingRecords,
+  setSelectedToolUid,
 }, dispatch)
 
 export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookPage))

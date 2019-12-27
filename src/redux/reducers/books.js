@@ -112,6 +112,17 @@ export default function(state = initialState, action) {
       }
       return state
 
+    case "SET_SELECTED_TOOL_UID": {
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          selectedToolUid: action.uid,
+        }
+        return newState
+      }
+      return state
+    }
+
     case "SET_TOC_AND_SPINES":
       if(newState[action.bookId]) {
         newState[action.bookId] = {

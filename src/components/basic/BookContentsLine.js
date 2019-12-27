@@ -1,9 +1,14 @@
 import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import ToolChip from './ToolChip'
 
 import { useLayout } from 'react-native-hooks'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+
+import { setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   listItem: {
@@ -41,6 +46,7 @@ const styles = StyleSheet.create({
 })
 
 const BookContentsLine = ({
+  bookId,
   indentLevel,
   uid,
   label,
@@ -48,23 +54,30 @@ const BookContentsLine = ({
   numToolsWithin,
   goToHref,
   href,
-  setToolUidInEdit,
-  toolUidInEdit,
   reportLineHeight,
   index,
   onToolMove,
   onToolRelease,
+
+  books,
+
+  setSelectedToolUid,
 }) => {
+
+  const { selectedToolUid } = useClassroomInfo({ books, bookId })
 
   const onPress = useCallback(
     () => {
       if(toolType) {
-        setToolUidInEdit(uid)
+        setSelectedToolUid({
+          bookId,
+          uid,
+        })
       } else {
         goToHref({ href })
       }
     },
-    [ href ],
+    [ href, bookId ],
   )
 
   const { onLayout, height } = useLayout()
@@ -72,7 +85,7 @@ const BookContentsLine = ({
   reportLineHeight({ index, height })
 
   const selected = toolType
-    ? (uid === toolUidInEdit)
+    ? (uid === selectedToolUid)
     : false
 
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
@@ -118,4 +131,12 @@ const BookContentsLine = ({
   )
 }
 
-export default BookContentsLine
+const mapStateToProps = ({ books }) => ({
+  books,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setSelectedToolUid,
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookContentsLine)

@@ -11,7 +11,6 @@ import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
-import EditTool from "../major/EditTool"
 import Tool from "../major/Tool"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -34,7 +33,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
          startRecordReading, endRecordReading, flushReadingRecords, setXapiConsentShown,
-         setTocAndSpines, setSyncStatus, updateTool } from "../../redux/actions"
+         setTocAndSpines, setSyncStatus, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -169,6 +168,7 @@ const Book = React.memo(({
   setTocAndSpines,
   setSyncStatus,
   updateTool,
+  setSelectedToolUid,
 
 }) => {
 
@@ -176,7 +176,6 @@ const Book = React.memo(({
   const [ processingPaused, setProcessingPaused ] = useState(true)
   const [ currentAppState, setCurrentAppState ] = useState('active')
   const [ selectionInfo, setSelectionInfo ] = useState(null)
-  const [ toolUidInEdit, setToolUidInEdit ] = useState()
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
   const [ inEditMode, setInEditMode ] = useState(false)
@@ -225,7 +224,7 @@ const Book = React.memo(({
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
-  const { classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, tools, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
   const getTools = useInstanceValue(tools)
 
   const toolCfiCounts = useMemo(
@@ -627,6 +626,11 @@ const Book = React.memo(({
     [],
   )
 
+  const unselectTool = useCallback(
+    () => setSelectedToolUid({ bookId }),
+    [ bookId ],
+  )
+
   const blurEvents = useCallback(
     ({ nativeEvent: { target } }) => {
       // TODO: This will not work on native apps  
@@ -637,12 +641,12 @@ const Book = React.memo(({
         !target.closest('[data-id=BookLeft]')
         && !target.closest('[data-id=EnhancedHeader]')
         && !target.closest('[data-id=FAB_addTool]')
-        && toolUidInEdit
+        && selectedToolUid
       ) {
-        setToolUidInEdit()
+        unselectTool()
       }
     },
-    [ toolUidInEdit ],
+    [ selectedToolUid, unselectTool ],
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
@@ -680,7 +684,7 @@ const Book = React.memo(({
                   uid={uid}
                   label={name}
                   toolType={toolType}
-                  onPress={() => setToolUidInEdit(uid)}
+                  onPress={unselectTool}
                   onToolMove={onToolMove}
                   onToolRelease={onToolRelease}        
                 />
@@ -697,7 +701,7 @@ const Book = React.memo(({
 
       }
     },
-    [ spineIdRef ],
+    [ unselectTool, spineIdRef ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -795,8 +799,8 @@ const Book = React.memo(({
   )
 
   const onBackPress = useCallback(
-    () => (toolUidInEdit ? setToolUidInEdit : history.goBack)(),
-    [ toolUidInEdit ],
+    () => (selectedToolUid ? unselectTool : history.goBack)(),
+    [ unselectTool, selectedToolUid ],
   )
 
   const pageCfisKey = getPageCfisKey({ displaySettings })
@@ -841,7 +845,7 @@ const Book = React.memo(({
               backToReading={backToReading}
               showDisplaySettings={showDisplaySettings}
               width={width}  // By sending this as a prop, I force a rerender
-              hideOptions={!!toolUidInEdit}
+              hideOptions={!!selectedToolUid}
               onBackPress={onBackPress}
             />
           }
@@ -893,17 +897,10 @@ const Book = React.memo(({
               pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
             />
           </View>
-          <EditTool
+          <Tool
             bookId={bookId}
-            toolUidInEdit={inEditMode ? toolUidInEdit : null}
-            setToolUidInEdit={setToolUidInEdit}
+            inEditMode={inEditMode}
           />
-          {!inEditMode &&
-            <Tool
-              bookId={bookId}
-              toolUid={toolUidInEdit}
-            />
-          }
         </View>
         {!widget &&
           <View style={[
@@ -914,8 +911,6 @@ const Book = React.memo(({
             <BookContents
               goToHref={goToHref}
               bookId={bookId}
-              toolUidInEdit={toolUidInEdit}
-              setToolUidInEdit={setToolUidInEdit}
               reportSpots={reportSpots}
               onToolMove={onToolMove}
               onToolRelease={onToolRelease}
@@ -977,6 +972,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setTocAndSpines,
   setSyncStatus,
   updateTool,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

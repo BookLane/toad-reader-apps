@@ -54,8 +54,6 @@ const styles = StyleSheet.create({
 
 const EditTool = React.memo(({
   bookId,
-  toolUidInEdit,
-  setToolUidInEdit,
 
   books,
   userDataByBookId,
@@ -65,8 +63,7 @@ const EditTool = React.memo(({
 
   const { toolTypes, toolInfoByType } = getToolInfo()
 
-  const { accountId, classroomUid, tools } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const toolInEdit = tools.filter(({ uid }) => uid === toolUidInEdit)[0]
+  const { accountId, classroomUid, selectedToolUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -76,9 +73,9 @@ const EditTool = React.memo(({
 
   useEffect(
     () => {
-      setNameInEdit((toolInEdit || {}).name || '')
+      setNameInEdit((selectedTool || {}).name || '')
     },
-    [ toolUidInEdit ],
+    [ selectedTool ],
   )
 
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
@@ -88,14 +85,14 @@ const EditTool = React.memo(({
       updateTool({
         bookId,
         classroomUid,
-        uid: toolUidInEdit,
+        uid: selectedToolUid,
         ...updates,
         patchInfo: {
           userDataByBookId: getUserDataByBookId(),
         },
       })
     },
-    [ updateTool, bookId, classroomUid, toolUidInEdit ],
+    [ updateTool, bookId, classroomUid, selectedToolUid ],
   )
 
   const onToolNameChange = useCallback(
@@ -114,7 +111,7 @@ const EditTool = React.memo(({
     [ goUpdateTool ],
   )
 
-  if(!toolInEdit) return null
+  if(!selectedTool) return null
 
   return (
     <View
@@ -140,19 +137,17 @@ const EditTool = React.memo(({
           </View>
           <View style={styles.basicDetailLine}>
             <Select
-              key={toolUidInEdit}
+              key={selectedTool.uid}
               label={i18n("Tool type")}
               data={toolTypes}
-              selectedOption={toolTypes.filter(({ toolType }) => toolType === toolInEdit.toolType)[0]}
+              selectedOption={toolTypes.filter(({ toolType }) => toolType === selectedTool.toolType)[0]}
               onSelect={onSelectToolType}
-              disabled={Object.keys(toolInEdit.data || {}).length > 0}
+              disabled={Object.keys(selectedTool.data || {}).length > 0}
             />
           </View>
         </View>
         <StatusAndActions
           bookId={bookId}
-          toolUidInEdit={toolUidInEdit}
-          setToolUidInEdit={setToolUidInEdit}
         />
       </View>
       <View
@@ -163,10 +158,10 @@ const EditTool = React.memo(({
       >
         <EditToolData
           classroomUid={classroomUid}
-          toolUidInEdit={toolUidInEdit}
+          selectedToolUid={selectedToolUid}
           accountId={accountId}
-          dataStructure={toolInfoByType[toolInEdit.toolType].dataStructure}
-          data={toolInEdit.data}
+          dataStructure={toolInfoByType[selectedTool.toolType].dataStructure}
+          data={selectedTool.data}
           goUpdateTool={goUpdateTool}
         />
       </View>
