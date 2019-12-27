@@ -445,8 +445,18 @@ const Book = React.memo(({
   )
 
   const goToHref = useCallback(
-    ({ href }) => {
+    ({ href, spineIdRef }) => {
       pauseProcessing()
+
+      if(spineIdRef) {
+        // This is to make the toc selection show there immediately
+        setLatestLocation({
+          bookId,
+          latestLocation: {
+            spineIdRef,
+          },
+        })
+      }
 
       setState({
         mode: 'page',

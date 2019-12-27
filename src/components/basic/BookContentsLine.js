@@ -2,6 +2,7 @@ import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { getSpineAndPage } from '../../utils/toolbox'
 
 import ToolChip from './ToolChip'
 
@@ -54,17 +55,21 @@ const BookContentsLine = ({
   numToolsWithin,
   goToHref,
   href,
+  spineIdRef,
   reportLineHeight,
   index,
   onToolMove,
   onToolRelease,
 
   books,
+  userDataByBookId,
 
   setSelectedToolUid,
 }) => {
 
-  const { selectedToolUid } = useClassroomInfo({ books, bookId })
+  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { latest_location } = userDataByBookId[bookId] || {}
+  const currentSpineIdRef = getSpineAndPage({ latest_location }).spineIdRef
 
   const onPress = useCallback(
     () => {
@@ -74,7 +79,7 @@ const BookContentsLine = ({
           uid,
         })
       } else {
-        goToHref({ href })
+        goToHref({ href, spineIdRef })
       }
     },
     [ href, bookId ],
@@ -86,7 +91,7 @@ const BookContentsLine = ({
 
   const selected = toolType
     ? (uid === selectedToolUid)
-    : false
+    : (!selectedToolUid && spineIdRef === currentSpineIdRef)
 
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
 
@@ -131,8 +136,9 @@ const BookContentsLine = ({
   )
 }
 
-const mapStateToProps = ({ books }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
   books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

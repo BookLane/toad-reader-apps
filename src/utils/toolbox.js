@@ -140,7 +140,7 @@ export const getSnapshotURI = params => {
 export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
-export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
+export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings={} }) => {
   try {
     
     if(latest_location) {
@@ -152,7 +152,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
     const pageCfisKey = getPageCfisKey({ displaySettings })
     let pageCfis = []
     let pageCfisKnown = false
-    book.spines.some(spine => {
+    book && book.spines.some(spine => {
       if(spine.idref === spineIdRef) {
         if(spine.pageCfis) {
           pageCfis = spine.pageCfis[pageCfisKey]
