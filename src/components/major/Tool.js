@@ -11,7 +11,8 @@ import EditTool from "./EditTool"
 
 const styles = StyleSheet.create({
   topSection: {
-    padding: 20,
+    paddingHorizontal: 30,
+    paddingTop: 20,
     paddingBottom: 10,
   },
   bottomSection: {

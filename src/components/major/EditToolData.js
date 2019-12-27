@@ -26,7 +26,8 @@ const trashButtonStyles = {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
     flex: 1,
   },
   dataLine: {
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
   textEditor: {
     outlineWidth: 0,
     flex: 1,
-    margin: -20,
-    padding: 20,
+    margin: -30,
+    padding: 30,
   },
   label: {
     color: 'rgb(143, 155, 179)',

@@ -11,8 +11,8 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   line: {
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 30,
+    paddingRight: 30,
     paddingTop: 10,
     paddingBottom: 10,
   },

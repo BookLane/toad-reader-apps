@@ -10,7 +10,8 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
     flex: 1,
   },
   question: {
@@ -25,8 +26,8 @@ const styles = StyleSheet.create({
   },
   answer: {
     outlineWidth: 0,
-    paddingHorizontal: 20,
-    marginHorizontal: -20,
+    paddingHorizontal: 30,
+    marginHorizontal: -30,
     flex: 1,
   },
 })

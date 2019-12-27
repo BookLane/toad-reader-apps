@@ -5,7 +5,8 @@ import { textToReactNative } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
   },
 })
 

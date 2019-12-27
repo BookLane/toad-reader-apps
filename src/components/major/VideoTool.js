@@ -7,7 +7,8 @@ import { Video } from 'expo-av'
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
   },
   videoSizer: {
     paddingBottom: '56.25%;',

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   page: {
-    padding: 20,
+    padding: 30,
     flex: 1,
     overflowY: 'auto',
   },
