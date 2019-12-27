@@ -100,17 +100,23 @@ const ToolFlipper = React.memo(({
     pageIdx => {
       const { uid } = toolSet[pageIdx - 1] || {}
 
+      if(!uid) {
+        const followingSpineIndex = toolSet[0].spineIdRef === 'AFTER LAST SPINE'
+          ? spines.length
+          : spines.map(({ idref }) => idref).indexOf(toolSet[0].spineIdRef)
+        const goToSpine = spines[pageIdx === 0 ? followingSpineIndex - 1 : followingSpineIndex]
+
+        if(!goToSpine) return
+
+        const spineIdRef = goToSpine.idref
+
+        goTo({ spineIdRef })
+      }
+
       setSelectedToolUid({
         bookId,
         uid,
       })
-
-      if(!uid) {
-        const followingSpineIndex = spines.map(({ idref }) => idref).indexOf(toolSet[0].spineIdRef)
-        const spineIdRef = spines[pageIdx === 0 ? followingSpineIndex - 1 : followingSpineIndex].idref
-
-        goTo({ spineIdRef })
-      }
     },
     [ toolSet, bookId, spines, goTo ],
   )
