@@ -200,7 +200,7 @@ const Book = React.memo(({
   })
 
   const toggleInEditMode = useCallback(
-    () => console.log(inEditMode) || setInEditMode(!inEditMode),
+    () => setInEditMode(!inEditMode),
     [ inEditMode ],
   )
 
