@@ -14,7 +14,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { setSelectedToolUid } from "../../redux/actions"
 
-const container = {
+const buttonContainer = {
   position: 'absolute',
   top: getToolbarHeight(),
   bottom: 30,   // this is the padding-bottom in the reader
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   leftButtonContainer: {
-    ...container,
+    ...buttonContainer,
     left: -10,
   },
   leftButton: {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: '50%',
   },
   rightButtonContainer: {
-    ...container,
+    ...buttonContainer,
     right: -10,
   },
   rightButton: {

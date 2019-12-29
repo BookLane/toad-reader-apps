@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -7,7 +7,10 @@ import { Button } from "react-native-ui-kitten"
 import Icon from '../basic/Icon'
 
 import { i18n } from "inline-i18n"
-import { getIdsFromAccountId } from "../../utils/toolbox"
+
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+
+import { setSelectedToolUid } from "../../redux/actions"
 
 const editButton = {
   borderRadius: '50%',
@@ -16,6 +19,13 @@ const editButton = {
   marginVertical: -12,
   marginRight: -10,
   borderColor: 'transparent',  
+}
+
+const lineContainer = {
+  padding: 20,
+  paddingTop: 10,
+  paddingBottom: 10,
+  flexDirection: 'row',
 }
 
 const styles = StyleSheet.create({
@@ -28,10 +38,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   lineContainer: {
-    padding: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    flexDirection: 'row',
+    ...lineContainer,
+  },
+  lineContainerSelected: {
+    ...lineContainer,
+    backgroundColor: 'rgb(199, 211, 234)',
   },
   line: {
     flex: 1,
@@ -58,25 +69,17 @@ const EnhancedHeader = React.memo(({
 
   books,
   userDataByBookId,
+
+  setSelectedToolUid,
 }) => {
 
-  const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts)[0] || ""
-  const { idpId, userId } = getIdsFromAccountId(accountId)
+  const { book, userId, classroom, isDefaultClassroom, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const bookVersion = Object.values(book.accounts)[0].version
-
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
-  let currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
-  if(currentClassroomUid && !currentClassroom) {
-    currentClassroomUid = defaultClassroomUid
-    currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
-  }
-  const myRole = (((currentClassroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
+  const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
 
   const hasFrontMatter = false
+  const frontMatterSelected = selectedToolUid === 'FRONT MATTER'
 
   const EditButtonIcon = useCallback(
     style => (
@@ -89,7 +92,17 @@ const EnhancedHeader = React.memo(({
     [ inEditMode ],
   )
 
-  if(bookVersion === 'BASE') return null
+  const selectFrontMatter = useCallback(
+    () => {
+      setSelectedToolUid({
+        bookId,
+        uid: 'FRONT MATTER',
+      })
+    },
+    [ bookId ],
+  )
+
+  if(!classroom || bookVersion === 'BASE') return null
 
   return (
     <View style={styles.container} data-id="EnhancedHeader">
@@ -99,7 +112,7 @@ const EnhancedHeader = React.memo(({
             {i18n("Enhanced")}
           </Text>
           {"  "}
-          {currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name}
+          {isDefaultClassroom ? i18n("Book default") : classroom.name}
         </Text>
         <Button
           style={inEditMode ? styles.editButtonActive : styles.editButton}
@@ -110,11 +123,15 @@ const EnhancedHeader = React.memo(({
         />
       </View>
       {!!(!hasFrontMatter && myRole === 'INSTRUCTOR') &&
-        <View style={styles.lineContainer}>
-          <Text style={styles.addFrontMatter}>
-            {i18n("Add front matter")}
-          </Text>
-        </View>
+        <TouchableOpacity
+          onPress={selectFrontMatter}
+        >
+          <View style={frontMatterSelected ? styles.lineContainerSelected : styles.lineContainer}>
+            <Text style={styles.addFrontMatter}>
+              {i18n("Add front matter")}
+            </Text>
+          </View>
+        </TouchableOpacity>
       }
     </View>
   )
@@ -126,6 +143,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(EnhancedHeader)

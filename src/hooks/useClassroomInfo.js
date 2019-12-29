@@ -3,22 +3,33 @@ import { getIdsFromAccountId } from '../utils/toolbox'
 const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
 
   const book = books[bookId] || {}
-  const { toc, spines, accounts, currentClassroomUid } = book
-  let { selectedToolUid } = book
+  const { toc, spines, accounts } = book
+  let { currentClassroomUid, selectedToolUid } = book
   const accountId = Object.keys(accounts)[0] || ""
   const { idpId, userId } = getIdsFromAccountId(accountId)
   
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
-  const classroomUid = currentClassroomUid || defaultClassroomUid
+  let classroomUid = currentClassroomUid || defaultClassroomUid
+  let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
+
+  // Ensure existence of classroom when we can (i.e. when userDataByBookId is sent over).
+  // If it doesn't exist, make the classroomUid's undefined.
+  if(userDataByBookId[bookId] && !classroom && classroomUid !== defaultClassroomUid) {
+    currentClassroomUid = undefined
+    classroomUid = defaultClassroomUid
+    classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
+  }
+  if(userDataByBookId[bookId] && !classroom) {
+    classroomUid = undefined
+  }
+
   const isDefaultClassroom = !currentClassroomUid
-  const classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
   const { tools=[] } = classroom || {}
-  const selectedTool = tools.filter(({ uid }) => uid === selectedToolUid)[0]
+  const selectedTool = selectedToolUid === 'FRONT MATTER' ? {} : tools.filter(({ uid }) => uid === selectedToolUid)[0]
 
   if(userDataByBookId[bookId] && !selectedTool && selectedToolUid) {
     // Make this consistent when we can (i.e. when userDataByBookId is sent over).
-    // And inconsistency here could be caused by a tool removal, etc.
     selectedToolUid = undefined
   }
 

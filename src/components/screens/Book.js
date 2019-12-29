@@ -12,6 +12,7 @@ import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import ToolFlipper from "../major/ToolFlipper"
+import FrontMatter from "../major/FrontMatter"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -924,6 +925,10 @@ const Book = React.memo(({
             bookId={bookId}
             inEditMode={inEditMode}
             goTo={goTo}
+          />
+          <FrontMatter
+            bookId={bookId}
+            inEditMode={inEditMode}
           />
         </View>
         {!widget &&
