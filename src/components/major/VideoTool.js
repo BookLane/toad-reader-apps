@@ -121,7 +121,6 @@ const VideoTool = React.memo(({
         <WebView
           containerStyle={styles.webViewContainer}
           style={styles.webView}
-          javaScriptEnabled={true}
           source={{ uri }}
         />
       )
@@ -151,7 +150,6 @@ const VideoTool = React.memo(({
           <WebView
             containerStyle={styles.webViewContainer}
             style={styles.webView}
-            javaScriptEnabled={true}
             source={{ uri }}
           />
         )
