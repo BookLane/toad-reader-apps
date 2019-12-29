@@ -6,11 +6,14 @@ import { connect } from "react-redux"
 import EditToolData from './EditToolData'
 
 import { i18n } from "inline-i18n"
+import { textToReactNative } from "../../utils/toolbox"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 const styles = StyleSheet.create({
   container: {
+    paddingVertical: 20,
+    paddingHorizontal: 30,
   },
 })
 
@@ -54,7 +57,13 @@ const InstructorsIntroduction = React.memo(({
     )
   }
 
-  return null
+  return (
+    <View style={styles.container}>
+      <Text>
+        {textToReactNative(introduction)}
+      </Text>
+    </View>
+  )
 })
 
 const mapStateToProps = ({ books, userDataByBookId }) => ({
