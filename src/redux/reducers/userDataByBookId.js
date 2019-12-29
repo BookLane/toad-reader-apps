@@ -284,6 +284,46 @@ export default function(state = initialState, action) {
       return newState
     }
 
+    case "UPDATE_CLASSROOM": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.uid) {
+
+          classroom = classrooms[idx] = { ...classroom }
+
+          ;[
+            'name',
+            'access_code',
+            'instructor_access_code',
+            'syllabus',
+            'introduction',
+            'classroom_highlights_mode',
+            'closes_at',
+            '_delete',
+          ].forEach(param => {
+            if(action[param] !== undefined) {
+              classroom[param] = action[param]
+            }
+          })
+
+          classroom.updated_at = now
+
+          return true
+
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+    }
+
     case "CREATE_TOOL": {
       if(classrooms.some((classroom, idx) => {
         if(classroom.uid === action.classroomUid) {

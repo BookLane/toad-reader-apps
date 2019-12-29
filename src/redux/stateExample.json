@@ -169,7 +169,7 @@
           "classroom_highlights_mode": "CLASSROOM",
           "closes_at": null,
           "created_at": 1573659531000,
-          "has_syllabus": 0,
+          "syllabus": null,
           "introduction": null,
           "members": [],
           "name": "",

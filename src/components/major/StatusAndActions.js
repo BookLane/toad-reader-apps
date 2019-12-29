@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
 
 const StatusAndActions = React.memo(({
   bookId,
+  isFrontMatter,
 
   books,
   userDataByBookId,
@@ -92,12 +93,14 @@ const StatusAndActions = React.memo(({
         >
           {i18n("Publish")}
         </Button>
-        <Button
-          onPress={onDelete}
-          status="basic"
-        >
-          {i18n("Remove")}
-        </Button>
+        {!isFrontMatter &&
+          <Button
+            onPress={onDelete}
+            status="basic"
+          >
+            {i18n("Remove")}
+          </Button>
+        }
       </View>
       <Text
         style={[

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,12 +7,16 @@ import { TabView, Tab } from "react-native-ui-kitten"
 
 import Syllabus from "./Syllabus"
 import InstructorsIntroduction from "./InstructorsIntroduction"
+import StatusAndActions from "./StatusAndActions"
 
 import { i18n } from "inline-i18n"
 import { getToolbarHeight } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useInstanceValue from '../../hooks/useInstanceValue'
+
+import { updateClassroom } from "../../redux/actions"
 
 const container = {
   ...StyleSheet.absoluteFillObject,
@@ -28,12 +32,16 @@ const styles = StyleSheet.create({
   constainerWideMode: {
     ...container,
     top: getToolbarHeight(),
+    paddingTop: 20,
+  },
+  topSectionWideMode: {
+    flexDirection: 'row',
   },
   heading: {
-    paddingTop: 20,
     paddingBottom: 20,
-    fontWeight: 300,
+    fontWeight: 600,
     fontSize: 18,
+    flex: 1,
   },
   tabView: {
     flex: 1,
@@ -60,24 +68,44 @@ const FrontMatter = React.memo(({
 
   books,
   userDataByBookId,
+
+  updateClassroom,
 }) => {
 
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
+
   const { classroom, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const getUserDataByBookId = useInstanceValue(userDataByBookId)
+
+  const goUpdateClassroom = useCallback(
+    updates => {
+      updateClassroom({
+        uid: classroom.uid,
+        bookId,
+        ...updates.data,
+        patchInfo: {
+          userDataByBookId: getUserDataByBookId(),
+        },
+      })
+    },
+    [ updateClassroom, bookId, classroom ],
+  )
 
   const wideMode = useWideMode()
 
   if(selectedToolUid !== 'FRONT MATTER') return null
 
-  const { has_syllabus: hasSyllabus, introduction="" } = classroom
+  const { syllabus, introduction } = classroom
 
   const tabs = [
-    ...((!hasSyllabus && !inEditMode) ? [] : [{
+    ...((!syllabus && !inEditMode) ? [] : [{
       title: i18n("Syllabus"),
       content: (
         <Syllabus
           bookId={bookId}
           inEditMode={inEditMode}
+          goUpdateClassroom={goUpdateClassroom}
         />
       ),
     }]),
@@ -88,12 +116,13 @@ const FrontMatter = React.memo(({
     //     />
     //   ),
     // },
-    ...((!introduction.trim() && !inEditMode) ? [] : [{
+    ...((!(introduction || "").trim() && !inEditMode) ? [] : [{
       title: i18n("Instructor’s introduction"),
       content: (
         <InstructorsIntroduction
           bookId={bookId}
           inEditMode={inEditMode}
+          goUpdateClassroom={goUpdateClassroom}
         />
       ),
     }]),
@@ -110,9 +139,17 @@ const FrontMatter = React.memo(({
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
-      <Text style={styles.heading}>
-        {i18n("Front matter")}
-      </Text>
+      <View style={wideMode ? styles.topSectionWideMode : null}>
+        <Text style={styles.heading}>
+          {i18n("Front matter")}
+        </Text>
+        {inEditMode &&
+          <StatusAndActions
+            bookId={bookId}
+            isFrontMatter={true}
+          />
+        }
+      </View>
       <TabView
         style={styles.tabView}
         tabBarStyle={styles.tabBar}
@@ -142,6 +179,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  updateClassroom,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(FrontMatter)

@@ -73,6 +73,28 @@ export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
   patchInfo,
 })
 
+export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at, patchInfo }) => ({
+  type: "UPDATE_CLASSROOM",
+  uid,
+  bookId,
+  name,
+  access_code,
+  instructor_access_code,
+  syllabus,
+  introduction,
+  classroom_highlights_mode,
+  closes_at,
+  patchInfo,
+})
+
+export const deleteClassroom = ({ uid, bookId, patchInfo }) => ({
+  type: "UPDATE_CLASSROOM",
+  uid,
+  bookId,
+  _delete: true,
+  patchInfo,
+})
+
 export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, patchInfo }) => ({
   type: "CREATE_TOOL",
   bookId,
