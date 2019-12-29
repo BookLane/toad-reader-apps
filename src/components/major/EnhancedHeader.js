@@ -77,6 +77,7 @@ const EnhancedHeader = React.memo(({
 
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
+  const iCanEdit = (myRole === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
   const hasFrontMatter = false
   const frontMatterSelected = selectedToolUid === 'FRONT MATTER'
@@ -114,13 +115,15 @@ const EnhancedHeader = React.memo(({
           {"  "}
           {isDefaultClassroom ? i18n("Book default") : classroom.name}
         </Text>
-        <Button
-          style={inEditMode ? styles.editButtonActive : styles.editButton}
-          appearance="ghost"
-          status="basic"
-          icon={EditButtonIcon}
-          onPress={toggleInEditMode}
-        />
+        {iCanEdit &&
+          <Button
+            style={inEditMode ? styles.editButtonActive : styles.editButton}
+            appearance="ghost"
+            status="basic"
+            icon={EditButtonIcon}
+            onPress={toggleInEditMode}
+          />
+        }
       </View>
       {!!(!hasFrontMatter && myRole === 'INSTRUCTOR') &&
         <TouchableOpacity
