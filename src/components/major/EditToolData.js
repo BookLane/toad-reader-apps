@@ -147,7 +147,7 @@ const EditToolData = React.memo(({
 
       if(info === 'choiceSelection') {
         dataSegment[`${dataSegmentKey}Selection`] = choiceSelectionIndex
-      } else if(value._delete) {
+      } else if((value || {})._delete) {
         dataSegment.splice(dataSegmentKey, 1)
       } else {
         dataSegment[dataSegmentKey] = value
@@ -325,7 +325,7 @@ const EditToolData = React.memo(({
                     <Button
                       status="basic"
                       size="small"
-                      onPress={() => onChangeInfo({ id, info: type })}
+                      onPress={() => onChangeInfo({ id, value: null, info: type })}
                     >
                       {i18n("Remove")}
                     </Button>
