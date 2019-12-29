@@ -342,15 +342,17 @@ const EditToolData = React.memo(({
                         fileType: fileTypes.join(','),
                         classroomUid,
                         onSuccess: ([{ name, size, result: { filename } }]) => {
-                          onChangeInfo({
-                            id,
-                            value: {
-                              name,
-                              size,
-                              filename,
-                            },
-                            info: type,
-                          })
+                          if(filename) {
+                            onChangeInfo({
+                              id,
+                              value: {
+                                name,
+                                size,
+                                filename,
+                              },
+                              info: type,
+                            })
+                          }
                         }
                       })
                     }}
@@ -408,11 +410,13 @@ const EditToolData = React.memo(({
                           id,
                           value: [
                             ...(dataSegment[name] || []),
-                            ...files.map(({ name, size, result: { filename } }) => ({
-                              name,
-                              size,
-                              filename,
-                            })),
+                            ...files
+                              .filter(({ result: { filename } }) => filename)
+                              .map(({ name, size, result: { filename } }) => ({
+                                name,
+                                size,
+                                filename,
+                              })),
                           ],
                           info: type,
                         })
