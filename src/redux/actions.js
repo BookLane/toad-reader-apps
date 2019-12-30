@@ -133,6 +133,24 @@ export const deleteTool = ({ bookId, classroomUid, uid, patchInfo }) => ({
   patchInfo,
 })
 
+export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+  type: "CREATE_INSTRUCTOR_HIGHLIGHT",
+  bookId,
+  classroomUid,
+  spineIdRef,
+  cfi,
+  patchInfo,
+})
+
+export const deleteInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+  type: "DELETE_INSTRUCTOR_HIGHLIGHT",
+  bookId,
+  classroomUid,
+  spineIdRef,
+  cfi,
+  patchInfo,
+})
+
 export const pushToBookDownloadQueue = ({ bookId }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,

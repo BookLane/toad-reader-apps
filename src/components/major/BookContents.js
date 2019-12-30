@@ -44,11 +44,8 @@ const BookContents = React.memo(({
   setSelectedToolUid
 }) => {
 
-  const { book, toc, userId, classroomUid, classroom, tools, selectedTool, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { book, toc, classroomUid, tools, selectedTool, bookVersion, myRole, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const viewingFrontMatter = selectedToolUid === 'FRONT MATTER'
-  const bookVersion = Object.values(book.accounts)[0].version
-  const myRole = (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
   const showAddToolButton = (
     (
       bookVersion === 'INSTRUCTOR'

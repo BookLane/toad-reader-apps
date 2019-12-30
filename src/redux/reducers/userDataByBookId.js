@@ -440,6 +440,85 @@ export default function(state = initialState, action) {
 
     }
 
+    case "CREATE_INSTRUCTOR_HIGHLIGHT": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const instructorHighlights = (classroom.instructorHighlights || [])
+            .filter(({ spineIdRef, cfi, isMine }) => !(spineIdRef === action.spineIdRef && cfi === action.cfi && isMine))
+
+          const newInstructorHighlight = {
+            spineIdRef: action.spineIdRef,
+            cfi: action.cfi,
+            created_at: now,
+            isMine: true,
+          }
+
+          instructorHighlights.push(newInstructorHighlight)
+
+          classrooms[idx] = {
+            ...classroom,
+            instructorHighlights,
+          }
+
+          return true
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
+    case "DELETE_INSTRUCTOR_HIGHLIGHT": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const instructorHighlights = [ ...(classroom.instructorHighlights || []) ]
+
+          return instructorHighlights.some((instructorHighlight, idx2) => {
+            if(instructorHighlight.spineIdRef === action.spineIdRef && instructorHighlight.cfi === action.cfi) {
+              instructorHighlights[idx2] = instructorHighlight = { ...instructorHighlight }
+
+              instructorHighlight._delete = true
+
+              // Since there is no updated_at one's own instructor highlights, we need
+              // to update created_at so patch knows to run it. This field will not 
+              // actually get updated in the db.
+              instructorHighlight.created_at = now
+
+              classrooms[idx] = {
+                ...classroom,
+                instructorHighlights,
+              }
+  
+              return true
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
     case "REMOVE_ACCOUNT": {
       // TODO: If I enable multiple accounts at once, this will need to be changed.
       return {}

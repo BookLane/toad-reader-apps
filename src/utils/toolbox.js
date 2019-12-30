@@ -501,3 +501,16 @@ export const shuffleArray = a => {
   }
   return a
 }
+
+export const combineItems = (...labels) => {
+  const nonEmptyLabels = labels.filter(Boolean)
+
+  if(nonEmptyLabels.length === 0) return ""
+
+  return nonEmptyLabels.reduce((item1, item2) => (
+    i18n("{{item1}}, {{item2}}", {
+      item1,
+      item2,
+    })
+  ))
+}

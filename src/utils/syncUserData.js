@@ -102,11 +102,12 @@ export const patch = info => setTimeout(() => {
       })
 
       ;(bookUserData.classrooms || []).forEach(classroom => {
-        const { members=[], tools=[] } = classroom
+        const { members=[], tools=[], instructorHighlights=[] } = classroom
         let classroomToPush = {
           uid: classroom.uid,
           members: [],
           tools: [],
+          instructorHighlights: [],
         }
         let classroomHasUpdate = false
 
@@ -145,10 +146,29 @@ export const patch = info => setTimeout(() => {
             }
           })
         }
+
+        if(isInstructor) {
+          instructorHighlights.forEach(instructorHighlight => {
+            if(instructorHighlight.created_at > lastSuccessfulPatch) {
+              const instructorHighlightToPush = {
+                spineIdRef: instructorHighlight.spineIdRef,
+                cfi: instructorHighlight.cfi,
+              }
+              if(instructorHighlight._delete) {
+                instructorHighlightToPush._delete = true
+              } else {
+                instructorHighlightToPush.created_at = instructorHighlight.created_at
+              }
+              classroomToPush.instructorHighlights.push(instructorHighlightToPush)
+              classroomHasUpdate = true
+            }
+          })
+        }
         
         if(classroomHasUpdate) {
           if(classroomToPush.members.length === 0) delete classroomToPush.members
           if(classroomToPush.tools.length === 0) delete classroomToPush.tools
+          if(classroomToPush.instructorHighlights.length === 0) delete classroomToPush.instructorHighlights
           newUserData[bookId].classrooms.push(classroomToPush)
           somethingToPatch = true
         }

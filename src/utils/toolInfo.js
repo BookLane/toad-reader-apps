@@ -188,6 +188,12 @@ export const getToolInfo = () => {
     //     },
     //   ],
     // },
+    {
+      toolType: 'INSTRUCTOR_HIGHLIGHT',
+      name: 'marker',
+      pack: 'materialCommunity',
+      text: i18n("Instructor’s highlight"),
+    },
   ]
 
   const toolInfoByType = {}
@@ -197,7 +203,7 @@ export const getToolInfo = () => {
   })
 
   return {
-    toolTypes,
+    toolTypes: toolTypes.filter(({ toolType }) => toolType !== 'INSTRUCTOR_HIGHLIGHT'),
     toolInfoByType,
   }
 }

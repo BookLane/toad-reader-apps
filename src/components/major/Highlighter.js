@@ -8,6 +8,7 @@ import { getToolbarHeight } from '../../utils/toolbox'
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
+import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighlightSection"
 
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
 const Highlighter = React.memo(({
   noteInEdit,
   selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-  userDataByBookId,
   bookId,
   setSelectionText,
   updateNoteInEdit,
-
   location,
+  
+  userDataByBookId,
 
   setHighlight,
 }) => {
@@ -134,6 +135,12 @@ const Highlighter = React.memo(({
       keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
       behavior="padding"
     >
+      {!!(highlight.current && !isEditingNote) &&
+        <HighlighterInstructorHighlightSection
+          bookId={bookId}
+          highlight={highlight.current}
+        />
+      }
       <HighlighterLabel
         selectionInfo={selectionInfo}
         bookId={bookId}

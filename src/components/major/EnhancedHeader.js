@@ -73,10 +73,8 @@ const EnhancedHeader = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { book, userId, classroom, isDefaultClassroom, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroom, isDefaultClassroom, selectedToolUid, bookVersion, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const bookVersion = Object.values(book.accounts)[0].version
-  const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
   const hasFrontMatter = false
