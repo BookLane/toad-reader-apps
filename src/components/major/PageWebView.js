@@ -145,7 +145,7 @@ const PageWebView = ({
         })
       }
     },
-    [ props.userDataByBookId, props.bookId ],
+    [ props.userDataByBookId, props.bookId, props.instructorHighlights ],
   )
 
   const onMessageEvent = useCallback(
