@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { TabView, Tab } from "react-native-ui-kitten"
+import { ViewPager } from "react-native-ui-kitten"
 
 import Syllabus from "./Syllabus"
 import InstructorsIntroduction from "./InstructorsIntroduction"
@@ -22,7 +22,18 @@ const container = {
   ...StyleSheet.absoluteFillObject,
   backgroundColor: 'white',
   zIndex: 5,
+}
+
+const topSection = {
   paddingHorizontal: 30,
+}
+
+const tabTitle = {
+  lineHeight: 30,
+  fontWeight: 500,
+  marginRight: 20,
+  borderBottomWidth: 3,
+  borderBottomColor: 'transparent',
 }
 
 const styles = StyleSheet.create({
@@ -34,7 +45,11 @@ const styles = StyleSheet.create({
     top: getToolbarHeight(),
     paddingTop: 20,
   },
+  topSection: {
+    ...topSection,
+  },
   topSectionWideMode: {
+    ...topSection,
     flexDirection: 'row',
   },
   heading: {
@@ -43,19 +58,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
   },
-  tabView: {
-    flex: 1,
-  },
-  tabBar: {
+  tabs: {
+    flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,.1)',
     paddingHorizontal: 30,
-    marginHorizontal: -30,
-    marginBottom: -4,
+    overflowX: 'auto',
   },
   tabTitle: {
-    lineHeight: 30,
-    fontWeight: 600,
+    ...tabTitle,
+  },
+  selectedTabTitle: {
+    ...tabTitle,
+    color: 'rgb(51, 102, 255)',
+    borderBottomColor: 'rgb(51, 102, 255)',
+  },
+  tabsContent: {
+    flex: 1,
   },
   tabContent: {
     flex: 1,
@@ -139,7 +158,7 @@ const FrontMatter = React.memo(({
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
-      <View style={wideMode ? styles.topSectionWideMode : null}>
+      <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.heading}>
           {i18n("Front matter")}
         </Text>
@@ -150,25 +169,36 @@ const FrontMatter = React.memo(({
           />
         }
       </View>
-      <TabView
-        style={styles.tabView}
-        tabBarStyle={styles.tabBar}
-        indicatorStyle={styles.indicator}
+      <View
+        style={styles.tabs}
+      >
+        {tabs.map(({ title }, idx) => (
+          <TouchableOpacity
+            key={idx}
+            onPress={() => setSelectedTabIndex(idx)}
+          >
+            <Text
+              style={idx === selectedTabIndex ? styles.selectedTabTitle : styles.tabTitle}
+            >
+              {title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <ViewPager
+        style={styles.tabsContent}
         selectedIndex={selectedTabIndex}
         onSelect={setSelectedTabIndex}
       >
-        {tabs.map(({ title, content }, idx) => (
-          <Tab
+        {tabs.map(({ content }, idx) => (
+          <View
             key={idx}
-            title={title}
-            titleStyle={styles.tabTitle}
+            style={styles.tabContent}
           >
-            <View style={styles.tabContent}>
-              {content}
-            </View>
-          </Tab>
+            {content}
+          </View>
         ))}
-      </TabView>
+      </ViewPager>
     </View>
   )
 })
