@@ -485,7 +485,7 @@ export default function(state = initialState, action) {
           const instructorHighlights = [ ...(classroom.instructorHighlights || []) ]
 
           return instructorHighlights.some((instructorHighlight, idx2) => {
-            if(instructorHighlight.spineIdRef === action.spineIdRef && instructorHighlight.cfi === action.cfi) {
+            if(instructorHighlight.spineIdRef === action.spineIdRef && instructorHighlight.cfi === action.cfi && instructorHighlight.isMine) {
               instructorHighlights[idx2] = instructorHighlight = { ...instructorHighlight }
 
               instructorHighlight._delete = true
