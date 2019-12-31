@@ -29,6 +29,8 @@ const VideoTool = React.memo(({
   subtitlesOn,
 }) => {
 
+  videoLink = videoLink || ""
+
   const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
   const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
   const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
