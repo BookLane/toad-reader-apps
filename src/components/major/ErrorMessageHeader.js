@@ -1,57 +1,56 @@
-import React from "react"
-import { StyleSheet, Platform } from "react-native"
-import { Title, Left, Right, Icon, Button, Body } from "native-base"
+import React, { useEffect, useCallback, useRef } from "react"
+// import { StyleSheet, Platform } from "react-native"
+import { withRouter } from "react-router"
+import { i18n } from "inline-i18n"
+
 import AppHeader from "../basic/AppHeader"
-import i18n from "../../utils/i18n.js"
+import HeaderIcon from "../basic/HeaderIcon"
 
-import { isPhoneSize, isStatusBarHidden, setStatusBarHidden, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
+import { isStatusBarHidden, setStatusBarHidden } from '../../utils/toolbox'
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
 
-const styles = StyleSheet.create({
-  title: {
-    ...(Platform.OS === 'ios' && isPhoneSize() ? { marginLeft: -50, left: -20 } : {}),
-  },
+// const styles = StyleSheet.create({
+//   title: {
+//     ...(Platform.OS === 'ios' && isPhoneSize() ? { marginLeft: -50, left: -20 } : {}),
+//   },
+// })
+
+const ErrorMessageHeader = React.memo(({
+  history,
+  location,
+}) => {
+
+  const priorStatusBarHiddenValue = useRef(isStatusBarHidden())
+  const [ setHideStatusBarTimeout ] = useSetTimeout()
+
+  useEffect(
+    () => setHideStatusBarTimeout(() => setStatusBarHidden(false), 20),
+    [],
+  )
+
+  const onBackPress = useCallback(
+    () => {
+      setStatusBarHidden(priorStatusBarHiddenValue.current)
+      history.goBack()
+    },
+    [ history ],
+  )
+
+  const { routerState } = useRouterState({ history, location })
+  const { title, critical } = routerState
+
+  return (
+    <AppHeader
+      title={title || i18n("Error")}
+      leftControl={critical ? null : (
+        <HeaderIcon
+          name="md-arrow-back"
+          onPress={onBackPress}
+        />
+      )}
+    />
+  )
 })
 
-class ErrorMessageHeader extends React.PureComponent {
-
-  componentDidMount() {
-    this.priorStatusBarHiddenValue = isStatusBarHidden()
-    setUpTimeout(() => setStatusBarHidden(false), 20, this)
-  }
-
-  componentWillUnmount = unmountTimeouts
-
-  onBackPress = () => {
-    const { navigation } = this.props
-    
-    setStatusBarHidden(this.priorStatusBarHiddenValue)
-
-    navigation.goBack()
-  }
-
-  render() {
-    const { navigation } = this.props
-    const { title, critical } = navigation.state.params || {}
-    
-    return (
-      <AppHeader>
-        <Left>
-          {!critical &&
-            <Button
-              transparent
-              onPress={this.onBackPress}
-            >
-              <Icon name="arrow-back" />
-            </Button>
-          }
-        </Left>
-        <Body>
-          <Title style={styles.title}>{title || i18n("Error")}</Title>
-        </Body>
-        <Right />
-      </AppHeader>
-    )
-  }
-}
-
-export default ErrorMessageHeader
+export default withRouter(ErrorMessageHeader)

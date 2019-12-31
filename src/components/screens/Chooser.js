@@ -1,41 +1,32 @@
 import React from "react"
-import { StyleSheet } from "react-native"
-import { Container, Header, Title, Left, Right, Button, Body, Content, Text, Card, CardItem } from "native-base"
+import { Text, View } from "react-native"
+import { withRouter } from "react-router"
+import { Button } from "react-native-ui-kitten"
+import SafeLayout from "../basic/SafeLayout"
 
-const styles = StyleSheet.create({
-  container: {
-  },
-})
+// const styles = StyleSheet.create({
+//   container: {
+//   },
+// })
 
-class Chooser extends React.Component {
+const Chooser = ({ history }) => (
+  <SafeLayout>
+    <View>
+      {/* <Card>
+        <CardItem>
+          <Body>
+            <Text>Chooser here</Text>
+          </Body>
+        </CardItem>
+      </Card> */}
+      <Button full rounded dark
+        style={{ marginTop: 10 }}
+        onPress={history.goBack}
+      >
+        <Text>Back</Text>
+      </Button>
+    </View>
+  </SafeLayout>
+)
 
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
-  render() {
-    return (
-      <Container>
-        <Content padder>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>Chooser here</Text>
-              </Body>
-            </CardItem>
-          </Card>
-          <Button full rounded dark
-            style={{ marginTop: 10 }}
-            onPress={this.goBack}
-          >
-            <Text>Back</Text>
-          </Button>
-        </Content>
-      </Container>
-    )
-  }
-}
-
-export default Chooser
+export default withRouter(Chooser)

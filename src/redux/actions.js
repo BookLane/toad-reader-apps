@@ -22,6 +22,11 @@ export const addBooks = ({ books, accountId }) => ({
   accountId,
 })
 
+export const deleteBook = ({ bookId }) => ({
+  type: "DELETE_BOOK",
+  bookId,
+})
+
 export const setCoverFilename = ({ bookId, coverFilename }) => ({
   type: "SET_COVER_FILENAME",
   bookId,
@@ -45,6 +50,105 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   type: "SET_DOWNLOADED_STATUS",
   bookId,
   downloadStatus,
+})
+
+export const setCurrentClassroom = ({ bookId, uid }) => ({
+  type: "SET_CURRENT_CLASSROOM",
+  bookId,
+  uid,
+})
+
+export const setSelectedToolUid = ({ bookId, uid }) => ({
+  type: "SET_SELECTED_TOOL_UID",
+  bookId,
+  uid,
+})
+
+export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
+  type: "CREATE_CLASSROOM",
+  uid,
+  bookId,
+  name,
+  userId,
+  patchInfo,
+})
+
+export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at, patchInfo }) => ({
+  type: "UPDATE_CLASSROOM",
+  uid,
+  bookId,
+  name,
+  access_code,
+  instructor_access_code,
+  syllabus,
+  introduction,
+  classroom_highlights_mode,
+  closes_at,
+  patchInfo,
+})
+
+export const deleteClassroom = ({ uid, bookId, patchInfo }) => ({
+  type: "UPDATE_CLASSROOM",
+  uid,
+  bookId,
+  _delete: true,
+  patchInfo,
+})
+
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, patchInfo }) => ({
+  type: "CREATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  spineIdRef,
+  cfi,
+  ordering,
+  name,
+  toolType,
+  patchInfo,
+})
+
+export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, patchInfo }) => ({
+  type: "UPDATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  spineIdRef,
+  cfi,
+  ordering,
+  name,
+  toolType,
+  data,
+  due_at,
+  closes_at,
+  patchInfo,
+})
+
+export const deleteTool = ({ bookId, classroomUid, uid, patchInfo }) => ({
+  type: "UPDATE_TOOL",
+  bookId,
+  classroomUid,
+  uid,
+  _delete: true,
+  patchInfo,
+})
+
+export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+  type: "CREATE_INSTRUCTOR_HIGHLIGHT",
+  bookId,
+  classroomUid,
+  spineIdRef,
+  cfi,
+  patchInfo,
+})
+
+export const deleteInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+  type: "DELETE_INSTRUCTOR_HIGHLIGHT",
+  bookId,
+  classroomUid,
+  spineIdRef,
+  cfi,
+  patchInfo,
 })
 
 export const pushToBookDownloadQueue = ({ bookId }) => ({
@@ -116,6 +220,15 @@ export const setTheme = ({ theme }) => ({
   theme,
 })
 
+export const setSidePanelWidth = ({ width }) => ({
+  type: "SET_SIDE_PANEL_WIDTH",
+  width,
+})
+
+export const toggleSidePanelOpen = () => ({
+  type: "TOGGLE_SIDE_PANEL_OPEN",
+})
+
 export const toggleView = () => ({
   type: "TOGGLE_VIEW",
 })
@@ -160,6 +273,11 @@ export const setUserData = ({ bookId, userData, lastSuccessfulPatch }) => ({
 export const setReaderStatus = ({ readerStatus }) => ({
   type: "SET_READER_STATUS",
   readerStatus,
+})
+
+export const setSyncStatus = syncStatus => ({
+  type: "SET_SYNC_STATUS",
+  syncStatus,
 })
 
 export const startRecordReading = ({ bookId, spineIdRef }) => ({

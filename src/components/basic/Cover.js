@@ -1,17 +1,17 @@
-import React from "react"
-import { Constants } from "expo"
-import { FileSystem } from "expo"
+import React, { useState, useCallback } from "react"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Text } from "native-base"
-import { Image, StyleSheet } from "react-native"
+import { Image, StyleSheet, View, Text, Platform } from "react-native"
+import { Link } from "../routers/react-router"
 
-import FullScreenSpin from "./FullScreenSpin"
+import CoverAndSpin from "./CoverAndSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
 
-import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+import { getDataOrigin } from '../../utils/toolbox'
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -46,62 +46,74 @@ const styles = StyleSheet.create({
   },
 })
 
-class Cover extends React.Component {
+const Cover = ({
+  bookId,
+  bookInfo,
+  bookWidth,
+  bookHeight,
+  downloadProgressByBookId,
+  idps,
+}) => {
 
-  state = {
-    imageError: false,
-  }
-
-  componentWillUnmount = unmountTimeouts
-
-  imageOnError = () => this.setState({ imageError: true })
+  const [ imageError, setImageError ] = useState(false)
+  const imageOnError = useCallback(() => setImageError(true), [])
   
-  render() {
-    const { bookId, bookInfo, bookWidth, bookHeight, downloadProgressByBookId } = this.props
-    const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount } = bookInfo
-    const downloadProgress = downloadProgressByBookId[bookId]
-    const { imageError } = this.state
+  const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, coverHref } = bookInfo
+  const idpId = Object.keys(accounts)[0].split(':')[0]
+  const downloadProgress = downloadProgressByBookId[bookId]
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
+  const uri = Platform.OS === 'web'
+    ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
+    : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
+  const cover = (
+    <View
+      style={[
+        styles.cover,
+        {
+          width: bookWidth,
+          paddingTop: bookHeight,
+        },
+      ]}
+    >
+      {!!(!uri || imageError) &&
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+      }
+      {!!uri &&
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          resizeMode='cover'
+          onError={imageOnError}
+        />
+      }
+      {downloadStatus == 1 &&
+        <CoverAndSpin
+          percentage={downloadProgress}
+        />
+      }
+      {downloadStatus == 2 && <CoverCheck />}
+      {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
+      {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
+    </View>
+  )
+
+  if(Platform.OS === 'web') {
     return (
-      <View
-        style={[
-          styles.cover,
-          {
-            width: bookWidth,
-            paddingTop: bookHeight,
-          },
-        ]}
-      >
-        {!!(!coverFilename || imageError) &&
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
-          </View>
-        }
-        {!!coverFilename &&
-          <Image
-            source={{ uri }}
-            style={styles.image}
-            resizeMode='cover'
-            onError={this.imageOnError}
-          />
-        }
-        {downloadStatus == 1 &&
-          <FullScreenSpin
-            percentage={downloadProgress}
-          />
-        }
-        {downloadStatus == 2 && <CoverCheck />}
-        {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
-        {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
-      </View>
+      <Link to={`/book/${bookId}`}>
+        {cover}
+      </Link>
     )
   }
+
+  return cover
 }
 
-const mapStateToProps = (state) => ({
-  downloadProgressByBookId: state.downloadProgressByBookId,
+const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({
+  downloadProgressByBookId,
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

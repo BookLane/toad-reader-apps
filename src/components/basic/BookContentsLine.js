@@ -1,36 +1,148 @@
-import React from "react"
-import { StyleSheet } from "react-native"
-import { Text, ListItem } from "native-base"
+import React, { useCallback } from "react"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { getSpineAndPage } from '../../utils/toolbox'
+
+import ToolChip from './ToolChip'
+
+import { useLayout } from 'react-native-hooks'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+
+import { setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   listItem: {
-    backgroundColor: 'transparent',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  listItemWithTool: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+  },
+  selected: {
+    backgroundColor: 'rgb(199, 211, 234)',
+  },
+  label: {
+    flexShrink: 1,
+  },
+  numWithin: {
+    backgroundColor: 'rgb(0, 0, 0)',
+    borderRadius: '50%',
+    color: 'white',
+    width: 19,
+    height: 19,
+    flexShrink: 0,
+    lineHeight: 18,
+    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: 600,
+    marginVertical: -6,
+    marginLeft: 8,
+    paddingRight: 1, // not sure why I need this
   },
 })
 
-class BookContentsLine extends React.Component {
+const BookContentsLine = ({
+  bookId,
+  indentLevel,
+  uid,
+  label,
+  toolType,
+  numToolsWithin,
+  goTo,
+  href,
+  spineIdRef,
+  reportLineHeight,
+  index,
+  onToolMove,
+  onToolRelease,
 
-  goToHref = () => {
-    const { goToHref, href } = this.props
+  books,
+  userDataByBookId,
 
-    goToHref({ href })
-  }
+  setSelectedToolUid,
+}) => {
 
-  render() {
-    const { indentLevel, label } = this.props
+  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { latest_location } = userDataByBookId[bookId] || {}
+  const currentSpineIdRef = getSpineAndPage({ latest_location }).spineIdRef
 
+  const onPress = useCallback(
+    () => {
+      if(toolType) {
+        setSelectedToolUid({
+          bookId,
+          uid,
+        })
+      } else {
+        goTo({ href, spineIdRef })
+      }
+    },
+    [ href, bookId, goTo ],
+  )
+
+  const { onLayout, height } = useLayout()
+
+  reportLineHeight({ index, height })
+
+  const selected = toolType
+    ? (uid === selectedToolUid)
+    : (!selectedToolUid && spineIdRef === currentSpineIdRef)
+
+  const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
+
+  if(toolType) {
     return (
-      <ListItem
+      <View
+        onLayout={onLayout}
         style={[
-          styles.listItem,
-          { paddingLeft: indentLevel * 20 },
+          styles.listItemWithTool,
+          indentStyle,
+          selected ? styles.selected : null,
         ]}
-        onPress={this.goToHref}
       >
-        <Text>{label}</Text>
-      </ListItem>
+        <ToolChip
+          uid={uid}
+          label={label}
+          toolType={toolType}
+          onPress={onPress}
+          onToolMove={onToolMove}
+          onToolRelease={onToolRelease}
+        />
+      </View>
     )
   }
+
+  return (
+    <TouchableOpacity
+      onLayout={onLayout}
+      onPress={!toolType ? onPress : null}
+    >
+      <View
+        style={[
+          styles.listItem,
+          indentStyle,
+          selected ? styles.selected : null,
+        ]}
+      >
+        <Text style={styles.label}>{label}</Text>
+        {!!numToolsWithin && <Text style={styles.numWithin}>{numToolsWithin}</Text>}
+      </View>
+    </TouchableOpacity>
+  )
 }
 
-export default BookContentsLine
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
+  userDataByBookId,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setSelectedToolUid,
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookContentsLine)

@@ -1,6 +1,7 @@
 import React from "react"
-import { Text } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Text } from "react-native"
+import { Link } from "../routers/react-router"
+import { Platform } from "@unimodules/core"
 
 const styles = StyleSheet.create({
   title: {
@@ -11,15 +12,18 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoTitle extends React.Component {
+const BookInfoTitle = ({ to, children }) => {
+  const title = <Text style={styles.title}>{children}</Text>
 
-  render() {
-    const { children } = this.props
-
+  if(Platform.OS === 'web') {
     return (
-      <Text style={styles.title}>{children}</Text>
+      <Link to={to}>
+        {title}
+      </Link>
     )
   }
+
+  return title
 }
 
 export default BookInfoTitle

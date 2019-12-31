@@ -1,7 +1,6 @@
 import React from "react"
-import { Constants } from "expo"
-import { View } from "native-base"
-import { StyleSheet } from "react-native"
+import Constants from 'expo-constants'
+import { StyleSheet, View } from "react-native"
 
 const {
   PAGES_VERTICAL_MARGIN,
@@ -19,17 +18,10 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesRow extends React.PureComponent {
-
-  render() {
-    const { children } = this.props
-
-    return (
-      <View style={styles.pages}>
-        {children}
-      </View>
-    )
-  }
-}
+const PagesRow = React.memo(({ children }) => (
+  <View style={styles.pages}>
+    {children}
+  </View>
+))
 
 export default PagesRow

@@ -1,86 +1,91 @@
-import React from "react"
+import React, { useRef, useEffect } from "react"
 import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { withRouter } from "react-router"
 
 import PageWebView from "./PageWebView"
 
-import { postMessage } from "../../utils/postMessage.js"
-import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox.js'
+import useInstanceValue from "../../hooks/useInstanceValue"
+import { postMessage } from "../../utils/postMessage"
+import takeSnapshot from "../../utils/takeSnapshot"
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox'
 
-import { addSpinePageCfis } from "../../redux/actions.js"
+import { addSpinePageCfis } from "../../redux/actions"
 
-class PageCapture extends React.Component {
+const PageCapture = ({
+  bookId,
+  spineIdRef,
+  width,
+  height,
+  displaySettings,
+  reportInfoOrCapture,
+  reportFinished,
+  processingPaused,
+  history,
+  
+  books,
+  userDataByBookId,
 
-  componentDidMount() {
-    this.getPageInfo()
-  }
+  addSpinePageCfis,
+}) => {
 
-  componentWillReceiveProps(nextProps) {
-    if(getSnapshotURI(nextProps) !== getSnapshotURI(this.props)) {
-      this.reset()
-    }
-  }
+  const { instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { processingPaused } = this.props
+  const loadSpineAndGetPagesInfoAlreadyCalled = useRef(false)
+  const getCfisOrShiftAndSnap = useRef()
+  const pageIndexInSpine = useRef(0)
+  const pageCfis = useRef([])
+  const unmounted = useRef(false)
+  const webView = useRef()
+  const view = useRef()
+
+  const getProcessingPaused = useInstanceValue(processingPaused)
+
+  const uriAsKey = getSnapshotURI({
+    bookId,
+    spineIdRef,
+    width,
+    height,
+    displaySettings,
+  })
+
+  useEffect(
+    () => {
+      loadSpineAndGetPagesInfoAlreadyCalled.current = false
+      getCfisOrShiftAndSnap.current = null
+      pageIndexInSpine.current = 0
+    },
+    [ uriAsKey ],
+  )
+
+  useEffect(
+    () => {
+      if(processingPaused) return
+
+      if(getCfisOrShiftAndSnap.current) {
+        getCfisOrShiftAndSnap.current()
     
-    return (
-      getSnapshotURI(nextProps) !== getSnapshotURI(this.props)
-      || (!nextProps.processingPaused && processingPaused)
-    )
-  }
+      } else {
+        if(loadSpineAndGetPagesInfoAlreadyCalled.current || !webView.current) return
 
-  componentDidUpdate() {
-    const { processingPaused } = this.props
+        postMessage(webView.current, 'loadSpineAndGetPagesInfo', {
+          spineIdRef,
+          allottedMS: 100,
+          minimumPagesToFetch: 1,
+        })
+    
+        pageCfis.current = []
+        loadSpineAndGetPagesInfoAlreadyCalled.current = true
+      }
+    },
+    [ uriAsKey, processingPaused ],
+  )
 
-    if(processingPaused) return
+  useEffect(() => () => unmounted.current = true, [])
 
-    if(this.getCfisOrShiftAndSnap) {
-      this.getCfisOrShiftAndSnap()
-    } else {
-      this.getPageInfo()
-    }
-  }
-
-  componentWillUnmount() {
-    unmountTimeouts.bind(this)()
-    this.unmounted = true
-  }
-
-  reset = () => {
-    delete this.loadSpineAndGetPagesInfoAlreadyCalled
-    delete this.inProcessOfShifting
-    delete this.getCfisOrShiftAndSnap
-    this.pageIndexInSpine = 0
-  }
-
-  getPageInfo = () => {
-    const { spineIdRef } = this.props
-
-    if(this.loadSpineAndGetPagesInfoAlreadyCalled || !this.webView) return
-    if(this.getProcessingPaused()) return
-
-    this.reset()
-
-    postMessage(this.webView, 'loadSpineAndGetPagesInfo', {
-      spineIdRef,
-      allottedMS: 100,
-      minimumPagesToFetch: 1,
-    })
-
-    this.pageCfis = []
-    this.loadSpineAndGetPagesInfoAlreadyCalled = true
-  }
-
-  getProcessingPaused = () => this.props.processingPaused
-
-  onMessageEvent = async (webView, data) => {
-    const { bookId, spineIdRef, width, height, displaySettings,
-      reportInfoOrCapture, reportFinished, addSpinePageCfis } = this.props
-
-    if(webView !== this.webView || this.unmounted) return // just in case
+  const onMessageEvent = async (webView2, data) => {
+    if(webView2 !== webView.current || unmounted.current) return // just in case
 
     switch(data.identifier) {
 
@@ -88,32 +93,33 @@ class PageCapture extends React.Component {
     
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
-        reportInfoOrCapture(this.props)
+        reportInfoOrCapture(uriAsKey)
 
-        if(data.payload.startIndex !== this.pageCfis.length) {
-          navigation.navigate("ErrorMessage", {
+        if(data.payload.startIndex !== pageCfis.current.length) {
+          // TODO: use historyPush from useRouterState
+          history.push("/error", {
             message: i18n("Invalid book."),
           })
-          reportFinished(this.props)
+          reportFinished(uriAsKey)
         }
 
-        this.pageCfis = [
-          ...this.pageCfis,
+        pageCfis.current = [
+          ...pageCfis.current,
           ...data.payload.pageCfis,
         ]
 
         if(!data.payload.completed) {
-          this.getCfisOrShiftAndSnap = () => postMessage(this.webView, 'continueToGetPagesInfo', {
+          getCfisOrShiftAndSnap.current = () => postMessage(webView.current, 'continueToGetPagesInfo', {
             spineIdRef,
-            startIndex: this.pageCfis.length,
+            startIndex: pageCfis.current.length,
             allottedMS: 100,
             minimumPagesToFetch: 1,
           })
-          if(!this.getProcessingPaused()) this.getCfisOrShiftAndSnap()
+          if(!getProcessingPaused()) getCfisOrShiftAndSnap.current()
           return
         }
 
-        const numPages = this.pageCfis.length
+        const numPages = pageCfis.current.length
         const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
 
         if(Platform.OS === 'android') {
@@ -123,74 +129,74 @@ class PageCapture extends React.Component {
         }
 
         await new Promise(resolve => {
-          this.getCfisOrShiftAndSnap = () => {
-            reportInfoOrCapture(this.props)
+          getCfisOrShiftAndSnap.current = () => {
+            reportInfoOrCapture(uriAsKey)
 
-            if(this.getProcessingPaused()) return
-            if(this.pageIndexInSpine >= numPages) return resolve()
+            if(getProcessingPaused()) return
+            if(pageIndexInSpine.current >= numPages) return resolve()
 
-            this.inProcessOfShifting = true
-            const shift = this.pageIndexInSpine * (width - platformOffset) * -1 + platformOffset
+            const shift = pageIndexInSpine.current * (width - platformOffset) * -1 + platformOffset
 
-            this.webView.injectJavaScript(`
+            webView.current.injectJavaScript(`
               document.documentElement.style.transform = "translate(${shift}px)";
               document.documentElement.getBoundingClientRect();  // ensures paint is done before postMessage call
               requestAnimationFrame(() => {
-                window.postMessage(JSON.stringify({
+                window.ReactNativeWebView.postMessage(JSON.stringify({
                   identifier: "docElShifted",
                   payload: {
                     spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
                   },
-                }), "*");
-              })
+                }));
+              });
             `)
 
           }
 
-          this.getCfisOrShiftAndSnap()
+          getCfisOrShiftAndSnap.current()
         })
 
-        if(this.unmounted) return
+        if(unmounted.current) return
 
-// if(this.pageCfis.some(cfi => !cfi)) {
+// if(pageCfis.current.some(cfi => !cfi)) {
 //   alert('bad!')
-//   console.log('bad cfi set', spineIdRef, this.pageCfis)
+//   console.log('bad cfi set', spineIdRef, pageCfis.current)
 // }
         
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
           key: [getPageCfisKey({ displaySettings, width, height })],
-          pageCfis: this.pageCfis.map((cfi, idx) => cfi || ''),
+          pageCfis: pageCfis.current.map(cfi => cfi || ''),
         })
         
-        reportFinished(this.props)
+        reportFinished(uriAsKey)
 
-        this.pageCfis = []
+        pageCfis.current = []
 
         return true
 
       }
 
-
       case 'docElShifted': {
 
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
-        delete this.inProcessOfShifting
+        if(getProcessingPaused()) return
 
-        if(this.getProcessingPaused()) return
-
-        reportInfoOrCapture(this.props)
+        reportInfoOrCapture(uriAsKey)
 
         const { pageWidth, pageHeight } = getPageSize({ width, height })
         const uri = getSnapshotURI({
-          ...this.props,
-          pageIndexInSpine: this.pageIndexInSpine,
+          bookId,
+          spineIdRef,
+          width,
+          height,
+          displaySettings,
+          pageIndexInSpine: pageIndexInSpine.current,
         })
 
         await takeSnapshot({
-          view: this.view,
+          view: view.current,
           uri,
           width: pageWidth,
           height: pageHeight,
@@ -198,10 +204,10 @@ class PageCapture extends React.Component {
           viewHeight: height,
         })
 
-        if(this.unmounted) return
+        if(unmounted.current) return
 
-        this.pageIndexInSpine++
-        this.getCfisOrShiftAndSnap()
+        pageIndexInSpine.current++
+        getCfisOrShiftAndSnap.current()
 
         return true
 
@@ -210,40 +216,35 @@ class PageCapture extends React.Component {
     }
   }
 
-  setWebViewEl = ref => this.webView = ref
+  if(processingPaused) return null
 
-  setView = ref => this.view = ref
-
-  render() {
-    const { bookId, width, height, spineIdRef, processingPaused } = this.props
-
-    if(processingPaused) return null
-
-    return (
-      <PageWebView
-        key={getSnapshotURI(this.props)}
-        style={{
-          position: 'absolute',
-          width,
-          height,
-          minHeight: height,
-        }}
-        bookId={bookId}
-        setWebViewEl={this.setWebViewEl}
-        setView={this.setView}
-        onMessage={this.onMessageEvent}
-        initialLocation={JSON.stringify({ idref: spineIdRef })}
-        initialDisplaySettings={getDisplaySettingsObj(this.props)}
-      />
-    )
-  }
+  return (
+    <PageWebView
+      key={uriAsKey}
+      style={{
+        position: 'absolute',
+        width,
+        height,
+        minHeight: height,
+      }}
+      bookId={bookId}
+      webViewRef={webView}
+      viewRef={view}
+      onMessage={onMessageEvent}
+      initialLocation={JSON.stringify({ idref: spineIdRef })}
+      initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+      instructorHighlights={instructorHighlights}
+    />
+  )
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addSpinePageCfis,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(PageCapture)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(PageCapture))

@@ -1,6 +1,5 @@
 import React from "react"
-import { Text } from "native-base"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Text } from "react-native"
 
 const styles = StyleSheet.create({
   author: {
@@ -8,15 +7,8 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoAuthor extends React.Component {
-
-  render() {
-    const { children } = this.props
-
-    return (
-      <Text style={styles.author}>{children}</Text>
-    )
-  }
-}
+const BookInfoAuthor = ({ children }) => (
+  <Text style={styles.author}>{children}</Text>
+)
 
 export default BookInfoAuthor

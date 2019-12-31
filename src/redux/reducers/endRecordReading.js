@@ -1,3 +1,5 @@
+import { getIdsFromAccountId } from "../../utils/toolbox"
+
 const initialState = {}
 
 export default function(state, action) {
@@ -20,7 +22,7 @@ export default function(state, action) {
 
       if(book && endTime - state.currentReadingRecord.startTime > 5*1000) {
         Object.keys(book.accounts || {}).forEach(accountId => {
-          const [ idpId ] = accountId.split(':')
+          const { idpId } = getIdsFromAccountId(accountId)
           const idp = state.idps[idpId]
   
           if(!idp || !idp.idpXapiOn) return

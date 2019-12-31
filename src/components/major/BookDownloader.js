@@ -1,63 +1,66 @@
-import React from "react"
+import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import i18n from "../../utils/i18n.js"
+import { withRouter } from "react-router"
+import { i18n } from "inline-i18n"
+import useInstanceValue from '../../hooks/useInstanceValue'
+import useSetTimeout from '../../hooks/useSetTimeout'
+import useRouterState from '../../hooks/useRouterState'
 
-import { getBooksDir, setUpTimeout, clearOutTimeout, unmountTimeouts } from "../../utils/toolbox.js"
-import { fetchZipAndAssets } from "../../utils/zipDownloader.js"
-import parseEpub from "../../utils/parseEpub.js"
+import { getBooksDir, getDataOrigin, getIdsFromAccountId } from "../../utils/toolbox"
+import { fetchZipAndAssets } from "../../utils/zipDownloader"
+import parseEpub from "../../utils/parseEpub"
 
-import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions.js";
+import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions"
 
-class BookDownloader extends React.Component {
+const BookDownloader = ({
+  downloadPaused,
+  idps,
+  accounts,
+  bookDownloadQueue,
+  books,
+  removeFromBookDownloadQueue,
+  setDownloadProgress,
+  setDownloadStatus,
+  setTocAndSpines,
+  updateAccount,
+  history,
+}) => {
 
-  state = {
-    currentDownloadBookId: null,
-  }
+  const [ currentDownloadBookId, setCurrentDownloadBookId ] = useState(null)
 
-  componentDidMount() {
-    this.downloadABook()
-  }
+  const [ setThrottleTimeout ] = useSetTimeout()
+  const getDownloadPaused = useInstanceValue(downloadPaused)
+  const getBooks = useInstanceValue(books)
+  const { historyPush } = useRouterState({ history })
 
-  componentWillUpdate(nextProps, nextState) {
-    this.downloadABook(nextProps, nextState)
-  }
+  if(currentDownloadBookId) return null
+  if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return null
+  if(getDownloadPaused()) return null
 
-  componentWillUnmount = unmountTimeouts
-
-  downloadIsPaused = () => this.props.downloadPaused
-
-  downloadWasCanceled = bookId => {
-    const { books={} } = this.props
-    const { downloadStatus } = books[bookId] || {}
+  const downloadWasCanceled = bookId => {
+    const { downloadStatus } = (getBooks() || {})[bookId] || {}
 
     if(downloadStatus === 0) {
-      this.setState({ currentDownloadBookId: null })
+      setCurrentDownloadBookId(null)
       return true
     }
 
     return false
   }
 
-  downloadABook = async (nextProps, nextState) => {
-    const { downloadPaused, idps, accounts, bookDownloadQueue, books, removeFromBookDownloadQueue, setDownloadProgress,
-            setDownloadStatus, setTocAndSpines, updateAccount, navigation } = nextProps || this.props
-    const { currentDownloadBookId } = nextState || this.state
-
-    if(currentDownloadBookId) return
-    if(!books || !bookDownloadQueue || !bookDownloadQueue[0]) return
-    if(downloadPaused) return
+  ;(async () => {
 
     const bookId = bookDownloadQueue[0]
-    const { downloadStatus, title } = books[bookId] || {}
-    const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
+    const { downloadStatus, title } = getBooks()[bookId] || {}
+    const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
 
     if(downloadStatus === 2 || !accountId) {
       removeFromBookDownloadQueue({ bookId })
       return
     }
 
-    this.setState({ currentDownloadBookId: bookId })
+    setCurrentDownloadBookId(bookId)
     console.log(`Download book with bookId ${bookId}...`)
 
     setDownloadStatus({ bookId, downloadStatus: 1 })
@@ -65,42 +68,41 @@ class BookDownloader extends React.Component {
     const markDownloadComplete = downloadStatus => {
       setDownloadStatus({ bookId, downloadStatus })
       removeFromBookDownloadQueue({ bookId })
-      this.setState({ currentDownloadBookId: null })
+      setCurrentDownloadBookId(null)
     }
 
     let throttleLastRan = 0
-    let throttleTimeout
+    const { idpId } = getIdsFromAccountId(accountId)
     const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl: `https://${idps[accountId.split(':')[0]].domain}/epub_content/book_${bookId}/book.epub`,
+      zipUrl: `${getDataOrigin(idps[idpId])}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
       cookie: accounts[accountId].cookie,
       progressCallback: progress => {
         const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
-        clearOutTimeout(throttleTimeout, this)
-        throttleTimeout = setUpTimeout(() => {
+        setThrottleTimeout(() => {
           setDownloadProgress({
             bookId,
             downloadProgress: parseInt(progress * 100, 10),
           })
-        }, throttleWaitTime, this)
+        }, throttleWaitTime)
       },
-      downloadIsPaused: this.downloadIsPaused,
+      getDownloadPaused,
       title,
       requiresAuth: true,
     })
-    if(this.downloadIsPaused()) {
+    if(getDownloadPaused()) {
       console.log(`Download of book with bookId ${bookId} was deferred due to a book open.`)
       setDownloadProgress({
         bookId,
         downloadProgress: 0,
       })
-      this.setState({ currentDownloadBookId: null })
+      setCurrentDownloadBookId(null)
       return
     }
-    if(this.downloadWasCanceled(bookId)) return  // check this after each await
+    if(downloadWasCanceled(bookId)) return  // check this after each await
     if(zipFetchInfo.errorMessage) {
       console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
-      navigation.navigate("ErrorMessage", {
+      historyPush("/error", {
         title: zipFetchInfo.errorTitle,
         message: zipFetchInfo.errorMessage,
       })
@@ -119,9 +121,9 @@ class BookDownloader extends React.Component {
       return
     }
     const { toc, spines, success } = await parseEpub({ bookId })
-    if(this.downloadWasCanceled(bookId)) return
+    if(downloadWasCanceled(bookId)) return
     if(!success) {
-      navigation.navigate("ErrorMessage", {
+      historyPush("/error", {
         message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
       })
       markDownloadComplete(0)
@@ -132,18 +134,17 @@ class BookDownloader extends React.Component {
     setTocAndSpines({ bookId, toc, spines })
     markDownloadComplete(2)
     console.log(`Done downloading book with bookId ${bookId}`)
-  }
 
-  render() {
-    return null
-  }
+  })()
+
+  return null
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  bookDownloadQueue: state.bookDownloadQueue,
-  books: state.books,
+const mapStateToProps = ({ idps, accounts, bookDownloadQueue, books }) => ({
+  idps,
+  accounts,
+  bookDownloadQueue,
+  books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -154,4 +155,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookDownloader)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookDownloader))

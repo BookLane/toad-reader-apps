@@ -1,4 +1,4 @@
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 
 const {
   IDPS,
@@ -40,7 +40,7 @@ export default function(state = initialState, action) {
         ) {
           newState[idpId] = {
             ...initialState[idpId],
-            xapiConsentShown: state[idpId].xapiConsentShown || false,
+            xapiConsentShown: (state[idpId] || {}).xapiConsentShown || false,
           }
           idpWasUpdated = true
         }

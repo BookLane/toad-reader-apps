@@ -1,52 +1,110 @@
 import React from "react"
-import { Constants } from "expo"
-import { Header } from "native-base"
-import { Platform, StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
+import { getToolbarHeight } from '../../utils/toolbox'
 
-import { getToolbarHeight } from '../../utils/toolbox.js'
+import useWideMode from "../../hooks/useWideMode"
 
-const {
-  ANDROID_TOOLBAR_COLOR,
-  ANDROID_STATUS_BAR_COLOR,
-} = Constants.manifest.extra
+const titleCenteredControlsGroup = {
+  flexBasis: 300,
+  flexDirection: 'row',
+  flexShrink: 9999999999,
+}
 
 const styles = StyleSheet.create({
   container: {
     zIndex: 3,
+    padding: 8,
+    height: getToolbarHeight(),
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    backgroundColor: 'white',
   },
-  header: {
-    ...(Platform.OS === 'android' ? { backgroundColor: ANDROID_TOOLBAR_COLOR } : {}),
+  titleView: {
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  titleViewCentered: {
+    justifyContent: 'center',
+    flexShrink: 1,
+    maxWidth: '50%',
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: "400",
+  },
+  subtitle: {
+    fontSize: 13,
+    fontWeight: "400",
+  },
+  controlsGroupRight: {
+    flexDirection: 'row',
+  },
+  titleCenteredControlsGroupLeft: {
+    ...titleCenteredControlsGroup,
+  },
+  titleCenteredControlsGroupRight: {
+    ...titleCenteredControlsGroup,
+    justifyContent: 'flex-end',
+  },
+  flex1: {
+    flex: 99999,
   },
 })
 
-class AppHeader extends React.Component {
+const AppHeader = ({
+  hide,
+  title,
+  subtitle,
+  titleCentered,
+  leftControl,
+  rightControls=[],
+  titleStyle,
+  ...topNavigationProps
+}) => {
 
-  // There is a bug by which the backgroundColor in the header does not get set on load.
-  // Thus, this component is a hack to force it to render properly.
+  const wideMode = useWideMode()
 
-  render() {
-    const { hide } = this.props
+  if(hide) return null
 
-    const style = {}
+  titleCentered = titleCentered && wideMode
 
-    if(hide) {
-      style.top = getToolbarHeight() * -1
-    }
-
-    return (
-      <View style={!hide && styles.container}>
-        <Header
-          androidStatusBarColor={ANDROID_STATUS_BAR_COLOR}
+  return (
+    <View style={styles.container}>
+      {!!leftControl &&
+        <View style={titleCentered ? styles.titleCenteredControlsGroupLeft : null}>
+          {leftControl}
+        </View>
+      }
+      {!!titleCentered && <View style={styles.flex1} />}
+      <View style={titleCentered ? styles.titleViewCentered : styles.titleView}>
+        <Text
+          numberOfLines={1}
           style={[
-            styles.header,
-            style,
+            styles.title,
+            titleStyle,
           ]}
         >
-          {this.props.children}
-        </Header>
+          {title}
+        </Text>
+        {!!subtitle &&
+          <Text
+            numberOfLines={1}
+            style={styles.subtitle}
+          >
+            {subtitle}
+          </Text>
+        }
       </View>
-    )
-  }
+      <View style={styles.flex1} />
+      <View style={titleCentered ? styles.titleCenteredControlsGroupRight : styles.controlsGroupRight}>
+        {rightControls.map((rightControl, idx) => (
+          <View key={idx}>
+            {rightControl}
+          </View>
+        ))}
+      </View>
+    </View>
+  )
 }
 
 export default AppHeader

@@ -1,7 +1,9 @@
-import React from "react"
-import { View, Text, Icon, Toast } from "native-base"
-import { StyleSheet, TouchableOpacity, Linking } from "react-native"
-import i18n from "../../utils/i18n.js"
+import React, { useCallback } from "react"
+import { StyleSheet, TouchableOpacity, Linking, View, Text } from "react-native"
+import { withRouter } from "react-router"
+import { i18n } from "inline-i18n"
+
+import useRouterState from "../../hooks/useRouterState"
 
 const styles = StyleSheet.create({
   container: {
@@ -18,51 +20,51 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookPageMessage extends React.Component {
+const BookPageMessage = ({
+  text,
+  moreInfoText,
+  externalHref,
+  history,
+}) => {
 
-  state = {
-    showingMoreInfo: false,
-  }
+  const { historyPush } = useRouterState({ history })
 
-  showMoreInfo = () =>  {
-    const { text, moreInfoText, externalHref } = this.props
+  const showMoreInfo = useCallback(
+    () =>  {
+      if(moreInfoText) {
+        // TODO
+        // Toast.show({
+        //   text: moreInfoText,
+        //   buttonText: i18n("Okay"),
+        //   duration: 15000,
+        // })
 
-    if(moreInfoText) {
-      Toast.show({
-        text: moreInfoText,
-        buttonText: i18n("Okay"),
-        duration: 15000,
-      })
-
-    } else if(externalHref) {
-      Linking.openURL(externalHref).catch(err => {
-        console.log('ERROR: Request to open URL failed.', err)
-        navigation.navigate("ErrorMessage", {
-          message: i18n("Your device is not allowing us to open this link."),
+      } else if(externalHref) {
+        Linking.openURL(externalHref).catch(err => {
+          console.log('ERROR: Request to open URL failed.', err)
+          historyPush("/error", {
+            message: i18n("Your device is not allowing us to open this link."),
+          })
         })
-      })
-    }
+      }
+    },
+    [ moreInfoText, externalHref, history ],
+  )
 
-  }
-
-  render() {
-    const { text, moreInfoText, externalHref } = this.props
-
-    return (
-      <View style={styles.container}>
-        {(moreInfoText || externalHref)
-          ?
-            <TouchableOpacity
-              onPress={this.showMoreInfo}
-            >
-              <Text style={styles.text}>{text}</Text>
-            </TouchableOpacity>
-          :
+  return (
+    <View style={styles.container}>
+      {(moreInfoText || externalHref)
+        ?
+          <TouchableOpacity
+            onPress={showMoreInfo}
+          >
             <Text style={styles.text}>{text}</Text>
-        }
-      </View>
-    )
-  }
+          </TouchableOpacity>
+        :
+          <Text style={styles.text}>{text}</Text>
+      }
+    </View>
+  )
 }
 
-export default BookPageMessage
+export default withRouter(BookPageMessage)

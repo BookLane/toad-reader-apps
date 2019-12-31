@@ -1,27 +1,39 @@
-import React from "react"
-import { Constants, Updates, FileSystem, ScreenOrientation } from "expo"
-import { Platform, StyleSheet, WebView } from "react-native"
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react"
+import { Updates, ScreenOrientation } from "expo"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
+import { Platform, StyleSheet, View, Text } from "react-native"
+import { Switch, Route } from "../routers/react-router"
+import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Container, Text, View } from "native-base"
-import i18n from "../../utils/i18n.js"
-import downloadAsync from "../../utils/downloadAsync.js"
-import { updateReader } from "../../utils/updateReader.js"
+import SideMenu from "react-native-side-menu"
+import SafeLayout from "../basic/SafeLayout"
+import { i18n } from "inline-i18n"
+import downloadAsync from "../../utils/downloadAsync"
+import { updateReader } from "../../utils/updateReader"
 
+import BookImporter from "../major/BookImporter"
+import Book from "./Book"
+import ErrorMessage from "./ErrorMessage"
+import AppMenu from "../major/AppMenu"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
-import Options from "../major/Options"
 import Spin from "../basic/Spin"
-import FullScreenSpin from "../basic/FullScreenSpin"
-import AppHeader from "../basic/AppHeader.js";
-import BookDownloader from "../major/BookDownloader.js"
+import CoverAndSpin from "../basic/CoverAndSpin"
+import AppHeader from "../basic/AppHeader"
+import BookDownloader from "../major/BookDownloader"
+import Login from "../major/Login"
+import WebView from "../major/WebView"
 
-import { getReqOptionsWithAdditions, setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
-import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub.js"
+import useRouterState from "../../hooks/useRouterState"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
+import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
-import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks, setDownloadStatus,
-         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions.js"
+import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks,
+         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -36,7 +48,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   spinnerContainer: {
-    padding: 40,
+    paddingTop: 70,
   },
   content: {
     zIndex: 1,
@@ -45,312 +57,418 @@ const styles = StyleSheet.create({
   },
 })
 
-class Library extends React.Component {
+const Library = ({
 
-  state = {
-    showOptions: false,
-    downloadPaused: false,
-  }
+  accounts,
+  idps,
+  books,
+  library,
+  fetchingBooks,
 
-  componentWillMount() {
-    const { books, clearAllSpinePageCfis, reSort, autoUpdateCoreIdps } = this.props
+  addBooks,
+  setCoverFilename,
+  reSort,
+  setSort,
+  setFetchingBooks,
+  removeAccount,
+  updateAccount,
+  setReaderStatus,
+  clearAllSpinePageCfis,
+  autoUpdateCoreIdps,
 
-    Updates.addListener(this.onUpdateEvent)
-    this.getUpToDateReader()
-    removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+  history,
+  location,
 
-    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
-    reSort()
+}) => {
 
-    autoUpdateCoreIdps()
-  }
+  const [ downloadPaused, setDownloadPaused ] = useState(false)
+  const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
+  const [ importingBooks, setImportingBooks ] = useState(false)
 
-  componentDidMount() {
-    const { library, navigation, reSort } = this.props
+  const JSUpdateReady = useRef(false)
 
-    this.navigationWillBlurListener = navigation.addListener("willBlur", () => this.setState({ downloadPaused: true }))
-    this.navigationDidFocusListener = navigation.addListener("didFocus", () => this.setState({ downloadPaused: false }))
-    this.navigationWillFocusListener = navigation.addListener("willFocus", reSort)
+  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { widget, parent_domain, logOutAccountId, refreshLibraryAccountId } = routerState
+  const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
+    ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
+    : null
 
-    this.fetchAll()
-  }
+  const getLocationPathname = useInstanceValue(location.pathname)
 
-  componentWillReceiveProps(nextProps) {
-    const { accounts } = this.props
+  useEffect(
+    () => {
+      // If it is a direct load to something other than the Library, then add
+      // the Library to the browser history so that calling back on the router
+      // works properly.
+      if(location.pathname !== '/') {
+        historyReplace('/')
+        historyPush(location.pathname, routerState)
+      }
+    },
+    [],
+  )
 
-    if(nextProps.accounts !== accounts) {
-      this.fetchAll(nextProps)
-    }
-  }
-
-  componentWillUnmount() {
-    this.navigationWillBlurListener.remove()
-    this.navigationDidFocusListener.remove()
-    this.navigationWillFocusListener.remove()
-
-    unmountTimeouts.bind(this)()
-  }
-
-  getUpToDateReader = async () => {
-    const { setReaderStatus } = this.props
-
-    updateReader({ setReaderStatus })
-  }
-
-  onUpdateEvent = ({ type }) => {
-    if(type === Updates.EventType.DOWNLOAD_FINISHED) {
-      this.JSUpdateReady = true
-    }
-  }
-
-  hasJSUpdate = () => !!this.JSUpdateReady
-
-  async fetchAll(nextProps) {
-    const { setFetchingBooks, accounts, idps, books, addBooks,
-            reSort, updateAccount, navigation } = nextProps || this.props
-    const { refreshLibraryAccountId } = navigation.state.params || {}
-
-    const account = Object.values(accounts)[0]
-    if(!account || account.needToLogInAgain) {
-      // when I move to multiple accounts, this will instead need to go to the Accounts screen
-      navigation.navigate("Login", {
-        idpId: Object.keys(idps)[0],
-        hasJSUpdate: this.hasJSUpdate,
-      })
-      return
-    }
-
-    // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
-    setFetchingBooks({ value: true })
-    for(accountId in accounts) {
-      try {
-
-        const [ idpId ] = accountId.split(':')
-
-        // no need to get the library listing if we already have it
-        if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
-          setUpTimeout(() => this.getCovers({ idpId }), 0, this)
-          continue
-        }
-
-        // update books
-
-        const libraryUrl = `https://${idps[idpId].domain}/epub_content/epub_library.json`
-        let response = await fetch(libraryUrl, getReqOptionsWithAdditions({
-          headers: {
-            "x-cookie-override": accounts[accountId].cookie,
-            "x-platform": Platform.OS,
-          },
-        }))
-        // I do not catch the no internet connection error because I only get here immediately after logging in,
-        // which requires the internet.
-
-        if(response.status != 200) {
-          // they need to login again
-          // TODO: I should probably look for other possibilities like 3XX or 5XX errors
-          updateAccount({
-            accountId,
-            accountInfo: {
-              needToLogInAgain: true
-            },
+  useEffect(
+    () => {
+      if(widget && parent_domain) {
+        // check to see if we should redirect to a different domain
+        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
+          .then(result => result.json())
+          .then(({ redirectToDomain }) => {
+            if(redirectToDomain && redirectToDomain !== location.host) {
+              if(isStaging()) {
+                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+              }
+              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
+            }
           })
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      updateReader({ setReaderStatus })
+      removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
+      autoUpdateCoreIdps()
+
+      if(Platform.OS !== 'web') {
+        ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      const eventSubscription = Updates.addListener(({ type }) => {
+        if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+          JSUpdateReady.current = true
+        }
+      })
+
+      return () => {
+        eventSubscription.remove()
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => setDownloadPaused(/^\/book\//.test(location.pathname)),
+    [ location ],
+  )
+
+  useLayoutEffect(
+    () => {
+      if(location.pathname === '/') {
+        reSort()
+      }
+    },
+    [ location ],
+  )
+
+  const getCovers = useCallback(
+    ({ idpId }) => {
+
+      for(let bookId in books) {
+        const book = books[bookId]
+
+        if(book.coverHref && !book.coverFilename) {
+          const idp = idps[idpId]
+
+          if(idp) {
+            const coverFilename = book.coverHref.split('/').pop()
+
+            downloadAsync(
+              `${getDataOrigin(idp)}/${book.coverHref}`,
+              `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
+            ).then(successful => {
+              if(successful) {
+                setCoverFilename({
+                  bookId,
+                  coverFilename,
+                })
+              }
+            })
+          }
+          
+        }
+      }
+    },
+    [ books, idps ],
+  )
+
+  const updateBooks = useCallback(
+    async ({ accountId }) => {
+
+      const { idpId } = getIdsFromAccountId(accountId)
+
+      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
+      let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": accounts[accountId].cookie,
+        },
+      }))
+      // I do not catch the no internet connection error because I only get here immediately after logging in,
+      // which requires the internet.
+
+      if(response.status != 200) {
+        // they need to login again
+        // TODO: I should probably look for other possibilities like 3XX or 5XX errors
+        updateAccount({
+          accountId,
+          accountInfo: {
+            needToLogInAgain: true
+          },
+        })
+        return
+      }
+
+      const newBooks = await response.json()
+
+      addBooks({
+        books: newBooks,
+        accountId,
+      })
+      reSort()
+
+      requestAnimationFrame(() => getCovers({ idpId }))
+
+    },
+    [ idps, accounts, books ],
+  )
+
+  useEffect(  // fetch all
+    () => {
+      (async () => {
+
+        const account = Object.values(accounts)[0]
+        if(!account || account.needToLogInAgain) {
+          // when I move to multiple accounts, this will instead need to go to the Accounts screen
+          setShowLogin(true)
           return
         }
 
-        const newBooks = await response.json()
+        // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
+        setFetchingBooks({ value: true })
+        for(let accountId in accounts) {
+          try {
 
-        addBooks({
-          books: newBooks,
-          accountId,
-        })
-        reSort()
+            const { idpId } = getIdsFromAccountId(accountId)
 
-        setUpTimeout(() => this.getCovers({ idpId }), 0, this)
-
-        if(refreshLibraryAccountId) {
-          navigation.state.params = {}
-          this.forceUpdate()
-        }
-        
-      } catch(error) {
-        navigation.navigate("ErrorMessage", {
-          message: error.message || null,
-        })
-      }
-    }
-    setFetchingBooks({ value: false })
-  }
-
-  getCovers = ({ idpId }) => {
-    const { idps={}, books={}, setCoverFilename } = this.props
-
-    for(let bookId in books) {
-      const book = books[bookId]
-
-      if(book.coverHref && !book.coverFilename) {
-        const idp = idps[idpId]
-
-        if(idp) {
-          const coverFilename = book.coverHref.split('/').pop()
-
-          downloadAsync(
-            `https://${idp.domain}/${book.coverHref}`,
-            `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
-          ).then(successful => {
-            if(successful) {
-              setCoverFilename({
-                bookId,
-                coverFilename,
-              })
+            // no need to get the library listing if we already have it
+            if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
+              requestAnimationFrame(() => getCovers({ idpId }))
+              continue
             }
-          })
+
+            // update books
+            await updateBooks({ accountId })
+
+            if(refreshLibraryAccountId) {
+              historyReplace()
+            }
+            
+          } catch(error) {
+            console.log("ERROR", error)
+            historyPush("/error", {
+              message: error.message || null,
+            })
+          }
         }
-        
+        setFetchingBooks({ value: false })
+      })()
+    },
+    [ idps, accounts, refreshLibraryAccountId ],
+  )
+
+  const onLoginSuccess = useCallback(
+    () => {
+      if(JSUpdateReady.current) {
+        Updates.reloadFromCache()
+      } else {
+        setShowLogin(false)
       }
-    }
-  }
-  
-  toggleShowOptions = () => {
-    const { showOptions } = this.state
+    },
+    [],
+  )
 
-    this.setState({ showOptions: !showOptions })
-  }
-  
-  hideOptions = () => this.setState({ showOptions: false })
-
-  logOurUrlOnLoad = () => {
-    const { navigation, removeAccount, updateAccount } = this.props
-    const { logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
-
-    if(refreshLibraryAccountId) {
-      updateAccount({
-        accountId: refreshLibraryAccountId,
-        accountInfo: {
-          needToLogInAgain: true,
+  const logOutUrlOnLoad = useCallback(
+    async () => {
+      // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
+      const logOutCallbackUrl = `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout/callback?noredirect=1`
+      await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": accounts[logOutAccountId || refreshLibraryAccountId].cookie,
         },
-      })
-    }
+      }))
 
-    if(logOutAccountId) {
-      removeAccount({ accountId: logOutAccountId })
-      navigation.state.params = {}
-      this.forceUpdate()
-    }
-  }
-  
-  render() {
-    const { library, accounts, idps, books, fetchingBooks, navigation, setSort } = this.props
-    const { showOptions, downloadPaused } = this.state
+      if(refreshLibraryAccountId) {
+        updateAccount({
+          accountId: refreshLibraryAccountId,
+          accountInfo: {
+            needToLogInAgain: true,
+          },
+        })
+      }
 
-    let { logOutUrl, logOutAccountId, refreshLibraryAccountId } = navigation.state.params || {}
-    const scope = library.scope || "all"
+      if(logOutAccountId) {
+        removeAccount({ accountId: logOutAccountId })
+        historyReplace()
+      }
+    },
+    [ idps, accounts, logOutAccountId, refreshLibraryAccountId ],
+  )
 
-    const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
-    const bookList = scope == 'all'
-      ? library.bookList
-      : (scope == 'device'
-        ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
-        : library.bookList.filter(bookId => (
-          Object.keys(books[bookId].accounts).some(accountId => accountId.split(':')[0] == scope.split(':')[0])
-        ))
-      )
+  const sideMenuOnChange = useCallback(
+    isOpen => {
+      if(!isOpen && getLocationPathname() === '/drawer') {
+        history.goBack()
+      }
+    },
+    [],
+  )
 
-    if(logOutUrl) {
-      return (
-        <Container>
-          <AppHeader hide={true} />
-          <WebView
-            style={styles.flex1}
-            source={getReqOptionsWithAdditions({
-              uri: logOutUrl,
-              headers: {
-                "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
-                "x-platform": Platform.OS,
-              },
-            })}
-            onLoad={this.logOurUrlOnLoad}
-            onError={this.logOurUrlOnLoad}  // Even if it fails, log them out on the device at least
-          />
-          <FullScreenSpin
-            text={
-              Object.values(idps).every(idp => idp.idpNoAuth)
-                ? i18n("Finding books...")
-                : i18n("Logging out...")
-            }
-            style={{ backgroundColor: 'white' }}
-          />
-        </Container>
-      )
-    }
+  const openImportBooks = useCallback(
+    () => {
+      setImportingBooks(true)
+      history.goBack()
+    },
+    [],
+  )
 
+  const closeImportingBooks = useCallback(() => setImportingBooks(false), [])
+
+  useEffect(
+    () => {
+      // If they have clicked on one of the links in the import
+      // results, close the import dialog.
+      if(location.pathname !== '/') {
+        setImportingBooks(false)
+      }
+    },
+    [ location ],
+  )
+
+  const scope = library.scope || "all"
+
+  const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
+  const bookList = scope == 'all'
+    ? library.bookList
+    : (scope == 'device'
+      ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
+      : library.bookList.filter(bookId => (
+        Object.keys(books[bookId].accounts).some(accountId => getIdsFromAccountId(accountId).idpId === getIdsFromAccountId(scope).idpId)
+      ))
+    )
+
+  const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
+
+  if(showLogin) {
     return (
-      <Container>
-        <LibraryHeader
-          scope={scope}
-          navigation={navigation}
-          toggleShowOptions={this.toggleShowOptions}
-          hideOptions={this.hideOptions}
-        />
-        {fetchingBooks && bookList.length == 0
-          ? (
-            <View style={styles.spinnerContainer}>
-              <Spin />
-            </View>
-          )
-          : (
-            bookList.length == 0
-              ? (
-                <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-              )
-              : (
-                <View style={styles.content}>
-                  <LibraryViewer
-                    bookList={bookList}
-                    navigation={navigation}
-                  />
-                </View>
-              )
-          )
-        }
-        {!!showOptions && 
-          <Options
-            requestHide={this.hideOptions}
-            headerText={i18n("Sort by...")}
-            options={[
-              {
-                text: i18n("Recent"),
-                selected: library.sort == 'recent',
-                onPress: () => setSort({ sort: 'recent' }),
-              },
-              {
-                text: i18n("Title"),
-                selected: library.sort == 'title',
-                onPress: () => setSort({ sort: 'title' }),
-              },
-              {
-                text: i18n("Author"),
-                selected: library.sort == 'author',
-                onPress: () => setSort({ sort: 'author' }),
-              },
-            ]}
-          />
-        }
-
-        <BookDownloader
-          downloadPaused={downloadPaused}
-          navigation={navigation}
-        />
-      </Container>
+      <Login
+        idpId={Object.keys(idps)[0]}
+        onSuccess={onLoginSuccess}
+      />
     )
   }
+
+  if(logOutUrl) {
+    return (
+      <SafeLayout>
+        <AppHeader hide={true} />
+        <WebView
+          style={styles.flex1}
+          source={getReqOptionsWithAdditions({
+            uri: logOutUrl,
+            headers: {
+              "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
+            },
+          })}
+          onLoad={logOutUrlOnLoad}
+          onError={logOutUrlOnLoad}  // Even if it fails, log them out on the device at least
+        />
+        <CoverAndSpin
+          text={
+            Object.values(idps).every(idp => idp.idpNoAuth)
+              ? i18n("Finding books...")
+              : i18n("Logging out...")
+          }
+          style={{ backgroundColor: 'white' }}
+        />
+      </SafeLayout>
+    )
+  }
+
+  const doingInitialFetch = fetchingBooks && bookList.length == 0
+
+  return (
+    <SideMenu
+      menu={<AppMenu onImportBooks={openImportBooks} />}
+      openMenuOffset={280}
+      isOpen={location.pathname === '/drawer'}
+      onChange={sideMenuOnChange}
+      disableGestures={true}
+    >
+
+      <Switch>
+        <Route path="/error" component={ErrorMessage} />
+        {!doingInitialFetch && <Route path="/book/:bookId" component={Book} />}
+        <Route>
+
+          <SafeLayout>
+            <LibraryHeader
+              scope={scope}
+            />
+            {doingInitialFetch
+              ? (
+                <View style={styles.spinnerContainer}>
+                  <Spin />
+                </View>
+              )
+              : (
+                bookList.length == 0
+                  ? (
+                    <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                  )
+                  : (
+                    <View style={styles.content}>
+                      <LibraryViewer
+                        bookList={bookList}
+                      />
+                    </View>
+                  )
+              )
+            }
+
+            <BookDownloader
+              downloadPaused={downloadPaused}
+            />
+
+          </SafeLayout>
+          
+        </Route>
+      </Switch>
+
+      <BookImporter
+        open={!!importingBooks}
+        accountId={bookImporterAccountId}
+        updateBooks={updateBooks}
+        onClose={closeImportingBooks}
+      />
+
+    </SideMenu>
+  )
 }
 
-const mapStateToProps = (state) => ({
-  accounts: state.accounts,
-  idps: state.idps,
-  books: state.books,
-  library: state.library,
-  fetchingBooks: state.fetchingBooks,
+const mapStateToProps = ({ accounts, idps, books, library, fetchingBooks }) => ({
+  accounts,
+  idps,
+  books,
+  library,
+  fetchingBooks,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -359,7 +477,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   reSort,
   setSort,
   setFetchingBooks,
-  setDownloadStatus,
   removeAccount,
   updateAccount,
   setReaderStatus,
@@ -367,4 +484,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   autoUpdateCoreIdps,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Library)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Library))

@@ -22,16 +22,16 @@
   },
   "accounts": {
     "1:-1": {
-      "firstname": "Demo",
-      "lastname": "Account",
+      "fullname": "Demo Account",
       "email": "demo@email.com",
+      "isAdmin": false,
       "cookie": "connect.sid=lkjsdfljasdflkjsdf;",
       "serverTimeOffset": 60
     },
     "2:3": {
-      "firstname": "Bill",
-      "lastname": "Smith",
+      "fullname": "Bill Smith",
       "email": "bill@email.com",
+      "isAdmin": true,
       "cookie": "connect.sid=lkjsdfljasdflkjsdsdff;",
       "serverTimeOffset": -20
     }
@@ -46,6 +46,7 @@
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
       "author": "John Piper",
       "epubSizeInMB": 3,
+      "version": "PUBLISHER",
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
       "accounts": {
@@ -56,12 +57,14 @@
           }
         }
       },
-      "downloadStatus": 1
+      "downloadStatus": 1,
+      "currentClassroomUid": "1-65"
     },
     "66": {
       "title": "God is the Gospel",
       "author": "John Piper",
       "epubSizeInMB": 5,
+      "version": "BASE",
       "totalCharacterCount": 231004,
       "coverFilename": "cover.png",
       "accounts": {
@@ -73,6 +76,7 @@
       "title": "Bloodlines",
       "author": "John Piper",
       "epubSizeInMB": 10,
+      "version": "INSTRUCTOR",
       "totalCharacterCount": 383021,
       "coverFilename": "cover.jpg",
       "accounts": {
@@ -84,24 +88,30 @@
         }
       },
       "downloadStatus": 2,
+      "currentClassroomUid": "Du39fs-38DF83-dfjdfs34",
+      "selectedToolUid": "jksdfj-sdisen2-3r8sn",
       "toc": [
         {
           "label": "Part 1",
           "href": "part1.xhtml",
+          "spineIdRef": "part1",
           "subNav": [
             {
               "label": "Chapter 1",
-              "href": "chapter1.xhtml"
+              "href": "chapter1.xhtml",
+              "spineIdRef": "chapter1"
             },
             {
               "label": "Chapter 2",
-              "href": "chapter2.xhtml"
+              "href": "chapter2.xhtml",
+              "spineIdRef": "chapter2"
             }
           ]
         },
         {
           "label": "Part 2",
-          "href": "part2.xhtml"
+          "href": "part2.xhtml",
+          "spineIdRef": "part2"
         }
       ],
       "spines": [
@@ -153,7 +163,21 @@
           "updated_at": 1506078484221
         }
       ],
-      "highlights": []
+      "highlights": [],
+      "classrooms": [
+        {
+          "classroom_highlights_mode": "CLASSROOM",
+          "closes_at": null,
+          "created_at": 1573659531000,
+          "syllabus": null,
+          "introduction": null,
+          "members": [],
+          "name": "",
+          "tools": [],
+          "uid": "1-135",
+          "updated_at": 1573659531000
+        }
+      ]
     },
     "68": {
       "progress": 34,
@@ -199,6 +223,10 @@
     ]
   },
   "currentBookId": null,
+  "sidePanelSettings": {
+    "width": 150,
+    "open": false
+  },
   "displaySettings": {
     "textSize": 100,
     "textSpacing": 1,
@@ -207,5 +235,6 @@
   "highlights": {
     "onlyShowColor": null
   },
-  "readerStatus": "ready"
+  "readerStatus": "ready",
+  "syncStatus": "synced"
 }

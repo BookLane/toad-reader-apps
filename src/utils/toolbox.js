@@ -1,8 +1,8 @@
-import { Platform, Dimensions, StatusBar, NetInfo } from "react-native"
-import { Constants, FileSystem } from "expo"
-import nativeBasePlatformVariables from 'native-base/src/theme/variables/platform'
-import { Toast } from "native-base"
-import i18n from "./i18n.js"
+import React from "react"
+import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
+import * as FileSystem from 'expo-file-system'
+import Constants from 'expo-constants'
+import { i18n } from "inline-i18n"
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
@@ -11,9 +11,12 @@ const {
   LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
+  DEV_DATA_ORIGIN_OVERRIDE,
 } = Constants.manifest.extra
 
 const cachedSizes = {}
+
+export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
 
 const getSizes = ({
   type,
@@ -106,15 +109,6 @@ export const getPageIndexInSpine = ({ pageCfis, cfi }) => {
   return pageIndexInSpine
 }
 
-export const latestLocationToObj = latest_location => {
-  const latestLocation = JSON.parse(latest_location)
-
-  return {
-    spineIdRef: latestLocation.idref,
-    cfi: latestLocation.elementCfi,
-  }
-}
-
 export const latestLocationToStr = latestLocation => {
   return JSON.stringify({
     idref: latestLocation.spineIdRef,
@@ -122,14 +116,10 @@ export const latestLocationToStr = latestLocation => {
   })
 }
 
-export const getDisplaySettingsObj = props => {
-  const { displaySettings } = props
-
-  return {
-    ...displaySettings,
-    columns: 'single',
-  }
-}
+export const getDisplaySettingsObj = displaySettings => ({
+  ...displaySettings,
+  columns: 'single',
+})
 
 export const getPageCfisKey = ({ displaySettings, width, height }) => {
   const { textSize, textSpacing } = displaySettings
@@ -147,22 +137,22 @@ export const getSnapshotURI = params => {
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
 
-export const getBooksDir = () => `${FileSystem.documentDirectory}books/`
+export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
-export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings }) => {
+export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings={} }) => {
   try {
     
     if(latest_location) {
-      const latestLocation = latestLocationToObj(latest_location)
-      spineIdRef = latestLocation.spineIdRef
-      cfi = latestLocation.cfi
+      const latestLocation = JSON.parse(latest_location)
+      spineIdRef = latestLocation.idref
+      cfi = latestLocation.elementCfi
     }
 
     const pageCfisKey = getPageCfisKey({ displaySettings })
     let pageCfis = []
     let pageCfisKnown = false
-    book.spines.some(spine => {
+    book && book.spines.some(spine => {
       if(spine.idref === spineIdRef) {
         if(spine.pageCfis) {
           pageCfis = spine.pageCfis[pageCfisKey]
@@ -175,6 +165,7 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
 
     return {
       spineIdRef,
+      cfi,
       pageIndexInSpine,
       pageCfisKnown,
     }
@@ -184,37 +175,30 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   }
 }
 
-export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
-export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
-export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
+export const isIPhoneX = false
+export const getFooterHeight = () => 50
+export const getToolbarHeight = () => 56
+// TODO
+// export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
+// export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
+// export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
 
 export const isPhoneSize = () => {
   const { width, height } = Dimensions.get('window')
   return Math.min(width, height) < 500
 }
 
-export const getFullName = user => user ? `${user.firstname || ''} ${user.lastname || ''}`.trim() : ``
+export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 
-export const JSON_to_URLEncoded = (element, key, list) => {
-  var list = list || []
-  if(typeof(element)=='object') {
-    for(var idx in element)
-      JSON_to_URLEncoded(element[idx], key?key+'['+idx+']':idx, list)
-  } else {
-    list.push(key + '=' + encodeURIComponent(element))
-  }
-  return list.join('&')
-}
-
-// The navigate function prevents a double tap from causing double navigation
-let lastDebounce
-export const debounce = (func, ...params) => {
-  if(lastDebounce !== JSON.stringify(params)) {
-    func(...params)
-    lastDebounce = JSON.stringify(params)
-    setTimeout(() => lastDebounce = undefined, 1500)
-  }
-}
+// This was used with react-navigation where a double tap caused double navigation. I'm not sure if it is still needed.
+// let lastDebounce
+// export const debounce = (func, ...params) => {
+//   if(lastDebounce !== JSON.stringify(params)) {
+//     func(...params)
+//     lastDebounce = JSON.stringify(params)
+//     setTimeout(() => lastDebounce = undefined, 1500)
+//   }
+// }
 
 export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback, cookie, timeout }) => (
   new Promise((resolve, reject) => {
@@ -226,7 +210,6 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     const reqHeaders = (getReqOptionsWithAdditions({
       headers: {
         "x-cookie-override": cookie,
-        "x-platform": Platform.OS,
       },
     }) || {}).headers
 
@@ -288,6 +271,7 @@ export const getReqOptionsWithAdditions = additions => {
   }
 
   mergeInObj(reqOptions, additions)
+  mergeInObj(reqOptions, { headers: { "x-platform": Platform.OS } })
 
   return reqOptions
 }
@@ -380,25 +364,6 @@ export const getFirstBookLinkInfo = book => {
   }
 }
 
-let netInfoIsConnectedFetch
-let isConnectedResolveFunctions = []
-
-export const isConnected = () => new Promise(resolve => {
-  isConnectedResolveFunctions.push(resolve)
-  
-  if(!netInfoIsConnectedFetch) {
-    const doResolves = isConnected => {
-      netInfoIsConnectedFetch = undefined
-      isConnectedResolveFunctions.forEach(func => func(isConnected))
-      isConnectedResolveFunctions = []
-    }
-
-    netInfoIsConnectedFetch = NetInfo.isConnected.fetch()
-      .then(doResolves)
-      .catch(() => doResolves(false))
-  }
-})
-
 export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
 
   let text = i18n("Note: By using this app, you consent to us recording usage data for the purpose of better improving our services.")
@@ -410,13 +375,142 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
     }
   })) {
 
-    Toast.show({
-      text,
-      buttonText: i18n("Okay"),
-      duration: 0,
-      onClose: setXapiConsentShown,
-    })
+    // Toast.show({
+    //   text,
+    //   buttonText: i18n("Okay"),
+    //   duration: 0,
+    //   onClose: setXapiConsentShown,
+    // })
 
   }
 
+}
+
+export const dashifyDomain = domain => domain
+  .replace(/-/g, '--')
+  .replace(/\./g, '-')
+
+export const isStaging = () => (
+  Constants.manifest.releaseChannel === 'staging'
+  || (
+    Platform.OS === 'web'
+    && /\.staging\.toadreader\.com$/.test(window.location.hostname)
+  )
+)
+
+export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
+
+  if(__DEV__) {
+    // dev environment
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
+  }
+
+  if(isStaging()) {
+    // staging environment
+    return `${protocol}://${dashifyDomain(domain)}.data.staging.toadreader.com`
+  }
+
+  // production environment
+  return `${protocol}://${dashifyDomain(domain)}.data.toadreader.com`
+
+}
+
+export const getMBSizeStr = numBytes => {
+  const sizeInMB = Math.round(numBytes/10000, 10) / 100
+
+  if(sizeInMB) {
+    return i18n("{{num}} mb", { num: sizeInMB })
+  }
+  
+  const sizeInKB = Math.round(numBytes/10, 10) / 100
+  return i18n("{{num}} kb", { num: sizeInKB })
+}
+
+export const createAccessCode = () => {
+  const digitOptions = `ABCDEFGHJKMNPQRSTUVWXYZ23456789`
+
+  return Array(6)
+    .fill(0)
+    .map(() => digitOptions[parseInt(Math.random() * digitOptions.length, 10)])
+    .join('')
+}
+
+export const getIdsFromAccountId = accountId => {
+  const [ idpId, userId ] = accountId.split(':').map(Number)
+
+  return {
+    idpId,
+    userId,
+  }
+}
+
+const identicalFetchDelayFactor = 100
+const identicalFetchMaxDelay = 1000 * 60 * 5
+const fetchRequests = {}
+export const safeFetch = async (uri, options={}) => {
+  const delayTime = fetchRequests[uri] || 0
+
+  fetchRequests[uri] = Math.min((delayTime * 2) || identicalFetchDelayFactor, identicalFetchMaxDelay)
+
+  const addedTime = fetchRequests[uri] - delayTime
+
+  setTimeout(() => fetchRequests[uri] -= addedTime, addedTime)
+
+  await new Promise(resolve => setTimeout(resolve, delayTime))
+
+  return fetch(uri, options)
+}
+
+
+export const textToReactNative = text => {
+
+  if(!text) return null
+
+  const linksRegEx = /((?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.#]+)/g
+  const linkWithSchemeRegEx = /^(?:https?|ftp):\/\//
+
+  const linksToReactNative = text => (
+    text
+      .split(linksRegEx)
+      .map((piece, idx) => (
+        <React.Fragment key={idx}>
+          {linksRegEx.test(piece)
+            ? (
+              <Text
+                style={{ color: 'blue' }}
+                onPress={() => {
+                  Linking.openURL(linkWithSchemeRegEx.test(piece) ? piece : `https://${piece}`)
+                }}
+              >
+                {piece}
+              </Text>
+            )
+            : piece
+          }
+        </React.Fragment>
+      ))
+  )
+
+  return linksToReactNative(text)
+}
+
+export const shuffleArray = a => {
+  for(let i=a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+export const combineItems = (...labels) => {
+  const nonEmptyLabels = labels.filter(Boolean)
+
+  if(nonEmptyLabels.length === 0) return ""
+
+  return nonEmptyLabels.reduce((item1, item2) => (
+    i18n("{{item1}}, {{item2}}", {
+      item1,
+      item2,
+    })
+  ))
 }

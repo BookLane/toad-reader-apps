@@ -1,22 +1,26 @@
-import React from "react"
+import React, { useEffect, useCallback, useRef, useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Linking, Platform } from "react-native"
-import { StyleSheet } from "react-native"
-import i18n from "../../utils/i18n.js"
+import { View, Linking, Platform, StyleSheet } from "react-native"
+import { withRouter } from "react-router"
+import { i18n } from "inline-i18n"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
 import Highlighter from "./Highlighter"
 import BookPageMessage from "../basic/BookPageMessage"
 
-import { postMessage } from "../../utils/postMessage.js"
-import takeSnapshot from "../../utils/takeSnapshot.js"
-import { getDisplaySettingsObj, getSpineAndPage, setUpTimeout, clearOutTimeout,
-         unmountTimeouts, getFirstBookLinkInfo } from "../../utils/toolbox.js"
+import { postMessage } from "../../utils/postMessage"
+// import takeSnapshot from "../../utils/takeSnapshot"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight } from "../../utils/toolbox"
+import useDidUpdate from "../../hooks/useDidUpdate"
+import useRouterState from "../../hooks/useRouterState"
+import usePrevious from "react-use/lib/usePrevious"
+import useInstanceValue from '../../hooks/useInstanceValue'
+import { useLayout } from 'react-native-hooks'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
-         startRecordReading, endRecordReading, flushReadingRecords } from "../../redux/actions.js"
+import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -24,189 +28,316 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookPage extends React.Component {
+const BookPage = React.memo(props => {
 
-  state = {
-    spineIdRef: this.props.spineIdRef,
-    pageIndexInSpine: this.props.pageIndexInSpine,
-    selectionInfo: null,
-    noteInEdit: null,
-  }
+  const {
+    spineIdRef,
+    pageIndexInSpine,
+    hrefToGoTo,
+    cfiToGoTo,
+    showSettings,
+    selectionInfo,
+    setSelectionInfo,
+    reportSpots,
+    toolCfiCounts,
+    // capturingSnapshots,
+    bookId,
+    indicateLoaded,
+    requestShowPages,
+    temporarilyPauseProcessing,
+    history,
+    location,
+    requestHideSettings,
+    latest_location,
 
-  componentWillReceiveProps(nextProps) {
-    const { displaySettings, hrefToGoTo } = this.props
-    const { spineIdRef, pageIndexInSpine } = this.state
+    books,
+    userDataByBookId,
+    displaySettings,
 
-    if(nextProps.displaySettings !== displaySettings) {
-      this.setDisplaySettings(nextProps)
-    }
+    setLatestLocation,
+    startRecordReading,
+    endRecordReading,
+    flushReadingRecords,
+    setSelectedToolUid,
+  } = props
 
-    if(
-      nextProps.spineIdRef !== spineIdRef
-      || (
-        nextProps.pageIndexInSpine !== pageIndexInSpine
-        && pageIndexInSpine !== -1  // this means that it previously did not have snapshots
-      )
-    ) {
-      this.goToLatestLocation(nextProps)
-      this.setState({
-        spineIdRef: nextProps.spineIdRef,
-        pageIndexInSpine: nextProps.pageIndexInSpine,
-      })
-    } else if(nextProps.hrefToGoTo && nextProps.hrefToGoTo !== hrefToGoTo) {
-      postMessage(this.webView, 'goToHref', { href: nextProps.hrefToGoTo })
-    }
-  }
+  const prevSpineIdRef = usePrevious(spineIdRef)
+  const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { showSettings, capturingSnapshots } = this.props
-    const { selectionInfo, noteInEdit } = this.state
+  const [ noteInEdit, setNoteInEdit ] = useState(null)
 
-    return (
-      nextProps.showSettings !== showSettings
-      || nextProps.capturingSnapshots !== capturingSnapshots
-      || nextState.selectionInfo !== selectionInfo
-      || nextState.noteInEdit !== noteInEdit
-    )
-  }
+  const loaded = useRef(false)
+  const doAfterLoaded = useRef()
+  const webView = useRef()
+  const view = useRef()
 
-  componentWillUnmount = unmountTimeouts
+  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  setDisplaySettings = nextProps => {
-    postMessage(this.webView, 'setDisplaySettings', getDisplaySettingsObj(nextProps || this.props))
-  }
+  const { tools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const getTools = useInstanceValue(tools)
 
-  goToLatestLocation = nextProps => {
-    const { spineIdRef, pageIndexInSpine } = nextProps || this.props
+  // const { onLayout, width, y: offsetY } = useLayout()
+  const { onLayout, width } = useLayout()
+  const getWidth = useInstanceValue(width)
+  // const getOffsetY = useInstanceValue(offsetY)
 
-    if(spineIdRef == null || pageIndexInSpine == null) return
-
-    this.doAfterLoaded = () => {
-      delete this.doAfterLoaded
-      postMessage(this.webView, 'goToPage', {
-        spineIdRef,
-        pageIndexInSpine: Math.max(pageIndexInSpine, 0),
-      })
-    }
-
-    // TODO: This will need to change as I do the "Do you want to go to the latest location" functionality.
-    if(this.loaded) this.doAfterLoaded()
-  }
-
-  isEditingNote = () => this.state.noteInEdit != null
-
-  onMessageEvent = async (webView, data) => {
-    const { setLatestLocation, bookId, indicateLoaded, requestShowPages, books,
-            displaySettings, temporarilyPauseProcessing, navigation,
-            startRecordReading, endRecordReading } = this.props
-    const { spineIdRef: prevSpineIdRef } = this.state
-
-    if(webView !== this.webView) return // just in case
-    
-    switch(data.identifier) {
-      case 'pageChanged':
-
-        const { newSpineIdRef, newCfi } = data.payload
-
-        const { spineIdRef, pageIndexInSpine } = getSpineAndPage({
-          spineIdRef: newSpineIdRef,
-          cfi: newCfi,
-          book: books[bookId],
-          displaySettings,
+  useEffect(
+    () => {
+      if(widget) {
+        // pass ref info to widget_setup
+        const { title, author, spines } = books[bookId]
+        
+        let spineLabel = ''
+        ;(spines || []).some(({ idref, label }) => {
+          if(idref === latestLocation.spineIdRef) {
+            spineLabel = label
+            return true
+          }
         })
 
-        this.setState(
-          {
-            spineIdRef,
-            pageIndexInSpine,
+        parent.postMessage({
+          action: 'setReference',
+          iframeid: window.name,
+          payload: {
+            spineLabel,
+            title,
+            author,
           },
-          () => {
-            setLatestLocation({
-              bookId,
-              latestLocation: {
-                spineIdRef,
-                cfi: newCfi,
+        }, '*')
+      }
+    },
+    [ books, bookId ],
+  )
+
+  useDidUpdate(
+    () => {
+      postMessage(webView.current, 'setDisplaySettings', getDisplaySettingsObj(displaySettings))
+    },
+    [ displaySettings ],
+  )
+
+  useDidUpdate(
+    () => {
+      postMessage(webView.current, 'insertTools', { toolCfiCounts })
+    },
+    [ toolCfiCounts ],
+  )
+
+  useDidUpdate(
+    () => {
+      if(Platform.OS === 'web') return
+      if(spineIdRef == null || pageIndexInSpine == null) return
+      if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
+      // the prevPageIndexInSpine === -1 check is to ensure that it previously did not have snapshots
+  
+      doAfterLoaded.current = () => {
+        doAfterLoaded.current = undefined
+        postMessage(webView.current, 'goToPage', {
+          spineIdRef,
+          pageIndexInSpine: Math.max(pageIndexInSpine, 0),
+        })
+      }
+  
+      // TODO: This will need to change as I do the "Do you want to go to the latest location" functionality.
+      if(loaded.current) {
+        doAfterLoaded.current && doAfterLoaded.current()
+      }
+    },
+    [ spineIdRef, pageIndexInSpine ],
+  )
+
+  useDidUpdate(
+    () => {
+      if(!cfiToGoTo) return
+      postMessage(webView.current, 'goToCfi', cfiToGoTo)
+    },
+    [ cfiToGoTo ],
+  )
+
+  useDidUpdate(
+    () => {
+      if(!hrefToGoTo) return
+      postMessage(webView.current, 'goToHref', { href: hrefToGoTo })
+    },
+    [ hrefToGoTo ],
+  )
+
+  const onMessageEvent = useCallback(
+    async (webView2, data) => {
+      if(webView2 !== webView.current) return // just in case
+
+      switch(data.identifier) {
+        case 'pageChanged': {
+
+          const { newSpineIdRef, newCfi } = data.payload
+          const latestLocation = {
+            spineIdRef: newSpineIdRef,
+            cfi: newCfi,
+          }
+
+          setLatestLocation({
+            bookId,
+            latestLocation,
+            patchInfo: {},
+          })
+
+          historyReplace(null, {
+            ...routerState,
+            latestLocation,
+          })
+
+          if(newSpineIdRef !== spineIdRef) {
+            endRecordReading({
+              reportReadingsInfo: {
+                books,
+                flushReadingRecords,
               },
-              patchInfo: this.props,
+            })
+            startRecordReading({
+              bookId,
+              spineIdRef: newSpineIdRef,
             })
           }
-        )
 
-        if(spineIdRef !== prevSpineIdRef) {
-          endRecordReading({
-            reportReadingsInfo: this.props,
-          })
-          startRecordReading({
-            bookId,
-            spineIdRef,
-          })
+          indicateLoaded()
+          loaded.current = true
+          doAfterLoaded.current && doAfterLoaded.current()
+
+          // await this.doTakeSnapshot()
+
+          return false  // i.e. still process pageChanged in the general PageWebView component
         }
 
-        indicateLoaded()
-        this.loaded = true
-        this.doAfterLoaded && this.doAfterLoaded()
+        case 'flipToNewSpine': {
+          const { newSpineIdRef } = data.payload || {}
+          const spineIdRefs = spines.map(({ idref }) => idref)
+          const tocSpineIdRefs = toc.map(({ spineIdRef }) => spineIdRef)
 
-        // await this.doTakeSnapshot()
+          const prevSpineIndex = spineIdRefs.indexOf(spineIdRef)
+          const newSpineIndex = spineIdRefs.indexOf(newSpineIdRef)
+          const prevTocSpineIndex = tocSpineIdRefs.indexOf(spineIdRef)
+          const pagedToBeginning = newSpineIdRef === undefined && prevTocSpineIndex === 0
+          const pagedToEnd = newSpineIdRef === undefined && prevSpineIndex === spineIdRefs.length - 1
 
-        return false  // i.e. still process pageChanged in the general PageWebView component
+          if(prevSpineIndex !== -1 && (newSpineIndex !== -1 || pagedToBeginning || pagedToEnd)) {
+            const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
+            const laterSpineIdRef = pagedToEnd
+              ? "AFTER LAST SPINE"
+              : (
+                pagedToBeginning
+                  ? spineIdRef
+                  : (
+                    pagedForward
+                      ? newSpineIdRef
+                      : spineIdRef
+                  )
+              )
 
-      case 'openURL':
-        Linking.openURL(data.payload.url).catch(err => {
-          console.log('ERROR: Request to open URL failed.', err)
-          navigation.navigate("ErrorMessage", {
-            message: i18n("Your device is not allowing us to open this link."),
-          })
-        })
-        return true
+            const toolsBeforeLaterSpine = getTools().filter(({ spineIdRef, cfi, _delete }) => (
+              spineIdRef === laterSpineIdRef
+              && !cfi
+              && !_delete
+            ))
 
-      case 'requestPauseProcessing':
-        temporarilyPauseProcessing()
-        return true
+            if(toolsBeforeLaterSpine.length > 0) {
+              toolsBeforeLaterSpine.sort((a, b) => a.ordering - b.ordering)
 
-      case 'showPageListView':
-        requestShowPages()
-        return true
-
-      case 'textUnselected':
-        // I tried to find a way to catch the initial tap on the text
-        // area so as to prevent the textUnselected before focus issue
-        // without using a timeout, but was unable to. This is less
-        // graceful, but it works.
-        if(!this.isEditingNote()) {
-          this.doUnselectText = setUpTimeout(() => {
-            if(!this.isEditingNote()) {
-              this.setState({ selectionInfo: data.payload })
+              setSelectedToolUid({
+                bookId,
+                uid: (pagedForward ? toolsBeforeLaterSpine[0] : toolsBeforeLaterSpine.pop()).uid,
+              })
             }
-          }, 200, this)
+          }
+
+          return true
         }
-        return true
 
-      case 'textSelected':
-        clearOutTimeout(this.doUnselectText, this)
-        this.setState({ selectionInfo: data.payload })
-        return true
-    }
-  }
+        case 'reportToolSpots': {
+          const { toolSpots, offsetX, offsetY } = data.payload
+          const wideModeShift = getToolbarHeight() - 30
 
-  setSelectionText = payload => {
-    if(!payload) {
-      this.setState({ selectionInfo: undefined })
-    }
-    Platform.OS !== 'ios' && postMessage(this.webView, 'setSelectionText', payload)
-  }
-
-  setWebViewEl = webViewEl => this.webView = webViewEl
-
-  updateNoteInEdit = noteInEdit => this.setState({ noteInEdit })
-
-//   setView = ref => this.view = ref
+          reportSpots({
+            type: 'BookPage',
+            styles: {
+              width: getWidth(),
+              left: 0,
+            },
+            offsetX,
+            spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
+              y: y + offsetY + wideModeShift,
+              spineIdRef,
+              cfi,
+              ordering,
+            })),
+          })
   
-//   doTakeSnapshot = async () => {
-//     const { bookId } = this.props
+          return true
+        }
 
-// console.log('before')
+        case 'reportPageTurnStart': {
+          reportSpots({ type: 'BookPage' })
+          return true
+        }
+
+        case 'openURL': {
+          Linking.openURL(data.payload.url).catch(err => {
+            console.log('ERROR: Request to open URL failed.', err)
+            historyPush("/error", {
+              message: i18n("Your device is not allowing us to open this link."),
+            })
+          })
+          return true
+        }
+
+        case 'requestPauseProcessing': {
+          temporarilyPauseProcessing()
+          return true
+        }
+
+        case 'showPageListView': {
+          requestShowPages()
+          return true
+        }
+
+        case 'textUnselected':
+        case 'textSelected': {
+          setSelectionInfo(data.payload)
+          return true
+        }
+
+        case 'setHeight':
+        case 'forbidden':
+        case 'loading': {
+          if(widget) {
+            // pass these on to widget_setup
+            parent.postMessage({
+              action: data.identifier,
+              iframeid: window.name,
+              payload: data.payload,
+            }, '*');
+          }
+          return true
+        }
+
+      }
+    },
+    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, location ],
+  )
+
+  const setSelectionText = useCallback(
+    payload => {
+      if(!payload) {
+        setSelectionInfo(undefined)
+      }
+      Platform.OS !== 'ios' && postMessage(webView.current, 'setSelectionText', payload)
+    },
+    [],
+  )
+
+//   doTakeSnapshot = async () => {
 //     await takeSnapshot({
-//       view: this.view,
+//       view,
 //       bookId: bookId,
 //       fileName: `test.jpg`,
 //     })
@@ -215,38 +346,38 @@ class BookPage extends React.Component {
 
 //   }
 
-  render() {
-    const { books, bookId, showSettings, requestHideSettings,
-            latest_location, capturingSnapshots } = this.props
-    const { selectionInfo, noteInEdit } = this.state
 
-    const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
+  const bookLinkInfo = getFirstBookLinkInfo(books[bookId])
 
-    return (
-      <View style={styles.container}>
+  const initialLocation = latestLocation
+    ? latestLocationToStr(latestLocation)
+    : latest_location
+
+  const initialDisplaySettings = getDisplaySettingsObj(displaySettings)
+  if(textsize) initialDisplaySettings.textSize = textsize
+  if(textspacing) initialDisplaySettings.textSpacing = textspacing
+  if(theme) initialDisplaySettings.textsize = theme
+
+  return (
+    <>
+      <View style={styles.container} onLayout={onLayout}>
         <PageWebView
           key={bookId}
           bookId={bookId}
-          setWebViewEl={this.setWebViewEl}
-          onMessage={this.onMessageEvent}
-          initialLocation={latest_location}
-          initialDisplaySettings={getDisplaySettingsObj(this.props)}
-          // setView={this.setView}
+          webViewRef={webView}
+          onMessage={onMessageEvent}
+          initialLocation={initialLocation}
+          initialDisplaySettings={initialDisplaySettings}
+          initialToolCfiCountsInThisSpine={toolCfiCounts}
+          initialAddlParams={widget ? { widget } : null}
+          instructorHighlights={instructorHighlights}
+          viewRef={view}
         />
-        {!!showSettings && 
-          <DisplaySettings
-            requestHide={requestHideSettings}
-          />
-        }
-        {!!selectionInfo &&
-          <Highlighter
-            bookId={bookId}
-            selectionInfo={selectionInfo}
-            noteInEdit={noteInEdit}
-            updateNoteInEdit={this.updateNoteInEdit}
-            setSelectionText={this.setSelectionText}
-          />
-        }
+        <DisplaySettings
+          open={showSettings}
+          requestHide={requestHideSettings}
+          reportSpots={reportSpots}
+        />
         {!!bookLinkInfo &&
           <BookPageMessage
             text={bookLinkInfo.label}
@@ -254,23 +385,31 @@ class BookPage extends React.Component {
           />
         }
       </View>
-    )
-  }
-}
+      {!!selectionInfo &&
+        <Highlighter
+          bookId={bookId}
+          selectionInfo={selectionInfo}
+          noteInEdit={noteInEdit}
+          updateNoteInEdit={setNoteInEdit}
+          setSelectionText={setSelectionText}
+        />
+      }
+    </>
+  )
+})
 
-const mapStateToProps = (state) => ({
-  books: state.books,
-  displaySettings: state.displaySettings,
+const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
+  books,
+  userDataByBookId,
+  displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
   startRecordReading,
   endRecordReading,
   flushReadingRecords,
+  setSelectedToolUid,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookPage)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookPage))

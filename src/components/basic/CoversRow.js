@@ -1,7 +1,6 @@
 import React from "react"
-import { Constants } from "expo"
-import { View } from "native-base"
-import { StyleSheet } from "react-native"
+import Constants from 'expo-constants'
+import { StyleSheet, View } from "react-native"
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -23,20 +22,16 @@ const styles = StyleSheet.create({
   },
 })
 
-class CoversRow extends React.PureComponent {
-
-  render() {
-    const { children, isFirstRow } = this.props
-
-    return (
-      <View style={[
-        styles.covers,
-        isFirstRow ? styles.coversFirstRow : {},
-      ]}>
-        {children}
-      </View>
-    )
-  }
-}
+const CoversRow = React.memo(({
+  children,
+  isFirstRow,
+}) => (
+  <View style={[
+    styles.covers,
+    isFirstRow ? styles.coversFirstRow : {},
+  ]}>
+    {children}
+  </View>
+))
 
 export default CoversRow

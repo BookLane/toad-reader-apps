@@ -1,8 +1,7 @@
-import { Platform } from "react-native"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 import JSZip from "jszip"
-import { fetchWithProgress, encodeBase64 } from './toolbox.js'
-import i18n from "./i18n.js"
+import { fetchWithProgress, encodeBase64 } from './toolbox'
+import { i18n } from "inline-i18n"
 
 export const binaryExtensionToMimeTypeMap = {
   aac: 'audio/aac',
@@ -57,13 +56,13 @@ export const cancelFetch = async ({ localBaseUri }) => {
   runAbort({ localBaseUri })
 }
 
-export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, downloadIsPaused=()=>{}, title="", timeout }) => {
+export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progressCallback, getDownloadPaused=()=>{}, title="", timeout }) => {
 
   // set up the cancel function
   let errorMessage
   let cancelComplete = false
   const isCanceled = async force => {
-    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || downloadIsPaused()) {
+    if(force || cancelDownloadByLocalBaseUri[localBaseUri] || cancelComplete || getDownloadPaused()) {
       if(!cancelComplete) {
         console.log(`Download canceled for ${zipUrl}`)
         delete cancelDownloadByLocalBaseUri[localBaseUri]
@@ -177,7 +176,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
                 const base64 = encodeBase64(binarystring)
 
                 FileSystem.writeAsStringAsync(uri, base64, {
-                  encoding: FileSystem.EncodingTypes.Base64,
+                  encoding: FileSystem.EncodingType.Base64,
                 })
                   .then(doResolve)
                   .catch(reject)

@@ -1,87 +1,108 @@
-import React from "react"
+import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Subtitle, Title, Left, Icon, Right, Button, Body, Text } from "native-base"
-import i18n from "../../utils/i18n.js"
+import { i18n } from "inline-i18n"
 import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
+import { OverflowMenu } from "react-native-ui-kitten"
 
-import { debounce } from "../../utils/toolbox.js"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
-import { setSort, toggleView } from "../../redux/actions.js"
+import { setSort, toggleView } from "../../redux/actions"
 
-class LibraryHeader extends React.Component {
+const LibraryHeader = ({
+  idps,
+  accounts,
+  library,
+  setSort,
+  toggleView,
+}) => {
 
-  openDrawer = () => {
-    const { navigation, hideOptions } = this.props
+  const [ showOptions, setShowOptions ] = useState(false)
 
-    hideOptions()
-    debounce(navigation.navigate, "DrawerOpen")
+  const onPressToggleView = useCallback(toggleView, [])
+
+  const scope = library.scope || "all"
+
+  let title = i18n("Library")
+  let subtitle = ""
+
+  if(scope == 'device') {
+    title = i18n("On device")
   }
 
-  toggleView = () => {
-    const { toggleView, hideOptions } = this.props
-
-    hideOptions()
-    toggleView()
+  if(accounts[scope]) {
+    title = idps[getIdsFromAccountId(scope).idpId].idpName
+    subtitle = accounts[scope].email
   }
 
-  render() {
-    const { idps, accounts, library, toggleShowOptions } = this.props
-    const scope = library.scope || "all"
+  const moreOptions = [
+    {
+      key: 'recent',
+      title: i18n("Recent"),
+    },
+    {
+      key: 'title',
+      title: i18n("Title"),
+    },
+    {
+      key: 'author',
+      title: i18n("Author"),
+    },
+  ]
 
-    let title = i18n("Library")
-    let subtitle = ""
+  const moreKeys = moreOptions.map(({ key }) => key)
 
-    if(scope == 'device') {
-      title = i18n("On device")
-    }
-  
-    if(accounts[scope]) {
-      title = idps[scope.split(':')[0]].idpName
-      subtitle = accounts[scope].email
-    }
-    
-    return (
-      <AppHeader>
-        <Left>
-          <Button
-            transparent
-            onPress={this.openDrawer}
-          >
-            <Icon name="menu" />
-          </Button>
-        </Left>
-        <Body>
-          <Title>{title}</Title>
-          {subtitle
-            ? <Subtitle>{subtitle}</Subtitle>
-            : null
-          }
-        </Body>
-        <Right>
-          <Button
-            transparent
-            onPress={this.toggleView}
-          >
-            <Icon name={library.view == "covers" ? "list" : "md-apps"} />
-            {/* square */}
-          </Button>
-          <Button
-            transparent
+  const toggleShowOptions = useCallback(
+    () => setShowOptions(!showOptions),
+    [ showOptions ],
+  )
+
+  const selectSort = useCallback(
+    selectedIndex => {
+      setSort({ sort: moreKeys[selectedIndex] })
+      // setShowOptions(false)
+    },
+    [],
+  )
+
+  return (
+    <AppHeader
+      title={title}
+      subtitle={subtitle}
+      leftControl={
+        <HeaderIcon
+          name="ios-menu"
+          path="/drawer"
+        />
+      }
+      rightControls={[
+        <HeaderIcon
+          name={library.view == "covers" ? "ios-list" : "md-apps"}
+          onPress={onPressToggleView}
+        />,
+        <OverflowMenu
+          data={moreOptions}
+          visible={showOptions}
+          selectedIndex={moreKeys.indexOf(library.sort)}
+          onSelect={selectSort}
+          onBackdropPress={toggleShowOptions}
+          placement='bottom end'
+        >
+          <HeaderIcon
+            name="md-more"
             onPress={toggleShowOptions}
-          >
-            <Icon name="more" />
-          </Button>
-        </Right>
-      </AppHeader>
-    )
-  }
+          />
+        </OverflowMenu>,
+      ]}
+    />
+  )
 }
 
-const mapStateToProps = (state) => ({
-  idps: state.idps,
-  accounts: state.accounts,
-  library: state.library,
+const mapStateToProps = ({ idps, accounts, library }) => ({
+  idps,
+  accounts,
+  library,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

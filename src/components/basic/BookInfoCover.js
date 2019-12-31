@@ -1,13 +1,13 @@
 import React from "react"
-import { FileSystem } from "expo"
+import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet } from "react-native"
-import { View } from "native-base"
+import { Image, StyleSheet, View, Platform } from "react-native"
+import { Link } from "../routers/react-router"
 
-import FullScreenSpin from "./FullScreenSpin"
+import CoverAndSpin from "./CoverAndSpin"
 
-import { setUpTimeout, unmountTimeouts } from "../../utils/toolbox.js"
+import { getDataOrigin } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {
@@ -24,36 +24,50 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookInfoCover extends React.Component {
+const BookInfoCover = ({
+  bookId,
+  bookInfo,
+  downloadProgressByBookId,
+  idps,
+}) => {
 
-  componentWillUnmount = unmountTimeouts
+  const { coverFilename, downloadStatus, accounts, coverHref } = bookInfo
+  const idpId = Object.keys(accounts)[0].split(':')[0]
+  const downloadProgress = downloadProgressByBookId[bookId]
 
-  render() {
-    const { bookId, bookInfo, downloadProgressByBookId } = this.props
-    const { coverFilename, downloadStatus } = bookInfo
-    const downloadProgress = downloadProgressByBookId[bookId]
+  const uri = Platform.OS === 'web'
+    ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
+    : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
-    const uri = `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`
-
-    return (
-      <View style={styles.container}>
-        <Image
-          source={{ uri }}
-          style={styles.image}
-          resizeMode='cover'
+  const cover = (
+    <View style={styles.container}>
+      <Image
+        source={{ uri }}
+        style={styles.image}
+        resizeMode='cover'
+      />
+      {downloadStatus == 1 &&
+        <CoverAndSpin
+          percentage={downloadProgress}
         />
-        {downloadStatus == 1 &&
-          <FullScreenSpin
-            percentage={downloadProgress}
-          />
-        }
-      </View>
+      }
+    </View>
+  )
+
+  if(Platform.OS === 'web') {
+    return (
+      <Link to={`/book/${bookId}`}>
+        {cover}
+      </Link>
     )
   }
+
+  return cover
 }
 
-const mapStateToProps = (state) => ({
-  downloadProgressByBookId: state.downloadProgressByBookId,
+const mapStateToProps = ({ downloadProgressByBookId, idps }) => ({
+  downloadProgressByBookId,
+  idps,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

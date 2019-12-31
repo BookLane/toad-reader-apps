@@ -1,15 +1,14 @@
-import React from "react"
-import { Constants } from "expo"
+import React, { useCallback } from "react"
+import Constants from 'expo-constants'
 import { StyleSheet, Platform, View, Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Footer } from "native-base"
 
 import ProgressDot from "../basic/ProgressDot"
 
-import { getFooterHeight } from '../../utils/toolbox.js'
+import { getFooterHeight } from '../../utils/toolbox'
 
-// import {  } from "../../redux/actions.js"
+// import {  } from "../../redux/actions"
 
 const {
   ANDROID_TOOLBAR_COLOR,
@@ -41,60 +40,53 @@ const styles = StyleSheet.create({
   },
 })
 
-class BookProgress extends React.Component {
+const onStartShouldSetResponder = () => true
 
-  doScroll = pageX => {
-    const { scrollToPercentage } = this.props
-    const { width } = Dimensions.get('window')
+const BookProgress = ({
+  scrollToPercentage,
+  animatedScrollPosition,
+  maxScroll,
+  capturingSnapshots,
+}) => {
 
-    const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
-    const percent = Math.min(Math.max(percentageFraction * 100, 0), 100)
-    
-    scrollToPercentage(percent)
-  }
+  const { width } = Dimensions.get('window')
 
-  onStartShouldSetResponder = event => true
+  const onResponderGrantAndMove = useCallback(
+    event => {
+      const { pageX } = event.nativeEvent
+      const percentageFraction = (pageX - PROGRESS_BAR_SIDE_SPACING) / (width - PROGRESS_BAR_SIDE_SPACING*2)
+      const percent = Math.min(Math.max(percentageFraction * 100, 0), 100)
+      
+      scrollToPercentage(percent)
+    },
+    [ scrollToPercentage, width ],
+  )
 
-  onResponderGrant = event => {
-    const { pageX } = event.nativeEvent
-    this.doScroll(pageX)
-  }
-
-  onResponderMove = event => {
-    const { pageX } = event.nativeEvent
-    this.doScroll(pageX)
-  }
-
-  render() {
-    const { animatedScrollPosition, maxScroll, capturingSnapshots } = this.props
-
-    return (
-      <Footer style={styles.footer}>
-        <View
-          style={styles.touchResponder}
-          onStartShouldSetResponderCapture={this.onStartShouldSetResponder}
-          onStartShouldSetResponder={this.onStartShouldSetResponder}
-          onResponderGrant={this.onResponderGrant}
-          onResponderMove={this.onResponderMove}
-        />
-        <View style={styles.line}/>
-        <ProgressDot
-          size={30}
-          animatedScrollPosition={animatedScrollPosition}
-          maxScroll={maxScroll}
-          capturingSnapshots={capturingSnapshots}
-        />
-        {/* <ProgressDot
-          left={PROGRESS_BAR_SIDE_SPACING + 100}
-          size={6}
-        /> */}
-      </Footer>
-    )
-  }
+  return (
+    <View style={styles.footer}>
+      <View
+        style={styles.touchResponder}
+        onStartShouldSetResponderCapture={onStartShouldSetResponder}
+        onStartShouldSetResponder={onStartShouldSetResponder}
+        onResponderGrant={onResponderGrantAndMove}
+        onResponderMove={onResponderGrantAndMove}
+      />
+      <View style={styles.line}/>
+      <ProgressDot
+        size={30}
+        animatedScrollPosition={animatedScrollPosition}
+        maxScroll={maxScroll}
+        capturingSnapshots={capturingSnapshots}
+      />
+      {/* <ProgressDot
+        left={PROGRESS_BAR_SIDE_SPACING + 100}
+        size={6}
+      /> */}
+    </View>
+  )
 }
 
-const mapStateToProps = (state) => ({
-  // books: state.books,
+const mapStateToProps = ({}) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

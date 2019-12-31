@@ -1,12 +1,22 @@
 // See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
 
-import { FileSystem } from "expo"
+import { Platform } from "react-native"
+import * as FileSystem from 'expo-file-system'
 import { parseString } from "xml2js"
 
-import { getBooksDir } from "./toolbox.js"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 
-const getXmlAsObj = async url => {
-  const xml = await FileSystem.readAsStringAsync(url.replace(/#.*$/, ''))
+const getXmlAsObj = async ({ url, account }) => {
+  const urlWithoutHash = url.replace(/#.*$/, '')
+
+  const xml = /^https?:\/\//.test(urlWithoutHash)
+    ? (
+      await safeFetch(urlWithoutHash, getReqOptionsWithAdditions({
+        "x-cookie-override": account.cookie,
+      })).then(response => response.text())
+    )
+    : await FileSystem.readAsStringAsync(urlWithoutHash)
+
   return await new Promise(
     (resolve, reject) => parseString(xml, (err, result) => {
       if(err) {
@@ -40,26 +50,31 @@ const findNavToc = objOrArray => {
   }
 }
 
-export default async ({ bookId }) => {
+export default async ({ bookId, idp, account }) => {
 
-  const localBaseUri = `${getBooksDir()}${bookId}/`
+  const baseUri = Platform.OS === 'web'
+    ? `${getDataOrigin(idp)}/epub_content/book_${bookId}/`
+    : `${getBooksDir()}${bookId}/`
+
   let
     opfRelativeUri,
     opfObj,
-    opfManifestItems = {}
+    opfManifestItemsByIdref = {},
+    opfManifestItemsByHref = {}
 
   try {
 
     // find and load the opf document
-    const containerObj = await getXmlAsObj(`${localBaseUri}META-INF/container.xml`)
+    const containerObj = await getXmlAsObj({ url: `${baseUri}META-INF/container.xml`, account })
     // if we end up supporting multiple renditions, the next line will need expanding (http://www.idpf.org/epub/renditions/multiple/)
     opfRelativeUri = containerObj.container.rootfiles[0].rootfile[0].$['full-path']
-    opfObj = await getXmlAsObj(`${localBaseUri}${opfRelativeUri}`)
+    opfObj = await getXmlAsObj({ url: `${baseUri}${opfRelativeUri}`, account })
 
     // load manifest into an object keyed by ids
     ;(opfObj.package.manifest[0].item || []).forEach(item => {
       if(item.$ && item.$.id) {
-        opfManifestItems[item.$.id] = item
+        opfManifestItemsByIdref[item.$.id] = item
+        opfManifestItemsByHref[item.$.href] = item
       }
     })
     
@@ -105,14 +120,14 @@ export default async ({ bookId }) => {
 
       if(!navRelativeUri) {
         (opfObj.package.spine[0].itemref || []).some(itemref => {
-          if(((itemref.$ && itemref.$.properties) || "").split(" ").includes('nav') && opfManifestItems[itemref.$.idref]) {
-            navRelativeUri = `${opfDir}${opfManifestItems[itemref.$.idref].$.href}`
+          if(((itemref.$ && itemref.$.properties) || "").split(" ").includes('nav') && opfManifestItemsByIdref[itemref.$.idref]) {
+            navRelativeUri = `${opfDir}${opfManifestItemsByIdref[itemref.$.idref].$.href}`
             return true
           }
         })
       }
 
-      const navObj = await getXmlAsObj(`${localBaseUri}${navRelativeUri}`)
+      const navObj = await getXmlAsObj({ url: `${baseUri}${navRelativeUri}`, account })
       const navTocObj = findNavToc(navObj)
 
       const getEpub3TocObjInfo = ol => (
@@ -130,11 +145,14 @@ export default async ({ bookId }) => {
             
             if(!label || !href) return null
 
+            const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
+
             setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
               href,
+              spineIdRef,
             }
 
             if(li.ol) {
@@ -163,8 +181,8 @@ export default async ({ bookId }) => {
     
     try {
       
-      const navRelativeUri = `${opfDir}${opfManifestItems[opfObj.package.spine[0].$.toc].$.href}`
-      const navObj = await getXmlAsObj(`${localBaseUri}${navRelativeUri}`)
+      const navRelativeUri = `${opfDir}${opfManifestItemsByIdref[opfObj.package.spine[0].$.toc].$.href}`
+      const navObj = await getXmlAsObj({ url: `${baseUri}${navRelativeUri}`, account })
   
       const getEpub2TocObjInfo = cont => (
         cont.navPoint
@@ -184,11 +202,14 @@ export default async ({ bookId }) => {
 
             tocLabelsByHref[href] = label
 
+            const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
+
             setLabelsByHref({ href, label })
 
             const tocObj = {
               label,
               href,
+              spineIdRef,
             }
 
             if(navPoint.navPoint) {
@@ -221,9 +242,9 @@ export default async ({ bookId }) => {
       return {
         idref,
         label: (
-          opfManifestItems[idref] 
-          && opfManifestItems[idref].$
-          && tocLabelsByHref[opfManifestItems[idref].$.href]
+          opfManifestItemsByIdref[idref] 
+          && opfManifestItemsByIdref[idref].$
+          && tocLabelsByHref[opfManifestItemsByIdref[idref].$.href]
         ) || "",
       }
     })

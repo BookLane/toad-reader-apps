@@ -1,0 +1,1 @@
+export { useDimensions as default } from 'react-native-hooks'

@@ -1,14 +1,20 @@
-import React from "react"
-import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from "react-native"
+import React, { useRef, useCallback } from "react"
+import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions, View } from "react-native"
+import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View } from 'native-base'
+import { getToolbarHeight } from '../../utils/toolbox'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
+import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighlightSection"
 
-import { setHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions.js";
+import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
+import useUnmount from "react-use/lib/useUnmount"
+
+import { setHighlight } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   clearCover: {
@@ -35,122 +41,130 @@ const styles = StyleSheet.create({
     bottom: 'auto',
     top: 0,
   },
+  containerTopWideMode: {
+    paddingTop: Platform.OS === 'web' ? getToolbarHeight() - 1 : 0,
+  },
 })
 
-class Highlighter extends React.PureComponent {
+const Highlighter = React.memo(({
+  noteInEdit,
+  selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+  bookId,
+  setSelectionText,
+  updateNoteInEdit,
+  location,
+  
+  userDataByBookId,
 
-  constructor(props) {
-    super(props)
+  setHighlight,
+}) => {
 
-    this.state = {
-      highlight: this.getHighlight(props),
-    }
-  }
+  // We do not use useState here, because we don't want to wait until the next render.
+  // We do not use a simple local variable here, because we sometimes want it to 
+  // not change from the previous value.
+  const highlight = useRef()
+  const isEditingNote = noteInEdit != null 
 
-  componentWillReceiveProps(nextProps) {
-    const { noteInEdit } = this.state
+  if(noteInEdit == null) {
 
-    if(nextProps.noteInEdit == null) {
-      this.setState({
-        highlight: this.getHighlight(nextProps),
-      })
-    }
-  }
-
-  getHighlight = props => {
-    const { selectionInfo, userDataByBookId, bookId } = props || this.props
-    // example of selectionInfo: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-
-    let highlightToReturn
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
-    thisBooksHighlights.some(highlight => {
-      if(highlight.spineIdRef === selectionInfo.spineIdRef && highlight.cfi === selectionInfo.cfi && !highlight._delete) {
-        highlightToReturn = highlight
+    if(!thisBooksHighlights.some(h => {
+      if(h.spineIdRef === selectionInfo.spineIdRef && h.cfi === selectionInfo.cfi) {
+        highlight.current = h._delete ? undefined : h
         return true
       }
-    })
-
-    return highlightToReturn
-  }
-
-  setEditingNote = editingNote => {
-    const { bookId, noteInEdit, selectionInfo, setHighlight, updateNoteInEdit, setSelectionText } = this.props
-    const { spineIdRef, cfi } = selectionInfo || {}
-    const { highlight } = this.state
-
-    if(editingNote) {
-      updateNoteInEdit(highlight.note)
-
-    } else {
-      setHighlight({
-        ...highlight,
-        bookId,
-        note: noteInEdit,
-        patchInfo: this.props,
-      })
-
-      updateNoteInEdit(null)
-
-      setSelectionText({
-        spineIdRef,
-        cfi,
-      })
+    })) {
+      highlight.current = undefined
     }
+
   }
 
-  setNoteTextInputEl = el => this.noteTextInputEl = el
-  endEditingNote = () => this.noteTextInputEl.blur()
-  
-  render() {
-    const { selectionInfo, bookId, noteInEdit, setSelectionText, updateNoteInEdit } = this.props
-    // {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
-    const { highlight } = this.state
+  const { routerState } = useRouterState({ location })
+  const { widget } = routerState
 
-    const isEditingNote = noteInEdit != null 
+  const wideMode = useWideMode()
 
-    return [
-      ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
-      <BackFunction key="back" func={isEditingNote ? this.endEditingNote : setSelectionText} />,
-      <KeyboardAvoidingView
-        key="container"
-        style={[
-          styles.container,
-          (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
-        ]}
-        keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
-        behavior="padding"
-      >
-        <HighlighterLabel
-          selectionInfo={selectionInfo}
-          bookId={bookId}
-          highlight={highlight}
-          // setSelectionText={setSelectionText}
-          isEditingNote={isEditingNote}
-          endEditingNote={this.endEditingNote}
-        />
-        {!!highlight && 
-          <HighlighterNotes
-            note={isEditingNote ? noteInEdit : highlight.note}
-            updateNoteInEdit={updateNoteInEdit}
-            setEditingNote={this.setEditingNote}
-            setNoteTextInputEl={this.setNoteTextInputEl}
-          />
+  const noteTextInputRef = useRef()
+
+  const setEditingNote = useCallback(
+    (editingNote, skipSetSelectionText) => {
+      const { spineIdRef, cfi } = selectionInfo || {}
+
+      if(editingNote) {
+        updateNoteInEdit(highlight.current.note)
+
+      } else if(isEditingNote) {
+        setHighlight({
+          ...highlight.current,
+          bookId,
+          note: noteInEdit,
+          patchInfo: {
+            userDataByBookId,
+          },
+        })
+
+        updateNoteInEdit(null)
+
+        if(!skipSetSelectionText) {
+          setSelectionText({
+            spineIdRef,
+            cfi,
+          })
         }
-      </KeyboardAvoidingView>
-    ]
-  }
-}
+      }
+    },
+    [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current, userDataByBookId ],
+  )
 
-const mapStateToProps = (state) => ({
-  userDataByBookId: state.userDataByBookId,
+  const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])
+
+  useUnmount(() => setEditingNote(false, true))
+  
+  return [
+    ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
+    <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
+    <KeyboardAvoidingView
+      key="container"
+      style={[
+        styles.container,
+        (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
+        (selectionInfo.copyTooltipInLowerHalf && wideMode && !widget && styles.containerTopWideMode),
+      ]}
+      data-id="highlighter"
+      keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
+      behavior="padding"
+    >
+      <HighlighterInstructorHighlightSection
+        bookId={bookId}
+        highlight={highlight.current}
+        selectionInfo={selectionInfo}
+      />
+      <HighlighterLabel
+        selectionInfo={selectionInfo}
+        bookId={bookId}
+        highlight={highlight.current}
+        // setSelectionText={setSelectionText}
+        isEditingNote={isEditingNote}
+      />
+      {!!highlight.current && 
+        <HighlighterNotes
+          note={isEditingNote ? noteInEdit : highlight.current.note}
+          updateNoteInEdit={updateNoteInEdit}
+          setEditingNote={setEditingNote}
+          noteTextInputRef={noteTextInputRef}
+        />
+      }
+    </KeyboardAvoidingView>
+  ]
+})
+
+const mapStateToProps = ({ userDataByBookId }) => ({
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Highlighter))

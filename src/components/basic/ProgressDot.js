@@ -1,12 +1,11 @@
 import React from "react"
-import { Constants } from "expo"
+import Constants from 'expo-constants'
 import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
-import { View } from "native-base"
-import i18n from "../../utils/i18n.js"
+// import { i18n } from "inline-i18n"
 
 import ProgressDotLabel from "./ProgressDotLabel"
 
-import { getFooterHeight } from "../../utils/toolbox.js"
+import { getFooterHeight } from "../../utils/toolbox"
 
 const {
   PROGRESS_BAR_SIDE_SPACING,
@@ -22,48 +21,49 @@ const styles = StyleSheet.create({
   },
 })
 
-class ProgressDot extends React.Component {
+const ProgressDot = ({
+  size,
+  animatedScrollPosition,
+  maxScroll,
+  capturingSnapshots,
+}) => {
 
-  render() {
-    const { size, animatedScrollPosition, maxScroll, capturingSnapshots } = this.props
+  const { width } = Dimensions.get('window')
 
-    const { width } = Dimensions.get('window')
+  const translateX = animatedScrollPosition.interpolate({
+    inputRange: [0, maxScroll],
+    outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
+  })
 
-    const translateX = animatedScrollPosition.interpolate({
-      inputRange: [0, maxScroll],
-      outputRange: [PROGRESS_BAR_SIDE_SPACING, width - PROGRESS_BAR_SIDE_SPACING],
-    })
-
-    const dotStyles = {
-      top: (getFooterHeight() - size) / 2,
-      width: size,
-      height: size,
-      borderRadius: size / 2,
-      marginLeft: size / -2,
-      marginRight: size / -2,
-      transform: [
-        {
-          translateX,
-        },
-      ],
-    }
-
-    return (
-      <Animated.View
-        style={[
-          styles.dot,
-          dotStyles,
-        ]}
-      >
-        {!capturingSnapshots &&
-          <ProgressDotLabel
-            animatedScrollPosition={animatedScrollPosition}
-            maxScroll={maxScroll}
-          />
-        }
-      </Animated.View>
-    )
+  const dotStyles = {
+    top: (getFooterHeight() - size) / 2,
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+    marginLeft: size / -2,
+    marginRight: size / -2,
+    transform: [
+      {
+        translateX,
+      },
+    ],
   }
+
+  return (
+    <Animated.View
+      style={[
+        styles.dot,
+        dotStyles,
+      ]}
+    >
+      {!capturingSnapshots &&
+        <ProgressDotLabel
+          animatedScrollPosition={animatedScrollPosition}
+          maxScroll={maxScroll}
+        />
+      }
+    </Animated.View>
+  )
 }
 
 export default ProgressDot

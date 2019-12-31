@@ -1,6 +1,6 @@
 import React from "react"
-import { View, Text, Icon } from "native-base"
-import { StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { StyleSheet, View, Text } from "react-native"
 
 const styles = StyleSheet.create({
   container: {
@@ -23,19 +23,12 @@ const styles = StyleSheet.create({
   },
 })
 
-class CoverCheck extends React.Component {
-
-  render() {
-    const { downloadStatus } = this.props
-
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>
-          <Icon name='md-checkmark' style={styles.checkmark} />
-        </Text>
-      </View>
-    )
-  }
-}
+const CoverCheck = () => (
+  <View style={styles.container}>
+    <Text style={styles.text}>
+      <Ionicons name='md-checkmark' style={styles.checkmark} />
+    </Text>
+  </View>
+)
 
 export default CoverCheck

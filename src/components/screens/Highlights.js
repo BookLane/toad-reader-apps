@@ -1,45 +1,35 @@
 import React from "react"
-import { Container, Title, Left, Right, Button, Icon, Body, Content, Text, Card, CardItem } from "native-base"
+// import { Ionicons } from "@expo/vector-icons"
+// import { Button } from "react-native-ui-kitten"
 import AppHeader from "../basic/AppHeader"
+import SafeLayout from "../basic/SafeLayout"
 
-class Highlights extends React.Component {
-
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
-  render() {
-    const { navigation } = this.props
-    return (
-      <Container>
-        <AppHeader>
-          <Left>
-            <Button
-              transparent
-              onPress={this.goBack}
-            >
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
+const Highlights = ({ history }) => (
+  <SafeLayout>
+    <AppHeader>
+      {/* <Left>
+        <Button
+          transparent
+          onPress={history.goBack}
+        >
+          <Ionicons name="md-arrow-back" />
+        </Button>
+      </Left>
+      <Body>
+        <Title>Highlights</Title>
+      </Body>
+      <Right /> */}
+    </AppHeader>
+    {/* <Content padder>
+      <Card>
+        <CardItem>
           <Body>
-            <Title>Highlights</Title>
+            <Text>Highlights here</Text>
           </Body>
-          <Right />
-        </AppHeader>
-        <Content padder>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>Highlights here</Text>
-              </Body>
-            </CardItem>
-          </Card>
-        </Content>
-      </Container>
-    )
-  }
-}
+        </CardItem>
+      </Card>
+    </Content> */}
+  </SafeLayout>
+)
 
 export default Highlights

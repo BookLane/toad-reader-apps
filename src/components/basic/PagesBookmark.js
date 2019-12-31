@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon } from "native-base"
+import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
@@ -10,15 +10,8 @@ const styles = StyleSheet.create({
   },
 })
 
-class PagesBookmark extends React.Component {
-
-  render() {
-    const { children, header } = this.props
-
-    return (
-      <Icon name='bookmark' style={styles.icon} />
-    )
-  }
-}
+const PagesBookmark = () => (
+  <Ionicons name='bookmark' style={styles.icon} />
+)
 
 export default PagesBookmark

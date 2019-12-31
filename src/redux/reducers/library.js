@@ -25,7 +25,11 @@ export default function(state = initialState, action) {
     case "REMOVE_ACCOUNT":
       newState.bookList = []
       return newState
-      
+
+    case "DELETE_BOOK":
+      newState.bookList = newState.bookList.filter(bookId => bookId !== action.bookId)
+      return newState
+  
   }
   
   return state

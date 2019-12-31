@@ -1,36 +1,25 @@
 import React from "react"
-import { Container, Title, Left, Icon, Right, Button, Body, Content } from "native-base"
+// import { Ionicons } from "@expo/vector-icons"
+import SafeLayout from "../basic/SafeLayout"
 import AppHeader from "../basic/AppHeader"
 
-class Accounts extends React.Component {
-
-  goBack = () => {
-    const { navigation } = this.props
-
-    navigation.goBack()
-  }
-
-  render() {
-
-    return (
-      <Container>
-        <AppHeader>
-          <Left>
-            <Button
-              transparent
-              onPress={this.goBack}
-            >
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>Accounts</Title>
-          </Body>
-          <Right />
-        </AppHeader>
-      </Container>
-    )
-  }
-}
+const Accounts = ({ history }) => (
+  <SafeLayout>
+    <AppHeader>
+      {/* <Left>
+        <Button
+          transparent
+          onPress={history.goBack}
+        >
+          <Ionicons name="md-arrow-back" />
+        </Button>
+      </Left>
+      <Body>
+        <Title>Accounts</Title>
+      </Body>
+      <Right /> */}
+    </AppHeader>
+  </SafeLayout>
+)
 
 export default Accounts

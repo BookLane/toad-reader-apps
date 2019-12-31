@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { Icon, Toast } from "native-base"
-import i18n from "../../utils/i18n.js"
+import { Ionicons } from "@expo/vector-icons"
+// import { i18n } from "inline-i18n"
 
 const styles = StyleSheet.create({
   container: {
@@ -18,30 +18,32 @@ const styles = StyleSheet.create({
   },
 })
 
-class CapturingThumbnailsInfoIcon extends React.PureComponent {
+const CapturingThumbnailsInfoIcon = React.memo(() => {
 
-  showInfo = () => {
-    Toast.show({
-      text: i18n("We will create thumbnail images in the background when you are reading."),
-      buttonText: i18n("Okay"),
-      duration: 15000,
-    })
-  }
+  const showInfo = useCallback(
+    () => {
+      // TODO
+      // Toast.show({
+      //   text: i18n("We will create thumbnail images in the background when you are reading."),
+      //   buttonText: i18n("Okay"),
+      //   duration: 15000,
+      // })
+    },
+    [],
+  )
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={this.showInfo}
-        >
-          <Icon
-            name="information-circle-outline"
-            style={styles.info}
-          />
-        </TouchableOpacity>
-      </View>
-    )
-  }
-}
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={showInfo}
+      >
+        <Ionicons
+          name="md-information-circle-outline"
+          style={styles.info}
+        />
+      </TouchableOpacity>
+    </View>
+  )
+})
 
 export default CapturingThumbnailsInfoIcon

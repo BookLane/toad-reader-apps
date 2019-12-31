@@ -4,7 +4,7 @@ export default function(state = initialState, action) {
   const newState = {...state}
 
   const removeAccount = (exceptBookIds = []) => {
-    for(bookId in newState) {
+    for(let bookId in newState) {
       if(exceptBookIds.includes(bookId)) continue
       const accounts = {...newState[bookId].accounts}
       delete accounts[action.accountId]
@@ -29,6 +29,7 @@ export default function(state = initialState, action) {
           title: book.title,
           author: book.author,
           epubSizeInMB: book.epubSizeInMB,
+          version: book.version,
           totalCharacterCount: book.totalCharacterCount,
           coverHref: book.coverHref,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
@@ -36,19 +37,25 @@ export default function(state = initialState, action) {
           spines: (state[book.id] && state[book.id].spines) || undefined,
           accounts: {
             ...((state[book.id] && state[book.id].accounts) || {}),
-            [action.accountId]: (
-              (book.link_href && book.link_label)
-                ? {
-                  link: {
-                    href: book.link_href,
-                    label: book.link_label,
-                  },
-                }
-                : {}
-            ),
+            [action.accountId]: {
+              ...!((book.link_href && book.link_label) ? {} : {
+                link: {
+                  href: book.link_href,
+                  label: book.link_label,
+                },
+              }),
+              version: book.version || 'BASE',
+              ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
+              ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
+              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || Date.now(),
+            },
           },
         }
       })
+      return newState
+
+    case "DELETE_BOOK":
+      delete newState[action.bookId]
       return newState
 
     case "SET_COVER_FILENAME":
@@ -94,6 +101,27 @@ export default function(state = initialState, action) {
         return newState
       }
       return state
+
+    case "SET_CURRENT_CLASSROOM":
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          currentClassroomUid: action.uid,
+        }
+        return newState
+      }
+      return state
+
+    case "SET_SELECTED_TOOL_UID": {
+      if(newState[action.bookId]) {
+        newState[action.bookId] = {
+          ...newState[action.bookId],
+          selectedToolUid: action.uid,
+        }
+        return newState
+      }
+      return state
+    }
 
     case "SET_TOC_AND_SPINES":
       if(newState[action.bookId]) {
