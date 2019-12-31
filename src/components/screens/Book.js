@@ -12,7 +12,7 @@ import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import ToolFlipper from "../major/ToolFlipper"
-// import EnhancedHeader from "../major/EnhancedHeader"
+import EnhancedHomepage from "../major/EnhancedHomepage"
 import FrontMatter from "../major/FrontMatter"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -927,9 +927,9 @@ const Book = React.memo(({
             inEditMode={inEditMode}
             goTo={goTo}
           />
-          {/* <EnhancedHeader
+          <EnhancedHomepage
             bookId={bookId}
-          /> */}
+          />
           <FrontMatter
             bookId={bookId}
             inEditMode={inEditMode}

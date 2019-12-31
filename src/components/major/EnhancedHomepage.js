@@ -5,9 +5,7 @@ import { connect } from "react-redux"
 
 import { ViewPager } from "react-native-ui-kitten"
 
-import Syllabus from "./Syllabus"
-import InstructorsIntroduction from "./InstructorsIntroduction"
-import StatusAndActions from "./StatusAndActions"
+import EnhancedConnecting from "./EnhancedConnecting"
 
 import { i18n } from "inline-i18n"
 import { getToolbarHeight } from '../../utils/toolbox'
@@ -22,10 +20,6 @@ const container = {
   ...StyleSheet.absoluteFillObject,
   backgroundColor: 'white',
   zIndex: 5,
-}
-
-const topSection = {
-  paddingHorizontal: 30,
 }
 
 const tabTitle = {
@@ -44,19 +38,6 @@ const styles = StyleSheet.create({
     ...container,
     top: getToolbarHeight(),
     paddingTop: 20,
-  },
-  topSection: {
-    ...topSection,
-  },
-  topSectionWideMode: {
-    ...topSection,
-    flexDirection: 'row',
-  },
-  heading: {
-    paddingBottom: 20,
-    fontWeight: 600,
-    fontSize: 18,
-    flex: 1,
   },
   tabs: {
     flexDirection: 'row',
@@ -81,9 +62,8 @@ const styles = StyleSheet.create({
   },
 })
 
-const FrontMatter = React.memo(({
+const EnhancedHomepage = React.memo(({
   bookId,
-  inEditMode,
 
   books,
   userDataByBookId,
@@ -93,7 +73,7 @@ const FrontMatter = React.memo(({
 
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
 
-  const { classroom, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroom, viewingEnhancedHomepage } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
 
@@ -113,42 +93,43 @@ const FrontMatter = React.memo(({
 
   const wideMode = useWideMode()
 
-  if(!viewingFrontMatter) return null
-
-  const { syllabus, introduction } = classroom
+  if(!viewingEnhancedHomepage) return null
 
   const tabs = [
-    ...((!syllabus && !inEditMode) ? [] : [{
-      title: i18n("Syllabus"),
+    {
+      title: i18n("Connecting"),
       content: (
-        <Syllabus
+        <EnhancedConnecting
           bookId={bookId}
-          inEditMode={inEditMode}
           goUpdateClassroom={goUpdateClassroom}
         />
       ),
-    }]),
+    },
     // {
-    //   title: i18n("Reading schedule"),
+    //   title: i18n("Analytics"),
     //   content: (
-    //     <ReaderSchedule
+    //     <EnhancedAnalytics
     //     />
     //   ),
     // },
-    ...((!(introduction || "").trim() && !inEditMode) ? [] : [{
-      title: i18n("Instructor’s introduction"),
-      content: (
-        <InstructorsIntroduction
-          bookId={bookId}
-          inEditMode={inEditMode}
-          goUpdateClassroom={goUpdateClassroom}
-        />
-      ),
-    }]),
     // {
-    //   title: i18n("Options"),
+    //   title: i18n("Scores"),
     //   content: (
-    //     <ClassroomOptions
+    //     <EnhancedScores
+    //     />
+    //   ),
+    // },
+    // {
+    //   title: i18n("Surveys"),
+    //   content: (
+    //     <EnhancedSurveys
+    //     />
+    //   ),
+    // },
+    // {
+    //   title: i18n("Discussions"),
+    //   content: (
+    //     <EnhancedDiscussions
     //     />
     //   ),
     // },
@@ -158,17 +139,6 @@ const FrontMatter = React.memo(({
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
-      <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
-        <Text style={styles.heading}>
-          {i18n("Front matter")}
-        </Text>
-        {inEditMode &&
-          <StatusAndActions
-            bookId={bookId}
-            isFrontMatter={true}
-          />
-        }
-      </View>
       <View
         style={styles.tabs}
       >
@@ -212,4 +182,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateClassroom,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(FrontMatter)
+export default connect(mapStateToProps, matchDispatchToProps)(EnhancedHomepage)
