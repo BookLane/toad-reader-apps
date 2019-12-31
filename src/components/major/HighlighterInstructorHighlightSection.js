@@ -23,6 +23,8 @@ const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
     borderColor: 'rgba(0,0,0,.2)',
+    maxHeight: 150,
+    overflowY: 'auto',
   },
   heading: {
     flexDirection: 'row',
