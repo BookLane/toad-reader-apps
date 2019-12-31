@@ -24,7 +24,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
     classroomUid = undefined
   }
 
-  const isDefaultClassroom = !currentClassroomUid
+  const isDefaultClassroom = classroomUid === defaultClassroomUid
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
 
