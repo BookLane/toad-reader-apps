@@ -57,6 +57,10 @@ const styles = StyleSheet.create({
   unselectedToolChip: {
     opacity: .2,
   },
+  clickable: {
+    textDecorationLine: 'underline',
+    fontStyle: 'normal',
+  },
 })
 
 const HighlighterInstructorHighlightSection = React.memo(({
@@ -82,8 +86,8 @@ const HighlighterInstructorHighlightSection = React.memo(({
   const hasInstructorHighlight = relevantInstructorHighlights.length > 0
   const hasIsMineInstructorHighlight = relevantInstructorHighlights.some(({ isMine, _delete }) => (isMine && !_delete))
   const othersInstructorHighlights = relevantInstructorHighlights.filter(({ isMine }) => !isMine)
-  const otherInstructorHighlightsWithNotes = othersInstructorHighlights.filter(({ note }) => (note || "").trim())
-  const otherInstructorHighlightsWithoutNotes = othersInstructorHighlights.filter(({ note }) => !(note || "").trim())
+  const othersInstructorHighlightsWithNotes = othersInstructorHighlights.filter(({ note }) => (note || "").trim())
+  const othersInstructorHighlightsWithoutNotes = othersInstructorHighlights.filter(({ note }) => !(note || "").trim())
   const iHaveANote = !!((highlight || {}).note || "").trim()
 
   const toggleAsInstructorHighlight = useCallback(
@@ -125,13 +129,13 @@ const HighlighterInstructorHighlightSection = React.memo(({
           onPress={othersInstructorHighlights.length === 0 ? toggleAsInstructorHighlight : null}
           style={!hasInstructorHighlight ? styles.unselectedToolChip : styles.toolChip}
         />
-        {otherInstructorHighlightsWithoutNotes.length > 0 &&
+        {othersInstructorHighlightsWithoutNotes.length > 0 &&
           <Text style={styles.authorInHeading}>
-            {combineItems(...otherInstructorHighlightsWithoutNotes.map(({ author_fullname }) => author_fullname))}
+            {combineItems(...othersInstructorHighlightsWithoutNotes.map(({ author_fullname }) => author_fullname))}
           </Text>
         }
       </View>
-      {otherInstructorHighlightsWithNotes.map(({ note, author_id, author_fullname }) => (
+      {othersInstructorHighlightsWithNotes.map(({ note, author_id, author_fullname }) => (
         <View key={author_id}>
           <Text style={styles.note}>
             {textToReactNative(note)}
@@ -144,14 +148,27 @@ const HighlighterInstructorHighlightSection = React.memo(({
       {hasIsMineInstructorHighlight && iHaveANote &&
         <Text style={styles.mynote}>
           {i18n("Students can also view your notes below.")}
-          {otherInstructorHighlightsWithNotes.length > 0 && iHaveANote &&
-            <Text
-              style={styles.clickable}
-              onPress={toggleAsInstructorHighlight}
-            >
-              {i18n("Remove")}
-            </Text>
+          {othersInstructorHighlights.length > 0 && iHaveANote &&
+            <>
+              {" "}
+              <Text
+                style={styles.clickable}
+                onPress={toggleAsInstructorHighlight}
+              >
+                {i18n("Remove")}
+              </Text>
+            </>
           }
+        </Text>
+      }
+      {hasInstructorHighlight && !hasIsMineInstructorHighlight && iHaveANote &&
+        <Text style={styles.mynote}>
+          <Text
+            style={styles.clickable}
+            onPress={toggleAsInstructorHighlight}
+          >
+            {i18n("Show students my note")}
+          </Text>
         </Text>
       }
     </View>
