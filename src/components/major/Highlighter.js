@@ -135,12 +135,11 @@ const Highlighter = React.memo(({
       keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
       behavior="padding"
     >
-      {!!(highlight.current && !isEditingNote) &&
-        <HighlighterInstructorHighlightSection
-          bookId={bookId}
-          highlight={highlight.current}
-        />
-      }
+      <HighlighterInstructorHighlightSection
+        bookId={bookId}
+        highlight={highlight.current}
+        selectionInfo={selectionInfo}
+      />
       <HighlighterLabel
         selectionInfo={selectionInfo}
         bookId={bookId}

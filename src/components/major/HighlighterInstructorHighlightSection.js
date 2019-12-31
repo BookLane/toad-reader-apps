@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
 const HighlighterInstructorHighlightSection = React.memo(({
   bookId,
   highlight,
+  selectionInfo,
 
   books,
   userDataByBookId,
@@ -77,13 +78,13 @@ const HighlighterInstructorHighlightSection = React.memo(({
 
   const { classroomUid, isDefaultClassroom, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === highlight.spineIdRef && cfi === highlight.cfi && !_delete))
+  const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === selectionInfo.spineIdRef && cfi === selectionInfo.cfi && !_delete))
   const hasInstructorHighlight = relevantInstructorHighlights.length > 0
   const hasIsMineInstructorHighlight = relevantInstructorHighlights.some(({ isMine, _delete }) => (isMine && !_delete))
   const othersInstructorHighlights = relevantInstructorHighlights.filter(({ isMine }) => !isMine)
   const otherInstructorHighlightsWithNotes = othersInstructorHighlights.filter(({ note }) => (note || "").trim())
   const otherInstructorHighlightsWithoutNotes = othersInstructorHighlights.filter(({ note }) => !(note || "").trim())
-  const iHaveANote = !!(highlight.note || "").trim()
+  const iHaveANote = !!((highlight || {}).note || "").trim()
 
   const toggleAsInstructorHighlight = useCallback(
     () => {
@@ -114,7 +115,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
   )
 
   if(isDefaultClassroom) return null
-  if(myRole !== 'INSTRUCTOR' && !hasInstructorHighlight) return null
+  if(!(myRole === 'INSTRUCTOR' && highlight) && !hasInstructorHighlight) return null
 
   return (
     <View style={styles.container}>
