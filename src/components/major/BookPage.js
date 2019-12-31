@@ -359,23 +359,31 @@ const BookPage = React.memo(props => {
   if(theme) initialDisplaySettings.textsize = theme
 
   return (
-    <View style={styles.container} onLayout={onLayout}>
-      <PageWebView
-        key={bookId}
-        bookId={bookId}
-        webViewRef={webView}
-        onMessage={onMessageEvent}
-        initialLocation={initialLocation}
-        initialDisplaySettings={initialDisplaySettings}
-        initialToolCfiCountsInThisSpine={toolCfiCounts}
-        initialAddlParams={widget ? { widget } : null}
-        viewRef={view}
-      />
-      <DisplaySettings
-        open={showSettings}
-        requestHide={requestHideSettings}
-        reportSpots={reportSpots}
-      />
+    <>
+      <View style={styles.container} onLayout={onLayout}>
+        <PageWebView
+          key={bookId}
+          bookId={bookId}
+          webViewRef={webView}
+          onMessage={onMessageEvent}
+          initialLocation={initialLocation}
+          initialDisplaySettings={initialDisplaySettings}
+          initialToolCfiCountsInThisSpine={toolCfiCounts}
+          initialAddlParams={widget ? { widget } : null}
+          viewRef={view}
+        />
+        <DisplaySettings
+          open={showSettings}
+          requestHide={requestHideSettings}
+          reportSpots={reportSpots}
+        />
+        {!!bookLinkInfo &&
+          <BookPageMessage
+            text={bookLinkInfo.label}
+            externalHref={bookLinkInfo.href}
+          />
+        }
+      </View>
       {!!selectionInfo &&
         <Highlighter
           bookId={bookId}
@@ -385,13 +393,7 @@ const BookPage = React.memo(props => {
           setSelectionText={setSelectionText}
         />
       }
-      {!!bookLinkInfo &&
-        <BookPageMessage
-          text={bookLinkInfo.label}
-          externalHref={bookLinkInfo.href}
-        />
-      }
-    </View>
+    </>
   )
 })
 

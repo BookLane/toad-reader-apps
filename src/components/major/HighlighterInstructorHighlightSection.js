@@ -73,7 +73,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
 
   const getUserDataByBookId = useInstanceValue(userDataByBookId)
 
-  const { classroomUid, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, isDefaultClassroom, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === highlight.spineIdRef && cfi === highlight.cfi && !_delete))
   const hasInstructorHighlight = relevantInstructorHighlights.length > 0
@@ -111,7 +111,8 @@ const HighlighterInstructorHighlightSection = React.memo(({
     [ hasIsMineInstructorHighlight, bookId, classroomUid, highlight ],
   )
 
-  if(myRole !== 'INSTRUCTOR' && hasInstructorHighlight) return null
+  if(isDefaultClassroom) return null
+  if(myRole !== 'INSTRUCTOR' && !hasInstructorHighlight) return null
 
   return (
     <View style={styles.container}>
