@@ -73,12 +73,11 @@ const EnhancedHeader = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroom, isDefaultClassroom, selectedToolUid, bookVersion, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
   const hasFrontMatter = false
-  const frontMatterSelected = selectedToolUid === 'FRONT MATTER'
 
   const EditButtonIcon = useCallback(
     style => (
@@ -89,6 +88,16 @@ const EnhancedHeader = React.memo(({
       />
     ),
     [ inEditMode ],
+  )
+
+  const selectEnhancedHomepage = useCallback(
+    () => {
+      setSelectedToolUid({
+        bookId,
+        uid: 'ENHANCED HOMEPAGE',
+      })
+    },
+    [ bookId ],
   )
 
   const selectFrontMatter = useCallback(
@@ -105,29 +114,33 @@ const EnhancedHeader = React.memo(({
 
   return (
     <View style={styles.container} data-id="EnhancedHeader">
-      <View style={styles.lineContainer}>
-        <Text style={styles.line}>
-          <Text style={styles.enhanced}>
-            {i18n("Enhanced")}
+      <TouchableOpacity
+        onPress={selectEnhancedHomepage}
+      >
+        <View style={viewingEnhancedHomepage ? styles.lineContainerSelected : styles.lineContainer}>
+          <Text style={styles.line}>
+            <Text style={styles.enhanced}>
+              {i18n("Enhanced")}
+            </Text>
+            {"  "}
+            {isDefaultClassroom ? i18n("Book default") : classroom.name}
           </Text>
-          {"  "}
-          {isDefaultClassroom ? i18n("Book default") : classroom.name}
-        </Text>
-        {iCanEdit &&
-          <Button
-            style={inEditMode ? styles.editButtonActive : styles.editButton}
-            appearance="ghost"
-            status="basic"
-            icon={EditButtonIcon}
-            onPress={toggleInEditMode}
-          />
-        }
-      </View>
+          {iCanEdit && !viewingEnhancedHomepage &&
+            <Button
+              style={inEditMode ? styles.editButtonActive : styles.editButton}
+              appearance="ghost"
+              status="basic"
+              icon={EditButtonIcon}
+              onPress={toggleInEditMode}
+            />
+          }
+        </View>
+      </TouchableOpacity>
       {!!(!hasFrontMatter && myRole === 'INSTRUCTOR') &&
         <TouchableOpacity
           onPress={selectFrontMatter}
         >
-          <View style={frontMatterSelected ? styles.lineContainerSelected : styles.lineContainer}>
+          <View style={viewingFrontMatter ? styles.lineContainerSelected : styles.lineContainer}>
             <Text style={styles.addFrontMatter}>
               {i18n("Add front matter")}
             </Text>

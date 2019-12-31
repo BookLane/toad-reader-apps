@@ -29,13 +29,14 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
 
   const { tools=[], instructorHighlights=[] } = classroom || {}
-  const selectedTool = selectedToolUid === 'FRONT MATTER' ? {} : tools.filter(({ uid }) => uid === selectedToolUid)[0]
+  const selectedTool = ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid) ? {} : tools.filter(({ uid }) => uid === selectedToolUid)[0]
 
   if(userDataByBookId[bookId] && !selectedTool && selectedToolUid) {
     // Make this consistent when we can (i.e. when userDataByBookId is sent over).
     selectedToolUid = undefined
   }
 
+  const viewingEnhancedHomepage = selectedToolUid === 'ENHANCED HOMEPAGE'
   const viewingFrontMatter = selectedToolUid === 'FRONT MATTER'
 
   return {
@@ -57,6 +58,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
     tools,  // requires userDataByBookId to be sent in
     selectedToolUid,
     selectedTool,  // requires userDataByBookId to be sent in
+    viewingEnhancedHomepage,
     viewingFrontMatter,
     instructorHighlights,  // requires userDataByBookId to be sent in
   }
