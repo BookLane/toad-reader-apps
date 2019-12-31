@@ -23,8 +23,14 @@ const PageCapture = ({
   reportFinished,
   processingPaused,
   history,
+  
+  books,
+  userDataByBookId,
+
   addSpinePageCfis,
 }) => {
+
+  const { instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const loadSpineAndGetPagesInfoAlreadyCalled = useRef(false)
   const getCfisOrShiftAndSnap = useRef()
@@ -227,11 +233,14 @@ const PageCapture = ({
       onMessage={onMessageEvent}
       initialLocation={JSON.stringify({ idref: spineIdRef })}
       initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+      instructorHighlights={instructorHighlights}
     />
   )
 }
 
-const mapStateToProps = ({}) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

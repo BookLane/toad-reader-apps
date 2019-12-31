@@ -40,13 +40,43 @@ const styles = StyleSheet.create({
   },
 })
 
-const getHighlightsObj = props => (props.userDataByBookId[props.bookId] || {}).highlights || []
-const getLatestLocation = props => (props.userDataByBookId[props.bookId] || {}).latest_location
+const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) => {
+  const highlights = ((userDataByBookId[bookId] || {}).highlights || [])
+    .filter(({ _delete }) => !_delete)
+    .map(({ spineIdRef, cfi, note }) => ({ spineIdRef, cfi, hasNote: !!(note || "").trim(), type: "user" }))
+
+  const highlightsByKey = {}
+  highlights.forEach(highlight => {
+    highlightsByKey[`${highlight.spineIdRef}\n${highlight.cfi}`] = highlight
+  })
+
+  ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note, _delete }) => {
+    if(_delete) return
+
+    if(highlightsByKey[`${spineIdRef}\n${cfi}`]) {
+      highlightsByKey[`${spineIdRef}\n${cfi}`].type = "user-instructor"
+      highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote = highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote || !!(note || "").trim()
+
+    } else {
+      highlightsByKey[`${spineIdRef}\n${cfi}`] = {
+        spineIdRef,
+        cfi,
+        hasNote: !!(note || "").trim(),
+        type: "instructor",
+      }
+      highlights.push(highlightsByKey[`${spineIdRef}\n${cfi}`])
+    }
+  })
+
+  return highlights
+}
+
+const getLatestLocation = ({ userDataByBookId, bookId }) => (userDataByBookId[bookId] || {}).latest_location
 
 const getHighlightsForThisSpine = ({ highlights, location }) => {
   try {
     const spineIdRef = JSON.parse(location).idref
-    return highlights.filter(highlight => highlight.spineIdRef === spineIdRef && !highlight._delete)
+    return highlights.filter(highlight => highlight.spineIdRef === spineIdRef)
   } catch(e) {
     return []
   }
@@ -70,6 +100,7 @@ const PageWebView = ({
     initialDisplaySettings,
     initialToolCfiCountsInThisSpine,
     initialAddlParams,
+    // instructorHighlights,  // used in getHighlightsArray functions
     viewRef,
     webViewRef,
     style,
@@ -78,7 +109,7 @@ const PageWebView = ({
   
     idps,
     accounts,
-    // userDataByBookId,  // used in getHighlightsObj and getLatestLocation functions
+    // userDataByBookId,  // used in getHighlightsArray and getLatestLocation functions
   } = state
 
   const [ unloaded, setUnloaded ] = useState(false)
@@ -99,13 +130,16 @@ const PageWebView = ({
 
   useEffect(
     () => {
-      const highlights = getHighlightsObj(props)
-    
-      if(highlights !== getHighlightsObj(state)) {
-        const newHighlightsInThisSpine = getHighlightsForThisSpine({
-          highlights,
-          location: getLatestLocation(props),
-        })
+      const oldHighlightsInThisSpine = getHighlightsForThisSpine({
+        highlights: getHighlightsArray(state),
+        location: getLatestLocation(state),
+      })
+      const newHighlightsInThisSpine = getHighlightsForThisSpine({
+        highlights: getHighlightsArray(props),
+        location: getLatestLocation(props),
+      })
+
+      if(JSON.stringify(newHighlightsInThisSpine) !== JSON.stringify(oldHighlightsInThisSpine)) {
         postMessage(webView.current, 'renderHighlights', {
           highlights: newHighlightsInThisSpine,
         })
@@ -169,7 +203,7 @@ const PageWebView = ({
 
   const initialHighlightsInThisSpine = getHighlightsForThisSpine({
     location: initialLocation,
-    highlights: getHighlightsObj(state),
+    highlights: getHighlightsArray(state),
   })
 
   const initialToolSpotsInThisSpine = []

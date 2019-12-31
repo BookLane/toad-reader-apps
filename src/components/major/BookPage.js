@@ -74,7 +74,7 @@ const BookPage = React.memo(props => {
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  const { tools, spines, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { tools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
   const getTools = useInstanceValue(tools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
@@ -370,6 +370,7 @@ const BookPage = React.memo(props => {
           initialDisplaySettings={initialDisplaySettings}
           initialToolCfiCountsInThisSpine={toolCfiCounts}
           initialAddlParams={widget ? { widget } : null}
+          instructorHighlights={instructorHighlights}
           viewRef={view}
         />
         <DisplaySettings
