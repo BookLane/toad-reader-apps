@@ -126,7 +126,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
       <View style={styles.heading}>
         <ToolChip
           toolType="INSTRUCTOR_HIGHLIGHT"
-          onPress={othersInstructorHighlights.length === 0 ? toggleAsInstructorHighlight : null}
+          onPress={(myRole === 'INSTRUCTOR' && othersInstructorHighlights.length === 0) ? toggleAsInstructorHighlight : null}
           style={!hasInstructorHighlight ? styles.unselectedToolChip : styles.toolChip}
         />
         {othersInstructorHighlightsWithoutNotes.length > 0 &&
@@ -145,7 +145,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
           </Text>
         </View>
       ))}
-      {hasIsMineInstructorHighlight && iHaveANote &&
+      {myRole === 'INSTRUCTOR' && hasIsMineInstructorHighlight && iHaveANote &&
         <Text style={styles.mynote}>
           {i18n("Students can also view your notes below.")}
           {othersInstructorHighlights.length > 0 && iHaveANote &&
@@ -161,7 +161,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
           }
         </Text>
       }
-      {hasInstructorHighlight && !hasIsMineInstructorHighlight && iHaveANote &&
+      {myRole === 'INSTRUCTOR' && hasInstructorHighlight && !hasIsMineInstructorHighlight && iHaveANote &&
         <Text style={styles.mynote}>
           <Text
             style={styles.clickable}
