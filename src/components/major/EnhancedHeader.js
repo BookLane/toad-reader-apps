@@ -115,7 +115,7 @@ const EnhancedHeader = React.memo(({
   return (
     <View style={styles.container} data-id="EnhancedHeader">
       <TouchableOpacity
-        onPress={selectEnhancedHomepage}
+        onPress={(myRole === 'INSTRUCTOR' && !isDefaultClassroom) ? selectEnhancedHomepage : null}
       >
         <View style={viewingEnhancedHomepage ? styles.lineContainerSelected : styles.lineContainer}>
           <Text style={styles.line}>
