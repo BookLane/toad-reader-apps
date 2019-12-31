@@ -73,7 +73,7 @@ export const patch = info => setTimeout(() => {
     const newUserData = {}
     let somethingToPatch = false
 
-    if(!idp || !userId || idp.idpNoAuth) return
+    if(!idp || !userId || idp.authMethod === 'NONE_OR_EMAIL') return
 
     // Filter down the userData object to only new items
     // Also, ignore things I did not and cannot modify
@@ -288,13 +288,13 @@ export const patch = info => setTimeout(() => {
   })
 })
 
-let idpXapiOffOnServer = false
+let xapiOffOnServer = false
 export const reportReadings = info => setTimeout(() => {
   // the setTimeout ensures this is async
 
   const { idps, accounts, books, readingRecordsByAccountId, flushReadingRecords } = setAndGetLatestInfo(info)
 
-  if(idpXapiOffOnServer) return
+  if(xapiOffOnServer) return
   if(!idps || !accounts || !books || !readingRecordsByAccountId || !flushReadingRecords) return
   if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
   
@@ -315,7 +315,7 @@ export const reportReadings = info => setTimeout(() => {
       })
     }
 
-    if(!idp.idpXapiOn) {
+    if(!idp.xapiOn) {
       flush()
       return
     }
@@ -340,7 +340,7 @@ export const reportReadings = info => setTimeout(() => {
           try {
             if((await response.json()).off) {
               console.log(`reportReading canceled due to xapi being turned off on the server.`)
-              idpXapiOffOnServer = true
+              xapiOffOnServer = true
               return
             }
           } catch(err) {}
@@ -396,9 +396,9 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
   if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return resolve()
   if(!books[bookId].accounts[accountId]) return resolve()
 
-  const { idpId, idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
+  const { idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
 
-  if(idp.idpNoAuth) return resolve()
+  if(idp.authMethod === 'NONE_OR_EMAIL') return resolve()
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 

@@ -15,6 +15,8 @@ import BackFunction from '../basic/BackFunction'
 
 import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub"
 
+import useHasNoAuth from "../../hooks/useHasNoAuth"
+
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions"
 
@@ -66,6 +68,8 @@ const AppMenu = ({
 
   const { online } = useNetwork()
   const { historyPush, historyReplace } = useRouterState({ history })
+
+  const hasNoAuth = useHasNoAuth(accounts)
 
   const showAll = useCallback(
     () => {
@@ -215,7 +219,7 @@ const AppMenu = ({
       },
     ]),
     ...(Object.keys(accounts).length === 1 ? [] : Object.keys(accounts).map(id => ({
-      title: i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].idpName }),
+      title: i18n("{{tenant}} only", { tenant: idps[id.split(':')[0]].name }),
       // {!!hasMultipleAccountsForSingleIdp &&
       //   <Text>{accounts[id].email}</Text>
       // }
@@ -247,7 +251,7 @@ const AppMenu = ({
         onSelect: removeAllEPubs,
       },
     ]),
-    ...(Object.values(idps).every(idp => idp.idpNoAuth) ? [] : [
+    ...(hasNoAuth ? [] : [
       {
         title: i18n("Log out"),
         // icon: logOutIcon,

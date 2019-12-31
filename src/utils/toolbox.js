@@ -369,8 +369,8 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
   let text = i18n("Note: By using this app, you consent to us recording usage data for the purpose of better improving our services.")
 
   if(Object.values(idps).some(idpInfo => {
-    if(idpInfo.idpXapiOn && !idpInfo.xapiConsentShown) {
-      text = idpInfo.idpXapiConsentText || text
+    if(idpInfo.xapiOn && !idpInfo.xapiConsentShown) {
+      text = idpInfo.xapiConsentText || text
       return true
     }
   })) {

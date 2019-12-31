@@ -32,7 +32,7 @@ const LibraryHeader = ({
   }
 
   if(accounts[scope]) {
-    title = idps[getIdsFromAccountId(scope).idpId].idpName
+    title = idps[getIdsFromAccountId(scope).idpId].name
     subtitle = accounts[scope].email
   }
 

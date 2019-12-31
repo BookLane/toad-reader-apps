@@ -13,6 +13,7 @@ import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
+import useHasNoAuth from "../../hooks/useHasNoAuth"
 
 import { addAccount } from "../../redux/actions"
 
@@ -38,10 +39,12 @@ const styles = StyleSheet.create({
 
 const Login = ({
   history,
-  idps,
   idpId,
   onSuccess,
   addAccount,
+
+  idps,
+  accounts,
 }) => {
 
   const [ loading, setLoading ] = useState(true)
@@ -54,6 +57,7 @@ const Login = ({
 
   const { online } = useNetwork()
   const { historyPush } = useRouterState({ history })
+  const hasNoAuth = useHasNoAuth(accounts)
 
   const [ setReloadTimeout ] = useSetTimeout()
 
@@ -99,7 +103,7 @@ const Login = ({
     async event => {
       
       let data
-      
+
       try {
         data = typeof event.nativeEvent.data !== 'object' ? JSON.parse(event.nativeEvent.data) : event.nativeEvent.data
       } catch (e) {
@@ -141,12 +145,12 @@ const Login = ({
       : (
         !online
           ? (
-            idps[idpId].idpNoAuth
+            hasNoAuth
               ? i18n("Waiting for an internet connection to get your book list...")
               : i18n("Waiting for an internet connection to log you in...")
           )
           : (
-            idps[idpId].idpNoAuth
+            hasNoAuth
               ? i18n("Finding books...")
               : (
                 askedForLoginInfoAtLeastOnce.current
@@ -186,8 +190,9 @@ const Login = ({
   )
 }
 
-const mapStateToProps = ({ idps }) => ({
+const mapStateToProps = ({ idps, accounts }) => ({
   idps,
+  accounts,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

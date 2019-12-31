@@ -25,7 +25,7 @@ export default function(state, action) {
           const { idpId } = getIdsFromAccountId(accountId)
           const idp = state.idps[idpId]
   
-          if(!idp || !idp.idpXapiOn) return
+          if(!idp || !idp.xapiOn) return
   
           newState.readingRecordsByAccountId[accountId] = [
             ...(newState.readingRecordsByAccountId[accountId] || []),

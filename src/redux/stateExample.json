@@ -1,23 +1,22 @@
 {
   "idps": {
     "1": {
-      "idpName": "Toad Reader",
+      "name": "Toad Reader",
       "domain": "books.toadreader.com",
-      "idpExpire": null,
-      "idpNoAuth": true
+      "authMethod": "NONE_OR_EMAIL"
     },
     "3": {
-      "idpName": "BibleMesh",
+      "name": "BibleMesh",
       "domain": "read.biblemesh.com",
-      "idpExpire": null,
-      "idpXapiOn": 1,
-      "idpXapiConsentText": "This information is used to improve your reading experience.",
+      "authMethod": "SHIBBOLETH",
+      "xapiOn": 1,
+      "xapiConsentText": "This information is used to improve your reading experience.",
       "xapiConsentShown": true
     },
     "4": {
-      "idpName": "Zondervan",
+      "name": "Zondervan",
       "domain": "zondervanacademic.read.biblemesh.com",
-      "idpExpire": null
+      "authMethod": "SHIBBOLETH"
     }
   },
   "accounts": {

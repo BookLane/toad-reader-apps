@@ -31,6 +31,7 @@ import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useHasNoAuth from "../../hooks/useHasNoAuth"
 
 import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
@@ -86,6 +87,8 @@ const Library = ({
   const [ importingBooks, setImportingBooks ] = useState(false)
 
   const JSUpdateReady = useRef(false)
+
+  const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { widget, parent_domain, logOutAccountId, refreshLibraryAccountId } = routerState
@@ -392,7 +395,7 @@ const Library = ({
         />
         <CoverAndSpin
           text={
-            Object.values(idps).every(idp => idp.idpNoAuth)
+            hasNoAuth
               ? i18n("Finding books...")
               : i18n("Logging out...")
           }

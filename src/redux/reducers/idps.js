@@ -6,10 +6,9 @@ const {
 
 const initialState = IDPS || {
   "21": {
-    idpName: "Toad Reader",
+    name: "Toad Reader",
     domain: "books.toadreader.com",
-    idpExpire: null,
-    idpNoAuth: true,
+    authMethod: "NONE_OR_EMAIL",
   },
 }
 
