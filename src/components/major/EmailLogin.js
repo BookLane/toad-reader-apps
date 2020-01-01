@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -16,6 +16,10 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import { addAccount } from "../../redux/actions"
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: 'rgba(51, 102, 255, .1)',
+  },
   title: {
     textAlign: 'center',
     fontSize: 18,
@@ -29,7 +33,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.2)',
     borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, .5)',
+    backgroundColor: 'rgba(255, 255, 255, .9)',
     padding: 20,
   },
   linkContainer: {
@@ -42,7 +46,7 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 20,
-    fontSize: 16,
+    fontSize: 15,
     color: 'red',
   },
   instructions: {
@@ -168,77 +172,79 @@ const EmailLogin = ({
 
   return (
     <SafeLayout>
-      <Text style={styles.title}>
-        {name}
-      </Text>
-      <View style={styles.box}>
-        {[ 'AWAITING_EMAIL', 'SENDING_EMAIL' ].includes(stage) &&
-          <>
-            <Text style={styles.instructions}>
-              {i18n("Enter your email to receive a login code.")}
-            </Text>
-            <Input
-              label={i18n("Email")}
-              value={email}
-              onChangeText={setEmail}
-              disabled={stage === 'SENDING_EMAIL'}
-            />
-            <View style={styles.buttonContainer}>
-              <Button
-                status="primary"
-                onPress={goSendEmail}
-                disabled={stage === 'SENDING_EMAIL' || !isValidEmail(email.trim())}
-              >
-                {i18n("Send login code")}
-              </Button>
-            </View>
-            {!!emailConsentText &&
-              <Text style={styles.consent}>
-                {emailConsentText}
+      <View style={styles.background}>
+        <Text style={styles.title}>
+          {name}
+        </Text>
+        <View style={styles.box}>
+          {[ 'AWAITING_EMAIL', 'SENDING_EMAIL' ].includes(stage) &&
+            <>
+              <Text style={styles.instructions}>
+                {i18n("Enter your email to receive a login code.")}
               </Text>
-            }
-          </>
-        }
-        {[ 'AWAITING_CODE', 'SENDING_CODE' ].includes(stage) &&
-          <>
-            <Text style={styles.instructions}>
-              {i18n("Email sent. Check your inbox and then enter the code from that email below.")}
-            </Text>
-            <Input
-              label={i18n("Login code")}
-              placeholder={i18n("Eg. U876TV")}
-              value={code}
-              onChangeText={setCode}
-              disabled={stage === 'SENDING_CODE'}
-            />
-            <View style={styles.buttonContainer}>
-              <Button
-                status="primary"
-                onPress={goCheckCode}
-                disabled={stage === 'SENDING_CODE' || !code.trim()}
-              >
-                {i18n("Log in")}
-              </Button>
-            </View>
-            <Text style={styles.linkContainer}>
-              <Text style={styles.link} onPress={sendAnotherEmail}>
-                {i18n("Send another email.")}
+              <Input
+                label={i18n("Email")}
+                value={email}
+                onChangeText={setEmail}
+                disabled={stage === 'SENDING_EMAIL'}
+              />
+              <View style={styles.buttonContainer}>
+                <Button
+                  status="primary"
+                  onPress={goSendEmail}
+                  disabled={stage === 'SENDING_EMAIL' || !isValidEmail(email.trim())}
+                >
+                  {i18n("Send login code")}
+                </Button>
+              </View>
+              {!!emailConsentText &&
+                <Text style={styles.consent}>
+                  {emailConsentText}
+                </Text>
+              }
+            </>
+          }
+          {[ 'AWAITING_CODE', 'SENDING_CODE' ].includes(stage) &&
+            <>
+              <Text style={styles.instructions}>
+                {i18n("Email sent. Check your inbox and then enter the code from that email below.")}
               </Text>
+              <Input
+                label={i18n("Login code")}
+                placeholder={i18n("Eg. U876TV")}
+                value={code}
+                onChangeText={setCode}
+                disabled={stage === 'SENDING_CODE'}
+              />
+              <View style={styles.buttonContainer}>
+                <Button
+                  status="primary"
+                  onPress={goCheckCode}
+                  disabled={stage === 'SENDING_CODE' || !code.trim()}
+                >
+                  {i18n("Log in")}
+                </Button>
+              </View>
+              <Text style={styles.linkContainer}>
+                <Text style={styles.link} onPress={sendAnotherEmail}>
+                  {i18n("Send another email.")}
+                </Text>
+              </Text>
+            </>
+          }
+          {error &&
+            <Text style={styles.error}>
+              {errorMessages[error] || error}
             </Text>
-          </>
-        }
-        {error &&
-          <Text style={styles.error}>
-            {errorMessages[error] || error}
-          </Text>
+          }
+        </View>
+        {[ 'SENDING_EMAIL', 'SENDING_CODE' ].includes(stage) && !error &&
+          <CoverAndSpin
+            text={stage === 'SENDING_EMAIL' ? i18n("Sending email...") : i18n("Checking code...")}
+            style={{ backgroundColor: 'white' }}
+          />
         }
       </View>
-      {[ 'SENDING_EMAIL', 'SENDING_CODE' ].includes(stage) && !error &&
-        <CoverAndSpin
-          text={stage === 'SENDING_EMAIL' ? i18n("Sending email...") : i18n("Checking code...")}
-          style={{ backgroundColor: 'white' }}
-        />
-      }
     </SafeLayout>
   )
 }
