@@ -7,6 +7,7 @@ import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
 
+import EmailLogin from "./EmailLogin"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
@@ -138,6 +139,15 @@ const Login = ({
     },
     [ history, addAccount, idpId, onSuccess ],
   )
+
+  if(['EMAIL', 'NONE_OR_EMAIL'].includes(idps[idpId].authMethod)) {
+    return (
+      <EmailLogin
+        idpId={idpId}
+        onSuccess={onSuccess}
+      />
+    )
+  }
 
   const spinMessage = 
     error
