@@ -5,20 +5,31 @@ export default function(state = initialState, action) {
 
   switch (action.type) {
 
-    case "ADD_ACCOUNT":
+    case "ADD_ACCOUNT": {
       newState[`${action.idpId}:${action.userId}`] = action.accountInfo
-      return newState
 
-    case "UPDATE_ACCOUNT":
+      // weed out needToLogInAgain accounts
+      Object.keys(newState).forEach(accountId => {
+        if(newState[accountId].needToLogInAgain) {
+          delete newState[accountId]
+        }
+      })
+
+      return newState
+    }
+
+    case "UPDATE_ACCOUNT": {
       newState[action.accountId] = {
         ...state[action.accountId],
         ...action.accountInfo,
       }
       return newState
+    }
 
-    case "REMOVE_ACCOUNT":
+    case "REMOVE_ACCOUNT": {
       delete newState[action.accountId]
       return newState
+    }
       
   }
 
