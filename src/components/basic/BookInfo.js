@@ -139,16 +139,18 @@ const BookInfo = ({
         }
         {Platform.OS === 'web'
           ? (
-            <View style={styles.buttonContainer}>
-              <Button
-                onPress={confirmDelete}
-                size="tiny"
-                status="basic"
-                appearance="outline"
-              >
-                {i18n("Delete")}
-              </Button>
-            </View>
+            (!!adminInfo &&
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={confirmDelete}
+                  size="tiny"
+                  status="basic"
+                  appearance="outline"
+                >
+                  {i18n("Delete")}
+                </Button>
+              </View>
+            )
           )
           : (
             <>
