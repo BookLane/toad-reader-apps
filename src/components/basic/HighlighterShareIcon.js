@@ -52,7 +52,7 @@ const HighlighterShareIcon = React.memo(({
       const { latest_location } = (userDataByBookId[bookId] || {})
       const fullname = getFullName(accounts[accountId])
 
-      if(!idp || !latest_location || !fullname) {
+      if(!idp || !latest_location) {
         throw new Error('Unable to share')
       }
 
