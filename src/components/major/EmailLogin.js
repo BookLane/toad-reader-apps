@@ -121,9 +121,7 @@ const EmailLogin = ({
       try {
         response = await safeFetch(
           `${getDataOrigin(idps[idpId])}/loginwithaccesscode?code=${encodeURIComponent(getCode().trim().toUpperCase())}`,
-          getReqOptionsWithAdditions({
-            mode: 'cors',
-          }),
+          getReqOptionsWithAdditions({}),
         )
       } catch(err) {
         response.statusText = err.message || 'Internet connection error'
@@ -227,7 +225,7 @@ const EmailLogin = ({
               </View>
               <Text style={styles.linkContainer}>
                 <Text style={styles.link} onPress={sendAnotherEmail}>
-                  {i18n("Send another email.")}
+                  {i18n("Send another email")}
                 </Text>
               </Text>
             </>

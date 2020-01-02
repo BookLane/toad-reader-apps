@@ -60,8 +60,12 @@ const BookInfo = ({
   bookId,
   bookInfo,
   isFirstRow,
+
+  history,
+
   accounts,
   idps,
+
   deleteBook,
 }) => {
 

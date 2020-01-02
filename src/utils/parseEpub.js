@@ -12,7 +12,9 @@ const getXmlAsObj = async ({ url, account }) => {
   const xml = /^https?:\/\//.test(urlWithoutHash)
     ? (
       await safeFetch(urlWithoutHash, getReqOptionsWithAdditions({
-        "x-cookie-override": account.cookie,
+        headers: {
+          "x-cookie-override": account.cookie,
+        },
       })).then(response => response.text())
     )
     : await FileSystem.readAsStringAsync(urlWithoutHash)

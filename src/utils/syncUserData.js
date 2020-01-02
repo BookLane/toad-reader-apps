@@ -24,7 +24,7 @@ const setAndGetLatestInfo = info => {
 const getAccountInfo = ({ idps, accountId }) => {
   const { idpId, userId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
-  const { serverTimeOffset=0 } = latestInfo.accounts[accountId]
+  const { serverTimeOffset=0 } = latestInfo.accounts[accountId] || {}
 
   return {
     idpId,
