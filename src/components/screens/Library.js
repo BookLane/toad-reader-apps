@@ -56,6 +56,13 @@ const styles = StyleSheet.create({
     backgroundColor: APP_BACKGROUND_COLOR,
     flex: 1,
   },
+  hiddenWebview: {
+    position: 'absolute',
+    top: -1,
+    left: 0,
+    width: 1,
+    height: 1,
+  },
 })
 
 const Library = ({
@@ -84,6 +91,7 @@ const Library = ({
 
   const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
+  const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
 
   const JSUpdateReady = useRef(false)
@@ -109,6 +117,15 @@ const Library = ({
       }
     },
     [],
+  )
+
+  useEffect(
+    () => {
+      if(Platform.OS === 'web' && !showLogin) {
+        setDoSetCookie(true)
+      }
+    },
+    [ accounts, showLogin ],
   )
 
   useEffect(
@@ -461,6 +478,23 @@ const Library = ({
         updateBooks={updateBooks}
         onClose={closeImportingBooks}
       />
+
+      {doSetCookie &&
+        (Object.keys(accounts).map(accountId => {
+          const { idpId } = getIdsFromAccountId(accountId)
+
+          return (
+            <WebView
+              key={accountId}
+              style={styles.hiddenWebview}
+              source={getReqOptionsWithAdditions({
+                uri: `${getDataOrigin(idps[idpId])}/setcookie?cookie=${(accounts[accountId].cookie)}`,
+              })}
+              onLoad={() => setDoSetCookie(false)}
+            />
+          )
+        }))
+      }
 
     </SideMenu>
   )
