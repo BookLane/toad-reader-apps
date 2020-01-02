@@ -486,7 +486,7 @@ const Library = ({
           return (
             <WebView
               key={accountId}
-              style={styles.hiddenWebview}
+              containerStyle={styles.hiddenWebview}
               source={getReqOptionsWithAdditions({
                 uri: `${getDataOrigin(idps[idpId])}/setcookie?cookie=${(accounts[accountId].cookie)}`,
               })}
