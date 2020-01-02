@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react"
+import React, { useState, useRef, useCallback, useEffect } from "react"
 import { StyleSheet, Platform } from "react-native"
 import WebView from './WebView'
 import { bindActionCreators } from "redux"
@@ -63,6 +63,30 @@ const Login = ({
   const [ setReloadTimeout ] = useSetTimeout()
 
   const confirmLoginUrl = `${getDataOrigin(idps[idpId])}/confirmlogin`
+
+  useEffect(
+    () => {
+      // Safari does not allow cookies to be set in an iframe if that domain has not
+      // been visited outside an iframe and a cookie has been set in that way. Thus,
+      // I need to bounce back and forth.
+
+      if(Platform.OS === 'web') {
+
+        const userAgent = navigator.userAgent.toLowerCase()
+
+        if(/safari/.test(userAgent) && !/chrome/.test(userAgent)) {  // Their browser is Safari
+          const lastFix = localStorage.getItem(`lastSafariFix`)
+
+          if(!lastFix || lastFix < Date.now() - (1000 * 60)) {
+            localStorage.setItem(`lastSafariFix`, Date.now())
+            const { pathname, search, hash } = window.location
+            window.location.href = `${getDataOrigin(idps[idpId])}/fixsafari?path=${encodeURIComponent(`${pathname}${search}${hash}`)}`
+          }
+        }
+      }
+    },
+    [],
+  )
 
   const onError = useCallback(
     err => {
