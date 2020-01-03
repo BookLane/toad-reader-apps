@@ -164,7 +164,9 @@ const Login = ({
     [ history, addAccount, idpId, onSuccess ],
   )
 
-  if(['EMAIL', 'NONE_OR_EMAIL'].includes(idps[idpId].authMethod)) {
+  const { authMethod, devAuthMethod } = idps[idpId]
+
+  if(['EMAIL'].includes(devAuthMethod || authMethod)) {
     return (
       <EmailLogin
         idpId={idpId}

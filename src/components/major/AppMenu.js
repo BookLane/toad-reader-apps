@@ -188,6 +188,13 @@ const AppMenu = ({
     [],
   )
 
+  const goToReports = useCallback(
+    () => {
+      historyReplace(`/reports`)
+    },
+    [ idps ],
+  )
+
   // const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
   // const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
   // // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
@@ -266,6 +273,13 @@ const AppMenu = ({
         title: i18n("Import books to server"),
         // icon: onDeviceIcon,
         onSelect: onImportBooks,
+      },
+    ]),
+    ...(!isAdmin ? [] : [
+      {
+        title: i18n("Reports"),
+        // icon: onDeviceIcon,
+        onSelect: goToReports,
       },
     ]),
   ]

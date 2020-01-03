@@ -15,6 +15,7 @@ import { updateReader } from "../../utils/updateReader"
 
 import BookImporter from "../major/BookImporter"
 import Book from "./Book"
+import Reports from "./Reports"
 import ErrorMessage from "./ErrorMessage"
 import AppMenu from "../major/AppMenu"
 import LibraryHeader from "../major/LibraryHeader"
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
   },
   hiddenWebview: {
     position: 'absolute',
-    top: -1,
+    top: -100,
     left: 0,
     width: 1,
     height: 1,
@@ -436,6 +437,7 @@ const Library = ({
       <Switch>
         <Route path="/error" component={ErrorMessage} />
         {!doingInitialFetch && <Route path="/book/:bookId" component={Book} />}
+        {!doingInitialFetch && <Route path="/reports" component={Reports} />}
         <Route>
 
           <SafeLayout>
