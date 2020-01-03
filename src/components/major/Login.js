@@ -166,7 +166,7 @@ const Login = ({
 
   const { authMethod, devAuthMethod } = idps[idpId]
 
-  if(['EMAIL'].includes(devAuthMethod || authMethod)) {
+  if(['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
     return (
       <EmailLogin
         idpId={idpId}

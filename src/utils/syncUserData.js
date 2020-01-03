@@ -73,7 +73,7 @@ export const patch = info => setTimeout(() => {
     const newUserData = {}
     let somethingToPatch = false
 
-    if(!idp || !userId || ((idp.devAuthMethod || idp.authMethod) === 'NONE_OR_EMAIL')) return
+    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) return
 
     // Filter down the userData object to only new items
     // Also, ignore things I did not and cannot modify
@@ -398,7 +398,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
 
   const { idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
 
-  if((idp.devAuthMethod || idp.authMethod) === 'NONE_OR_EMAIL') return resolve()
+  if(((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL') return resolve()
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
