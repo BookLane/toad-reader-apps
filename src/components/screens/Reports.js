@@ -27,9 +27,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 700,
     marginTop: 20,
+    marginBottom: 20,
+  },
+  container: {
+    flex: 1,
+  },
+  tabContent: {
+    overflowY: 'auto',
+    flex: 1,
   },
   tableContainer: {
-    marginVertical: 10,
+    marginBottom: 10,
     marginHorizontal: 30,
   },
   tableHeading: {
@@ -123,45 +131,47 @@ const Reports = ({
         </Text>
       }
       {!error && info.map(({ tab, data }, idx) => (
-        <View key={idx}>
+        <View key={idx} style={styles.container}>
           <Text style={styles.tab}>
             {tab}
           </Text>
-          {data.map(({ heading, rows, summary }, idx) => {
-            const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[0-9\.$]*$/.test(val) ? 1 : 2)
+          <View style={styles.tabContent}>
+            {data.map(({ heading, rows, summary }, idx) => {
+              const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[0-9\.$]*$/.test(val) ? 1 : 2)
 
-            return (
-              <View style={styles.tableContainer} key={idx}>
-                <Text style={styles.tableHeading}>
-                  {heading}
-                </Text>
-                {rows.length > 0 &&
-                  <Table borderStyle={{ borderWidth: 1, borderColor: '#DDD' }}>
-                    <Row
-                      data={Object.keys(rows[0])}
-                      style={styles.tableHead}
-                      textStyle={styles.tableHeadText}
-                      flexArr={flexArr}
-                    />
-                    <Rows
-                      data={rows.map(row => (
-                        Object.values(row).map((val, idx) => (
-                          flexArr[idx] === 1
-                            ? <Text style={styles.tableCellNumber}>{val}</Text>
-                            : val
-                        ))
-                      ))}
-                      textStyle={styles.tableText}
-                      flexArr={flexArr}
-                    />
-                  </Table>
-                }
-                <Text style={styles.tableSummary}>
-                  {summary}
-                </Text>
-              </View>
-            )
-          })}
+              return (
+                <View style={styles.tableContainer} key={idx}>
+                  <Text style={styles.tableHeading}>
+                    {heading}
+                  </Text>
+                  {rows.length > 0 &&
+                    <Table borderStyle={{ borderWidth: 1, borderColor: '#DDD' }}>
+                      <Row
+                        data={Object.keys(rows[0])}
+                        style={styles.tableHead}
+                        textStyle={styles.tableHeadText}
+                        flexArr={flexArr}
+                      />
+                      <Rows
+                        data={rows.map(row => (
+                          Object.values(row).map((val, idx) => (
+                            flexArr[idx] === 1
+                              ? <Text style={styles.tableCellNumber}>{val}</Text>
+                              : val
+                          ))
+                        ))}
+                        textStyle={styles.tableText}
+                        flexArr={flexArr}
+                      />
+                    </Table>
+                  }
+                  <Text style={styles.tableSummary}>
+                    {summary}
+                  </Text>
+                </View>
+              )
+            })}
+          </View>
         </View>
       ))}
       {loading &&
