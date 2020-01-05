@@ -137,7 +137,7 @@ const Reports = ({
           </Text>
           <View style={styles.tabContent}>
             {data.map(({ heading, rows, summary }, idx) => {
-              const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[0-9\.$]*$/.test(val) ? 1 : 2)
+              const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[-0-9\.$]*$/.test(val) ? 1 : 2)
 
               return (
                 <View style={styles.tableContainer} key={idx}>
