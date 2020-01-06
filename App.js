@@ -21,7 +21,7 @@ import contrastTheme from "./src/themes/contrast"
 import customMapping from "./src/themes/custom-mapping"
 
 import updateDataStructure from "./src/utils/updateDataStructure"
-import { patch, reportReadings } from "./src/utils/syncUserData"
+import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
 
 import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
@@ -37,17 +37,11 @@ const {
 
 const patchMiddleware = store => next => action => {
   const result = next(action)
-  if(action.patchInfo) {
-    patch({
-      ...action.patchInfo,
-      ...store.getState(),
-    })
+  if(action.doPatch) {
+    patch()
   }
-  if(action.reportReadingsInfo) {
-    reportReadings({
-      ...action.reportReadingsInfo,
-      ...store.getState(),
-    })
+  if(action.doReportReadings) {
+    reportReadings()
   }
   return result
 }
@@ -64,6 +58,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
+setStore(store)
 
 const App = () => {
 

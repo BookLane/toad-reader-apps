@@ -1,31 +1,24 @@
-import { Platform, AppState } from 'react-native'
+import { AppState } from 'react-native'
 
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
          safeFetch, createAccessCode } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
+import { updateAccount, updateBookAccount, setSyncStatus, shareHighlight,
+         updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
+
 // I record the last time I successfully sent a user data patch for a particular book/account
 // Then, whenever I patch, I filter down to objects which are newer than the last successful patch.
 
-let latestInfo = {}
+let store
 const currentlyReportingReadingsByAccountId = {}
 const currentlyPatchingBookAccountCombo = {}
 const currentlyRefreshingBookAccountCombo = {}
 
-const setAndGetLatestInfo = info => {
-  if(info) {
-    latestInfo = {
-      ...latestInfo,
-      ...info,
-    }
-  }
-  return latestInfo
-}
-
 const getAccountInfo = ({ idps, accountId }) => {
   const { idpId, userId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
-  const { serverTimeOffset=0 } = latestInfo.accounts[accountId] || {}
+  const { serverTimeOffset=0 } = store.getState().accounts[accountId] || {}
 
   return {
     idpId,
@@ -58,13 +51,13 @@ const reportResponseError = ({ message, response, error, retry }) => {
   retry && setTimeout(() => retry(), 30000)
 }
 
-export const patch = info => setTimeout(() => {
+export const setStore = s => { store = s }
+
+export const patch = () => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount, setSyncStatus, shareHighlight, updateClassroom } = setAndGetLatestInfo(info)
+  const { idps, accounts, books, userDataByBookId } = store.getState()
 
-  if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount || !setSyncStatus) return
-  
   if(!connectionInfo.online) return
 
   Object.keys(accounts).forEach(accountId => {
@@ -179,7 +172,7 @@ export const patch = info => setTimeout(() => {
 
     if(somethingToPatch) {
 
-      setSyncStatus("patching")
+      store.dispatch(setSyncStatus("patching"))
 
       // send necessary patch requests
       Object.keys(newUserData).forEach(bookId => {
@@ -189,13 +182,13 @@ export const patch = info => setTimeout(() => {
 
         const updateLastSuccessfulPatch = () => {
           // save it in redux
-          updateBookAccount({
+          store.dispatch(updateBookAccount({
             bookId,
             accountId, 
             accountInfo: {
               lastSuccessfulPatch: patchTime,
             },
-          })
+          }))
 
           // save it here too in case patch gets called again before I have a fresh books var
           books[bookId].accounts[accountId].lastSuccessfulPatch = patchTime
@@ -235,19 +228,19 @@ export const patch = info => setTimeout(() => {
   
               } else if(response.status === 403) {
                 // they need to login
-                updateAccount({
+                store.dispatch(updateAccount({
                   accountId,
                   accountInfo: {
                     needToLogInAgain: true
                   },
-                })
+                }))
                 // It would be better to have the retry a callback after they login, but this will do for now.
                 reportResponseError({
                   message: `Patch failed due to no auth`,
                   response,
                   retry: patch,
                 })
-                setSyncStatus("error")
+                store.dispatch(setSyncStatus("error"))
 
               } else if(response.status === 412) {
                 console.log(`User data is stale (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
@@ -271,12 +264,11 @@ export const patch = info => setTimeout(() => {
                           const badShareCode = dupCodeErrorPieces[1]
                           bookUserData.highlights.some(highlight => {
                             if(highlight.share_code === badShareCode) {
-                              shareHighlight({
+                              store.dispatch(shareHighlight({
                                 ...highlight,
                                 bookId,
                                 forceNewShareCode: true,
-                                patchInfo: {},
-                              })
+                              }))
                               return true
                             }
                           })
@@ -289,13 +281,12 @@ export const patch = info => setTimeout(() => {
                               badAccessCodes.includes(classroom.access_code)
                               || badAccessCodes.includes(classroom.instructor_access_code)
                             ) {
-                              updateClassroom({
+                              store.dispatch(updateClassroom({
                                 ...classroom,
                                 bookId,
                                 access_code: createAccessCode(),
                                 instructor_access_code: createAccessCode(),
-                                patchInfo: {},
-                              })
+                              }))
                               return true
                             }
                           })
@@ -314,7 +305,7 @@ export const patch = info => setTimeout(() => {
                   response,
                   retry: patch,
                 })
-                setSyncStatus("error")
+                store.dispatch(setSyncStatus("error"))
               }
 
             })
@@ -327,26 +318,25 @@ export const patch = info => setTimeout(() => {
                 error,
                 retry: patch,
               })
-              setSyncStatus("error")
+              store.dispatch(setSyncStatus("error"))
             
             })
         }
       })
 
     } else {
-      setSyncStatus("synced")
+      store.dispatch(setSyncStatus("synced"))
     }
   })
 })
 
 let xapiOffOnServer = false
-export const reportReadings = info => setTimeout(() => {
+export const reportReadings = () => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, readingRecordsByAccountId, flushReadingRecords } = setAndGetLatestInfo(info)
+  const { idps, accounts, readingRecordsByAccountId } = store.getState()
 
   if(xapiOffOnServer) return
-  if(!idps || !accounts || !books || !readingRecordsByAccountId || !flushReadingRecords) return
   if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
   
   if(!connectionInfo.online) return
@@ -355,15 +345,15 @@ export const reportReadings = info => setTimeout(() => {
 
     if(currentlyReportingReadingsByAccountId[accountId]) return
 
-    const { idpId, idp, userId } = getAccountInfo({ idps, accountId })
+    const { idp, userId } = getAccountInfo({ idps, accountId })
     const readingRecords = readingRecordsByAccountId[accountId]
     const path = `${getDataOrigin(idp)}/reportReading`
 
     const flush = () => {
-      flushReadingRecords({
+      store.dispatch(flushReadingRecords({
         accountId,
         numberOfRecords: readingRecords.length,
-      })
+      }))
     }
 
     if(!idp.xapiOn) {
@@ -401,13 +391,6 @@ export const reportReadings = info => setTimeout(() => {
           // remove these reading records from readingRecordsByAccountId in the state
           flush()
 
-          // Save it to latestInfo too, for calls to reportReadings from inside this
-          // file prior to getting fresh state from an external call. Take into account
-          // that additional reading records could have been added while this was reporting
-          // to the server.
-          latestInfo.readingRecordsByAccountId[accountId] =
-            latestInfo.readingRecordsByAccountId[accountId].slice(readingRecords.length)
-
           // run again in case something has changed since the reading records were sent
           reportReadings()
 
@@ -438,12 +421,12 @@ export const reportReadings = info => setTimeout(() => {
   })
 })
 
-export const refreshUserData = ({ accountId, bookId, info }) => new Promise(resolve => setTimeout(() => {
+export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, userDataByBookId, updateAccount, setUserData, setSyncStatus } = setAndGetLatestInfo(info)
+  const { idps, accounts, books } = store.getState()
   
-  if(!accountId || !bookId || !idps || !books || !userDataByBookId || !updateAccount || !setUserData || !setSyncStatus) return resolve()
+  if(!accountId || !bookId) return resolve()
   if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return resolve()
   if(!books[bookId].accounts[accountId]) return resolve()
 
@@ -455,7 +438,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
 
   if(!connectionInfo.online) return resolve()
 
-  setSyncStatus("refreshing")
+  store.dispatch(setSyncStatus("refreshing"))
 
   const path = `${getDataOrigin(idp)}/users/${userId}/books/${bookId}.json`
 
@@ -490,14 +473,14 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
             //     response,
             //     retry: () => refreshUserData({ accountId, bookId }),
             //   })
-            //   setSyncStatus("error")
+            //   store.dispatch(setSyncStatus("error"))
             //   return resolve()
             // }
 
             // convert user data updated_at times to local device per server time offset
             adjustAllUpdatedAts(userData, serverTimeOffset * -1);
             
-            setUserData({ bookId, userData, lastSuccessfulPatch })
+            store.dispatch(setUserData({ bookId, userData, lastSuccessfulPatch }))
 
             console.log(`User data refresh successful (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
 
@@ -511,25 +494,25 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
               response,
               retry: () => refreshUserData({ accountId, bookId }),
             })
-            setSyncStatus("error")
+            store.dispatch(setSyncStatus("error"))
             resolve()
           })
 
       } else if(response.status === 403) {
         // they need to login
-        updateAccount({
+        store.dispatch(updateAccount({
           accountId,
           accountInfo: {
             needToLogInAgain: true
           },
-        })
+        }))
         // It would be better to have the retry a callback after they login, but this will do for now.
         reportResponseError({
           message: `User data fetch failed due to no auth.`,
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
-        setSyncStatus("error")
+        store.dispatch(setSyncStatus("error"))
         resolve()
 
       } else {
@@ -538,7 +521,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
           response,
           retry: () => refreshUserData({ accountId, bookId }),
         })
-        setSyncStatus("error")
+        store.dispatch(setSyncStatus("error"))
         resolve()
       }
 
@@ -552,7 +535,7 @@ export const refreshUserData = ({ accountId, bookId, info }) => new Promise(reso
         error,
         retry: () => refreshUserData({ accountId, bookId }),
       })
-      setSyncStatus("error")
+      store.dispatch(setSyncStatus("error"))
 
       resolve()
 

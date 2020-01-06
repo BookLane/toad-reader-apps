@@ -8,7 +8,6 @@ import { i18n } from "inline-i18n"
 // import {  } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
-import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { deleteTool, setSelectedToolUid } from "../../redux/actions"
@@ -42,7 +41,6 @@ const StatusAndActions = React.memo(({
   isFrontMatter,
 
   books,
-  userDataByBookId,
   syncStatus,
 
   deleteTool,
@@ -53,8 +51,6 @@ const StatusAndActions = React.memo(({
 
   const wideMode = useWideMode()
 
-  const getUserDataByBookId = useInstanceValue(userDataByBookId)
-
   const onDelete = useCallback(
     () => {
       if(!confirm("Are you sure?")) return
@@ -62,9 +58,6 @@ const StatusAndActions = React.memo(({
         bookId,
         classroomUid,
         uid: selectedToolUid,
-        patchInfo: {
-          userDataByBookId: getUserDataByBookId(),
-        },
       })
       setSelectedToolUid({ bookId })
     },
@@ -116,9 +109,8 @@ const StatusAndActions = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
+const mapStateToProps = ({ books, syncStatus }) => ({
   books,
-  userDataByBookId,
   syncStatus,
 })
 

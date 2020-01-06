@@ -26,7 +26,6 @@ const ConnectToAClassroom = React.memo(({
   idps,
   accounts,
   books,
-  userDataByBookId,
 
   setCurrentClassroom,
 
@@ -73,9 +72,6 @@ const ConnectToAClassroom = React.memo(({
       const { success } = await refreshUserData({
         accountId,
         bookId,
-        info: {
-          userDataByBookId,
-        },
       }) || {}
 
       if(!success) {
@@ -94,7 +90,7 @@ const ConnectToAClassroom = React.memo(({
       requestHide({ hideAll: true })
 
     },
-    [ idp, accounts, books, userDataByBookId, idpId, accountId, bookId, code ],
+    [ idp, accounts, books, idpId, accountId, bookId, code ],
   )
 
   const onChangeText = useCallback(code => setCode(code), [])
@@ -124,11 +120,10 @@ const ConnectToAClassroom = React.memo(({
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books }) => ({
   idps,
   accounts,
   books,
-  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

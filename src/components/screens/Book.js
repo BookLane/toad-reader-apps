@@ -33,10 +33,8 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
-import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
-         startRecordReading, endRecordReading, flushReadingRecords, setXapiConsentShown,
-         setTocAndSpines, setSyncStatus, shareHighlight,
-         updateClassroom, updateTool, setSelectedToolUid } from "../../redux/actions"
+import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
+         setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -162,17 +160,10 @@ const Book = React.memo(({
   readerStatus,
 
   setLatestLocation,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
   startRecordReading,
   endRecordReading,
-  flushReadingRecords,
   setXapiConsentShown,
   setTocAndSpines,
-  setSyncStatus,
-  shareHighlight,
-  updateClassroom,
   updateTool,
   setSelectedToolUid,
 
@@ -209,7 +200,6 @@ const Book = React.memo(({
   )
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
-  const getUserDataByBookId = useInstanceValue(userDataByBookId)
   const getInEditMode = useInstanceValue(inEditMode)
 
   const toolSpots = useRef({})
@@ -252,13 +242,6 @@ const Book = React.memo(({
     [ JSON.stringify(tools), spineIdRef ],
   )
 
-  const reportReadingsInfo = {
-    idps,
-    accounts,
-    books,
-    flushReadingRecords,      
-  }
-
   useEffect(
     () => {
       if(!books[bookId]) return
@@ -268,18 +251,6 @@ const Book = React.memo(({
         refreshUserData({
           accountId,
           bookId,
-          info: {
-            idps,
-            accounts,
-            books,
-            userDataByBookId,
-            updateAccount,
-            setUserData,
-            updateBookAccount,
-            setSyncStatus,
-            shareHighlight,
-            updateClassroom,
-          },
         })
       })
     },
@@ -291,7 +262,7 @@ const Book = React.memo(({
       const handleAppStateChange = nextAppState => {
         if(mode === 'page') {
           if(currentAppState === 'active' && nextAppState !== 'active') {
-            endRecordReading({ reportReadingsInfo })
+            endRecordReading()
       
           } else if(currentAppState !== 'active' && nextAppState === 'active') {
             startRecordReading({
@@ -313,13 +284,13 @@ const Book = React.memo(({
 
       return () => {
         if(mode === 'page') {
-          endRecordReading({ reportReadingsInfo })
+          endRecordReading()
         }
     
         AppState.removeEventListener('change', handleAppStateChange)
       }
     },
-    [ spineIdRef, currentAppState, mode, JSON.stringify(reportReadingsInfo) ],
+    [ spineIdRef, currentAppState, mode ],
   )
 
   useEffect(
@@ -427,9 +398,6 @@ const Book = React.memo(({
             setLatestLocation({
               bookId,
               latestLocation: zoomToInfo,
-              patchInfo: {
-                userDataByBookId,
-              },
             })
 
           } else {  // back to the same page
@@ -450,7 +418,7 @@ const Book = React.memo(({
         spineIdRef,
       })
     },
-    [ spineIdRef, cfi, idps, accounts, books, userDataByBookId ],
+    [ spineIdRef, cfi, idps, accounts, books ],
   )
 
   const goTo = useCallback(
@@ -555,7 +523,7 @@ const Book = React.memo(({
 
       pauseProcessing()
 
-      endRecordReading({ reportReadingsInfo })
+      endRecordReading()
 
       setStatusBarHidden(false)
 
@@ -570,7 +538,7 @@ const Book = React.memo(({
         },
       })
     },
-    [ JSON.stringify(reportReadingsInfo), wideMode ],
+    [ wideMode ],
   )
 
   const requestHideSettings = useCallback(
@@ -815,9 +783,6 @@ const Book = React.memo(({
           spineIdRef,
           cfi,
           ordering,
-          patchInfo: {
-            userDataByBookId: getUserDataByBookId(),
-          },
         })
       }
 
@@ -1000,17 +965,10 @@ const mapStateToProps = ({ idps, accounts, books, userDataByBookId, displaySetti
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
   startRecordReading,
   endRecordReading,
-  flushReadingRecords,
   setXapiConsentShown,
   setTocAndSpines,
-  setSyncStatus,
-  shareHighlight,
-  updateClassroom,
   updateTool,
   setSelectedToolUid,
 }, dispatch)

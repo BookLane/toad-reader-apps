@@ -179,7 +179,6 @@ const BookPage = React.memo(props => {
           setLatestLocation({
             bookId,
             latestLocation,
-            patchInfo: {},
           })
 
           historyReplace(null, {
@@ -188,12 +187,7 @@ const BookPage = React.memo(props => {
           })
 
           if(newSpineIdRef !== spineIdRef) {
-            endRecordReading({
-              reportReadingsInfo: {
-                books,
-                flushReadingRecords,
-              },
-            })
+            endRecordReading()
             startRecordReading({
               bookId,
               spineIdRef: newSpineIdRef,

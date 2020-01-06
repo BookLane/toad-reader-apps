@@ -9,7 +9,7 @@ import { i18n } from "inline-i18n"
 import HighlighterShareIcon from "./HighlighterShareIcon"
 import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
 
-import { setHighlight, deleteHighlight, updateAccount, updateBookAccount, setUserData } from "../../redux/actions"
+import { setHighlight, deleteHighlight } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -77,11 +77,10 @@ const HighlighterLabel = React.memo(({
   selectionInfo,
   bookId,
   highlight,
-  setHighlight,
-  deleteHighlight,
   isEditingNote,
 
-  userDataByBookId,
+  setHighlight,
+  deleteHighlight,
 }) => {
 
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
@@ -93,7 +92,7 @@ const HighlighterLabel = React.memo(({
     [ JSON.stringify(selectionInfo) ],
   )
 
-  const toggleHighlightDependencies = [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight, userDataByBookId ]
+  const toggleHighlightDependencies = [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight ]
 
   const toggleHighlight = useCallback(
     color => {
@@ -110,9 +109,6 @@ const HighlighterLabel = React.memo(({
           bookId,
           spineIdRef,
           cfi,
-          patchInfo: {
-            userDataByBookId,
-          },
         })
 
         setShowDeletedMsgAndUndo(true)
@@ -124,9 +120,6 @@ const HighlighterLabel = React.memo(({
           cfi,
           color,
           note,
-          patchInfo: {
-            userDataByBookId,
-          },
         })
 
         setShowDeletedMsgAndUndo(false)
@@ -232,16 +225,12 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = ({ userDataByBookId }) => ({
-  userDataByBookId,
+const mapStateToProps = ({ x }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
   deleteHighlight,
-  updateAccount,
-  updateBookAccount,
-  setUserData,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(HighlighterLabel)

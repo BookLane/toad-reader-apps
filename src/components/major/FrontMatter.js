@@ -14,7 +14,6 @@ import { getToolbarHeight } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-import useInstanceValue from '../../hooks/useInstanceValue'
 
 import { updateClassroom } from "../../redux/actions"
 
@@ -95,17 +94,12 @@ const FrontMatter = React.memo(({
 
   const { classroom, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const getUserDataByBookId = useInstanceValue(userDataByBookId)
-
   const goUpdateClassroom = useCallback(
     updates => {
       updateClassroom({
         uid: classroom.uid,
         bookId,
         ...updates.data,
-        patchInfo: {
-          userDataByBookId: getUserDataByBookId(),
-        },
       })
     },
     [ updateClassroom, bookId, classroom ],

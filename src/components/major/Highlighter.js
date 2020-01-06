@@ -99,9 +99,6 @@ const Highlighter = React.memo(({
           ...highlight.current,
           bookId,
           note: noteInEdit,
-          patchInfo: {
-            userDataByBookId,
-          },
         })
 
         updateNoteInEdit(null)
@@ -114,7 +111,7 @@ const Highlighter = React.memo(({
         }
       }
     },
-    [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current, userDataByBookId ],
+    [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current ],
   )
 
   const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])

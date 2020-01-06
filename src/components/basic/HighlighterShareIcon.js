@@ -43,7 +43,6 @@ const HighlighterShareIcon = React.memo(({
   
   idps,
   books,
-  userDataByBookId,
   syncStatus,
 
   shareHighlight,
@@ -74,16 +73,13 @@ const HighlighterShareIcon = React.memo(({
           spineIdRef: selectionInfo.spineIdRef,
           cfi: selectionInfo.cfi,
           share_quote,
-          patchInfo: {
-            userDataByBookId,
-          },
         })
       }
 
       // With a timeout to allow for syncStatus to update at the same time as showShare
       setTimeout(() => setShowShare(true))
     },
-    [ bookId, selectionInfo, userDataByBookId ],
+    [ bookId, selectionInfo ],
   )
 
   useEffect(
@@ -153,11 +149,10 @@ const HighlighterShareIcon = React.memo(({
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId, syncStatus }) => ({
+const mapStateToProps = ({ idps, accounts, books, syncStatus }) => ({
   idps,
   accounts,
   books,
-  userDataByBookId,
   syncStatus,
 })
 

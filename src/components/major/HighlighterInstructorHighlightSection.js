@@ -10,7 +10,6 @@ import ToolChip from '../basic/ToolChip'
 // import Dialog from "./Dialog"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-import useInstanceValue from '../../hooks/useInstanceValue'
 
 import { createInstructorHighlight, deleteInstructorHighlight } from "../../redux/actions"
 
@@ -78,8 +77,6 @@ const HighlighterInstructorHighlightSection = React.memo(({
   // const [ showShare, setShowShare ] = useState(false)
   // const setShowShareToFalse = useCallback(() => setShowShare(false), [])
 
-  const getUserDataByBookId = useInstanceValue(userDataByBookId)
-
   const { classroomUid, isDefaultClassroom, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === selectionInfo.spineIdRef && cfi === selectionInfo.cfi && !_delete))
@@ -98,9 +95,6 @@ const HighlighterInstructorHighlightSection = React.memo(({
           classroomUid,
           spineIdRef: highlight.spineIdRef,
           cfi: highlight.cfi,
-          patchInfo: {
-            userDataByBookId: getUserDataByBookId(),
-          },
         })
 
       } else {
@@ -109,9 +103,6 @@ const HighlighterInstructorHighlightSection = React.memo(({
           classroomUid,
           spineIdRef: highlight.spineIdRef,
           cfi: highlight.cfi,
-          patchInfo: {
-            userDataByBookId: getUserDataByBookId(),
-          },
         })
       }
     },

@@ -222,9 +222,6 @@ const BookContents = React.memo(({
         ordering,
         name: "",
         // toolType,
-        patchInfo: {
-          userDataByBookId,
-        },
       })
 
       setSelectedToolUid({

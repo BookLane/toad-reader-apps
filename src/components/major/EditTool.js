@@ -11,7 +11,6 @@ import { getToolInfo } from '../../utils/toolInfo'
 import StatusAndActions from "./StatusAndActions"
 
 import useWideMode from "../../hooks/useWideMode"
-import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
@@ -71,8 +70,6 @@ const EditTool = React.memo(({
     [ tool ],
   )
 
-  const getUserDataByBookId = useInstanceValue(userDataByBookId)
-
   const goUpdateTool = useCallback(
     updates => {
       updateTool({
@@ -80,9 +77,6 @@ const EditTool = React.memo(({
         classroomUid,
         uid: tool.uid,
         ...updates,
-        patchInfo: {
-          userDataByBookId: getUserDataByBookId(),
-        },
       })
     },
     [ updateTool, bookId, classroomUid, tool.uid ],

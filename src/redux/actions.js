@@ -64,16 +64,16 @@ export const setSelectedToolUid = ({ bookId, uid }) => ({
   uid,
 })
 
-export const createClassroom = ({ uid, bookId, name, userId, patchInfo }) => ({
+export const createClassroom = ({ uid, bookId, name, userId }) => ({
   type: "CREATE_CLASSROOM",
   uid,
   bookId,
   name,
   userId,
-  patchInfo,
+  doPatch: true,
 })
 
-export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at, patchInfo }) => ({
+export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at }) => ({
   type: "UPDATE_CLASSROOM",
   uid,
   bookId,
@@ -84,18 +84,18 @@ export const updateClassroom = ({ uid, bookId, name, access_code, instructor_acc
   introduction,
   classroom_highlights_mode,
   closes_at,
-  patchInfo,
+  doPatch: true,
 })
 
-export const deleteClassroom = ({ uid, bookId, patchInfo }) => ({
+export const deleteClassroom = ({ uid, bookId }) => ({
   type: "UPDATE_CLASSROOM",
   uid,
   bookId,
   _delete: true,
-  patchInfo,
+  doPatch: true,
 })
 
-export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, patchInfo }) => ({
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType }) => ({
   type: "CREATE_TOOL",
   bookId,
   classroomUid,
@@ -105,10 +105,10 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   ordering,
   name,
   toolType,
-  patchInfo,
+  doPatch: true,
 })
 
-export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, patchInfo }) => ({
+export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at }) => ({
   type: "UPDATE_TOOL",
   bookId,
   classroomUid,
@@ -121,34 +121,34 @@ export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   data,
   due_at,
   closes_at,
-  patchInfo,
+  doPatch: true,
 })
 
-export const deleteTool = ({ bookId, classroomUid, uid, patchInfo }) => ({
+export const deleteTool = ({ bookId, classroomUid, uid }) => ({
   type: "UPDATE_TOOL",
   bookId,
   classroomUid,
   uid,
   _delete: true,
-  patchInfo,
+  doPatch: true,
 })
 
-export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi }) => ({
   type: "CREATE_INSTRUCTOR_HIGHLIGHT",
   bookId,
   classroomUid,
   spineIdRef,
   cfi,
-  patchInfo,
+  doPatch: true,
 })
 
-export const deleteInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, patchInfo }) => ({
+export const deleteInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi }) => ({
   type: "DELETE_INSTRUCTOR_HIGHLIGHT",
   bookId,
   classroomUid,
   spineIdRef,
   cfi,
-  patchInfo,
+  doPatch: true,
 })
 
 export const pushToBookDownloadQueue = ({ bookId }) => ({
@@ -238,39 +238,39 @@ export const changeLibraryScope = ({ scope }) => ({
   scope,
 })
 
-export const setLatestLocation = ({ bookId, latestLocation, patchInfo }) => ({
+export const setLatestLocation = ({ bookId, latestLocation }) => ({
   type: "SET_LATEST_LOCATION",
   bookId,
   latestLocation,
-  patchInfo,
+  doPatch: true,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, patchInfo }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   color,
   note,
-  patchInfo,
+  doPatch: true,
 })
 
-export const deleteHighlight = ({ bookId, spineIdRef, cfi, patchInfo }) => ({
+export const deleteHighlight = ({ bookId, spineIdRef, cfi }) => ({
   type: "DELETE_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
-  patchInfo,
+  doPatch: true,
 })
 
-export const shareHighlight = ({ bookId, spineIdRef, cfi, share_quote, forceNewShareCode, patchInfo }) => ({
+export const shareHighlight = ({ bookId, spineIdRef, cfi, share_quote, forceNewShareCode }) => ({
   type: "SHARE_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   share_quote,
   forceNewShareCode,
-  patchInfo,
+  doPatch: true,
 })
 
 export const setUserData = ({ bookId, userData, lastSuccessfulPatch }) => ({
@@ -296,9 +296,9 @@ export const startRecordReading = ({ bookId, spineIdRef }) => ({
   spineIdRef,
 })
 
-export const endRecordReading = ({ reportReadingsInfo }) => ({
+export const endRecordReading = () => ({
   type: "END_RECORD_READING",
-  reportReadingsInfo,
+  doReportReadings: true,
 })
 
 export const flushReadingRecords = ({ accountId, numberOfRecords }) => ({
