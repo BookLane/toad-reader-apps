@@ -9,6 +9,7 @@ import { connect } from "react-redux"
 import BookInfoCover from "./BookInfoCover"
 import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
+import BookInfoIsbn from "./BookInfoIsbn"
 import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
 import { i18n } from "inline-i18n"
@@ -71,7 +72,7 @@ const BookInfo = ({
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
 
-  const { title, author } = bookInfo
+  const { title, author, isbn } = bookInfo
 
   let adminInfo = false
   Object.keys(bookInfo.accounts).some(accountId => {
@@ -138,6 +139,7 @@ const BookInfo = ({
       <View style={styles.info}>
         <BookInfoTitle to={`/book/${bookId}`}>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
+        <BookInfoIsbn isbn={isbn} />
         {!!adminInfo &&
           <BookInfoId id={bookId} />
         }
