@@ -1,6 +1,7 @@
 import { Platform, AppState } from 'react-native'
 
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "./toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
+         safeFetch, createAccessCode } from "./toolbox"
 import { connectionInfo } from "../hooks/useNetwork"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -60,7 +61,7 @@ const reportResponseError = ({ message, response, error, retry }) => {
 export const patch = info => setTimeout(() => {
   // the setTimeout ensures this is async
 
-  const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount, setSyncStatus } = setAndGetLatestInfo(info)
+  const { idps, accounts, books, userDataByBookId, updateAccount, updateBookAccount, setSyncStatus, shareHighlight, updateClassroom } = setAndGetLatestInfo(info)
 
   if(!idps || !accounts || !books || !userDataByBookId || !updateAccount || !updateBookAccount || !setSyncStatus) return
   
@@ -219,7 +220,7 @@ export const patch = info => setTimeout(() => {
             },
             body: JSON.stringify(bookUserData),
           }))
-            .then(response => {
+            .then(async response => {
 
               currentlyPatchingBookAccountCombo[`${accountId} ${bookId}`] = false
 
@@ -258,6 +259,56 @@ export const patch = info => setTimeout(() => {
                 refreshUserData({ accountId, bookId })
   
               } else {
+
+                try {
+                  const errorsInfo = await response.json()
+
+                  if(errorsInfo.every(({ patch, error }) => {
+                    const dupCodeErrorPieces = error.split('duplicate code(s): ')
+                    if(dupCodeErrorPieces.length === 2) {
+                      switch(patch) {
+                        case "highlights": {
+                          const badShareCode = dupCodeErrorPieces[1]
+                          bookUserData.highlights.some(highlight => {
+                            if(highlight.share_code === badShareCode) {
+                              shareHighlight({
+                                ...highlight,
+                                bookId,
+                                forceNewShareCode: true,
+                                patchInfo: {},
+                              })
+                              return true
+                            }
+                          })
+                          break
+                        }
+                        case "classrooms": {
+                          const badAccessCodes = dupCodeErrorPieces[1].split(' ')
+                          bookUserData.classrooms.some(classroom => {
+                            if(
+                              badAccessCodes.includes(classroom.access_code)
+                              || badAccessCodes.includes(classroom.instructor_access_code)
+                            ) {
+                              updateClassroom({
+                                ...classroom,
+                                bookId,
+                                access_code: createAccessCode(),
+                                instructor_access_code: createAccessCode(),
+                                patchInfo: {},
+                              })
+                              return true
+                            }
+                          })
+                          break
+                        }
+                      }
+                    }
+                  })) {
+                    console.log(`User data had used codes. Retrying. (bookId: ${bookId}, userId: ${userId}, path: ${path}).`)
+                    return
+                  }
+                } catch(e) {}
+
                 reportResponseError({
                   message: `Patch error to ${path}`,
                   response,

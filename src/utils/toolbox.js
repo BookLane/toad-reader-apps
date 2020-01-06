@@ -426,14 +426,17 @@ export const getMBSizeStr = numBytes => {
   return i18n("{{num}} kb", { num: sizeInKB })
 }
 
-export const createAccessCode = () => {
-  const digitOptions = `ABCDEFGHJKMNPQRSTUVWXYZ23456789`
-
-  return Array(6)
+export const createAccessCode = ({ digitOptions=`ABCDEFGHJKMNPQRSTUVWXYZ23456789`, codeLength=6 }={}) => (
+  Array(codeLength)
     .fill(0)
     .map(() => digitOptions[parseInt(Math.random() * digitOptions.length, 10)])
     .join('')
-}
+)
+
+export const createShareCode = () => createAccessCode({
+  digitOptions: `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_`,
+  codeLength: 5,
+})
 
 export const getIdsFromAccountId = accountId => {
   const [ idpId, userId ] = accountId.split(':').map(Number)

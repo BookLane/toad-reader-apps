@@ -1,14 +1,21 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, TouchableOpacity, Platform, Share, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import { i18n } from "inline-i18n"
 
-import { getFullName, getDataOrigin, getIdsFromAccountId } from '../../utils/toolbox'
+import { getDataOrigin } from '../../utils/toolbox'
 
-import Iframe from './Iframe'
+import WebView from '../major/WebView'
 import Dialog from "../major/Dialog"
+
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+
+import { shareHighlight } from "../../redux/actions"
+
+const MAX_QUOTE_WORD_LENGTH = 300
+const MAX_QUOTE_CHARACTER_LENGTH = 1500
 
 const styles = StyleSheet.create({
   share: {
@@ -21,8 +28,7 @@ const styles = StyleSheet.create({
   shareDialog: {
     maxWidth: 'none',
   },
-  iframe: {
-    borderWidth: 0,
+  webview: {
     width: 800,
     height: 400,
     maxWidth: 'calc(100vw - 40px)',
@@ -31,63 +37,70 @@ const styles = StyleSheet.create({
 })
 
 const HighlighterShareIcon = React.memo(({
-  idps,
-  accounts,
-  books,
-  userDataByBookId,
   bookId,
   selectionInfo,
   highlight,
+  
+  idps,
+  books,
+  userDataByBookId,
+  syncStatus,
+
+  shareHighlight,
 }) => {
 
   const [ showShare, setShowShare ] = useState(false)
+  const { idpId } = useClassroomInfo({ books, bookId })
 
-  const getUrlDependencies = [ idps, accounts, books, userDataByBookId, bookId, selectionInfo, highlight ]
-  const getUrl = useCallback(
-    () => {
-      const book = books[bookId] || {}
-      const accountId = Object.keys(book.accounts)[0] || ""
-      const { idpId } = getIdsFromAccountId(accountId)
-      const idp = idps[idpId]
-      const { latest_location } = (userDataByBookId[bookId] || {})
-      const fullname = getFullName(accounts[accountId])
+  const { authMethod, devAuthMethod } = idps[idpId]
 
-      if(!idp || !latest_location) {
-        throw new Error('Unable to share')
-      }
+  const shareUrl = `${getDataOrigin(idps[idpId])}/q/${highlight.share_code || ''}`
 
-      let url = `${getDataOrigin(idp)}/book/${bookId}`
-        + `?goto=${encodeURIComponent(latest_location)}`
-        + `&highlight=${encodeURIComponent(selectionInfo.text)}`
+  let share_quote = selectionInfo.text
 
-      if(highlight.note) {
-        url += `&note=${encodeURIComponent(highlight.note)}`
-          + `&sharer=${encodeURIComponent(fullname)}`
-      }
+  if(share_quote.split(' ').length > MAX_QUOTE_WORD_LENGTH) {
+    share_quote = `${share_quote.split(' ').slice(0, MAX_QUOTE_WORD_LENGTH).join(' ')}...`
+  }
 
-      return url
-    },
-    getUrlDependencies,
-  )
+  if(share_quote.length > MAX_QUOTE_CHARACTER_LENGTH) {
+    share_quote = `${share_quote.substr(0, MAX_QUOTE_CHARACTER_LENGTH - 3)}...`
+  }
 
   const goShare = useCallback(
     () => {
-      const book = books[bookId] || {}
-      const url = getUrl()
+      if(!highlight.share_code) {
+        shareHighlight({
+          bookId,
+          spineIdRef: selectionInfo.spineIdRef,
+          cfi: selectionInfo.cfi,
+          share_quote,
+          patchInfo: {
+            userDataByBookId,
+          },
+        })
+      }
 
-      const title = i18n("Quote from {{book}}", {
-        book: book.title,
-      })
+      // With a timeout to allow for syncStatus to update at the same time as showShare
+      setTimeout(() => setShowShare(true))
+    },
+    [ bookId, selectionInfo, userDataByBookId ],
+  )
 
-      if(Platform.OS === 'web') {
-        setShowShare(true)
+  useEffect(
+    () => {
+      if(Platform.OS !== 'web' && highlight.share_code && showShare && syncStatus === 'synced') {
 
-      } else {
+        const book = books[bookId] || {}
+
+        const title = i18n("Quote from {{book}}", {
+          book: book.title,
+        })
+
         Share.share(
           {
-            message: `“${selectionInfo.text}”${(Platform.OS === 'android' ? `\n\n${url}` : ``)}`,
+            message: `“${selectionInfo.text}”${(Platform.OS === 'android' ? `\n\n${shareUrl}` : ``)}`,
             title,
-            url,  // ios
+            url: shareUrl,  // ios
           },
           {
             subject: title,  // ios share via email
@@ -96,13 +109,17 @@ const HighlighterShareIcon = React.memo(({
             dialogTitle: title,  // android
           }
         )
-      }
 
+        setShowShare(false)
+
+      }
     },
-    [ ...getUrlDependencies, books, bookId, selectionInfo ],
+    [ showShare, highlight.share_code ],
   )
 
   const setShowShareToFalse = useCallback(() => setShowShare(false), [])
+
+  if(((__DEV__ && devAuthMethod) || authMethod) === 'NONE_OR_EMAIL') return null
 
   return (
     <>
@@ -114,32 +131,38 @@ const HighlighterShareIcon = React.memo(({
           style={styles.share}
         />
       </TouchableOpacity>
-      <Dialog
-        open={!!showShare}
-        title={i18n("Share")}
-        message={
-          <View style={styles.shareMessage}>
-            <Iframe
-              src={`${getUrl()}&editing=1`}
-              style={styles.iframe}
-            />
-          </View>
-        }
-        style={styles.shareDialog}
-        onClose={setShowShareToFalse}
-      />
+      {Platform.OS === 'web' &&
+        <Dialog
+          open={!!(showShare && highlight.share_code)}
+          title={i18n("Share")}
+          message={
+            <View style={styles.shareMessage}>
+              <WebView
+                source={{
+                  uri: (highlight.share_code && syncStatus === 'synced') ? shareUrl : null,
+                }}
+                style={styles.webview}
+              />
+            </View>
+          }
+          style={styles.shareDialog}
+          onClose={setShowShareToFalse}
+        />
+      }
     </>
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId, syncStatus }) => ({
   idps,
   accounts,
   books,
   userDataByBookId,
+  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  shareHighlight,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(HighlighterShareIcon)

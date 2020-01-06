@@ -1,4 +1,4 @@
-import { latestLocationToStr, createAccessCode } from '../../utils/toolbox'
+import { latestLocationToStr, createAccessCode, createShareCode } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
 
 const initialState = {}
@@ -178,12 +178,18 @@ export default function(state = initialState, action) {
     }
 
     case "SET_HIGHLIGHT": {
-      let noChange
+      let noChange, highlightShareInfo = {}
       highlights = highlights.filter(highlight => {
         if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
           if(highlight.color === action.color && highlight.note === action.note && !highlight._delete) {
             noChange = true
           } else {
+            if(highlight.share_code) {
+              highlightShareInfo = {
+                share_code: highlight.share_code,
+                share_quote: highlight.share_quote,
+              }
+            }
             return false
           }
         }
@@ -195,6 +201,7 @@ export default function(state = initialState, action) {
       }
 
       highlights.push({
+        ...highlightShareInfo,
         spineIdRef: action.spineIdRef,
         cfi: action.cfi,
         color: action.color,
@@ -227,6 +234,40 @@ export default function(state = initialState, action) {
       highlights.push({
         ...highlightToDel,
         _delete: true,
+        updated_at: now,
+      })
+
+      newState[action.bookId] = {
+        ...userDataForThisBook,
+        highlights,
+      }
+
+      return newState
+    }
+
+    case "SHARE_HIGHLIGHT": {
+      let highlightToShare
+      highlights = highlights.filter(highlight => {
+        if(
+          highlight.spineIdRef === action.spineIdRef
+          && highlight.cfi === action.cfi
+          && (!highlight.share_code || action.forceNewShareCode)
+          && !highlight._delete
+        ) {
+          highlightToShare = highlight
+          return false
+        }
+        return true
+      })
+
+      if(!highlightToShare) {
+        return state
+      }
+
+      highlights.push({
+        ...highlightToShare,
+        share_code: createShareCode(),
+        share_quote: action.share_quote,
         updated_at: now,
       })
 

@@ -35,7 +35,8 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import { setLatestLocation, updateAccount, updateBookAccount, setUserData,
          startRecordReading, endRecordReading, flushReadingRecords, setXapiConsentShown,
-         setTocAndSpines, setSyncStatus, updateTool, setSelectedToolUid } from "../../redux/actions"
+         setTocAndSpines, setSyncStatus, shareHighlight,
+         updateClassroom, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 const {
   APP_BACKGROUND_COLOR,
@@ -170,6 +171,8 @@ const Book = React.memo(({
   setXapiConsentShown,
   setTocAndSpines,
   setSyncStatus,
+  shareHighlight,
+  updateClassroom,
   updateTool,
   setSelectedToolUid,
 
@@ -274,6 +277,8 @@ const Book = React.memo(({
             setUserData,
             updateBookAccount,
             setSyncStatus,
+            shareHighlight,
+            updateClassroom,
           },
         })
       })
@@ -1004,6 +1009,8 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setXapiConsentShown,
   setTocAndSpines,
   setSyncStatus,
+  shareHighlight,
+  updateClassroom,
   updateTool,
   setSelectedToolUid,
 }, dispatch)

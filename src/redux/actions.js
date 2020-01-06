@@ -263,6 +263,16 @@ export const deleteHighlight = ({ bookId, spineIdRef, cfi, patchInfo }) => ({
   patchInfo,
 })
 
+export const shareHighlight = ({ bookId, spineIdRef, cfi, share_quote, forceNewShareCode, patchInfo }) => ({
+  type: "SHARE_HIGHLIGHT",
+  bookId,
+  spineIdRef,
+  cfi,
+  share_quote,
+  forceNewShareCode,
+  patchInfo,
+})
+
 export const setUserData = ({ bookId, userData, lastSuccessfulPatch }) => ({
   type: "SET_USER_DATA",
   bookId,
