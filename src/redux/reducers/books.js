@@ -33,6 +33,7 @@ export default function(state = initialState, action) {
           version: book.version,
           totalCharacterCount: book.totalCharacterCount,
           coverHref: book.coverHref,
+          subscriptions: book.subscriptions,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           toc: (state[book.id] && state[book.id].toc) || undefined,
           spines: (state[book.id] && state[book.id].spines) || undefined,
@@ -182,6 +183,17 @@ export default function(state = initialState, action) {
       }
       return state
 
+      case "SET_SUBSCRIPTIONS": {
+        if(newState[action.bookId]) {
+          newState[action.bookId] = {
+            ...newState[action.bookId],
+            subscriptions: action.subscriptions,
+          }
+          return newState
+        }
+        return state
+      }
+  
   }
 
   return state

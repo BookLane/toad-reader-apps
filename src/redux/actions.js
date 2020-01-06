@@ -191,6 +191,12 @@ export const clearAllSpinePageCfis = ({ bookId }) => ({
   bookId,
 })
 
+export const setSubscriptions = ({ bookId, subscriptions }) => ({
+  type: "SET_SUBSCRIPTIONS",
+  bookId,
+  subscriptions,
+})
+
 export const setSort = ({ sort }) => ({
   type: "SET_SORT",
   sort,

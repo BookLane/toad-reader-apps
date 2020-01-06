@@ -49,6 +49,7 @@
       "version": "PUBLISHER",
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
+      "subscriptions": [],
       "accounts": {
         "1:-1": {
           "link": {
@@ -68,6 +69,12 @@
       "version": "BASE",
       "totalCharacterCount": 231004,
       "coverFilename": "cover.png",
+      "subscriptions": [
+        {
+          "id": -1,
+          "version": "BASE"
+        }
+      ],
       "accounts": {
         "1:-1": {}
       },
@@ -81,6 +88,7 @@
       "version": "INSTRUCTOR",
       "totalCharacterCount": 383021,
       "coverFilename": "cover.jpg",
+      "subscriptions": [],
       "accounts": {
         "1:-1": {
           "lastSuccessfulPatch": 1506078483419

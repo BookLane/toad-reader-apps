@@ -14,10 +14,12 @@ import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
 import { i18n } from "inline-i18n"
 import Dialog from "../major/Dialog"
+import CheckBox from "./CheckBox"
+import CoverAndSpin from "./CoverAndSpin"
 
 import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 
-import { deleteBook } from "../../redux/actions"
+import { deleteBook, setSubscriptions } from "../../redux/actions"
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -44,9 +46,14 @@ const styles = StyleSheet.create({
   spacer: {
     flexGrow: 1,
   },
-  buttonContainer: {
-    marginVertical: 10,
+  checkBoxContainer: {
     flexDirection: 'row',
+    marginVertical: 8,
+  },
+  buttonContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    marginBottom: 10,
   },
   emphasis: {
     color: 'black',
@@ -54,6 +61,9 @@ const styles = StyleSheet.create({
   },
   subtle: {
     fontSize: 12,
+  },
+  spin: {
+    backgroundColor: 'transparent',
   },
 })
 
@@ -68,11 +78,13 @@ const BookInfo = ({
   idps,
 
   deleteBook,
+  setSubscriptions,
 }) => {
 
-  const [ deleteStatus, setDeleteStatus ] = useState('none')
+  const { title, author, isbn, subscriptions } = bookInfo
 
-  const { title, author, isbn } = bookInfo
+  const [ deleteStatus, setDeleteStatus ] = useState('none')
+  const [ updatingSubscriptions, setUpdatingSubscriptions ] = useState(false)
 
   let adminInfo = false
   Object.keys(bookInfo.accounts).some(accountId => {
@@ -128,6 +140,50 @@ const BookInfo = ({
     [ bookId ],
   )
 
+  const setDefaultSubscription = useCallback(
+    async checked => {
+
+      setUpdatingSubscriptions(true)
+
+      const path = `${getDataOrigin(idps[adminInfo.idpId])}/setsubscriptions/${bookId}`
+
+      const newSubscriptions = checked
+        ? [ ...(subscriptions || []), { id: adminInfo.idpId * -1, version: "BASE" }]
+        : (subscriptions || []).filter(({ id }) => id !== adminInfo.idpId * -1)
+
+      try {
+
+        const result = await safeFetch(path, getReqOptionsWithAdditions({
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+            "x-cookie-override": adminInfo.cookie,
+          },
+          body: JSON.stringify({ subscriptions: newSubscriptions }),
+        }))
+
+        if(result.status === 200 && ((await result.json()) || {}).success) {
+          setSubscriptions({
+            bookId,
+            subscriptions: newSubscriptions,
+          })
+
+        } else {
+          history.push("/error")
+        }
+
+      } catch(err) {
+        history.push("/error", {
+          message: err.message,
+        })
+      }
+
+      setUpdatingSubscriptions(false)
+
+    },
+    [ bookId, subscriptions ],
+  )
+
   return (
     <View style={[
       styles.container,
@@ -146,16 +202,25 @@ const BookInfo = ({
         {Platform.OS === 'web'
           ? (
             (!!adminInfo &&
-              <View style={styles.buttonContainer}>
-                <Button
-                  onPress={confirmDelete}
-                  size="tiny"
-                  status="basic"
-                  appearance="outline"
-                >
-                  {i18n("Delete")}
-                </Button>
-              </View>
+              <>
+                <View style={styles.checkBoxContainer}>
+                  <CheckBox
+                    text={i18n("Accessible to all users")}
+                    checked={!!(adminInfo && (subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1))}
+                    onChange={setDefaultSubscription}
+                  />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <Button
+                    onPress={confirmDelete}
+                    size="tiny"
+                    status="basic"
+                    appearance="outline"
+                  >
+                    {i18n("Delete")}
+                  </Button>
+                </View>
+              </>
             )
           )
           : (
@@ -188,6 +253,11 @@ const BookInfo = ({
         onClose={updateLibrary}
         submitting={[ 'deleting' ].includes(deleteStatus)}
       />
+      {updatingSubscriptions &&
+        <CoverAndSpin
+          style={styles.spin}
+        />
+      }
     </View>
   )
 }
@@ -199,6 +269,7 @@ const mapStateToProps = ({ accounts, idps }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   deleteBook,
+  setSubscriptions,
 }, dispatch)
 
 export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookInfo))

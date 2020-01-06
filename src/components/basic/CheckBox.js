@@ -17,7 +17,7 @@ const CheckBox = React.memo(({
       onChange && onChange(value)
       onChangeInfo && onChangeInfo({ id, value })
     },
-    [ id ],
+    [ id, onChange, onChangeInfo ],
   )
 
   return (
