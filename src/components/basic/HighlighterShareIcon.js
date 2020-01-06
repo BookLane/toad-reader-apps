@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import { i18n } from "inline-i18n"
 
-import { getDataOrigin } from '../../utils/toolbox'
+import { getDataOrigin, isStaging } from '../../utils/toolbox'
 
 import WebView from '../major/WebView'
 import Dialog from "../major/Dialog"
@@ -54,7 +54,7 @@ const HighlighterShareIcon = React.memo(({
 
   const { authMethod, devAuthMethod } = idps[idpId]
 
-  const shareUrl = `${getDataOrigin(idps[idpId])}/q/${highlight.share_code || ''}`
+  const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://q.toadreader.com`}/q/${highlight.share_code || ''}`
 
   let share_quote = selectionInfo.text
 
@@ -139,7 +139,7 @@ const HighlighterShareIcon = React.memo(({
             <View style={styles.shareMessage}>
               <WebView
                 source={{
-                  uri: (highlight.share_code && syncStatus === 'synced') ? shareUrl : null,
+                  uri: (highlight.share_code && syncStatus === 'synced') ? `${shareUrl}?iniframe=1` : null,
                 }}
                 style={styles.webview}
               />
