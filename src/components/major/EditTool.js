@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Select } from "react-native-ui-kitten"
+import uuidv4 from 'uuid/v4'
 
 import Input from "../basic/Input"
 
@@ -14,7 +15,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
-import { updateTool } from "../../redux/actions"
+import { updateTool, createTool, setSelectedToolUid } from "../../redux/actions"
 import EditToolData from "./EditToolData"
 
 const styles = StyleSheet.create({
@@ -51,6 +52,8 @@ const EditTool = React.memo(({
   userDataByBookId,
 
   updateTool,
+  createTool,
+  setSelectedToolUid,
 }) => {
 
   const { toolTypes, toolInfoByType } = getToolInfo()
@@ -72,14 +75,36 @@ const EditTool = React.memo(({
 
   const goUpdateTool = useCallback(
     updates => {
-      updateTool({
-        bookId,
-        classroomUid,
-        uid: tool.uid,
-        ...updates,
-      })
+
+      if(tool.published_at) {
+        const uid = uuidv4()
+
+        createTool({
+          ...tool,
+          bookId,
+          classroomUid,
+          uid,
+          published_at: null,
+          currently_published_tool_uid: tool.uid,
+          ...updates,
+        })
+
+        setSelectedToolUid({
+          bookId,
+          uid,
+        })
+
+      } else {
+        updateTool({
+          bookId,
+          classroomUid,
+          uid: tool.uid,
+          ...updates,
+        })
+
+      }
     },
-    [ updateTool, bookId, classroomUid, tool.uid ],
+    [ bookId, classroomUid, tool.uid, tool.published_at ],
   )
 
   const onToolNameChange = useCallback(
@@ -156,6 +181,8 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateTool,
+  createTool,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(EditTool)

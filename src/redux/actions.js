@@ -95,7 +95,7 @@ export const deleteClassroom = ({ uid, bookId }) => ({
   doPatch: true,
 })
 
-export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType }) => ({
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid }) => ({
   type: "CREATE_TOOL",
   bookId,
   classroomUid,
@@ -105,6 +105,10 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   ordering,
   name,
   toolType,
+  data,
+  due_at,
+  closes_at,
+  currently_published_tool_uid,
   doPatch: true,
 })
 
@@ -121,6 +125,14 @@ export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   data,
   due_at,
   closes_at,
+  doPatch: true,
+})
+
+export const publishTool = ({ bookId, classroomUid, uid }) => ({
+  type: "PUBLISH_TOOL",
+  bookId,
+  classroomUid,
+  uid,
   doPatch: true,
 })
 

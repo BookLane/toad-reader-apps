@@ -8,9 +8,10 @@ import { i18n } from "inline-i18n"
 // import {  } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
+import useNetwork from "../../hooks/useNetwork"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
-import { deleteTool, setSelectedToolUid } from "../../redux/actions"
+import { publishTool, deleteTool, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -41,15 +42,34 @@ const StatusAndActions = React.memo(({
   isFrontMatter,
 
   books,
+  userDataByBookId,
   syncStatus,
 
+  publishTool,
   deleteTool,
   setSelectedToolUid,
 }) => {
 
-  const { classroomUid, selectedToolUid } = useClassroomInfo({ books, bookId })
+  const { classroomUid, selectedToolUid, selectedTool, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
+  const { online } = useNetwork()
+
+  const onPublish = useCallback(
+    () => {
+      if(viewingFrontMatter) {
+        alert('Not yet implemented')
+        return
+      }
+      if(!confirm("Are you sure?")) return
+      publishTool({
+        bookId,
+        classroomUid,
+        uid: selectedToolUid,
+      })
+    },
+    [ publishTool, bookId, classroomUid, selectedToolUid, viewingFrontMatter ],
+  )
 
   const onDelete = useCallback(
     () => {
@@ -59,9 +79,13 @@ const StatusAndActions = React.memo(({
         classroomUid,
         uid: selectedToolUid,
       })
-      setSelectedToolUid({ bookId })
+
+      setSelectedToolUid({
+        bookId,
+        uid: selectedTool.currently_published_tool_uid || undefined,
+      })
     },
-    [ deleteTool, bookId, classroomUid, selectedToolUid ],
+    [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid ],
   )
 
   const syncStatusMessages = {
@@ -70,6 +94,35 @@ const StatusAndActions = React.memo(({
     refreshing: i18n("Saving to server..."),
     error: i18n("Unable to save to server."),
   }
+
+  const publishedStatusMessages = {
+    published: i18n("No changes since last publish."),
+    edited: i18n("Contains unpublished changes."),
+    new: i18n("Not yet published."),
+  }
+
+  const publishedStatus = (selectedTool || {}).published_at
+    ? 'published'
+    : (
+      (selectedTool || {}).currently_published_tool_uid
+        ? 'edited'
+        : 'new'
+    )
+
+  // TODO's:
+
+  // frontend
+    // BUG: publish and then immediate edit
+    // BUG: weird back-and-forth tool selection (reproduce: create took, publish, select it, create new tool, wait)
+    // publish requirements: frontend and backend
+    // push to staging and test
+    // push out
+
+    // Show published date, last updated date
+    // speed up (create function in toolbox for useEffect, useCallback, useMemo)
+    // do publish for front matter
+
+    // do we need instruction for LAB phase??
 
   return (
     <View
@@ -80,9 +133,10 @@ const StatusAndActions = React.memo(({
     >
       <View style={styles.buttons}>
         <Button
-          onPress={() => alert('not yet implemented')}
+          onPress={onPublish}
           status="primary"
           style={styles.button}
+          disabled={syncStatus !== 'synced' || !online || !!selectedTool.published_at}
         >
           {i18n("Publish")}
         </Button>
@@ -91,7 +145,7 @@ const StatusAndActions = React.memo(({
             onPress={onDelete}
             status="basic"
           >
-            {i18n("Remove")}
+            {selectedTool.currently_published_tool_uid ? i18n("Discard changes") : i18n("Remove")}
           </Button>
         }
       </View>
@@ -103,18 +157,20 @@ const StatusAndActions = React.memo(({
       >
         {syncStatusMessages[syncStatus]}
         {" "}
-        {i18n("Not yet published.")}
+        {publishedStatusMessages[publishedStatus]}
       </Text>
     </View>
   )
 })
 
-const mapStateToProps = ({ books, syncStatus }) => ({
+const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
   books,
+  userDataByBookId,
   syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  publishTool,
   deleteTool,
   setSelectedToolUid,
 }, dispatch)

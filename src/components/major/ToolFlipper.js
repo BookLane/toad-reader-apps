@@ -77,23 +77,22 @@ const ToolFlipper = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { selectedTool, tools, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { selectedTool, visibleTools, spines } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const wideMode = useWideMode()
 
   const toolSet = useMemo(
     () => {
-      const toolsInSameSet = tools.filter(({ spineIdRef, cfi, _delete }) => (
+      const toolsInSameSet = visibleTools.filter(({ spineIdRef, cfi }) => (
         spineIdRef === (selectedTool || {}).spineIdRef
         && !cfi
-        && !_delete
       ))
     
       toolsInSameSet.sort((a, b) => a.ordering - b.ordering)
 
       return toolsInSameSet
     },
-    [ tools, (selectedTool || {}).spineIdRef ],
+    [ visibleTools, (selectedTool || {}).spineIdRef, inEditMode ],
   )
 
   const onPageChange = useCallback(

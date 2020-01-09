@@ -11,6 +11,22 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { setSelectedToolUid } from "../../redux/actions"
 
+const numWithin = {
+  backgroundColor: 'rgb(0, 0, 0)',
+  borderRadius: '50%',
+  color: 'white',
+  width: 19,
+  height: 19,
+  flexShrink: 0,
+  lineHeight: 18,
+  textAlign: 'center',
+  fontSize: 10,
+  fontWeight: 600,
+  marginVertical: -6,
+  marginLeft: 8,
+  paddingRight: 1, // not sure why I need this
+}
+
 const styles = StyleSheet.create({
   listItem: {
     paddingVertical: 8,
@@ -30,19 +46,11 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   numWithin: {
-    backgroundColor: 'rgb(0, 0, 0)',
-    borderRadius: '50%',
-    color: 'white',
-    width: 19,
-    height: 19,
-    flexShrink: 0,
-    lineHeight: 18,
-    textAlign: 'center',
-    fontSize: 10,
-    fontWeight: 600,
-    marginVertical: -6,
-    marginLeft: 8,
-    paddingRight: 1, // not sure why I need this
+    ...numWithin,
+  },
+  numWithinDraft: {
+    ...numWithin,
+    fontStyle: 'italic',
   },
 })
 
@@ -52,6 +60,7 @@ const BookContentsLine = ({
   uid,
   label,
   toolType,
+  isDraft,
   numToolsWithin,
   goTo,
   href,
@@ -60,6 +69,7 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
+  inEditMode,
 
   books,
   userDataByBookId,
@@ -67,7 +77,7 @@ const BookContentsLine = ({
   setSelectedToolUid,
 }) => {
 
-  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
   const { latest_location } = userDataByBookId[bookId] || {}
   const currentSpineIdRef = getSpineAndPage({ latest_location }).spineIdRef
 
@@ -109,6 +119,7 @@ const BookContentsLine = ({
           uid={uid}
           label={label}
           toolType={toolType}
+          isDraft={isDraft}
           onPress={onPress}
           onToolMove={onToolMove}
           onToolRelease={onToolRelease}
@@ -130,7 +141,7 @@ const BookContentsLine = ({
         ]}
       >
         <Text style={styles.label}>{label}</Text>
-        {!!numToolsWithin && <Text style={styles.numWithin}>{numToolsWithin}</Text>}
+        {!!numToolsWithin && <Text style={isDraft ? styles.numWithinDraft : styles.numWithin}>{numToolsWithin}</Text>}
       </View>
     </TouchableOpacity>
   )

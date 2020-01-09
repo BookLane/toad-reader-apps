@@ -194,11 +194,6 @@ const Book = React.memo(({
     snapshotZoomed: true,
   })
 
-  const toggleInEditMode = useCallback(
-    () => setInEditMode(!inEditMode),
-    [ inEditMode ],
-  )
-
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
 
@@ -221,15 +216,14 @@ const Book = React.memo(({
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
-  const { classroomUid, tools, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const getTools = useInstanceValue(tools)
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool, draftToolByCurrentlyPublishedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const getVisibleTools = useInstanceValue(visibleTools)
 
   const toolCfiCounts = useMemo(
     () => {
       const countsByCfi = {}
 
-      tools.forEach(({ cfi, _delete, ...tool }) => {
-        if(_delete) return
+      visibleTools.forEach(({ uid, cfi, published_at, ...tool }) => {
         if(tool.spineIdRef !== spineIdRef) return
         if(!countsByCfi[cfi]) {
           countsByCfi[cfi] = 0
@@ -239,7 +233,40 @@ const Book = React.memo(({
 
       return countsByCfi
     },
-    [ JSON.stringify(tools), spineIdRef ],
+    [ JSON.stringify(visibleTools), spineIdRef, inEditMode ],
+  )
+
+  const toggleInEditMode = useCallback(
+    () => {
+      if(selectedTool) {
+        if(inEditMode) {
+          // leaving edit mode
+          if(selectedTool.currently_published_tool_uid) {
+            // this is a draft of a published tool
+            setSelectedToolUid({
+              bookId,
+              uid: selectedTool.currently_published_tool_uid,
+            })
+
+          } else if(!selectedTool.published_at) {
+            // this is a new, unpublished tool
+            unselectTool()
+          }
+        } else {
+          // entering edit mode
+          if(draftToolByCurrentlyPublishedToolUid[selectedTool.uid]) {
+            // has a draft version
+            setSelectedToolUid({
+              bookId,
+              uid: draftToolByCurrentlyPublishedToolUid[selectedTool.uid].uid,
+            })
+          }
+        }
+      }
+
+      setInEditMode(!inEditMode)
+    },
+    [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid ],
   )
 
   useEffect(
@@ -460,7 +487,7 @@ const Book = React.memo(({
         // be initiated.
       })
     },
-    [ bookId, spineIdRef ],
+    [ bookId, spineIdRef, reportSpots ],
   )
 
   const toggleBookView = useCallback(
@@ -652,8 +679,12 @@ const Book = React.memo(({
       if(type === 'BookPage') {
 
         const spineToolsByCfi = {}
-        getTools().forEach(tool => {
-          if(tool.spineIdRef === spineIdRef && tool.cfi && !tool._delete) {
+
+        getVisibleTools().forEach(tool => {
+          if(
+            tool.spineIdRef === spineIdRef
+            && tool.cfi
+          ) {
             if(!spineToolsByCfi[tool.cfi]) {
               spineToolsByCfi[tool.cfi] = []
             }
@@ -661,23 +692,29 @@ const Book = React.memo(({
           }
         })
 
+        Object.values(spineToolsByCfi).forEach(spineTools => spineTools.sort((a, b) => a.ordering - b.ordering))
+
         const toolsToOverlayOnThisPage = []
 
         ;(info.spots || []).forEach(({ cfi, y, ordering: spotOrdering }) => {
           if(spotOrdering !== 0) return
 
-          ;(spineToolsByCfi[cfi] || []).forEach(({ uid, toolType, name, ordering }) => {
+          ;(spineToolsByCfi[cfi] || []).forEach(({ uid, toolType, published_at, name }, idx) => {
 
             toolsToOverlayOnThisPage.push(
               <View key={uid} style={styles.toolChipContainer}>
                 <ToolChip
                   style={{
                     left: info.offsetX,
-                    top: y + 3 + (ordering * 34),  // the 3 matches the top/bottom padding when the chip is in the toc
+                    // The 3 matches the top/bottom padding when the chip is in the toc.
+                    // Using idx instead of tool ordering, since all may not be displayed
+                    // given whether we are in edit mode or not.
+                    top: y + 3 + (idx * 34),
                   }}
                   uid={uid}
                   label={name}
                   toolType={toolType}
+                  isDraft={!published_at}
                   onPress={() => setSelectedToolUid({
                     bookId,
                     uid,
@@ -698,14 +735,14 @@ const Book = React.memo(({
 
       }
     },
-    [ bookId, spineIdRef ],
+    [ bookId, spineIdRef, inEditMode ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
   const getBookContentsScrollY = useInstanceValue(bookContentsScrollY)
 
   const onToolMove = useCallback(
-    ({ nativeEvent, label, toolType, uid }) => {
+    ({ nativeEvent, label, toolType, isDraft, uid }) => {
       if(!getInEditMode()) return false
 
       if(!movingToolOffsets.current) {
@@ -761,6 +798,7 @@ const Book = React.memo(({
             top,
           },
           toolType,
+          isDraft,
           label,
         },
         uid,
@@ -876,6 +914,7 @@ const Book = React.memo(({
               setSelectionInfo={setSelectionInfo}
               reportSpots={reportSpots}
               toolCfiCounts={toolCfiCounts}
+              inEditMode={inEditMode}
             />
             {toolsToOverlayOnThisPage}
           </View>

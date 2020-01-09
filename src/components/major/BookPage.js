@@ -49,6 +49,7 @@ const BookPage = React.memo(props => {
     location,
     requestHideSettings,
     latest_location,
+    inEditMode,
 
     books,
     userDataByBookId,
@@ -74,8 +75,8 @@ const BookPage = React.memo(props => {
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  const { tools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const getTools = useInstanceValue(tools)
+  const { visibleTools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const getVisibleTools = useInstanceValue(visibleTools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
   const { onLayout, width } = useLayout()
@@ -228,10 +229,9 @@ const BookPage = React.memo(props => {
                   )
               )
 
-            const toolsBeforeLaterSpine = getTools().filter(({ spineIdRef, cfi, _delete }) => (
+            const toolsBeforeLaterSpine = getVisibleTools().filter(({ spineIdRef, cfi }) => (
               spineIdRef === laterSpineIdRef
               && !cfi
-              && !_delete
             ))
 
             if(toolsBeforeLaterSpine.length > 0) {
@@ -316,7 +316,7 @@ const BookPage = React.memo(props => {
 
       }
     },
-    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, location ],
+    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, location, reportSpots, inEditMode ],
   )
 
   const setSelectionText = useCallback(

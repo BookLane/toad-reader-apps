@@ -522,3 +522,22 @@ export const isValidEmail = email => {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email)
 }
+
+
+export const getDraftToolByCurrentlyPublishedToolUid = tools => {
+  const hasDraftTool = {}
+
+  tools.forEach(tool => {
+    const { currently_published_tool_uid, published_at, _delete } = tool
+
+    if(
+      currently_published_tool_uid
+      && !published_at
+      && !_delete
+    ) {
+      hasDraftTool[currently_published_tool_uid] = tool
+    }
+  })
+
+  return hasDraftTool
+}

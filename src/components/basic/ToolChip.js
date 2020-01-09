@@ -7,15 +7,31 @@ import { getToolInfo } from "../../utils/toolInfo"
 
 const onMoveShouldSetResponderCapture = () => true
 
+const text = {
+  fontWeight: 400,
+  fontSize: 12,
+}
+
+const icon = {
+  tintColor: 'rgb(149, 174, 224)',
+  height: 13,
+  marginRight: 0,
+}
+
 const styles = StyleSheet.create({
   text: {
-    fontWeight: 400,
-    fontSize: 12,
+    ...text,
+  },
+  draftText: {
+    ...text,
+    fontStyle: 'italic',
   },
   icon: {
-    tintColor: 'rgb(149, 174, 224)',
-    height: 13,
-    marginRight: 0,
+    ...icon,
+  },
+  draftIcon: {
+    ...icon,
+    // tintColor: '#fdf594',
   },
   button: {
     backgroundColor: 'black',
@@ -31,6 +47,7 @@ const ToolChip = React.memo(({
   uid,
   label,
   toolType,
+  isDraft,
   onPress,
   onToolMove,
   onToolRelease,
@@ -50,11 +67,12 @@ const ToolChip = React.memo(({
         uid,
         label,
         toolType,
+        isDraft,
       })) {
         setHideTool(true)
       }
     },
-    [ onToolMove, uid, label, toolType ],
+    [ onToolMove, uid, label, toolType, isDraft ],
   )
 
   const onResponderRelease = useCallback(
@@ -70,12 +88,12 @@ const ToolChip = React.memo(({
       <Icon
         {...toolInfoByType[toolType]}
         style={[
-          styles.icon,
+          isDraft ? styles.draftIcon : styles.icon,
           // iconStyle,
         ]}
       />
     ),
-    [ toolType ],
+    [ toolType, isDraft ],
   )
 
   return (
@@ -97,7 +115,7 @@ const ToolChip = React.memo(({
         size='tiny'
         icon={ButtonIcon}
         iconStyle={iconStyle}
-        textStyle={styles.text}
+        textStyle={isDraft ? styles.draftText : styles.text}
         onPress={onPress}
       >
         {label || toolInfoByType[toolType].text}

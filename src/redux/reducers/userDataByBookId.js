@@ -1,4 +1,4 @@
-import { latestLocationToStr, createAccessCode, createShareCode } from '../../utils/toolbox'
+import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
 
 const initialState = {}
@@ -18,9 +18,14 @@ const fixToolOrdering = ({
     [modifiedToolPlacementKey]: modifiedTool.ordering === 0 ? 1 : 0,
   }
 
+  let draftToolByCurrentlyPublishedToolUid = getDraftToolByCurrentlyPublishedToolUid(tools)
+
   tools.forEach((tool, idx) => {
     if(tool._delete) return
     if(tool.uid === modifiedTool.uid) return
+
+    // if there are both published and draft versions of a tool, deal only with the draft here
+    if(tool.published_at && draftToolByCurrentlyPublishedToolUid[tool.uid]) return
 
     const placementKey = getPlacementKey(tool)
     const properOrdering = ordering[placementKey] || 0
@@ -37,6 +42,30 @@ const fixToolOrdering = ({
       && ordering[placementKey] === modifiedTool.ordering
     ) {
       ordering[placementKey]++
+    }
+  })
+
+  // Refetch because tools info may have changed.
+  draftToolByCurrentlyPublishedToolUid = getDraftToolByCurrentlyPublishedToolUid(tools)
+
+  // conform placement of all published tools which have draft versions to accord with their draft version
+  tools.forEach((tool, idx) => {
+    if(tool._delete) return
+
+    if(tool.published_at && draftToolByCurrentlyPublishedToolUid[tool.uid]) {
+      const { spineIdRef, cfi, ordering } = draftToolByCurrentlyPublishedToolUid[tool.uid]
+
+      if(
+        tool.spineIdRef !== spineIdRef
+        || tool.cfi !== cfi
+        || tool.ordering !== ordering
+      ) {
+        tools[idx] = tool = { ...tool }
+        tool.spineIdRef = spineIdRef
+        tool.cfi = cfi
+        tool.ordering = ordering
+        tool.updated_at = now
+      }
     }
   })
 
@@ -379,8 +408,11 @@ export default function(state = initialState, action) {
             name: action.name,
             toolType: action.toolType || getToolInfo().toolTypes[0].toolType,
             undo_array: [],
-            data: {},
+            data: action.data || {},
             updated_at: now,
+            due_at: action.due_at,
+            closes_at: action.closes_at,
+            currently_published_tool_uid: action.currently_published_tool_uid,
           }
 
           tools.push(newTool)
@@ -460,6 +492,47 @@ export default function(state = initialState, action) {
               classrooms[idx] = {
                 ...classroom,
                 tools,
+              }
+  
+              return true
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
+    case "PUBLISH_TOOL": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const tools = [ ...(classroom.tools || []) ]
+
+          return tools.some((tool, idx2) => {
+            if(tool.uid === action.uid) {
+              tools[idx2] = tool = { ...tool }
+
+              const oldPublishedToolUid = tool.currently_published_tool_uid
+
+              tool.published_at = now
+              tool.currently_published_tool_uid = null
+              tool.updated_at = now
+
+              classrooms[idx] = {
+                ...classroom,
+                // simply get rid the previous version (if exists) as the backend will take care of its data updates
+                tools: tools.filter(({ uid }) => uid !== oldPublishedToolUid),
               }
   
               return true

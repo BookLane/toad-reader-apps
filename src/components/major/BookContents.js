@@ -44,7 +44,8 @@ const BookContents = React.memo(({
   setSelectedToolUid
 }) => {
 
-  const { book, toc, classroomUid, tools, selectedTool, bookVersion, myRole, viewingEnhancedHomepage, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
+          myRole, viewingEnhancedHomepage, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const showAddToolButton = (
     (
@@ -54,40 +55,51 @@ const BookContents = React.memo(({
     || bookVersion === 'PUBLISHER'
   )
 
-  const numToolsWithinBySpineIdRef = useMemo(
+  const toolsInfoWithinBySpineIdRef = useMemo(
     () => {
-      const countsBySpineIdRef = {}
+      const infoBySpineIdRef = {}
 
-      tools.forEach(({ spineIdRef, cfi, _delete }) => {
-        if(_delete || !cfi) return
-        if(!countsBySpineIdRef[spineIdRef]) {
-          countsBySpineIdRef[spineIdRef] = 0
+      visibleTools.forEach(({ spineIdRef, cfi, published_at }) => {
+        if(!cfi) return
+
+        if(!infoBySpineIdRef[spineIdRef]) {
+          infoBySpineIdRef[spineIdRef] = {
+            count: 0,
+            isDraft: false,
+          }
         }
-        countsBySpineIdRef[spineIdRef]++
+
+        infoBySpineIdRef[spineIdRef].count++
+        infoBySpineIdRef[spineIdRef].isDraft = infoBySpineIdRef[spineIdRef].isDraft || !published_at
       })
 
-      return countsBySpineIdRef
+      return infoBySpineIdRef
     },
-    [ tools ],
+    [ JSON.stringify(visibleTools), inEditMode ],
   )
 
   const getListItems = (toc, indentLevel=0, insertedToolUidObj={}, insertedNumSpineIdRefObj={}) => {
     let listItems = []
 
     const findToolsToInsert = spineIdRefToFind => {
-      const toolsToInsert = tools
-        .filter(({ uid, spineIdRef, cfi, _delete }) => (spineIdRef === spineIdRefToFind && !cfi && !_delete && !insertedToolUidObj[uid]))
+      const toolsToInsert = visibleTools
+        .filter(({ uid, spineIdRef, cfi }) => (
+          spineIdRef === spineIdRefToFind
+          && !cfi
+          && !insertedToolUidObj[uid]
+        ))
 
       toolsToInsert.forEach(({ uid }) => {
         insertedToolUidObj[uid] = true
       })
 
-      return toolsToInsert.map(({ uid, name, toolType, spineIdRef, ordering }) => ({
+      return toolsToInsert.map(({ uid, name, toolType, published_at, spineIdRef, ordering }) => ({
         key: uid,
         uid,
         indentLevel,
         label: name,
         toolType,
+        isDraft: !published_at,
         spineIdRef,
         ordering,
         isTool: true,
@@ -95,7 +107,7 @@ const BookContents = React.memo(({
     }
 
     ;(toc || []).forEach(tocItem => {
-      const numToolsWithin = (!insertedNumSpineIdRefObj[tocItem.spineIdRef] && numToolsWithinBySpineIdRef[tocItem.spineIdRef]) || 0
+      const toolInfoWithin = (!insertedNumSpineIdRefObj[tocItem.spineIdRef] && toolsInfoWithinBySpineIdRef[tocItem.spineIdRef]) || 0
       insertedNumSpineIdRefObj[tocItem.spineIdRef] = true
       listItems = [
         ...listItems,
@@ -104,7 +116,8 @@ const BookContents = React.memo(({
           ...tocItem,
           indentLevel,
           key: `${tocItem.label}-${tocItem.href}`,
-          numToolsWithin,
+          numToolsWithin: toolInfoWithin.count,
+          isDraft: toolInfoWithin.isDraft,
         },
         ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj, insertedNumSpineIdRefObj),
       ]
@@ -122,7 +135,7 @@ const BookContents = React.memo(({
 
   const data = useMemo(
     () => getListItems(toc),
-    [ toc, tools ],
+    [ toc, JSON.stringify(visibleTools), inEditMode ],
   )
 
   const { onLayout, width, y: offsetY } = useLayout()
@@ -190,6 +203,7 @@ const BookContents = React.memo(({
         index={index}
         onToolMove={onToolMove}
         onToolRelease={onToolRelease}
+        inEditMode={inEditMode}
       />
     ),
     [ bookId, goTo, reportLineHeight ],
@@ -199,7 +213,8 @@ const BookContents = React.memo(({
     () => {
 
       const uid = uuidv4()
-      let spineIdRef, ordering
+      let spineIdRef
+      let ordering = 0
 
       if(selectedTool) {
         spineIdRef = selectedTool.spineIdRef
@@ -210,7 +225,14 @@ const BookContents = React.memo(({
         const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
         const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
-        ordering = tools.filter(tool => tool.spineIdRef === spineIdRef).length
+        visibleTools.forEach(tool => {
+          if(
+            tool.spineIdRef === spineIdRef
+            && !tool.cfi
+          ) {
+            ordering = Math.max(tool.ordering + 1, ordering)
+          }
+        })
       }
 
       createTool({
@@ -229,7 +251,7 @@ const BookContents = React.memo(({
         uid,
       })
     },
-    [ bookId, classroomUid, book, displaySettings, tools, selectedTool ],
+    [ bookId, classroomUid, book, displaySettings, JSON.stringify(visibleTools), selectedTool ],
   )
 
   if(!toc) return null

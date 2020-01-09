@@ -1,6 +1,7 @@
-import { getIdsFromAccountId } from '../utils/toolbox'
+import { useMemo } from "react"
+import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid } from "../utils/toolbox"
 
-const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
+const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) => {
 
   const book = books[bookId] || {}
   const { toc, spines, accounts } = book
@@ -29,6 +30,35 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
 
   const { tools=[], instructorHighlights=[] } = classroom || {}
+
+  const draftToolByCurrentlyPublishedToolUid = useMemo(
+    () => getDraftToolByCurrentlyPublishedToolUid(tools),
+    [ tools ],
+  )
+
+  const visibleTools = inEditMode == null
+    ? tools
+    : tools.filter(({ uid, published_at, _delete }) => {
+      const isVisible = (
+        !_delete
+        && !(
+          !inEditMode
+          && !published_at
+        )
+        && !(
+          inEditMode
+          && published_at
+          && draftToolByCurrentlyPublishedToolUid[uid]
+        )
+      )
+
+      if(!isVisible && uid === selectedToolUid) {
+        selectedToolUid = undefined
+      }
+
+      return isVisible
+    })
+
   const selectedTool = ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid) ? {} : tools.filter(({ uid }) => uid === selectedToolUid)[0]
 
   if(userDataByBookId[bookId] && !selectedTool && selectedToolUid) {
@@ -61,6 +91,8 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={} }) => {
     viewingEnhancedHomepage,
     viewingFrontMatter,
     instructorHighlights,  // requires userDataByBookId to be sent in
+    draftToolByCurrentlyPublishedToolUid,  // requires userDataByBookId to be sent in
+    visibleTools,  // requires userDataByBookId and inEditMode to be sent in
   }
   
 }
