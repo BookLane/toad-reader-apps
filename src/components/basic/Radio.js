@@ -12,7 +12,7 @@ const Radio = React.memo(({
     value => {
       onChange && onChange({ id, value, info })
     },
-    [ id, info ],
+    [ id, info, onChange ],
   )
 
   return (

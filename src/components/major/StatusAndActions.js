@@ -112,7 +112,6 @@ const StatusAndActions = React.memo(({
   // TODO's:
 
   // frontend
-    // BUG: publish and then immediate edit
     // BUG: weird back-and-forth tool selection (reproduce: create took, publish, select it, create new tool, wait)
     // publish requirements: frontend and backend
     // push to staging and test

@@ -12,7 +12,7 @@ const Button = React.memo(({
     () => {
       onPress && onPress({ id, info })
     },
-    [ id, info ],
+    [ id, info, onPress ],
   )
 
   return (

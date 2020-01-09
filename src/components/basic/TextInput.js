@@ -14,7 +14,7 @@ const TextInput = React.memo(({
       onChangeText && onChangeText(value)
       onChangeInfo && onChangeInfo({ id, value, info })
     },
-    [ id, info ],
+    [ id, info, onChangeText, onChangeInfo ],
   )
 
   return (
