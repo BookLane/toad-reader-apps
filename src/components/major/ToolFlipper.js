@@ -175,7 +175,10 @@ const ToolFlipper = React.memo(({
       >
         <View style={styles.toolContainer} />
         {toolSet.map(tool => (
-          <View style={styles.toolContainer}>
+          <View
+            key={tool.currently_published_tool_uid || tool.uid}
+            style={styles.toolContainer}
+          >
             <Tool
               bookId={bookId}
               inEditMode={inEditMode}

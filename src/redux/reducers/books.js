@@ -114,6 +114,7 @@ export default function(state = initialState, action) {
       }
       return state
 
+    case "CREATE_TOOL":
     case "SET_SELECTED_TOOL_UID": {
       if(newState[action.bookId]) {
         newState[action.bookId] = {

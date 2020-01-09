@@ -15,7 +15,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
-import { updateTool, createTool, setSelectedToolUid } from "../../redux/actions"
+import { updateTool, createTool } from "../../redux/actions"
 import EditToolData from "./EditToolData"
 
 const styles = StyleSheet.create({
@@ -53,7 +53,6 @@ const EditTool = React.memo(({
 
   updateTool,
   createTool,
-  setSelectedToolUid,
 }) => {
 
   const { toolTypes, toolInfoByType } = getToolInfo()
@@ -87,11 +86,6 @@ const EditTool = React.memo(({
           published_at: null,
           currently_published_tool_uid: tool.uid,
           ...updates,
-        })
-
-        setSelectedToolUid({
-          bookId,
-          uid,
         })
 
       } else {
@@ -182,7 +176,6 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateTool,
   createTool,
-  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(EditTool)

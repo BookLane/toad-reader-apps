@@ -15,7 +15,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { useLayout } from 'react-native-hooks'
 
-import { createTool, setSelectedToolUid } from "../../redux/actions"
+import { createTool } from "../../redux/actions"
 
 const paddingTop = 12
 
@@ -41,7 +41,6 @@ const BookContents = React.memo(({
   displaySettings,
 
   createTool,
-  setSelectedToolUid
 }) => {
 
   const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
@@ -245,11 +244,6 @@ const BookContents = React.memo(({
         name: "",
         // toolType,
       })
-
-      setSelectedToolUid({
-        bookId,
-        uid,
-      })
     },
     [ bookId, classroomUid, book, displaySettings, JSON.stringify(visibleTools), selectedTool ],
   )
@@ -290,7 +284,6 @@ const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   createTool,
-  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookContents)
