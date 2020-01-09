@@ -1,6 +1,7 @@
 import React from "react"
-import { Input } from "react-native-ui-kitten"
 import { StyleSheet, View } from "react-native"
+
+import Input from "./Input"
 
 const styles = StyleSheet.create({
   container: {
