@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Button } from "react-native-ui-kitten"
@@ -32,15 +32,27 @@ const styles = StyleSheet.create({
     color: 'rgba(0,0,0,.5)',
     textAlign: 'left',
     marginVertical: 15,
+    flexGrow: 1,
   },
   statusWideMode: {
     textAlign: 'right',
+  },
+  previewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  preview: {
+    textTransform: 'uppercase',
+    color: 'rgb(51, 102, 255)',
+    fontWeight: 700,
+    fontSize: 13,
   },
 })
 
 const StatusAndActions = React.memo(({
   bookId,
   isFrontMatter,
+  setViewingPreview,
 
   books,
   userDataByBookId,
@@ -51,14 +63,14 @@ const StatusAndActions = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroomUid, selectedToolUid, selectedTool, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+  const { classroomUid, selectedToolUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
 
   const onPublish = useCallback(
     () => {
-      if(viewingFrontMatter) {
+      if(isFrontMatter) {
         alert('Not yet implemented')
         return
       }
@@ -69,7 +81,7 @@ const StatusAndActions = React.memo(({
         uid: selectedToolUid,
       })
     },
-    [ publishTool, bookId, classroomUid, selectedToolUid, viewingFrontMatter ],
+    [ publishTool, bookId, classroomUid, selectedToolUid, isFrontMatter ],
   )
 
   const onDelete = useCallback(
@@ -88,6 +100,8 @@ const StatusAndActions = React.memo(({
     },
     [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid ],
   )
+
+  const onPreview = useCallback(() => setViewingPreview(true), [])
 
   const syncStatusMessages = {
     synced: i18n("Saved."),
@@ -111,7 +125,7 @@ const StatusAndActions = React.memo(({
     )
 
   const { toolInfoByType } = getToolInfo()
-  const isReadyToPublish = viewingFrontMatter
+  const isReadyToPublish = isFrontMatter
     ? true
     : toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
 
@@ -119,7 +133,6 @@ const StatusAndActions = React.memo(({
   // TODO's:
 
   // frontend
-    // preview!
     // get rid of old school confirm (and any alerts)
     // confirm on publish
     // push to staging and test
@@ -133,6 +146,7 @@ const StatusAndActions = React.memo(({
     // add limits according to the spec
     // on enhanced homepage, don't count inEditMode in useClassroom...
     // mobile size
+    // update latest location to prior spine when clicking on toc tool?
 
     // do we need instruction for LAB phase??
 
@@ -171,6 +185,13 @@ const StatusAndActions = React.memo(({
         {" "}
         {publishedStatusMessages[publishedStatus]}
       </Text>
+      <View style={styles.previewContainer}>
+        <TouchableOpacity onPress={onPreview}>
+          <Text style={styles.preview}>
+            {i18n("Preview")}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 })

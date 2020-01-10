@@ -1,6 +1,7 @@
-import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import React, { useState, useCallback } from "react"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 
+import { i18n } from "inline-i18n"
 import { getToolInfo } from '../../utils/toolInfo'
 
 import NotesInsertTool from './NotesInsertTool'
@@ -14,6 +15,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingTop: 20,
     paddingBottom: 10,
+    flexDirection: 'row',
   },
   bottomSection: {
     borderTopWidth: 1,
@@ -24,6 +26,14 @@ const styles = StyleSheet.create({
   name: {
     fontWeight: 600,
     fontSize: 18,
+    flex: 1,
+  },
+  edit: {
+    textTransform: 'uppercase',
+    color: 'rgb(51, 102, 255)',
+    fontWeight: 700,
+    fontSize: 13,
+    marginTop: 'auto',
   },
 })
 
@@ -33,13 +43,18 @@ const Tool = React.memo(({
   tool,
 }) => {
 
+  const [ viewingPreview, setViewingPreview ] = useState(false)
+
   const { toolInfoByType } = getToolInfo()
 
-  if(inEditMode) {
+  const onEdit = useCallback(() => setViewingPreview(false), [])
+
+  if(inEditMode && !viewingPreview) {
     return (
       <EditTool
         bookId={bookId}
         tool={tool}
+        setViewingPreview={setViewingPreview}
       />
     )
   }
@@ -73,6 +88,13 @@ const Tool = React.memo(({
         <Text style={styles.name}>
           {name || toolInfoByType[toolType].text}
         </Text>
+        {inEditMode &&
+          <TouchableOpacity onPress={onEdit}>
+            <Text style={styles.edit}>
+              {i18n("Exit preview")}
+            </Text>
+          </TouchableOpacity>
+        }
       </View>
       <View style={styles.bottomSection}>
         <ToolComponent

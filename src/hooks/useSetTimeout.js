@@ -1,13 +1,26 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
-const useSetTimeout = () => {
+import useUnmount from "react-use/lib/useUnmount"
+import useInstanceValue from './useInstanceValue'
+
+const useSetTimeout = ({ fireOnUnmount }={}) => {
 
   const timeout = useRef()
-  useEffect(() => clear, [])
+  const timeoutFunc = useRef(() => {})
+  const getFireOnUnmount = useInstanceValue(fireOnUnmount)
 
-  const set = (...props) => {
+  useUnmount(() => {
     clear()
-    timeout.current = setTimeout(...props)
+
+    if(getFireOnUnmount()) {
+      timeoutFunc.current()
+    }
+  })
+
+  const set = (func, ...otherProps) => {
+    clear()
+    timeoutFunc.current = func
+    timeout.current = setTimeout(func, ...otherProps)
   }
 
   const clear = () => {

@@ -73,9 +73,7 @@ const EnhancedHeader = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
-
-  const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
+  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage, viewingFrontMatter, iCanEdit } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const hasFrontMatter = false
 

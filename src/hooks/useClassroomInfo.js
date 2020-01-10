@@ -28,6 +28,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
   const isDefaultClassroom = classroomUid === defaultClassroomUid
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
+  const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
   const { tools=[], instructorHighlights=[] } = classroom || {}
 
@@ -85,6 +86,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     classroom,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in
+    iCanEdit,  // requires userDataByBookId to be sent in
     tools,  // requires userDataByBookId to be sent in
     selectedToolUid,
     selectedTool,  // requires userDataByBookId to be sent in

@@ -118,7 +118,7 @@ const EditToolData = React.memo(({
   )
 
   const getDataInEdit = useInstanceValue(dataInEdit)
-  const [ setToolDataSaveTimeout ] = useSetTimeout()
+  const [ setToolDataSaveTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
   const onChangeInfo = useCallback(
     ({ id, value, info }) => {

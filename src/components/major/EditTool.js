@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
 const EditTool = React.memo(({
   bookId,
   tool,
+  setViewingPreview,
 
   books,
   userDataByBookId,
@@ -61,7 +62,7 @@ const EditTool = React.memo(({
 
   const wideMode = useWideMode()
 
-  const [ setToolNameSaveTimeout ] = useSetTimeout()
+  const [ setToolNameSaveTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
   const [ nameInEdit, setNameInEdit ] = useState()
 
@@ -147,6 +148,7 @@ const EditTool = React.memo(({
         </View>
         <StatusAndActions
           bookId={bookId}
+          setViewingPreview={setViewingPreview}
         />
       </View>
       <View
