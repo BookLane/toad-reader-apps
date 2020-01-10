@@ -1,7 +1,5 @@
 import { i18n } from "inline-i18n"
-
-const nonEmpty = str => !!(str || "").trim()
-const validUrl = url => /^https?:\/\/[^.]+\.[^.]/.test(url || "")
+import { nonEmpty, validUrl } from './toolbox'
 
 export const getToolInfo = () => {
   const toolTypes = [

@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
   },
-  edit: {
+  exitPreview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
     fontWeight: 700,
@@ -47,7 +47,7 @@ const Tool = React.memo(({
 
   const { toolInfoByType } = getToolInfo()
 
-  const onEdit = useCallback(() => setViewingPreview(false), [])
+  const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
   if(inEditMode && !viewingPreview) {
     return (
@@ -89,8 +89,8 @@ const Tool = React.memo(({
           {name || toolInfoByType[toolType].text}
         </Text>
         {inEditMode &&
-          <TouchableOpacity onPress={onEdit}>
-            <Text style={styles.edit}>
+          <TouchableOpacity onPress={onExitPreview}>
+            <Text style={styles.exitPreview}>
               {i18n("Exit preview")}
             </Text>
           </TouchableOpacity>

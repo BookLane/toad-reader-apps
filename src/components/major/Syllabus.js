@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
 const Syllabus = React.memo(({
   bookId,
   inEditMode,
+  viewingPreview,
   goUpdateClassroom,
 
   idps,
@@ -44,16 +45,16 @@ const Syllabus = React.memo(({
 
   const { uid, syllabus, draftData } = classroom
 
-  if(inEditMode) {
-    const data = {}
-    const hasDraft = (draftData || {}).syllabus !== undefined
+  const data = {}
+  const hasDraft = (draftData || {}).syllabus !== undefined
 
-    if(hasDraft) {
-      data.syllabus = draftData.syllabus
-    } else if(syllabus) {
-      data.syllabus = syllabus
-    }
+  if(inEditMode && hasDraft) {
+    data.syllabus = draftData.syllabus
+  } else if(syllabus) {
+    data.syllabus = syllabus
+  }
 
+  if(inEditMode && !viewingPreview) {
     return (
       <EditToolData
         key={changeIndex}
@@ -76,14 +77,14 @@ const Syllabus = React.memo(({
     )
   }
 
-  if(!syllabus) return null
+  if(!data.syllabus) return null
 
   return (
     <View style={styles.container}>
       <WebView
         containerStyle={styles.webViewContainer}
         style={styles.webView}
-        source={{ uri: `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${syllabus.filename}` }}
+        source={{ uri: `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}` }}
       />
     </View>
   )

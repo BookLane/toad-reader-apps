@@ -541,3 +541,7 @@ export const getDraftToolByCurrentlyPublishedToolUid = tools => {
 
   return hasDraftTool
 }
+
+export const nonEmpty = str => !!(str || "").trim()
+
+export const validUrl = url => /^https?:\/\/[^.]+\.[^.]/.test(url || "")

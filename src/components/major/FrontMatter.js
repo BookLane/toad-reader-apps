@@ -10,7 +10,7 @@ import InstructorsIntroduction from "./InstructorsIntroduction"
 import StatusAndActions from "./StatusAndActions"
 
 import { i18n } from "inline-i18n"
-import { getToolbarHeight } from '../../utils/toolbox'
+import { getToolbarHeight, nonEmpty } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -78,6 +78,13 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
   },
+  exitPreview: {
+    textTransform: 'uppercase',
+    color: 'rgb(51, 102, 255)',
+    fontWeight: 700,
+    fontSize: 13,
+    marginTop: 'auto',
+  },
 })
 
 const FrontMatter = React.memo(({
@@ -91,8 +98,11 @@ const FrontMatter = React.memo(({
 }) => {
 
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
+  const [ viewingPreview, setViewingPreview ] = useState(false)
 
   const { classroom, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
   const goUpdateClassroom = useCallback(
     updates => {
@@ -113,14 +123,45 @@ const FrontMatter = React.memo(({
   if(!viewingFrontMatter) return null
 
   const { syllabus, introduction } = classroom
+  const draftSyllabus = (classroom.draftData || {}).syllabus
+  const draftIntroduction = (classroom.draftData || {}).introduction
+
+  const showSyllabus = !!(
+    viewingPreview
+      ? (
+        draftSyllabus !== undefined
+          ? draftSyllabus
+          : syllabus
+      )
+      : (
+        inEditMode
+          ? true
+          : syllabus
+      )
+  )
+
+  const showIntroduction = !!(
+    viewingPreview
+      ? nonEmpty(
+        draftIntroduction !== undefined
+          ? draftIntroduction
+          : introduction
+      )
+      : (
+        inEditMode
+          ? true
+          : nonEmpty(introduction)
+      )
+  )
 
   const tabs = [
-    ...((!syllabus && !inEditMode) ? [] : [{
+    ...(!showSyllabus ? [] : [{
       title: i18n("Syllabus"),
       content: (
         <Syllabus
           bookId={bookId}
           inEditMode={inEditMode}
+          viewingPreview={viewingPreview}
           goUpdateClassroom={goUpdateClassroom}
         />
       ),
@@ -132,12 +173,13 @@ const FrontMatter = React.memo(({
     //     />
     //   ),
     // },
-    ...((!(introduction || "").trim() && !inEditMode) ? [] : [{
+    ...(!showIntroduction ? [] : [{
       title: i18n("Instructor’s introduction"),
       content: (
         <InstructorsIntroduction
           bookId={bookId}
           inEditMode={inEditMode}
+          viewingPreview={viewingPreview}
           goUpdateClassroom={goUpdateClassroom}
         />
       ),
@@ -159,10 +201,18 @@ const FrontMatter = React.memo(({
         <Text style={styles.heading}>
           {i18n("Front matter")}
         </Text>
-        {inEditMode &&
+        {(inEditMode && !viewingPreview) &&
           <StatusAndActions
             bookId={bookId}
+            setViewingPreview={setViewingPreview}
           />
+        }
+        {inEditMode && viewingPreview &&
+          <TouchableOpacity onPress={onExitPreview}>
+            <Text style={styles.exitPreview}>
+              {i18n("Exit preview")}
+            </Text>
+          </TouchableOpacity>
         }
       </View>
       <View

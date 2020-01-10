@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
 const InstructorsIntroduction = React.memo(({
   bookId,
   inEditMode,
+  viewingPreview,
   goUpdateClassroom,
 
   books,
@@ -35,15 +36,16 @@ const InstructorsIntroduction = React.memo(({
 
   const { uid, introduction, draftData } = classroom
 
-  if(inEditMode) {
-    const data = {}
-    const hasDraft = (draftData || {}).introduction !== undefined
+  const data = {}
+  const hasDraft = (draftData || {}).introduction !== undefined
 
-    if(hasDraft) {
-      data.introduction = draftData.introduction
-    } else if(introduction) {
-      data.introduction = introduction
-    }
+  if(inEditMode && hasDraft) {
+    data.introduction = draftData.introduction
+  } else if(introduction) {
+    data.introduction = introduction
+  }
+
+  if(inEditMode && !viewingPreview) {
 
     return (
       <EditToolData
@@ -66,7 +68,7 @@ const InstructorsIntroduction = React.memo(({
   return (
     <View style={styles.container}>
       <Text>
-        {textToReactNative(introduction)}
+        {textToReactNative(data.introduction)}
       </Text>
     </View>
   )
