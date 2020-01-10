@@ -25,6 +25,8 @@ const useSetTimeout = ({ fireOnUnmount }={}) => {
 
   const clear = () => {
     clearTimeout(timeout.current)
+    timeout.current = undefined
+    timeoutFunc.current = () => {}
   }
 
   return [ set, clear ]

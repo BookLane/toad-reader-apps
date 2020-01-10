@@ -9,6 +9,7 @@ import { i18n } from "inline-i18n"
 import { textToReactNative } from "../../utils/toolbox"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useChangeIndex from '../../hooks/useChangeIndex'
 
 const styles = StyleSheet.create({
   container: {
@@ -26,22 +27,27 @@ const InstructorsIntroduction = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
+  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
 
   if(!classroom) return null
 
-  const { uid, introduction } = classroom
+  const { uid, introduction, draftData } = classroom
 
   if(inEditMode) {
     const data = {}
+    const hasDraft = (draftData || {}).introduction !== undefined
 
-    if(introduction) {
+    if(hasDraft) {
+      data.introduction = draftData.introduction
+    } else if(introduction) {
       data.introduction = introduction
     }
 
     return (
       <EditToolData
+        key={changeIndex}
         classroomUid={uid}
         accountId={accountId}
         dataStructure={[

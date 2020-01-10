@@ -99,7 +99,10 @@ const FrontMatter = React.memo(({
       updateClassroom({
         uid: classroom.uid,
         bookId,
-        ...updates.data,
+        draftData: {
+          ...(classroom.draftData || {}),
+          ...updates.data,
+        },
       })
     },
     [ updateClassroom, bookId, classroom ],
@@ -159,7 +162,6 @@ const FrontMatter = React.memo(({
         {inEditMode &&
           <StatusAndActions
             bookId={bookId}
-            isFrontMatter={true}
           />
         }
       </View>

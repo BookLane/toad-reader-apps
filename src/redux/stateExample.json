@@ -181,6 +181,8 @@
           "created_at": 1573659531000,
           "syllabus": null,
           "introduction": null,
+          "draftData": {},
+          "published_at": null,
           "members": [],
           "name": "",
           "tools": [],

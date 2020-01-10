@@ -368,6 +368,8 @@ export default function(state = initialState, action) {
             'introduction',
             'classroom_highlights_mode',
             'closes_at',
+            'draftData',
+            'published_at',
             '_delete',
           ].forEach(param => {
             if(action[param] !== undefined) {

@@ -11,8 +11,9 @@ import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useNetwork from "../../hooks/useNetwork"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useInstanceValue from "../../hooks/useInstanceValue"
 
-import { publishTool, deleteTool, setSelectedToolUid } from "../../redux/actions"
+import { publishTool, updateClassroom, deleteTool, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
 
 const StatusAndActions = React.memo(({
   bookId,
-  isFrontMatter,
   setViewingPreview,
 
   books,
@@ -59,44 +59,69 @@ const StatusAndActions = React.memo(({
   syncStatus,
 
   publishTool,
+  updateClassroom,
   deleteTool,
   setSelectedToolUid,
 }) => {
 
-  const { classroomUid, selectedToolUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+  const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
+  const getClassroomDraftData = useInstanceValue(classroom.draftData || {})
 
   const onPublish = useCallback(
     () => {
-      if(isFrontMatter) {
-        alert('Not yet implemented')
-        return
+      if(viewingFrontMatter) {
+        if(!confirm("Are you sure?")) return
+
+        updateClassroom({
+          uid: classroomUid,
+          bookId,
+          ...getClassroomDraftData(),
+          draftData: {},
+          published_at: Date.now(),
+        })
+  
+      } else {
+        if(!confirm("Are you sure?")) return
+
+        publishTool({
+          bookId,
+          classroomUid,
+          uid: selectedToolUid,
+        })
       }
-      if(!confirm("Are you sure?")) return
-      publishTool({
-        bookId,
-        classroomUid,
-        uid: selectedToolUid,
-      })
     },
-    [ publishTool, bookId, classroomUid, selectedToolUid, isFrontMatter ],
+    [ bookId, classroomUid, selectedToolUid, viewingFrontMatter ],
   )
 
   const onDelete = useCallback(
     () => {
-      if(!confirm("Are you sure?")) return
-      deleteTool({
-        bookId,
-        classroomUid,
-        uid: selectedToolUid,
-      })
+      if(viewingFrontMatter) {
+        if(!confirm("Are you sure?")) return
 
-      setSelectedToolUid({
-        bookId,
-        uid: selectedTool.currently_published_tool_uid || undefined,
-      })
+        updateClassroom({
+          uid: classroomUid,
+          bookId,
+          draftData: {},
+        })
+  
+      } else {
+        if(!confirm("Are you sure?")) return
+
+        deleteTool({
+          bookId,
+          classroomUid,
+          uid: selectedToolUid,
+        })
+
+        setSelectedToolUid({
+          bookId,
+          uid: selectedTool.currently_published_tool_uid || undefined,
+        })
+
+      }
     },
     [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid ],
   )
@@ -116,39 +141,50 @@ const StatusAndActions = React.memo(({
     new: i18n("Not yet published."),
   }
 
-  const publishedStatus = (selectedTool || {}).published_at
-    ? 'published'
-    : (
-      (selectedTool || {}).currently_published_tool_uid
+  const publishedStatus = viewingFrontMatter
+    ? (
+      hasDraftData
         ? 'edited'
-        : 'new'
+        : (
+          classroom.published_at
+            ? 'published'
+            : 'new'
+        )
+    )
+    : (
+      (selectedTool || {}).published_at
+        ? 'published'
+        : (
+          (selectedTool || {}).currently_published_tool_uid
+            ? 'edited'
+            : 'new'
+        )
     )
 
-  const { toolInfoByType } = getToolInfo()
-  const isReadyToPublish = isFrontMatter
+  const isReadyToPublish = viewingFrontMatter
     ? true
-    : toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
+    : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
 
 
   // TODO's:
 
   // frontend
-    // get rid of old school confirm (and any alerts)
-    // confirm on publish
+    // front matter preview
+    // no swiping on tool edit inputs
     // push to staging and test
     // push out
 
+    // do we need instruction for LAB phase??
+
     // Show published date, last updated date
+    // in and out of edit mode when on front matter should keep you there
+    // get rid of old school confirm (and any alerts)
     // speed up (create function in toolbox for useEffect, useCallback, useMemo)
-    // do publish for front matter
-      // no "Add front matter" when not in edit mode
-    // no swiping on tool edit inputs
     // add limits according to the spec
     // on enhanced homepage, don't count inEditMode in useClassroom...
     // mobile size
     // update latest location to prior spine when clicking on toc tool?
 
-    // do we need instruction for LAB phase??
 
   return (
     <View
@@ -162,18 +198,17 @@ const StatusAndActions = React.memo(({
           onPress={onPublish}
           status="primary"
           style={styles.button}
-          disabled={syncStatus !== 'synced' || !online || !!selectedTool.published_at || !isReadyToPublish}
+          disabled={syncStatus !== 'synced' || !online || publishedStatus === 'published' || !isReadyToPublish}
         >
           {i18n("Publish")}
         </Button>
-        {!isFrontMatter &&
-          <Button
-            onPress={onDelete}
-            status="basic"
-          >
-            {selectedTool.currently_published_tool_uid ? i18n("Discard changes") : i18n("Remove")}
-          </Button>
-        }
+        <Button
+          onPress={onDelete}
+          status="basic"
+          disabled={viewingFrontMatter && publishedStatus === 'published'}
+        >
+          {(viewingFrontMatter || selectedTool.currently_published_tool_uid) ? i18n("Discard changes") : i18n("Remove")}
+        </Button>
       </View>
       <Text
         style={[
@@ -204,6 +239,7 @@ const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   publishTool,
+  updateClassroom,
   deleteTool,
   setSelectedToolUid,
 }, dispatch)

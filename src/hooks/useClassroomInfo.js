@@ -25,6 +25,8 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     classroomUid = undefined
   }
 
+  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction)
+  const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
@@ -84,6 +86,8 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     isDefaultClassroom,
     defaultClassroomUid,
     classroom,  // requires userDataByBookId to be sent in
+    hasFrontMatter,  // requires userDataByBookId to be sent in
+    hasDraftData,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in
     iCanEdit,  // requires userDataByBookId to be sent in

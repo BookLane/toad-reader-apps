@@ -73,7 +73,7 @@ export const createClassroom = ({ uid, bookId, name, userId }) => ({
   doPatch: true,
 })
 
-export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at }) => ({
+export const updateClassroom = ({ uid, bookId, name, access_code, instructor_access_code, syllabus, introduction, classroom_highlights_mode, closes_at, draftData, published_at }) => ({
   type: "UPDATE_CLASSROOM",
   uid,
   bookId,
@@ -84,6 +84,8 @@ export const updateClassroom = ({ uid, bookId, name, access_code, instructor_acc
   introduction,
   classroom_highlights_mode,
   closes_at,
+  draftData,
+  published_at,
   doPatch: true,
 })
 

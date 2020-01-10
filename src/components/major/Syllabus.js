@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -9,6 +9,7 @@ import EditToolData from './EditToolData'
 import WebView from "./WebView"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useChangeIndex from '../../hooks/useChangeIndex'
 
 const styles = StyleSheet.create({
   container: {
@@ -35,22 +36,27 @@ const Syllabus = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, idpId, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
+  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
 
   if(!classroom) return null
 
-  const { uid, syllabus } = classroom
+  const { uid, syllabus, draftData } = classroom
 
   if(inEditMode) {
     const data = {}
+    const hasDraft = (draftData || {}).syllabus !== undefined
 
-    if(syllabus) {
+    if(hasDraft) {
+      data.syllabus = draftData.syllabus
+    } else if(syllabus) {
       data.syllabus = syllabus
     }
 
     return (
       <EditToolData
+        key={changeIndex}
         classroomUid={uid}
         accountId={accountId}
         dataStructure={[

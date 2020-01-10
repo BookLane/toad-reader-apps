@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
   },
-  addFrontMatter: {
+  frontMatterEdited: {
     fontStyle: 'italic',
   },
   editButton: {
@@ -73,9 +73,8 @@ const EnhancedHeader = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage, viewingFrontMatter, iCanEdit } = useClassroomInfo({ books, bookId, userDataByBookId })
-
-  const hasFrontMatter = false
+  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage,
+          viewingFrontMatter, iCanEdit, hasFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const EditButtonIcon = useCallback(
     style => (
@@ -134,13 +133,13 @@ const EnhancedHeader = React.memo(({
           }
         </View>
       </TouchableOpacity>
-      {!!(!hasFrontMatter && myRole === 'INSTRUCTOR') &&
+      {(hasFrontMatter || inEditMode) &&
         <TouchableOpacity
           onPress={selectFrontMatter}
         >
           <View style={viewingFrontMatter ? styles.lineContainerSelected : styles.lineContainer}>
-            <Text style={styles.addFrontMatter}>
-              {i18n("Add front matter")}
+            <Text style={(inEditMode && hasDraftData) ? styles.frontMatterEdited : styles.frontMatter}>
+              {inEditMode ? i18n("Front matter and options") : i18n("Front matter")}
             </Text>
           </View>
         </TouchableOpacity>
