@@ -193,7 +193,9 @@ const FrontMatter = React.memo(({
     // },
   ]
 
-  if(tabs.length === 0) return null
+  if(tabs.length === 0 && !viewingPreview) return null
+
+  const correctedSelectedTabIndex = Math.min(selectedTabIndex || 0, tabs.length - 1)
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
@@ -215,36 +217,40 @@ const FrontMatter = React.memo(({
           </TouchableOpacity>
         }
       </View>
-      <View
-        style={styles.tabs}
-      >
-        {tabs.map(({ title }, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => setSelectedTabIndex(idx)}
-          >
-            <Text
-              style={idx === selectedTabIndex ? styles.selectedTabTitle : styles.tabTitle}
-            >
-              {title}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <ViewPager
-        style={styles.tabsContent}
-        selectedIndex={selectedTabIndex}
-        onSelect={setSelectedTabIndex}
-      >
-        {tabs.map(({ content }, idx) => (
+      {tabs.length > 0 &&
+        <>
           <View
-            key={idx}
-            style={styles.tabContent}
+            style={styles.tabs}
           >
-            {content}
+            {tabs.map(({ title }, idx) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => setSelectedTabIndex(idx)}
+              >
+                <Text
+                  style={idx === correctedSelectedTabIndex ? styles.selectedTabTitle : styles.tabTitle}
+                >
+                  {title}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        ))}
-      </ViewPager>
+          <ViewPager
+            style={styles.tabsContent}
+            selectedIndex={correctedSelectedTabIndex}
+            onSelect={setSelectedTabIndex}
+          >
+            {tabs.map(({ content }, idx) => (
+              <View
+                key={idx}
+                style={styles.tabContent}
+              >
+                {content}
+              </View>
+            ))}
+          </ViewPager>
+        </>
+      }
     </View>
   )
 })
