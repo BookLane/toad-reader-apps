@@ -165,27 +165,6 @@ const StatusAndActions = React.memo(({
     ? true
     : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
 
-
-  // TODO's:
-
-  // frontend
-    // front matter preview
-    // no swiping on tool edit inputs
-    // push to staging and test
-    // push out
-
-    // do we need instruction for LAB phase??
-
-    // Show published date, last updated date
-    // in and out of edit mode when on front matter should keep you there
-    // get rid of old school confirm (and any alerts)
-    // speed up (create function in toolbox for useEffect, useCallback, useMemo)
-    // add limits according to the spec
-    // on enhanced homepage, don't count inEditMode in useClassroom...
-    // mobile size
-    // update latest location to prior spine when clicking on toc tool?
-
-
   return (
     <View
       style={[
