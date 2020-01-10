@@ -133,7 +133,7 @@ const EnhancedHeader = React.memo(({
           }
         </View>
       </TouchableOpacity>
-      {(hasFrontMatter || inEditMode) &&
+      {!isDefaultClassroom && (hasFrontMatter || inEditMode) &&
         <TouchableOpacity
           onPress={selectFrontMatter}
         >
