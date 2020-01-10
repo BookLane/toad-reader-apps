@@ -166,6 +166,8 @@ const ToolFlipper = React.memo(({
   return (
     <>
       <ViewPager
+        // The key prevents a bad onSelect call when creating a tool while another was selected.
+        key={toolSet.length}
         style={[
           styles.container,
           wideMode ? styles.constainerWideMode : null,

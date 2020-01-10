@@ -112,14 +112,15 @@ const StatusAndActions = React.memo(({
   // TODO's:
 
   // frontend
-    // BUG: weird back-and-forth tool selection (reproduce: create took, publish, select it, create new tool, wait)
     // publish requirements: frontend and backend
+    // get rid of old school confirm (and any alerts)
     // push to staging and test
     // push out
 
     // Show published date, last updated date
     // speed up (create function in toolbox for useEffect, useCallback, useMemo)
     // do publish for front matter
+    // add limits according to the spec
 
     // do we need instruction for LAB phase??
 
