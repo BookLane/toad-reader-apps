@@ -6,6 +6,7 @@ import { Button } from "react-native-ui-kitten"
 
 import { i18n } from "inline-i18n"
 // import {  } from '../../utils/toolbox'
+import { getToolInfo } from '../../utils/toolInfo'
 
 import useWideMode from "../../hooks/useWideMode"
 import useNetwork from "../../hooks/useNetwork"
@@ -109,11 +110,18 @@ const StatusAndActions = React.memo(({
         : 'new'
     )
 
+  const { toolInfoByType } = getToolInfo()
+  const isReadyToPublish = selectedTool
+    ? toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
+    : true
+
+
   // TODO's:
 
   // frontend
-    // publish requirements: frontend and backend
+    // preview!
     // get rid of old school confirm (and any alerts)
+    // confirm on publish
     // push to staging and test
     // push out
 
@@ -136,7 +144,7 @@ const StatusAndActions = React.memo(({
           onPress={onPublish}
           status="primary"
           style={styles.button}
-          disabled={syncStatus !== 'synced' || !online || !!selectedTool.published_at}
+          disabled={syncStatus !== 'synced' || !online || !!selectedTool.published_at || !isReadyToPublish}
         >
           {i18n("Publish")}
         </Button>

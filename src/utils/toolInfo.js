@@ -1,5 +1,8 @@
 import { i18n } from "inline-i18n"
 
+const nonEmpty = str => !!(str || "").trim()
+const validUrl = url => /^https?:\/\/[^.]+\.[^.]/.test(url || "")
+
 export const getToolInfo = () => {
   const toolTypes = [
     {
@@ -14,6 +17,7 @@ export const getToolInfo = () => {
           placeholder: i18n("Enter your notes here."),
         },
       ],
+      readyToPublish: ({ content }) => nonEmpty(content),
     },
     {
       toolType: 'QUIZ',
@@ -49,6 +53,17 @@ export const getToolInfo = () => {
           label: i18n("Shuffle questions on each attempt"),
         },
       ],
+      readyToPublish: ({ questions=[] }) => (
+        questions.length > 0
+        && questions.every(({ question, answers=[], answersSelection }) => (
+          nonEmpty(question)
+          && answers.length > 0
+          && answers.every(answer => nonEmpty(answer))
+          && typeof answersSelection === 'number'
+          && answersSelection >= 0
+          && answersSelection < answers.length
+        ))
+      ),
     },
     {
       toolType: 'LTI',
@@ -62,6 +77,7 @@ export const getToolInfo = () => {
           label: i18n("Launch URL"),
         },
       ],
+      readyToPublish: ({ url }) => validUrl(url),
     },
     {
       toolType: 'VIDEO',
@@ -89,6 +105,7 @@ export const getToolInfo = () => {
           placeholder: 'Eg. 12:14',
         },
       ],
+      readyToPublish: ({ videoLink }) => validUrl(videoLink),
     },
     // {
     //   toolType: 'DISCUSSION_QUESTION',
@@ -115,6 +132,7 @@ export const getToolInfo = () => {
           label: i18n("Question"),
         },
       ],
+      readyToPublish: ({ question }) => nonEmpty(question),
     },
     // {
     //   toolType: 'POLL',
