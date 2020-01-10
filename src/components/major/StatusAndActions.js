@@ -111,9 +111,9 @@ const StatusAndActions = React.memo(({
     )
 
   const { toolInfoByType } = getToolInfo()
-  const isReadyToPublish = selectedTool
-    ? toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
-    : true
+  const isReadyToPublish = viewingFrontMatter
+    ? true
+    : toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
 
 
   // TODO's:
@@ -128,7 +128,11 @@ const StatusAndActions = React.memo(({
     // Show published date, last updated date
     // speed up (create function in toolbox for useEffect, useCallback, useMemo)
     // do publish for front matter
+      // no "Add front matter" when not in edit mode
+    // no swiping on tool edit inputs
     // add limits according to the spec
+    // on enhanced homepage, don't count inEditMode in useClassroom...
+    // mobile size
 
     // do we need instruction for LAB phase??
 
