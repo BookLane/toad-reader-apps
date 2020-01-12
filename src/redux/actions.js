@@ -97,6 +97,15 @@ export const deleteClassroom = ({ uid, bookId }) => ({
   doPatch: true,
 })
 
+export const deleteClassroomMember = ({ classroomUid, bookId, userId }) => ({
+  type: "UPDATE_CLASSROOM_MEMBER",
+  classroomUid,
+  bookId,
+  userId,
+  _delete: true,
+  doPatch: true,
+})
+
 export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid }) => ({
   type: "CREATE_TOOL",
   bookId,

@@ -79,9 +79,9 @@ const HighlighterInstructorHighlightSection = React.memo(({
 
   const { classroomUid, isDefaultClassroom, enhancedIsOff, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === selectionInfo.spineIdRef && cfi === selectionInfo.cfi && !_delete))
+  const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi }) => (spineIdRef === selectionInfo.spineIdRef && cfi === selectionInfo.cfi))
   const hasInstructorHighlight = relevantInstructorHighlights.length > 0
-  const hasIsMineInstructorHighlight = relevantInstructorHighlights.some(({ isMine, _delete }) => (isMine && !_delete))
+  const hasIsMineInstructorHighlight = relevantInstructorHighlights.some(({ isMine }) => isMine)
   const othersInstructorHighlights = relevantInstructorHighlights.filter(({ isMine }) => !isMine)
   const othersInstructorHighlightsWithNotes = othersInstructorHighlights.filter(({ note }) => (note || "").trim())
   const othersInstructorHighlightsWithoutNotes = othersInstructorHighlights.filter(({ note }) => !(note || "").trim())

@@ -9,8 +9,15 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
   const accountId = Object.keys(accounts)[0] || ""
   const { idpId, userId } = getIdsFromAccountId(accountId)
   
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
+  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
+    .filter(({ uid, _delete, members=[] }) => (
+      !_delete
+      && (
+        uid === defaultClassroomUid
+        || members.some(({ user_id, _delete }) => (user_id === userId && !_delete))
+      )
+    ))
   let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
 
   // Ensure existence of classroom when we can (i.e. when userDataByBookId is sent over).
@@ -45,7 +52,8 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     selectedToolUid = null
   }
 
-  const { tools=[], instructorHighlights=[] } = classroom || {}
+  const tools = ((classroom || {}).tools || []).filter(({ _delete }) => !_delete)
+  const instructorHighlights = ((classroom || {}).instructorHighlights || []).filter(({ _delete }) => !_delete)
 
   const draftToolByCurrentlyPublishedToolUid = useMemo(
     () => getDraftToolByCurrentlyPublishedToolUid(tools),
@@ -58,10 +66,9 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
       : (
         inEditMode == null
           ? tools
-          : tools.filter(({ uid, published_at, _delete }) => {
+          : tools.filter(({ uid, published_at }) => {
             const isVisible = (
-              !_delete
-              && !(
+              !(
                 !inEditMode
                 && !published_at
               )

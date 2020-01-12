@@ -50,9 +50,7 @@ const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) 
     highlightsByKey[`${highlight.spineIdRef}\n${highlight.cfi}`] = highlight
   })
 
-  ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note, _delete }) => {
-    if(_delete) return
-
+  ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note }) => {
     if(highlightsByKey[`${spineIdRef}\n${cfi}`]) {
       highlightsByKey[`${spineIdRef}\n${cfi}`].type = "user-instructor"
       highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote = highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote || !!(note || "").trim()

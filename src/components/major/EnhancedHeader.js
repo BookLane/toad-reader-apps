@@ -62,9 +62,17 @@ const styles = StyleSheet.create({
   editIconActive: {
     tintColor: 'rgb(51, 102, 255)',
   },
+  optionsIconContainer: {
+    position: 'relative',
+  },
   optionsIcon: {
-    marginTop: -11,
-    marginBottom: -12,
+    position: 'absolute',
+    top: -4,
+    bottom: -4,
+    right: 0,
+    left: 0,
+    paddingHorizontal: 10,
+    color: 'rgb(143, 155, 179)',
   },
   homeIcon: {
     height: 16,
@@ -180,7 +188,7 @@ const EnhancedHeader = React.memo(({
         setShowOptions(false)
       },
     })),
-    ...(!(myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
+    ...(!(bookVersion === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
           {i18n("Manage classrooms")}
@@ -188,7 +196,7 @@ const EnhancedHeader = React.memo(({
       ),
       onPress: toggleShowManageClassrooms,
     }]),
-    ...((myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
+    ...((bookVersion === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
           {i18n("Connect to a classroom")}
@@ -253,11 +261,13 @@ const EnhancedHeader = React.memo(({
             onBackdropPress={toggleShowOptions}
             placement='bottom end'
           >
-            <HeaderIcon
-              name="md-more"
-              onPress={toggleShowOptions}
-              style={styles.optionsIcon}
-            />
+            <View style={styles.optionsIconContainer}>
+              <HeaderIcon
+                name="md-more"
+                onPress={toggleShowOptions}
+                style={styles.optionsIcon}
+              />
+            </View>
           </OverflowMenu>
         </View>
       </TouchableOpacity>

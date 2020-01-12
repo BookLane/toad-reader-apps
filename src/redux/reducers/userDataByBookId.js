@@ -396,6 +396,49 @@ export default function(state = initialState, action) {
       return state
     }
 
+    case "UPDATE_CLASSROOM_MEMBER": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          return (classroom.members || []).some((member, idx) => {
+            if(member.user_id === action.userId) {
+
+              classroom = classrooms[idx] = { ...classroom }
+              member = classroom.members[idx] = { ...member }
+
+              ;[
+                'classroom_group_id',
+                'role',
+                '_delete',
+              ].forEach(param => {
+                if(action[param] !== undefined) {
+                  member[param] = action[param]
+                }
+              })
+
+              classroom.updated_at = now
+              member.updated_at = now
+
+              return true
+
+            }
+          })
+
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+    }
+
     case "CREATE_TOOL": {
       if(classrooms.some((classroom, idx) => {
         if(classroom.uid === action.classroomUid) {

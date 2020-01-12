@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Menu, Button } from "react-native-ui-kitten"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 
+import Button from "../basic/Button"
+import Icon from "../basic/Icon"
 import Dialog from "./Dialog"
 import CreateClassroom from "./CreateClassroom"
 import ConnectToAClassroom from "./ConnectToAClassroom"
@@ -13,17 +14,34 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import BackFunction from '../basic/BackFunction'
 
-import { setCurrentClassroom } from "../../redux/actions"
+import { deleteClassroomMember, deleteClassroom } from "../../redux/actions"
 
 const styles = StyleSheet.create({
+  dialog: {
+    maxWidth: 300,
+  },
   menu: {
     width: '100%',
   },
-  buttonRow: {
+  createButtons: {
     width: '100%',
+    marginBottom: 20,
   },
   button: {
-    margin: 4,
+    marginVertical: 4,
+  },
+  classroomLine: {
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 10,
+  },
+  classroomName: {
+    flex: 1,
+    marginVertical: 'auto',
+    marginRight: 5,
+  },
+  ghostButton: {
+    paddingHorizontal: 0,
   },
 })
 
@@ -35,28 +53,38 @@ const ManageClassrooms = React.memo(({
   books,
   userDataByBookId,
 
-  setCurrentClassroom,
+  deleteClassroomMember,
+  deleteClassroom,
 }) => {
 
   const [ showCreateClassroom, setShowCreateClassroom ] = useState(false)
   const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
 
-  const { bookVersion, classrooms, defaultClassroomUid } = useClassroomInfo({ books, bookId })
+  const { userId, bookVersion, classrooms, defaultClassroomUid } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const classroomData = classrooms
-    .map(({ uid, name }) => ({
-      title: uid === defaultClassroomUid ? i18n("Book default") : (name || ' '),
-    }))
+  const goRemoveMyselfFromClassroom = useCallback(
+    ({ id: classroomUid }) => {
+      if(!confirm("Are you sure you want to leave this classroom?")) return
 
-  const updateCurrentClassroom = useCallback(
-    selectedIndex => {
-      setCurrentClassroom({
+      deleteClassroomMember({
         bookId,
-        uid: classrooms[selectedIndex].uid,
+        classroomUid,
+        userId,
       })
-      requestHide()
     },
-    [ bookId, classrooms, requestHide ],
+    [ bookId, userId ],
+  )
+
+  const goDeleteClassroom = useCallback(
+    ({ id: uid }) => {
+      if(!confirm("Are you sure you want to delete this classroom?")) return
+
+      deleteClassroom({
+        bookId,
+        uid,
+      })
+    },
+    [ bookId ],
   )
 
   const toggleShowCreateClassroom = useCallback(
@@ -75,65 +103,87 @@ const ManageClassrooms = React.memo(({
     [ showConnectToAClassroom ],
   )
 
-  const buttons = [
-    <Button
-      key="close"
-      size="small"
-      onPress={requestHide}
-      status="basic"
-      style={[
-        styles.button,
-      ]}
-    >
-      {i18n("Cancel")}
-    </Button>,
-    <View
-      key="actions"
-      style={styles.buttonRow}
-    >
-      {bookVersion === 'INSTRUCTOR' &&
-        <Button
-          key="create"
-          size="small"
-          onPress={toggleShowCreateClassroom}
-          status="primary"
-          style={[
-            styles.button,
-          ]}
-        >
-          {i18n("Create a new classroom")}
-        </Button>
-      }
-      {['INSTRUCTOR', 'ENHANCED'].includes(bookVersion) &&
-        <Button
-          key="connect"
-          size="small"
-          onPress={toggleShowConnectToAClassroom}
-          status="primary"
-          style={[
-            styles.button,
-          ]}
-        >
-          {i18n("Connect to a classroom")}
-        </Button>
-      }
-    </View>,
-  ]
+  const ExitIcon = useCallback(style => <Icon name='md-exit' style={style} />, [])
+  const TrashIcon = useCallback(style => <Icon name='md-trash' style={style} />, [])
 
   return (
     <>
       {!!open && <BackFunction func={requestHide} />}
       <Dialog
         open={!!open}
+        style={styles.dialog}
         title={i18n("Manage classrooms")}
         message={(
-          <Menu
-            data={classroomData}
-            onSelect={updateCurrentClassroom}
-            style={styles.menu}
-          />
+          <>
+            <View
+              key="actions"
+              style={styles.createButtons}
+            >
+              {bookVersion === 'INSTRUCTOR' &&
+                <Button
+                  key="create"
+                  size="small"
+                  onPress={toggleShowCreateClassroom}
+                  status="primary"
+                  style={[
+                    styles.button,
+                  ]}
+                >
+                  {i18n("Create a new classroom")}
+                </Button>
+              }
+              {['INSTRUCTOR', 'ENHANCED'].includes(bookVersion) &&
+                <Button
+                  key="connect"
+                  size="small"
+                  onPress={toggleShowConnectToAClassroom}
+                  status="primary"
+                  style={[
+                    styles.button,
+                  ]}
+                >
+                  {i18n("Connect to a classroom")}
+                </Button>
+              }
+            </View>
+            {classrooms.filter(({ uid }) => uid !== defaultClassroomUid).map(({ uid, name, members=[] }) => {
+              const myRole = (bookVersion === 'INSTRUCTOR' && (members.filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
+              const iAmTheLoneInstructor = myRole === 'INSTRUCTOR' && members.filter(({ role }) => role === 'INSTRUCTOR').length === 1
+
+              return (
+                <View style={styles.classroomLine}>
+                  <Text style={styles.classroomName}>
+                    {name}
+                  </Text>
+                  {!iAmTheLoneInstructor &&
+                    <Button
+                      id={uid}
+                      icon={ExitIcon}
+                      size="small"
+                      status="basic"
+                      appearance="ghost"
+                      style={styles.ghostButton}
+                      onPress={goRemoveMyselfFromClassroom}
+                    />
+                  }
+                  {myRole === 'INSTRUCTOR' &&
+                    <Button
+                      id={uid}
+                      icon={TrashIcon}
+                      size="small"
+                      status="basic"
+                      appearance="ghost"
+                      style={styles.ghostButton}
+                      onPress={goDeleteClassroom}
+                    />
+                  }
+                </View>
+              )
+            })}
+          </>
         )}
-        buttons={buttons}
+        onClose={requestHide}
+        closeButtonText={i18n("Done")}
       />
       <CreateClassroom
         open={showCreateClassroom}
@@ -155,7 +205,8 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  setCurrentClassroom,
+  deleteClassroomMember,
+  deleteClassroom,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(ManageClassrooms)

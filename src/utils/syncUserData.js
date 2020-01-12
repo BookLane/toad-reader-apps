@@ -128,6 +128,16 @@ export const patch = () => setTimeout(() => {
               classroomHasUpdate = true
             }
           })
+        } else {
+          members.forEach(({ user_id, updated_at, _delete }) => {
+            if(user_id === userId && updated_at > lastSuccessfulPatch && _delete) {
+              classroomToPush.members.push({
+                user_id,
+                _delete,
+              })
+              classroomHasUpdate = true
+            }
+          })
         }
 
         if(isInstructor || isPublisherAndThisIsTheDefaultClassroom) {

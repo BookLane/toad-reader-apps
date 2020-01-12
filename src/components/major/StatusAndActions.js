@@ -73,7 +73,7 @@ const StatusAndActions = React.memo(({
   const onPublish = useCallback(
     () => {
       if(viewingFrontMatter) {
-        if(!confirm("Are you sure?")) return
+        if(!confirm("Are you sure you want to publish Front Matter?")) return
 
         updateClassroom({
           uid: classroomUid,
@@ -84,7 +84,7 @@ const StatusAndActions = React.memo(({
         })
   
       } else {
-        if(!confirm("Are you sure?")) return
+        if(!confirm("Are you sure you want to publish this tool?")) return
 
         publishTool({
           bookId,
@@ -99,7 +99,7 @@ const StatusAndActions = React.memo(({
   const onDelete = useCallback(
     () => {
       if(viewingFrontMatter) {
-        if(!confirm("Are you sure?")) return
+        if(!confirm("Are you sure you want to discard the Front Matter draft?")) return
 
         updateClassroom({
           uid: classroomUid,
@@ -108,7 +108,7 @@ const StatusAndActions = React.memo(({
         })
   
       } else {
-        if(!confirm("Are you sure?")) return
+        if(!confirm("Are you sure you want to delete this tool?")) return
 
         deleteTool({
           bookId,
