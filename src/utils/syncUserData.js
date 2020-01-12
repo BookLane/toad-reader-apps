@@ -133,6 +133,7 @@ export const patch = () => setTimeout(() => {
             if(user_id === userId && updated_at > lastSuccessfulPatch && _delete) {
               classroomToPush.members.push({
                 user_id,
+                updated_at,
                 _delete,
               })
               classroomHasUpdate = true

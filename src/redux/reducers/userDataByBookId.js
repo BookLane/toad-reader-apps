@@ -416,7 +416,6 @@ export default function(state = initialState, action) {
                 }
               })
 
-              classroom.updated_at = now
               member.updated_at = now
 
               return true
