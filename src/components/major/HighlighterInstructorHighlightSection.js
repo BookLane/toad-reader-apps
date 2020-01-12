@@ -77,7 +77,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
   // const [ showShare, setShowShare ] = useState(false)
   // const setShowShareToFalse = useCallback(() => setShowShare(false), [])
 
-  const { classroomUid, isDefaultClassroom, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, isDefaultClassroom, enhancedIsOff, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const relevantInstructorHighlights = instructorHighlights.filter(({ spineIdRef, cfi, _delete }) => (spineIdRef === selectionInfo.spineIdRef && cfi === selectionInfo.cfi && !_delete))
   const hasInstructorHighlight = relevantInstructorHighlights.length > 0
@@ -109,7 +109,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
     [ hasIsMineInstructorHighlight, bookId, classroomUid, highlight ],
   )
 
-  if(isDefaultClassroom) return null
+  if(isDefaultClassroom || enhancedIsOff) return null
   if(!(myRole === 'INSTRUCTOR' && highlight) && !hasInstructorHighlight) return null
 
   return (

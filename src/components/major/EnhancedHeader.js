@@ -87,7 +87,8 @@ const EnhancedHeader = React.memo(({
   setCurrentClassroom,
 }) => {
 
-  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid, bookVersion, myRole, viewingEnhancedHomepage,
+  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid,
+          enhancedIsOff, bookVersion, myRole, viewingEnhancedHomepage,
           viewingFrontMatter, iCanEdit, hasFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ showOptions, setShowOptions ] = useState(false)
@@ -201,17 +202,21 @@ const EnhancedHeader = React.memo(({
       )
   )
 
+  const homepageClickable = myRole === 'INSTRUCTOR' && !isDefaultClassroom && !enhancedIsOff
+
   return (
     <View style={styles.container} data-id="EnhancedHeader">
       <TouchableOpacity
-        onPress={(myRole === 'INSTRUCTOR' && !isDefaultClassroom) ? selectEnhancedHomepage : null}
+        onPress={homepageClickable ? selectEnhancedHomepage : null}
       >
         <View style={viewingEnhancedHomepage ? styles.lineContainerSelected : styles.lineContainer}>
-          <Icon
-            name="home"
-            pack="fontAwesome"
-            style={styles.homeIcon}
-          />
+          {homepageClickable &&
+            <Icon
+              name="home"
+              pack="fontAwesome"
+              style={styles.homeIcon}
+            />
+          }
           <Text style={styles.line}>
             <Text style={styles.enhanced}>
               {i18n("Enhanced")}
@@ -244,7 +249,7 @@ const EnhancedHeader = React.memo(({
           </OverflowMenu>
         </View>
       </TouchableOpacity>
-      {!isDefaultClassroom && (hasFrontMatter || inEditMode) &&
+      {!isDefaultClassroom && !enhancedIsOff && (hasFrontMatter || inEditMode) &&
         <TouchableOpacity
           onPress={selectFrontMatter}
         >

@@ -27,12 +27,23 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     classroomUid = undefined
   }
 
+  const enhancedIsOff = !classroomUid
   const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction)
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
   const bookVersion = Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
+
+  if(
+    enhancedIsOff
+    || (
+      ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid)
+      && isDefaultClassroom
+    )
+  ) {
+    selectedToolUid = null
+  }
 
   const { tools=[], instructorHighlights=[] } = classroom || {}
 
@@ -41,30 +52,36 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     [ tools ],
   )
 
-  const visibleTools = inEditMode == null
-    ? tools
-    : tools.filter(({ uid, published_at, _delete }) => {
-      const isVisible = (
-        !_delete
-        && !(
-          !inEditMode
-          && !published_at
-        )
-        && !(
-          inEditMode
-          && published_at
-          && draftToolByCurrentlyPublishedToolUid[uid]
-        )
+  const visibleTools = (
+    enhancedIsOff
+      ? []
+      : (
+        inEditMode == null
+          ? tools
+          : tools.filter(({ uid, published_at, _delete }) => {
+            const isVisible = (
+              !_delete
+              && !(
+                !inEditMode
+                && !published_at
+              )
+              && !(
+                inEditMode
+                && published_at
+                && draftToolByCurrentlyPublishedToolUid[uid]
+              )
+            )
+    
+            if(!isVisible && uid === selectedToolUid) {
+              selectedToolUid = undefined
+            }
+    
+            return isVisible
+          })
       )
+  )
 
-      if(!isVisible && uid === selectedToolUid) {
-        selectedToolUid = undefined
-      }
-
-      return isVisible
-    })
-
-  const selectedTool = ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid) ? {} : tools.filter(({ uid }) => uid === selectedToolUid)[0]
+  const selectedTool = ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid) ? {} : visibleTools.filter(({ uid }) => uid === selectedToolUid)[0]
 
   if(userDataByBookId[bookId] && !selectedTool && selectedToolUid) {
     // Make this consistent when we can (i.e. when userDataByBookId is sent over).
@@ -84,6 +101,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     userId,
     classrooms,  // requires userDataByBookId to be sent in
     classroomUid,
+    enhancedIsOff,
     isDefaultClassroom,
     defaultClassroomUid,
     classroom,  // requires userDataByBookId to be sent in
