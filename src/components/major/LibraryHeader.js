@@ -90,7 +90,8 @@ const LibraryHeader = ({
           placement='bottom end'
         >
           <HeaderIcon
-            name="md-more"
+            name="sort"
+            pack="materialCommunity"
             onPress={toggleShowOptions}
           />
         </OverflowMenu>,
