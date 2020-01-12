@@ -5,23 +5,25 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
 
   const book = books[bookId] || {}
   const { toc, spines, accounts } = book
-  let { currentClassroomUid, selectedToolUid } = book
+  let { currentClassroomUid: classroomUid, selectedToolUid } = book
   const accountId = Object.keys(accounts)[0] || ""
   const { idpId, userId } = getIdsFromAccountId(accountId)
   
   const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
   const defaultClassroomUid = `${idpId}-${bookId}`
-  let classroomUid = currentClassroomUid || defaultClassroomUid
   let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
 
   // Ensure existence of classroom when we can (i.e. when userDataByBookId is sent over).
-  // If it doesn't exist, make the classroomUid's undefined.
-  if(userDataByBookId[bookId] && !classroom && classroomUid !== defaultClassroomUid) {
-    currentClassroomUid = undefined
-    classroomUid = defaultClassroomUid
-    classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
-  }
-  if(userDataByBookId[bookId] && !classroom) {
+  // If it doesn't exist, make the classroomUid's undefined (signifying that the enhanced
+  // content is turned off).
+  if(
+    (
+      userDataByBookId[bookId]
+      && !classroom
+      && classroomUid !== defaultClassroomUid
+    )
+    || !classroomUid
+  ) {
     classroomUid = undefined
   }
 
@@ -82,7 +84,6 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     userId,
     classrooms,  // requires userDataByBookId to be sent in
     classroomUid,
-    currentClassroomUid,
     isDefaultClassroom,
     defaultClassroomUid,
     classroom,  // requires userDataByBookId to be sent in

@@ -8,8 +8,8 @@ import { i18n } from "inline-i18n"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import ManageClassrooms from "./ManageClassrooms"
 import useWideMode from "../../hooks/useWideMode"
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { confirmRemoveEPub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, getIdsFromAccountId } from "../../utils/toolbox"
@@ -38,7 +38,6 @@ const BookHeader = React.memo(({
   onBackPress,
 
   books,
-  userDataByBookId,
   sidePanelSettings,
 
   removeFromBookDownloadQueue,
@@ -51,29 +50,11 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)
-  const [ showManageClassrooms, setShowManageClassrooms ] = useState(false)
   const wideMode = useWideMode()
 
-  const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts || {})[0] || ""
-  const { idpId } = getIdsFromAccountId(accountId)
+  const { book } = useClassroomInfo({ books, bookId })
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const bookVersion = Object.values(book.accounts)[0].version
-
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
-  let currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
-  if(currentClassroomUid && !currentClassroom) {
-    currentClassroomUid = defaultClassroomUid
-    currentClassroom = classrooms.filter(({ uid }) => uid === currentClassroomUid)[0]
-  }
-
-  const toggleShowManageClassrooms = useCallback(
-    () => setShowManageClassrooms(!showManageClassrooms),
-    [ showManageClassrooms ],
-  )
 
   const goToBookLink = useCallback(
     () => {
@@ -107,17 +88,6 @@ const BookHeader = React.memo(({
   )
 
   const moreOptions = [
-    ...(!currentClassroom ? [] : [
-      {
-        title: i18n("Enhanced: {{name}}", {
-          name: currentClassroomUid === defaultClassroomUid ? i18n("Book default") : currentClassroom.name,
-        }),
-      },
-    ]),
-    ...(!['ENHANCED', 'INSTRUCTOR'].includes(bookVersion) ? [] : [{
-      title: i18n("Manage classrooms"),
-      onPress: toggleShowManageClassrooms,
-    }]),
     // {
     //   title: i18n("My highlights and notes"),
     //   onPress: goToHighlights,
@@ -149,7 +119,7 @@ const BookHeader = React.memo(({
         setShowOptions(false)
       }
     },
-    [ currentClassroom, defaultClassroomUid, bookVersion, classrooms, toggleShowManageClassrooms, bookLinkInfo, goToBookLink, removeFromDevice ],
+    [ bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
   const rightControls = [
@@ -184,7 +154,6 @@ const BookHeader = React.memo(({
       <OverflowMenu
         data={moreOptions}
         visible={showOptions}
-        selectedIndex={currentClassroom ? 0 : null}
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
         placement='bottom end'
@@ -215,18 +184,12 @@ const BookHeader = React.memo(({
         rightControls={!hideOptions ? rightControls : []}
         titleStyle={wideMode ? styles.faded : {}}
       />
-      <ManageClassrooms
-        open={showManageClassrooms}
-        requestHide={toggleShowManageClassrooms}
-        bookId={bookId}
-      />
     </>
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
+const mapStateToProps = ({ books, sidePanelSettings }) => ({
   books,
-  userDataByBookId,
   sidePanelSettings,
 })
 

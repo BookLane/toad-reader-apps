@@ -1,30 +1,32 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { Button } from "react-native-ui-kitten"
+import { Button, OverflowMenu } from "react-native-ui-kitten"
 import Icon from '../basic/Icon'
+import HeaderIcon from "../basic/HeaderIcon"
+import ManageClassrooms from "./ManageClassrooms"
+import ConnectToAClassroom from "./ConnectToAClassroom"
 
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { setSelectedToolUid } from "../../redux/actions"
+import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
 
 const editButton = {
   borderRadius: '50%',
   width: 40,
   height: 40,
   marginVertical: -12,
-  marginRight: -10,
   borderColor: 'transparent',  
 }
 
 const lineContainer = {
-  padding: 20,
-  paddingTop: 10,
-  paddingBottom: 10,
+  paddingLeft: 20,
+  paddingRight: 10,
+  paddingVertical: 10,
   flexDirection: 'row',
 }
 
@@ -60,6 +62,17 @@ const styles = StyleSheet.create({
   editIconActive: {
     tintColor: 'rgb(51, 102, 255)',
   },
+  optionsIcon: {
+    marginTop: -11,
+    marginBottom: -12,
+  },
+  homeIcon: {
+    height: 16,
+    marginRight: 6,
+  },
+  off: {
+    fontStyle: 'italic',
+  },
 })
 
 const EnhancedHeader = React.memo(({
@@ -71,10 +84,15 @@ const EnhancedHeader = React.memo(({
   userDataByBookId,
 
   setSelectedToolUid,
+  setCurrentClassroom,
 }) => {
 
-  const { classroom, isDefaultClassroom, bookVersion, myRole, viewingEnhancedHomepage,
+  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid, bookVersion, myRole, viewingEnhancedHomepage,
           viewingFrontMatter, iCanEdit, hasFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const [ showOptions, setShowOptions ] = useState(false)
+  const [ showManageClassrooms, setShowManageClassrooms ] = useState(false)
+  const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
 
   const EditButtonIcon = useCallback(
     style => (
@@ -107,7 +125,81 @@ const EnhancedHeader = React.memo(({
     [ bookId ],
   )
 
-  if(!classroom || bookVersion === 'BASE') return null
+  const toggleShowOptions = useCallback(
+    () => setShowOptions(!showOptions),
+    [ showOptions ],
+  )
+
+  const selectOption = useCallback(
+    selectedIndex => {
+      const { onPress } = moreOptions[selectedIndex]
+      if(onPress) {
+        onPress()
+        setShowOptions(false)
+      }
+    },
+    [ bookId, classrooms, toggleShowManageClassrooms, toggleShowConnectToAClassroom ],
+  )
+
+  const toggleShowManageClassrooms = useCallback(
+    () => setShowManageClassrooms(!showManageClassrooms),
+    [ showManageClassrooms ],
+  )
+
+  const toggleShowConnectToAClassroom = useCallback(
+    () => setShowConnectToAClassroom(!showConnectToAClassroom),
+    [ showConnectToAClassroom ],
+  )
+
+  const sortedClassrooms = [ ...classrooms ]
+  sortedClassrooms.sort((a, b) => {
+    if(a.uid === defaultClassroomUid) return 1
+    if(b.uid === defaultClassroomUid) return -1
+    const aName = a.name.toUpperCase()
+    const bName = b.name.toUpperCase()
+    return (aName < bName) ? -1 : (aName > bName) ? 1 : 0
+  })
+  sortedClassrooms.push({
+    uid: undefined,
+    name: i18n("Off"),
+  })
+
+  const moreOptions = [
+    ...sortedClassrooms.map(({ uid, name }) => ({
+      title: uid === defaultClassroomUid ? i18n("Book default") : name,
+      onPress: () => {
+        setCurrentClassroom({
+          bookId,
+          uid,
+        })
+        setShowOptions(false)
+      },
+    })),
+    ...(!(myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
+      title: i18n("Manage classrooms"),
+      onPress: toggleShowManageClassrooms,
+    }]),
+    ...((myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
+      title: i18n("Connect to a classroom"),
+      onPress: toggleShowConnectToAClassroom,
+    }]),
+  ]
+
+  if(bookVersion === 'BASE') return null
+
+  const classroomName = (
+    isDefaultClassroom
+      ? i18n("Book default")
+      : (
+        classroom
+          ? classroom.name
+          : (
+            <Text style={styles.off}>
+              {i18n("Off")}
+            </Text>
+          )
+      )
+  )
 
   return (
     <View style={styles.container} data-id="EnhancedHeader">
@@ -115,12 +207,17 @@ const EnhancedHeader = React.memo(({
         onPress={(myRole === 'INSTRUCTOR' && !isDefaultClassroom) ? selectEnhancedHomepage : null}
       >
         <View style={viewingEnhancedHomepage ? styles.lineContainerSelected : styles.lineContainer}>
+          <Icon
+            name="home"
+            pack="fontAwesome"
+            style={styles.homeIcon}
+          />
           <Text style={styles.line}>
             <Text style={styles.enhanced}>
               {i18n("Enhanced")}
             </Text>
             {"  "}
-            {isDefaultClassroom ? i18n("Book default") : classroom.name}
+            {classroomName}
           </Text>
           {iCanEdit && !viewingEnhancedHomepage &&
             <Button
@@ -131,6 +228,20 @@ const EnhancedHeader = React.memo(({
               onPress={toggleInEditMode}
             />
           }
+          <OverflowMenu
+            data={moreOptions}
+            visible={showOptions}
+            selectedIndex={sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid)}
+            onSelect={selectOption}
+            onBackdropPress={toggleShowOptions}
+            placement='bottom end'
+          >
+            <HeaderIcon
+              name="md-more"
+              onPress={toggleShowOptions}
+              style={styles.optionsIcon}
+            />
+          </OverflowMenu>
         </View>
       </TouchableOpacity>
       {!isDefaultClassroom && (hasFrontMatter || inEditMode) &&
@@ -144,6 +255,16 @@ const EnhancedHeader = React.memo(({
           </View>
         </TouchableOpacity>
       }
+      <ManageClassrooms
+        open={showManageClassrooms}
+        requestHide={toggleShowManageClassrooms}
+        bookId={bookId}
+      />
+      <ConnectToAClassroom
+        open={showConnectToAClassroom}
+        requestHide={toggleShowConnectToAClassroom}
+        bookId={bookId}
+      />
     </View>
   )
 })
@@ -155,6 +276,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
+  setCurrentClassroom,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(EnhancedHeader)

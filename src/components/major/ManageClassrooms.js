@@ -8,7 +8,8 @@ import Dialog from "./Dialog"
 import CreateClassroom from "./CreateClassroom"
 import ConnectToAClassroom from "./ConnectToAClassroom"
 import { i18n } from "inline-i18n"
-import { getIdsFromAccountId } from "../../utils/toolbox"
+
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -40,21 +41,7 @@ const ManageClassrooms = React.memo(({
   const [ showCreateClassroom, setShowCreateClassroom ] = useState(false)
   const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
 
-  const book = books[bookId] || {}
-  const accountId = Object.keys(book.accounts)[0] || ""
-  const { idpId } = getIdsFromAccountId(accountId)
-
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-  const classroomUids = classrooms.map(({ uid }) => uid)
-  const bookVersion = Object.values(book.accounts)[0].version
-
-  const defaultClassroomUid = `${idpId}-${bookId}`
-  let currentClassroomUid = book.currentClassroomUid || defaultClassroomUid
-  let currentClassroomIndex = classroomUids.indexOf(currentClassroomUid)
-  if(currentClassroomUid && !currentClassroomIndex) {
-    currentClassroomUid = defaultClassroomUid
-    currentClassroomIndex = classroomUids.indexOf(currentClassroomUid)
-  }
+  const { bookVersion, classrooms, defaultClassroomUid } = useClassroomInfo({ books, bookId })
 
   const classroomData = classrooms
     .map(({ uid, name }) => ({
@@ -142,7 +129,6 @@ const ManageClassrooms = React.memo(({
         message={(
           <Menu
             data={classroomData}
-            selectedIndex={currentClassroomIndex}
             onSelect={updateCurrentClassroom}
             style={styles.menu}
           />
