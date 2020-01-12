@@ -73,6 +73,10 @@ const styles = StyleSheet.create({
   off: {
     fontStyle: 'italic',
   },
+  optionsAction: {
+    fontStyle: 'italic',
+    fontWeight: 300,
+  },
 })
 
 const EnhancedHeader = React.memo(({
@@ -177,11 +181,19 @@ const EnhancedHeader = React.memo(({
       },
     })),
     ...(!(myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
-      title: i18n("Manage classrooms"),
+      title: (
+        <Text style={styles.optionsAction}>
+          {i18n("Manage classrooms")}
+        </Text>
+      ),
       onPress: toggleShowManageClassrooms,
     }]),
     ...((myRole === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
-      title: i18n("Connect to a classroom"),
+      title: (
+        <Text style={styles.optionsAction}>
+          {i18n("Connect to a classroom")}
+        </Text>
+      ),
       onPress: toggleShowConnectToAClassroom,
     }]),
   ]
