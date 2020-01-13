@@ -110,7 +110,7 @@ const ManageClassrooms = React.memo(({
   const ExitIcon = useCallback(style => <Icon name='md-exit' style={style} />, [])
   const TrashIcon = useCallback(style => <Icon name='md-trash' style={style} />, [])
 
-  if(!online || syncStatus !== 'synced') {
+  if(!online) {
     return (
       <>
         {!!open && <BackFunction func={requestHide} />}
@@ -207,6 +207,7 @@ const ManageClassrooms = React.memo(({
         )}
         onClose={requestHide}
         closeButtonText={i18n("Done")}
+        submitting={syncStatus !== 'synced'}
       />
       <CreateClassroom
         open={showCreateClassroom}
