@@ -1,4 +1,4 @@
-import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid } from '../../utils/toolbox'
+import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid, createShareCode } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
 
 const initialState = {}
