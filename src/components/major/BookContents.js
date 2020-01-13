@@ -44,7 +44,7 @@ const BookContents = React.memo(({
 }) => {
 
   const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
-          myRole, viewingEnhancedHomepage, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+          myRole, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const showAddToolButton = (
     (
@@ -264,7 +264,7 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && inEditMode && !viewingEnhancedHomepage && !viewingFrontMatter &&
+      {showAddToolButton && inEditMode && !viewingFrontMatter &&
         <FAB
           data-id="FAB_addTool"
           iconName="md-add"

@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid } from "../utils/toolbox"
 
-const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) => {
+const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawInEditMode }) => {
 
   const book = useMemo(
     () => (books[bookId] || {}),
@@ -82,6 +82,14 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     selectedToolUid = null
   }
 
+  if(rawInEditMode) {
+    inEditMode = !!(
+      rawInEditMode
+      && iCanEdit
+      && !['ENHANCED HOMEPAGE'].includes(selectedToolUid)
+    )
+  }
+
   const tools = useMemo(
     () => ((classroom || {}).tools || []).filter(({ _delete }) => !_delete),
     [ (classroom || {}).tools ]
@@ -156,10 +164,11 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     hasDraftData,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in
+    inEditMode,  // requires userDataByBookId and rawInEditMode to be sent in
     iCanEdit,  // requires userDataByBookId to be sent in
     tools,  // requires userDataByBookId to be sent in
-    selectedToolUid,
-    selectedTool,  // requires userDataByBookId to be sent in
+    selectedToolUid,  // requires userDataByBookId and inEditMode to be sent in to be most accurate
+    selectedTool,  // requires userDataByBookId and inEditMode to be sent in
     viewingEnhancedHomepage,
     viewingFrontMatter,
     instructorHighlights,  // requires userDataByBookId to be sent in

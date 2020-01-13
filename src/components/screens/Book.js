@@ -175,7 +175,7 @@ const Book = React.memo(({
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
-  const [ inEditMode, setInEditMode ] = useState(false)
+  const [ rawInEditMode, setRawInEditMode ] = useState(false)
 
   const [{
     bookLoaded,
@@ -193,9 +193,6 @@ const Book = React.memo(({
     showSettings: false,
     snapshotZoomed: true,
   })
-
-  const getToolMoveInfo = useInstanceValue(toolMoveInfo)
-  const getInEditMode = useInstanceValue(inEditMode)
 
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
@@ -216,8 +213,12 @@ const Book = React.memo(({
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
-  const { classroomUid, visibleTools, selectedToolUid, selectedTool, draftToolByCurrentlyPublishedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool,
+          draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+
   const getVisibleTools = useInstanceValue(visibleTools)
+  const getToolMoveInfo = useInstanceValue(toolMoveInfo)
+  const getInEditMode = useInstanceValue(inEditMode)
 
   const toolCfiCounts = useMemo(
     () => {
@@ -264,7 +265,7 @@ const Book = React.memo(({
         }
       }
 
-      setInEditMode(!inEditMode)
+      setRawInEditMode(!inEditMode)
     },
     [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid ],
   )
