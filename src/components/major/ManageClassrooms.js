@@ -11,6 +11,7 @@ import ConnectToAClassroom from "./ConnectToAClassroom"
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useNetwork from "../../hooks/useNetwork"
 
 import BackFunction from '../basic/BackFunction'
 
@@ -52,6 +53,7 @@ const ManageClassrooms = React.memo(({
 
   books,
   userDataByBookId,
+  syncStatus,
 
   deleteClassroomMember,
   deleteClassroom,
@@ -59,6 +61,8 @@ const ManageClassrooms = React.memo(({
 
   const [ showCreateClassroom, setShowCreateClassroom ] = useState(false)
   const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
+
+  const { online } = useNetwork()
 
   const { userId, bookVersion, classrooms, defaultClassroomUid } = useClassroomInfo({ books, bookId, userDataByBookId })
 
@@ -105,6 +109,25 @@ const ManageClassrooms = React.memo(({
 
   const ExitIcon = useCallback(style => <Icon name='md-exit' style={style} />, [])
   const TrashIcon = useCallback(style => <Icon name='md-trash' style={style} />, [])
+
+  if(!online || syncStatus !== 'synced') {
+    return (
+      <>
+        {!!open && <BackFunction func={requestHide} />}
+        <Dialog
+          open={!!open}
+          style={styles.dialog}
+          title={i18n("Whoops!")}
+          message={(
+            <Text>
+              {i18n("You must have an active internet connection and be fully synced to manage classrooms.")}
+            </Text>
+          )}
+          onClose={requestHide}
+        />
+      </>
+    )
+  }
 
   return (
     <>
@@ -199,9 +222,10 @@ const ManageClassrooms = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId, syncStatus }) => ({
   books,
   userDataByBookId,
+  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
