@@ -108,7 +108,9 @@ const StatusAndActions = React.memo(({
         })
   
       } else {
-        if(!confirm("Are you sure you want to delete this tool?")) return
+        const isDraftOfPublished = !!selectedTool.currently_published_tool_uid
+        if(isDraftOfPublished && !confirm("Are you sure you want to discard this draft?")) return
+        if(!isDraftOfPublished && !confirm("Are you sure you want to delete this tool?")) return
 
         deleteTool({
           bookId,
