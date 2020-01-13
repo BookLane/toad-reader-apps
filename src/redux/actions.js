@@ -64,12 +64,13 @@ export const setSelectedToolUid = ({ bookId, uid }) => ({
   uid,
 })
 
-export const createClassroom = ({ uid, bookId, name, userId }) => ({
+export const createClassroom = ({ uid, bookId, name, userId, duplicateFromUid }) => ({
   type: "CREATE_CLASSROOM",
   uid,
   bookId,
   name,
   userId,
+  duplicateFromUid,
   doPatch: true,
 })
 

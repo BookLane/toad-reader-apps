@@ -1,20 +1,30 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useMemo } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-// import { StyleSheet } from "react-native"
+import { StyleSheet, View } from "react-native"
+import { Select } from "react-native-ui-kitten"
 import uuidv4 from 'uuid/v4'
+import { i18n } from "inline-i18n"
 
 import Dialog from "./Dialog"
 import DialogInput from "../basic/DialogInput"
-import { i18n } from "inline-i18n"
+import BackFunction from '../basic/BackFunction'
+
 import { getIdsFromAccountId } from "../../utils/toolbox"
 
-import BackFunction from '../basic/BackFunction'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { createClassroom, setCurrentClassroom } from "../../redux/actions"
 
-// const styles = StyleSheet.create({
-// })
+const styles = StyleSheet.create({
+  container: {
+    width: 320,
+    maxWidth: 320,
+  },
+  select: {
+    marginTop: 10,
+  },
+})
 
 const CreateClassroom = React.memo(({
   open,
@@ -22,12 +32,16 @@ const CreateClassroom = React.memo(({
   bookId,
 
   books,
+  userDataByBookId,
 
   createClassroom,
   setCurrentClassroom,
 }) => {
 
   const [ name, setName ] = useState("")
+  const [ basedOffUid, setBasedOffUid ] = useState()
+
+  const { defaultClassroomUid, sortedClassrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
@@ -42,6 +56,7 @@ const CreateClassroom = React.memo(({
         bookId,
         name,
         userId,
+        duplicateFromUid: basedOffUid,
       })
 
       setCurrentClassroom({
@@ -51,10 +66,28 @@ const CreateClassroom = React.memo(({
 
       requestHide({ hideAll: true })
     },
-    [ bookId, name, userId ],
+    [ bookId, name, userId, basedOffUid ],
   )
 
   const onChangeText = useCallback(name => setName(name), [])
+
+  const basedOffOptions = useMemo(
+    () => sortedClassrooms.map(({ uid, name }) => ({
+      text: (
+        uid === defaultClassroomUid
+          ? i18n("Book default")
+          : (
+            !uid
+              ? i18n("None")  
+              : name
+          )
+      ),
+      uid,
+    })),
+    [ sortedClassrooms, defaultClassroomUid ]
+  )
+
+  const onSelect = useCallback(({ uid }) => setBasedOffUid(uid), [])
 
   return (
     <>
@@ -64,12 +97,21 @@ const CreateClassroom = React.memo(({
         type="confirm"
         title={i18n("Create a new classroom")}
         message={(
-          <DialogInput
-            value={name}
-            onChangeText={onChangeText}
-            label={i18n("Classroom name")}
-            placeholder={i18n("Eg. Fall 2020")}
-          />
+          <View style={styles.container}>
+            <DialogInput
+              value={name}
+              onChangeText={onChangeText}
+              label={i18n("Classroom name")}
+              placeholder={i18n("Eg. Fall 2020")}
+            />
+            <Select
+              label={i18n("Based off...")}
+              style={styles.select}
+              data={basedOffOptions}
+              selectedOption={basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0]}
+              onSelect={onSelect}
+            />
+          </View>
         )}
         confirmButtonText={i18n("Create")}
         confirmButtonStatus="primary"
@@ -80,8 +122,9 @@ const CreateClassroom = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
   books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

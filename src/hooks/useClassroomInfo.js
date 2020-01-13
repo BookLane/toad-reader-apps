@@ -26,6 +26,28 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     ),
     [ (userDataByBookId[bookId] || {}).classrooms ]
   )
+
+  const sortedClassrooms = useMemo(
+    () => {
+      const classroomsBeingSorted = [ ...classrooms ]
+
+      classroomsBeingSorted.sort((a, b) => {
+        if(a.uid === defaultClassroomUid) return 1
+        if(b.uid === defaultClassroomUid) return -1
+        const aName = a.name.toUpperCase()
+        const bName = b.name.toUpperCase()
+        return (aName < bName) ? -1 : (aName > bName) ? 1 : 0
+      })
+
+      classroomsBeingSorted.push({
+        uid: undefined,
+      })
+
+      return classroomsBeingSorted
+    },
+    [ classrooms, defaultClassroomUid ]
+  )
+
   let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
 
   // Ensure existence of classroom when we can (i.e. when userDataByBookId is sent over).
@@ -124,6 +146,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     idpId,
     userId,
     classrooms,  // requires userDataByBookId to be sent in
+    sortedClassrooms,  // requires userDataByBookId to be sent in
     classroomUid,
     enhancedIsOff,
     isDefaultClassroom,

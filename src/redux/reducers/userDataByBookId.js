@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid/v4'
+
 import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid, createShareCode } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
 
@@ -331,7 +333,7 @@ export default function(state = initialState, action) {
     }
 
     case "CREATE_CLASSROOM": {
-      classrooms.push({
+      const newClassroom = {
         uid: action.uid,
         name: action.name,
         updated_at: now,
@@ -344,7 +346,80 @@ export default function(state = initialState, action) {
             updated_at: now,
           },
         ]
-      })
+      }
+
+      classrooms.push(newClassroom)
+
+      if(action.duplicateFromUid) {
+        classrooms.some((classroom, idx) => {
+          if(classroom.uid === action.duplicateFromUid) {
+  
+            ;[
+              'syllabus',
+              'introduction',
+              'classroom_highlights_mode',
+              'closes_at',
+              'draftData',
+            ].forEach(param => {
+              if(classroom[param] !== undefined) {
+                newClassroom[param] = classroom[param]
+                if(param !== 'draftData') {
+                  newClassroom.published_at = now
+                }
+              }
+            })
+
+            // TODO: When I get classroom_group's working, be sure to insert an updated classroom_group_uid where relevant
+            // TODO: I may need to adjust due_at and closes_at in a smart way when an old classroom is being copied from
+            newClassroom.tools = []
+            const oldToNewUidMap = {}
+            const pushOnTools = doDraftsOfPublished => {
+              ;(classroom.tools || []).forEach(({ uid: oldUid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, published_at, currently_published_tool_uid, _delete }) => {
+                if(_delete) return
+                if(doDraftsOfPublished && !currently_published_tool_uid) return
+                if(!doDraftsOfPublished && currently_published_tool_uid) return
+
+                const uid = uuidv4()
+                oldToNewUidMap[oldUid] = uid
+
+                newClassroom.tools.push({
+                  uid,
+                  spineIdRef,
+                  cfi,
+                  ordering,
+                  name,
+                  toolType,
+                  undo_array: [],
+                  data,
+                  due_at,
+                  closes_at,
+                  published_at,
+                  currently_published_tool_uid: oldToNewUidMap[currently_published_tool_uid] || null,
+                  updated_at: now,
+                })
+              })
+            }
+            pushOnTools(false)
+            pushOnTools(true)
+
+            newClassroom.instructorHighlights = []
+            ;(classroom.instructorHighlights || []).forEach(({ spineIdRef, cfi, isMine, note, updated_at, author_fullname, author_id, _delete }) => {
+              if(_delete) return
+              newClassroom.instructorHighlights.push({
+                spineIdRef,
+                cfi,
+                isMine,
+                note,
+                updated_at,
+                author_fullname,
+                author_id,
+                created_at: now,
+              })
+            })
+  
+          }
+        })
+      }
 
       newState[action.bookId] = {
         ...userDataForThisBook,
@@ -407,7 +482,7 @@ export default function(state = initialState, action) {
               member = classroom.members[idx] = { ...member }
 
               ;[
-                'classroom_group_id',
+                'classroom_group_uid',
                 'role',
                 '_delete',
               ].forEach(param => {

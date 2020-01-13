@@ -99,7 +99,7 @@ const EnhancedHeader = React.memo(({
   setCurrentClassroom,
 }) => {
 
-  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid,
+  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid, sortedClassrooms,
           enhancedIsOff, bookVersion, myRole, viewingEnhancedHomepage,
           viewingFrontMatter, iCanEdit, hasFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
@@ -164,22 +164,17 @@ const EnhancedHeader = React.memo(({
     [ bookId, classrooms, toggleShowManageClassrooms, toggleShowConnectToAClassroom ],
   )
 
-  const sortedClassrooms = [ ...classrooms ]
-  sortedClassrooms.sort((a, b) => {
-    if(a.uid === defaultClassroomUid) return 1
-    if(b.uid === defaultClassroomUid) return -1
-    const aName = a.name.toUpperCase()
-    const bName = b.name.toUpperCase()
-    return (aName < bName) ? -1 : (aName > bName) ? 1 : 0
-  })
-  sortedClassrooms.push({
-    uid: undefined,
-    name: i18n("Off"),
-  })
-
   const moreOptions = [
     ...sortedClassrooms.map(({ uid, name }) => ({
-      title: uid === defaultClassroomUid ? i18n("Book default") : name,
+      title: (
+        uid === defaultClassroomUid
+          ? i18n("Book default")
+          : (
+            !uid
+              ? i18n("Off")  
+              : name
+          )
+      ),
       onPress: () => {
         setCurrentClassroom({
           bookId,

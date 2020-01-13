@@ -159,6 +159,10 @@ export const patch = () => setTimeout(() => {
                 spineIdRef: instructorHighlight.spineIdRef,
                 cfi: instructorHighlight.cfi,
               }
+              if(!instructorHighlight.isMine) {
+                // This is needed when duplicating a classroom
+                instructorHighlightToPush.author_id = instructorHighlight.author_id
+              }
               if(instructorHighlight._delete) {
                 instructorHighlightToPush._delete = true
               } else {
