@@ -213,7 +213,7 @@ const Book = React.memo(({
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
-  const { classroomUid, visibleTools, selectedToolUid, selectedTool,
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const getVisibleTools = useInstanceValue(visibleTools)
@@ -239,7 +239,7 @@ const Book = React.memo(({
 
   const toggleInEditMode = useCallback(
     () => {
-      if(selectedTool) {
+      if(selectedTool && !viewingFrontMatter) {
         if(inEditMode) {
           // leaving edit mode
           if(selectedTool.currently_published_tool_uid) {
@@ -267,7 +267,7 @@ const Book = React.memo(({
 
       setRawInEditMode(!inEditMode)
     },
-    [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid ],
+    [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid, viewingFrontMatter ],
   )
 
   useEffect(

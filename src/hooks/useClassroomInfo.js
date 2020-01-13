@@ -82,12 +82,20 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     selectedToolUid = null
   }
 
-  if(rawInEditMode) {
+  if(rawInEditMode !== undefined) {
     inEditMode = !!(
       rawInEditMode
       && iCanEdit
       && !['ENHANCED HOMEPAGE'].includes(selectedToolUid)
     )
+  }
+
+  if(
+    selectedToolUid === 'FRONT MATTER'
+    && !hasFrontMatter
+    && inEditMode === false
+  ) {
+    selectedToolUid = null
   }
 
   const tools = useMemo(

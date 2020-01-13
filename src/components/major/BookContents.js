@@ -205,7 +205,7 @@ const BookContents = React.memo(({
         inEditMode={inEditMode}
       />
     ),
-    [ bookId, goTo, reportLineHeight ],
+    [ bookId, goTo, reportLineHeight, inEditMode ],
   )
 
   const createNewTool = useCallback(
