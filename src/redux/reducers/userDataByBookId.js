@@ -336,6 +336,7 @@ export default function(state = initialState, action) {
       const newClassroom = {
         uid: action.uid,
         name: action.name,
+        created_at: now,
         updated_at: now,
         access_code: createAccessCode(),
         instructor_access_code: createAccessCode(),
@@ -374,7 +375,7 @@ export default function(state = initialState, action) {
             newClassroom.tools = []
             const oldToNewUidMap = {}
             const pushOnTools = doDraftsOfPublished => {
-              ;(classroom.tools || []).forEach(({ uid: oldUid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, published_at, currently_published_tool_uid, _delete }) => {
+              ;(classroom.tools || []).forEach(({ uid: oldUid, currently_published_tool_uid, _delete, classroom_group_uid, ...otherToolInfo }) => {
                 if(_delete) return
                 if(doDraftsOfPublished && !currently_published_tool_uid) return
                 if(!doDraftsOfPublished && currently_published_tool_uid) return
@@ -383,18 +384,11 @@ export default function(state = initialState, action) {
                 oldToNewUidMap[oldUid] = uid
 
                 newClassroom.tools.push({
+                  ...otherToolInfo,
                   uid,
-                  spineIdRef,
-                  cfi,
-                  ordering,
-                  name,
-                  toolType,
                   undo_array: [],
-                  data,
-                  due_at,
-                  closes_at,
-                  published_at,
                   currently_published_tool_uid: oldToNewUidMap[currently_published_tool_uid] || null,
+                  created_at: now,
                   updated_at: now,
                 })
               })
@@ -403,16 +397,10 @@ export default function(state = initialState, action) {
             pushOnTools(true)
 
             newClassroom.instructorHighlights = []
-            ;(classroom.instructorHighlights || []).forEach(({ spineIdRef, cfi, isMine, note, updated_at, author_fullname, author_id, _delete }) => {
+            ;(classroom.instructorHighlights || []).forEach(({ _delete, ...otherInstructorHighlightInfo }) => {
               if(_delete) return
               newClassroom.instructorHighlights.push({
-                spineIdRef,
-                cfi,
-                isMine,
-                note,
-                updated_at,
-                author_fullname,
-                author_id,
+                ...otherInstructorHighlightInfo,
                 created_at: now,
               })
             })
@@ -526,8 +514,9 @@ export default function(state = initialState, action) {
             ordering: action.ordering,
             name: action.name,
             toolType: action.toolType || getToolInfo().toolTypes[0].toolType,
-            undo_array: [],
             data: action.data || {},
+            undo_array: [],
+            created_at: now,
             updated_at: now,
             due_at: action.due_at,
             closes_at: action.closes_at,
