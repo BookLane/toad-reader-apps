@@ -15,6 +15,9 @@ const styles = StyleSheet.create({
   },
 })
 
+const onStartShouldSetResponder = () => true
+const onResponderTerminationRequest = ({ nativeEvent }) => !/^mouse/.test(nativeEvent.type)
+
 const Input = React.memo(({
   id,
   info,
@@ -36,6 +39,8 @@ const Input = React.memo(({
 
   return (
     <UIKittenInput
+      onStartShouldSetResponder={onStartShouldSetResponder}
+      onResponderTerminationRequest={onResponderTerminationRequest}
       {...otherProps}
       style={[
         styles.input,

@@ -1,6 +1,9 @@
 import React, { useCallback } from "react"
 import { TextInput as RNTextInput } from "react-native"
 
+const onStartShouldSetResponder = () => true
+const onResponderTerminationRequest = ({ nativeEvent }) => !/^mouse/.test(nativeEvent.type)
+
 const TextInput = React.memo(({
   id,
   info,
@@ -19,6 +22,8 @@ const TextInput = React.memo(({
 
   return (
     <RNTextInput
+      onStartShouldSetResponder={onStartShouldSetResponder}
+      onResponderTerminationRequest={onResponderTerminationRequest}
       {...otherProps}
       onChangeText={customOnChangeText}
     />
