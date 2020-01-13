@@ -143,6 +143,16 @@ const EnhancedHeader = React.memo(({
     [ showOptions ],
   )
 
+  const toggleShowManageClassrooms = useCallback(
+    () => setShowManageClassrooms(!showManageClassrooms),
+    [ showManageClassrooms ],
+  )
+
+  const toggleShowConnectToAClassroom = useCallback(
+    () => setShowConnectToAClassroom(!showConnectToAClassroom),
+    [ showConnectToAClassroom ],
+  )
+
   const selectOption = useCallback(
     selectedIndex => {
       const { onPress } = moreOptions[selectedIndex]
@@ -152,16 +162,6 @@ const EnhancedHeader = React.memo(({
       }
     },
     [ bookId, classrooms, toggleShowManageClassrooms, toggleShowConnectToAClassroom ],
-  )
-
-  const toggleShowManageClassrooms = useCallback(
-    () => setShowManageClassrooms(!showManageClassrooms),
-    [ showManageClassrooms ],
-  )
-
-  const toggleShowConnectToAClassroom = useCallback(
-    () => setShowConnectToAClassroom(!showConnectToAClassroom),
-    [ showConnectToAClassroom ],
   )
 
   const sortedClassrooms = [ ...classrooms ]
