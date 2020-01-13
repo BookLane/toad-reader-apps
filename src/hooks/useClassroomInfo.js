@@ -3,21 +3,29 @@ import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid } from "..
 
 const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) => {
 
-  const book = books[bookId] || {}
+  const book = useMemo(
+    () => (books[bookId] || {}),
+    [ books[bookId] ]
+  )
   const { toc, spines, accounts } = book
   let { currentClassroomUid: classroomUid, selectedToolUid } = book
   const accountId = Object.keys(accounts)[0] || ""
   const { idpId, userId } = getIdsFromAccountId(accountId)
   
   const defaultClassroomUid = `${idpId}-${bookId}`
-  const classrooms = ((userDataByBookId[bookId] || {}).classrooms || [])
-    .filter(({ uid, _delete, members=[] }) => (
-      !_delete
-      && (
-        uid === defaultClassroomUid
-        || members.some(({ user_id, _delete }) => (user_id === userId && !_delete))
-      )
-    ))
+  const classrooms = useMemo(
+    () => (
+      ((userDataByBookId[bookId] || {}).classrooms || [])
+        .filter(({ uid, _delete, members=[] }) => (
+          !_delete
+          && (
+            uid === defaultClassroomUid
+            || members.some(({ user_id, _delete }) => (user_id === userId && !_delete))
+          )
+        ))
+    ),
+    [ (userDataByBookId[bookId] || {}).classrooms ]
+  )
   let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
 
   // Ensure existence of classroom when we can (i.e. when userDataByBookId is sent over).
@@ -52,40 +60,49 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode }) =>
     selectedToolUid = null
   }
 
-  const tools = ((classroom || {}).tools || []).filter(({ _delete }) => !_delete)
-  const instructorHighlights = ((classroom || {}).instructorHighlights || []).filter(({ _delete }) => !_delete)
+  const tools = useMemo(
+    () => ((classroom || {}).tools || []).filter(({ _delete }) => !_delete),
+    [ (classroom || {}).tools ]
+  )
+  const instructorHighlights = useMemo(
+    () => ((classroom || {}).instructorHighlights || []).filter(({ _delete }) => !_delete),
+    [ (classroom || {}).instructorHighlights ]
+  )
 
   const draftToolByCurrentlyPublishedToolUid = useMemo(
     () => getDraftToolByCurrentlyPublishedToolUid(tools),
     [ tools ],
   )
 
-  const visibleTools = (
-    enhancedIsOff
-      ? []
-      : (
-        inEditMode == null
-          ? tools
-          : tools.filter(({ uid, published_at }) => {
-            const isVisible = (
-              !(
-                !inEditMode
-                && !published_at
+  const visibleTools = useMemo(
+    () => (
+      enhancedIsOff
+        ? []
+        : (
+          inEditMode == null
+            ? tools
+            : tools.filter(({ uid, published_at }) => {
+              const isVisible = (
+                !(
+                  !inEditMode
+                  && !published_at
+                )
+                && !(
+                  inEditMode
+                  && published_at
+                  && draftToolByCurrentlyPublishedToolUid[uid]
+                )
               )
-              && !(
-                inEditMode
-                && published_at
-                && draftToolByCurrentlyPublishedToolUid[uid]
-              )
-            )
-    
-            if(!isVisible && uid === selectedToolUid) {
-              selectedToolUid = undefined
-            }
-    
-            return isVisible
-          })
-      )
+
+              if(!isVisible && uid === selectedToolUid) {
+                selectedToolUid = undefined
+              }
+
+              return isVisible
+            })
+        )
+    ),
+    [ enhancedIsOff, inEditMode, tools, draftToolByCurrentlyPublishedToolUid, selectedToolUid ]
   )
 
   const selectedTool = ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid) ? {} : visibleTools.filter(({ uid }) => uid === selectedToolUid)[0]

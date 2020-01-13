@@ -12,6 +12,7 @@ import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
 import getReaderCode from '../../../getReaderCode'
+import usePrevious from "react-use/lib/usePrevious"
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -91,7 +92,7 @@ const PageWebView = ({
 }) => {
 
   // props are put in state so as to use their initial value only
-  const [ state ] = useState(props)
+  const [ initialProps ] = useState(props)
   const {
     bookId,
     initialLocation,
@@ -108,7 +109,7 @@ const PageWebView = ({
     idps,
     accounts,
     // userDataByBookId,  // used in getHighlightsArray and getLatestLocation functions
-  } = state
+  } = initialProps
 
   const [ unloaded, setUnloaded ] = useState(false)
 
@@ -126,11 +127,15 @@ const PageWebView = ({
 
   useEffect(() => () => webView.current.unmounted = true, [])
 
+  const prevProps = usePrevious(props)
+
   useEffect(
     () => {
+      if(!prevProps) return
+
       const oldHighlightsInThisSpine = getHighlightsForThisSpine({
-        highlights: getHighlightsArray(state),
-        location: getLatestLocation(state),
+        highlights: getHighlightsArray(prevProps),
+        location: getLatestLocation(prevProps),
       })
       const newHighlightsInThisSpine = getHighlightsForThisSpine({
         highlights: getHighlightsArray(props),
@@ -201,7 +206,7 @@ const PageWebView = ({
 
   const initialHighlightsInThisSpine = getHighlightsForThisSpine({
     location: initialLocation,
-    highlights: getHighlightsArray(state),
+    highlights: getHighlightsArray(initialProps),
   })
 
   const initialToolSpotsInThisSpine = []
