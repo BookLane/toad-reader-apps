@@ -83,6 +83,7 @@ const Dialog = React.memo(({
   
   // TODO: do fullscreen if small device size
   const { width, height } = useDimensions().window
+  const maxHeight = height - 50
 
   const titles = {
     info: i18n("Note"),
@@ -147,6 +148,7 @@ const Dialog = React.memo(({
       <View style={{ width }}>
         <View style={[
           styles.container,
+          { maxHeight },
           style,
         ]}>
           <Text style={styles.title}>{title || titles[type]}</Text>
