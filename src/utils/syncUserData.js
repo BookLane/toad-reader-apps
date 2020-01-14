@@ -101,12 +101,14 @@ export const patch = () => setTimeout(() => {
           uid: classroom.uid,
           members: [],
           tools: [],
+          toolEngagements: [],
           instructorHighlights: [],
         }
         let classroomHasUpdate = false
 
         const isInstructor = members.some(({ user_id, role }) => (user_id === userId && role === 'INSTRUCTOR'))
         const isPublisherAndThisIsTheDefaultClassroom = isPublisher && classroom.uid === `${idpId}-${bookId}`
+        const isStudent = !isInstructor && !isPublisherAndThisIsTheDefaultClassroom
 
         if(isInstructor && classroom.updated_at > lastSuccessfulPatch) {
           classroomToPush = {
@@ -173,10 +175,30 @@ export const patch = () => setTimeout(() => {
             }
           })
         }
-        
+
+        tools.forEach(({ uid: tool_uid, toolType, engagements=[], engagement={} }) => {
+          if([ 'QUIZ', 'POLL' ].includes(toolType) && !isStudent) return
+
+          const pushEngagementIfUpdated = anEngagement => {
+            if(anEngagement.updated_at > lastSuccessfulPatch) {
+              const engagementToPush = {
+                ...anEngagement,
+                tool_uid,
+              }
+              delete engagementToPush.created_at
+              classroomToPush.toolEngagements.push(engagementToPush)
+              classroomHasUpdate = true
+            }
+          }
+
+          engagements.forEach(pushEngagementIfUpdated)
+          pushEngagementIfUpdated(engagement)
+        })
+
         if(classroomHasUpdate) {
           if(classroomToPush.members.length === 0) delete classroomToPush.members
           if(classroomToPush.tools.length === 0) delete classroomToPush.tools
+          if(classroomToPush.toolEngagements.length === 0) delete classroomToPush.toolEngagements
           if(classroomToPush.instructorHighlights.length === 0) delete classroomToPush.instructorHighlights
           newUserData[bookId].classrooms.push(classroomToPush)
           somethingToPatch = true

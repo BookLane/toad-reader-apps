@@ -148,6 +148,37 @@ export const publishTool = ({ bookId, classroomUid, uid }) => ({
   doPatch: true,
 })
 
+export const updateToolEngagement = ({ bookId, classroomUid, toolUid, text, answers }) => ({
+  type: "UPDATE_TOOL_ENGAGEMENT",
+  bookId,
+  classroomUid,
+  toolUid,
+  text,
+  answers,
+  doPatch: true,
+})
+
+export const submitToolEngagement = ({ bookId, classroomUid, toolUid, uid, text, answers, score }) => ({
+  type: "SUBMIT_TOOL_ENGAGEMENT",
+  bookId,
+  classroomUid,
+  toolUid,
+  uid,  // tools with submission times have uid's and a single user can have more than one engagement per tool
+  text,
+  answers,
+  score,
+  doPatch: true,
+})
+
+export const deleteToolEngagement = ({ bookId, classroomUid, toolUid, uid }) => ({
+  type: "DELETE_TOOL_ENGAGEMENT",
+  bookId,
+  classroomUid,
+  toolUid,
+  uid,
+  doPatch: true,
+})
+
 export const deleteTool = ({ bookId, classroomUid, uid }) => ({
   type: "UPDATE_TOOL",
   bookId,

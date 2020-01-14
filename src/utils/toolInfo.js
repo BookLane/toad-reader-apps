@@ -139,19 +139,14 @@ export const getToolInfo = () => {
     //   text: i18n("Poll question"),
     //   dataStructure: [
     //     {
-    //       name: 'questions',
-    //       type: [
-    //         {
-    //           name: 'question',
-    //           type: 'string',
-    //           label: i18n("Question"),
-    //         },
-    //         {
-    //           name: 'choices',
-    //           type: ['string'],
-    //           label: i18n("Choices"),
-    //         },
-    //       ],
+    //       name: 'question',
+    //       type: 'string',
+    //       label: i18n("Question"),
+    //     },
+    //     {
+    //       name: 'choices',
+    //       type: ['string'],
+    //       label: i18n("Choices"),
     //     },
     //   ],
     // },

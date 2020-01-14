@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
 
 const returnTrue = () => true
 
-const ReflectionQuestionTool = React.memo(({
+const QuizTool = React.memo(({
   // bookId,
 
   questions,
@@ -252,4 +252,4 @@ const mapStateToProps = ({ books }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(ReflectionQuestionTool)
+export default connect(mapStateToProps, matchDispatchToProps)(QuizTool)

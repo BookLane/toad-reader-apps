@@ -662,6 +662,161 @@ export default function(state = initialState, action) {
 
     }
 
+    case "UPDATE_TOOL_ENGAGEMENT": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const tools = [ ...(classroom.tools || []) ]
+
+          return tools.some((tool, idx2) => {
+            if(tool.uid === action.toolUid) {
+              tools[idx2] = tool = { ...tool }
+              
+              if(tool.engagement) {
+                tool.engagement = { ...tool.engagement }
+              } else {
+                tool.engagement = {
+                  created_at: now,
+                }
+              }
+
+              ;[
+                'text',
+                'answers',
+              ].forEach(param => {
+                if(action[param] !== undefined) {
+                  tool.engagement[param] = action[param]
+                }
+              })
+  
+              tool.engagement.updated_at = now
+
+              classrooms[idx] = {
+                ...classroom,
+                tools,
+              }
+  
+              return true
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
+    case "SUBMIT_TOOL_ENGAGEMENT": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const tools = [ ...(classroom.tools || []) ]
+
+          return tools.some((tool, idx2) => {
+            if(tool.uid === action.toolUid) {
+              tools[idx2] = tool = { ...tool }
+
+              const newEngagement = {
+                // tools with submission times have uid's and a single user can have more than one engagement per tool
+                uid: uuidv4(),
+                created_at: now,
+                updated_at: now,
+                submitted_at: now,
+              }
+
+              ;[
+                'text',
+                'answers',
+                'score',
+              ].forEach(param => {
+                if(action[param] !== undefined) {
+                  newEngagement[param] = action[param]
+                }
+              })
+
+              tool.engagements = [
+                ...(tool.engagements || []),
+                newEngagement,
+              ]
+
+              classrooms[idx] = {
+                ...classroom,
+                tools,
+              }
+  
+              return true
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
+    case "DELETE_TOOL_ENGAGEMENT": {
+      if(classrooms.some((classroom, idx) => {
+        if(classroom.uid === action.classroomUid) {
+
+          const tools = [ ...(classroom.tools || []) ]
+
+          return tools.some((tool, idx2) => {
+            if(tool.uid === action.toolUid) {
+              tools[idx2] = tool = { ...tool }
+
+              tool.engagements = [ ...(tool.engagements || []) ]
+
+              return tool.engagements.some((engagement, idx3) => {
+                if(engagement.uid === action.uid) {
+                  tool.engagements[idx3] = engagement = { ...engagement }
+
+                  engagement._delete = true
+                  engagement.updated_at = now
+
+                  classrooms[idx] = {
+                    ...classroom,
+                    tools,
+                  }
+      
+                  return true
+                }
+              })
+            }
+          })
+        }
+      })) {
+
+        newState[action.bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
+
+    }
+
     case "CREATE_INSTRUCTOR_HIGHLIGHT": {
       if(classrooms.some((classroom, idx) => {
         if(classroom.uid === action.classroomUid) {

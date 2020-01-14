@@ -99,6 +99,9 @@ const Tool = React.memo(({
       <View style={styles.bottomSection}>
         <ToolComponent
           bookId={bookId}
+          toolUid={tool.uid}
+          inEditMode={inEditMode}
+          viewingPreview={viewingPreview}
           {...data}
         />
       </View>
