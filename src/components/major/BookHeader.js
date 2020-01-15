@@ -129,19 +129,18 @@ const BookHeader = React.memo(({
       onPress={showDisplaySettings}
       style={wideMode ? styles.faded : {}}
     />,
-    <HeaderIcon
-      name="md-list"
-      onPress={wideMode ? toggleSidePanelOpen : backToReading}
-      style={[
-        wideMode ? styles.faded : {},
-        (wideMode && sidePanelSettings.open) ? styles.selected : null,
-      ]}
-    />,
-    ...(!(wideMode && Platform.OS !== 'web') ? [] : [
+    // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
+    //   <HeaderIcon
+    //     name="md-apps"
+    //     onPress={togglePageBrowser}
+    //     style={styles.faded}
+    //   />
+    // ]),
+    ...(!(wideMode) ? [] : [
       <HeaderIcon
-        name="md-apps"
-        onPress={toggleBookView}
-        style={wideMode ? styles.faded : {}}
+        name="md-list"
+        onPress={toggleSidePanelOpen}
+        style={sidePanelSettings.open ? null : styles.faded}
       />
     ]),
     ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
