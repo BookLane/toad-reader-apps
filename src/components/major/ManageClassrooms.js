@@ -174,7 +174,7 @@ const ManageClassrooms = React.memo(({
               const iAmTheLoneInstructor = myRole === 'INSTRUCTOR' && members.filter(({ role }) => role === 'INSTRUCTOR').length === 1
 
               return (
-                <View style={styles.classroomLine}>
+                <View style={styles.classroomLine} key={uid}>
                   <Text style={styles.classroomName}>
                     {name}
                   </Text>
