@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   tab: {
     marginHorizontal: 30,
     fontSize: 18,
-    fontWeight: 700,
+    fontWeight: '700',
     marginTop: 20,
     marginBottom: 20,
   },
@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabContent: {
-    overflowY: 'auto',
     flex: 1,
   },
   tableContainer: {
@@ -60,7 +59,7 @@ const styles = StyleSheet.create({
   },
   tableSummary: {
     textAlign: 'right',
-    fontWeight: 600,
+    fontWeight: '600',
     marginVertical: 10,
   },
 })
@@ -135,7 +134,7 @@ const Reports = ({
           <Text style={styles.tab}>
             {tab}
           </Text>
-          <View style={styles.tabContent}>
+          <ScrollView style={styles.tabContent}>
             {data.map(({ heading, rows, summary }, idx) => {
               const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[-0-9\.$]*$/.test(val) ? 1 : 2)
 
@@ -171,7 +170,7 @@ const Reports = ({
                 </View>
               )
             })}
-          </View>
+          </ScrollView>
         </View>
       ))}
       {loading &&

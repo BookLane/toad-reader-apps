@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
   leftButton: {
     ...button,
     left: 0,
-    borderTopRightRadius: '50%',
-    borderBottomRightRadius: '50%',
+    borderTopRightRadius: 60,
+    borderBottomRightRadius: 60,
   },
   rightButtonContainer: {
     ...buttonContainer,
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
   rightButton: {
     ...button,
     right: 0,
-    borderTopLeftRadius: '50%',
-    borderBottomLeftRadius: '50%',
+    borderTopLeftRadius: 60,
+    borderBottomLeftRadius: 60,
   },
   icon: {
     height: 28,

@@ -16,7 +16,7 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
 
 const editButton = {
-  borderRadius: '50%',
+  borderRadius: 20,
   width: 40,
   height: 40,
   marginVertical: -12,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   optionsAction: {
     fontStyle: 'italic',
-    fontWeight: 300,
+    fontWeight: '300',
   },
 })
 

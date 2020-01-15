@@ -12,10 +12,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 15,
     right: 15,
-    borderRadius: '50%',
+    borderRadius: 25,
     width: 50,
     height: 50,
-    boxShadow: '1px 1px 15px rgba(0,0,0,.3)',
+    elevation:4,
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: "black",
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
   },
 })
 

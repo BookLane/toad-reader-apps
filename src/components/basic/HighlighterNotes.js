@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, TextInput } from "react-native"
+import { StyleSheet, TextInput, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 
 const styles = StyleSheet.create({
@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     padding: 15,
     paddingTop: 0,
-    outlineWidth: 0,
+    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
   },
 })
 

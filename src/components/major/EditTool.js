@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Select } from "react-native-ui-kitten"
@@ -38,7 +38,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
     flex: 1,
-    overflow: 'auto',
+  },
+  bottomSectionContent: {
+    flex: 1,
   },
   bottomSectionWideMode: {
   },
@@ -151,11 +153,12 @@ const EditTool = React.memo(({
           setViewingPreview={setViewingPreview}
         />
       </View>
-      <View
+      <ScrollView
         style={[
           styles.bottomSection,
           wideMode ? styles.bottomSectionWideMode : null,
         ]}
+        contentContainerStyle={styles.bottomSectionContent}
       >
         <EditToolData
           classroomUid={classroomUid}
@@ -165,7 +168,7 @@ const EditTool = React.memo(({
           data={tool.data}
           goUpdateTool={goUpdateTool}
         />
-      </View>
+      </ScrollView>
     </>
   )
 })

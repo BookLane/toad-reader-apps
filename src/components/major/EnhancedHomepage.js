@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -23,7 +23,7 @@ const container = {
 
 const tabTitle = {
   lineHeight: 30,
-  fontWeight: 500,
+  fontWeight: '500',
   marginRight: 20,
   borderBottomWidth: 3,
   borderBottomColor: 'transparent',
@@ -39,11 +39,10 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   tabs: {
-    flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,.1)',
     paddingHorizontal: 30,
-    overflowX: 'auto',
+    flexGrow: 0,
   },
   tabTitle: {
     ...tabTitle,
@@ -57,6 +56,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabContent: {
+    flex: 1,
+  },
+  tabContentContainer: {
     flex: 1,
   },
 })
@@ -133,8 +135,9 @@ const EnhancedHomepage = React.memo(({
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
-      <View
+      <ScrollView
         style={styles.tabs}
+        horizontal={true}
       >
         {tabs.map(({ title }, idx) => (
           <TouchableOpacity
@@ -148,19 +151,20 @@ const EnhancedHomepage = React.memo(({
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
       <ViewPager
         style={styles.tabsContent}
         selectedIndex={selectedTabIndex}
         onSelect={setSelectedTabIndex}
       >
         {tabs.map(({ content }, idx) => (
-          <View
+          <ScrollView
             key={idx}
             style={styles.tabContent}
+            contentContainerStyle={styles.tabContentContainer}
           >
             {content}
-          </View>
+          </ScrollView>
         ))}
       </ViewPager>
     </View>

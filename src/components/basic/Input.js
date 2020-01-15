@@ -1,10 +1,10 @@
 import React, { useCallback } from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Platform } from "react-native"
 import { Input as UIKittenInput } from "react-native-ui-kitten"
 
 const styles = StyleSheet.create({
   inputText: {
-    outlineWidth: 0,
+    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     color: 'rgb(34, 43, 69)',
   },
   inputLabel: {

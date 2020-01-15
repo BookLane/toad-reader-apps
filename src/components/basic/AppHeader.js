@@ -30,11 +30,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 19,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   subtitle: {
     fontSize: 13,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   controlsGroupRight: {
     flexDirection: 'row',

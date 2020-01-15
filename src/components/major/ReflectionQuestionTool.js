@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -19,16 +19,16 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: '500',
     marginBottom: 20,
   },
   info: {
     fontSize: 14,
-    fontWeight: 100,
+    fontWeight: '100',
     marginTop: 20,
   },
   answer: {
-    outlineWidth: 0,
+    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     paddingHorizontal: 30,
     marginHorizontal: -30,
     flex: 1,

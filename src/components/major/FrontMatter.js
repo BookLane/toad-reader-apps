@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -29,7 +29,7 @@ const topSection = {
 
 const tabTitle = {
   lineHeight: 30,
-  fontWeight: 500,
+  fontWeight: '500',
   marginRight: 20,
   borderBottomWidth: 3,
   borderBottomColor: 'transparent',
@@ -53,16 +53,15 @@ const styles = StyleSheet.create({
   },
   heading: {
     paddingBottom: 20,
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 18,
     flex: 1,
   },
   tabs: {
-    flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,.1)',
     paddingHorizontal: 30,
-    overflowX: 'auto',
+    flexGrow: 0,
   },
   tabTitle: {
     ...tabTitle,
@@ -78,10 +77,13 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
   },
+  tabContentContainer: {
+    flex: 1,
+  },
   exitPreview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
-    fontWeight: 700,
+    fontWeight: '700',
     fontSize: 13,
     marginTop: 'auto',
   },
@@ -219,8 +221,9 @@ const FrontMatter = React.memo(({
       </View>
       {tabs.length > 0 &&
         <>
-          <View
+          <ScrollView
             style={styles.tabs}
+            horizontal={true}
           >
             {tabs.map(({ title }, idx) => (
               <TouchableOpacity
@@ -234,19 +237,20 @@ const FrontMatter = React.memo(({
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
           <ViewPager
             style={styles.tabsContent}
             selectedIndex={correctedSelectedTabIndex}
             onSelect={setSelectedTabIndex}
           >
             {tabs.map(({ content }, idx) => (
-              <View
+              <ScrollView
                 key={idx}
                 style={styles.tabContent}
+                contentContainerStyle={styles.tabContentContainer}
               >
                 {content}
-              </View>
+              </ScrollView>
             ))}
           </ViewPager>
         </>

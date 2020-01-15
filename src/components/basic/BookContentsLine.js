@@ -13,7 +13,7 @@ import { setSelectedToolUid } from "../../redux/actions"
 
 const numWithin = {
   backgroundColor: 'rgb(0, 0, 0)',
-  borderRadius: '50%',
+  borderRadius: 10,
   color: 'white',
   width: 19,
   height: 19,
@@ -21,7 +21,7 @@ const numWithin = {
   lineHeight: 18,
   textAlign: 'center',
   fontSize: 10,
-  fontWeight: 600,
+  fontWeight: '600',
   marginVertical: -6,
   marginLeft: 8,
   paddingRight: 1, // not sure why I need this

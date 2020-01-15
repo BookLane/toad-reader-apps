@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import React, { useCallback } from "react"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -14,7 +14,7 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 import { createInstructorHighlight, deleteInstructorHighlight } from "../../redux/actions"
 
 const author = {
-  fontWeight: 100,
+  fontWeight: '100',
   fontSize: 12,
 }
 
@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(0,0,0,.2)',
     maxHeight: 150,
-    overflowY: 'auto',
   },
   heading: {
     flexDirection: 'row',
@@ -113,7 +112,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
   if(!(myRole === 'INSTRUCTOR' && highlight) && !hasInstructorHighlight) return null
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.heading}>
         <ToolChip
           toolType="INSTRUCTOR_HIGHLIGHT"
@@ -162,7 +161,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
           </Text>
         </Text>
       }
-    </View>
+    </ScrollView>
       /* <Dialog
         open={!!showShare}
         title={i18n("Instructor’s highlight")}

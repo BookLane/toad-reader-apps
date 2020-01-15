@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { Button } from "react-native-ui-kitten"
 // import { Modal, Button } from "react-native-ui-kitten"
 import { Modal } from "../ui-fixes/Modal"
@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     paddingBottom: 10,
     backgroundColor: "white",
-    overflow: 'auto',
   },
   title: {
     fontSize: 18,
@@ -146,7 +145,7 @@ const Dialog = React.memo(({
       backdropStyle={styles.modalBackdrop}
     >
       <View style={{ width }}>
-        <View style={[
+        <ScrollView style={[
           styles.container,
           { maxHeight },
           style,
@@ -154,7 +153,7 @@ const Dialog = React.memo(({
           <Text style={styles.title}>{title || titles[type]}</Text>
           {!!message &&
             <View style={styles.messageContainer}>
-              {(message instanceof Array ? message : [message]).map((paragraph, idx) => (
+              {!(message instanceof Array) ? message : message.map((paragraph, idx) => (
                 <View
                   key={idx}
                   style={[
@@ -181,7 +180,7 @@ const Dialog = React.memo(({
             </View>
           }
           {!!submitting && <CoverAndSpin />}
-        </View>
+        </ScrollView>
       </View>
     </Modal>
   )

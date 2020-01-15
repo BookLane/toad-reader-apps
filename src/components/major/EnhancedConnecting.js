@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   codeSectionLabel: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 17,
     marginBottom: 10,
   },

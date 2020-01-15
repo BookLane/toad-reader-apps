@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from "react-native"
 
 import { i18n } from "inline-i18n"
 import { getToolInfo } from '../../utils/toolInfo'
@@ -21,17 +21,19 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
     flex: 1,
-    overflow: 'auto',
+  },
+  bottomSectionContent: {
+    flex: 1,
   },
   name: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 18,
     flex: 1,
   },
   exitPreview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
-    fontWeight: 700,
+    fontWeight: '700',
     fontSize: 13,
     marginTop: 'auto',
   },
@@ -96,7 +98,10 @@ const Tool = React.memo(({
           </TouchableOpacity>
         }
       </View>
-      <View style={styles.bottomSection}>
+      <ScrollView
+        style={styles.bottomSection}
+        contentContainerStyle={styles.bottomSectionContent}
+      >
         <ToolComponent
           bookId={bookId}
           toolUid={tool.uid}
@@ -104,7 +109,7 @@ const Tool = React.memo(({
           viewingPreview={viewingPreview}
           {...data}
         />
-      </View>
+      </ScrollView>
     </>
   )
 })

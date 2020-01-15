@@ -7,7 +7,7 @@ import FileImporter from "./FileImporter"
 
 const styles = StyleSheet.create({
   failed: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: "red",
   },
   result: {

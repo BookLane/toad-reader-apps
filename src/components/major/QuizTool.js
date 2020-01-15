@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
   page: {
     padding: 30,
     flex: 1,
-    overflowY: 'auto',
   },
   spacerBeforePage: {
     flex: 1,
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: '500',
     marginBottom: 10,
   },
   choices: {
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   },
   choice: {
     fontSize: 15,
-    fontWeight: 300,
+    fontWeight: '300',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     fontSize: 15,
-    fontWeight: 700,
+    fontWeight: '700',
     height: 20,
     lineHeight: 20,
   },
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 20,
     fontSize: 18,
-    fontWeight: 700,
+    fontWeight: '700',
   },
 })
 
@@ -144,7 +143,7 @@ const QuizTool = React.memo(({
           // onSelect={setSelectedIndex}
         >
           {preppedQuestions.map(({ question: { question, answers, answersSelection }, origQuestionIdx }, pageIdx) => (
-            <View
+            <ScrollView
               key={origQuestionIdx}
               style={styles.page}
             >
@@ -217,7 +216,7 @@ const QuizTool = React.memo(({
                   {!currentQuestionSubmitted && <Text style={styles.feedback} />}
                 </View>
               </View>
-            </View>
+            </ScrollView>
           ))}
           <View style={styles.container}>
             <Text style={styles.score}>

@@ -8,7 +8,7 @@ import { getToolInfo } from "../../utils/toolInfo"
 const onMoveShouldSetResponderCapture = () => true
 
 const text = {
-  fontWeight: 400,
+  fontWeight: '400',
   fontSize: 12,
 }
 

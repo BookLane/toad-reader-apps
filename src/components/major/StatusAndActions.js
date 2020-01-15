@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   preview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
-    fontWeight: 700,
+    fontWeight: '700',
     fontSize: 13,
   },
 })

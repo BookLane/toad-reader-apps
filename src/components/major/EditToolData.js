@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
 
@@ -16,7 +16,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 const trashButtonStyles = {
-  borderRadius: '50%',
+  borderRadius: 20,
   width: 40,
   height: 40,
   marginTop: 'auto',
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     width: 200,
   },
   textEditor: {
-    outlineWidth: 0,
+    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     flex: 1,
     margin: -30,
     padding: 30,
