@@ -6,10 +6,13 @@ import { withRouter } from "react-router"
 
 import PageWebView from "./PageWebView"
 
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox'
+
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
 import takeSnapshot from "../../utils/takeSnapshot"
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, setUpTimeout, unmountTimeouts } from '../../utils/toolbox'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useSetTimeout from "../../hooks/useSetTimeout"
 
 import { addSpinePageCfis } from "../../redux/actions"
 
@@ -41,6 +44,8 @@ const PageCapture = ({
   const view = useRef()
 
   const getProcessingPaused = useInstanceValue(processingPaused)
+
+  const [ setDelayTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
   const uriAsKey = getSnapshotURI({
     bookId,
@@ -125,7 +130,7 @@ const PageCapture = ({
         if(Platform.OS === 'android') {
           // Delay to ensure render of the initial page in spine
           // since this is not covered by the dup check in takeSnapshot.
-          await new Promise(resolve => setUpTimeout(resolve, 25, this))
+          await new Promise(resolve => setDelayTimeout(resolve, 25))
         }
 
         await new Promise(resolve => {
