@@ -74,7 +74,7 @@ const PagesPage = React.memo(({
 
       preventDoubleTap.current = true
 
-      view.measureInWindow((x, y) => zoomToPage({
+      view.current.measureInWindow((x, y) => zoomToPage({
         zoomToInfo: {
           spineIdRef,
           cfi,
