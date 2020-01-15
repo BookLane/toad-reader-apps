@@ -14,10 +14,11 @@ const fixToolOrdering = ({
 }) => {
 
   const modifiedToolPlacementKey = getPlacementKey(modifiedTool)
+  const nonDeletedModifiedToolOrdering = modifiedTool._delete ? -1 : modifiedTool.ordering
 
   // adjust ordering key of other tools with same spineIdRef/cfi combo
   const ordering = {
-    [modifiedToolPlacementKey]: modifiedTool.ordering === 0 ? 1 : 0,
+    [modifiedToolPlacementKey]: nonDeletedModifiedToolOrdering === 0 ? 1 : 0,
   }
 
   let draftToolByCurrentlyPublishedToolUid = getDraftToolByCurrentlyPublishedToolUid(tools)
@@ -41,7 +42,7 @@ const fixToolOrdering = ({
     ordering[placementKey] = properOrdering + 1
     if(
       placementKey === modifiedToolPlacementKey
-      && ordering[placementKey] === modifiedTool.ordering
+      && ordering[placementKey] === nonDeletedModifiedToolOrdering
     ) {
       ordering[placementKey]++
     }
