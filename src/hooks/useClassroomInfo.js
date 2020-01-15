@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { Platform } from "react-native"
 import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid } from "../utils/toolbox"
 
 const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawInEditMode }) => {
@@ -14,7 +15,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   
   const defaultClassroomUid = `${idpId}-${bookId}`
   const classrooms = useMemo(
-    () => (
+    () => Platform.OS !== 'web' ? [] : (
       ((userDataByBookId[bookId] || {}).classrooms || [])
         .filter(({ uid, _delete, members=[] }) => (
           !_delete
@@ -68,7 +69,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction)
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const bookVersion = Object.values(book.accounts)[0].version
+  const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
