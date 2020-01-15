@@ -148,6 +148,7 @@ export const patch = () => setTimeout(() => {
             if(tool.updated_at > lastSuccessfulPatch) {
               const toolToPush = { ...tool }
               delete toolToPush.created_at
+              delete toolToPush.engagement
               classroomToPush.tools.push(toolToPush)
               classroomHasUpdate = true
             }
