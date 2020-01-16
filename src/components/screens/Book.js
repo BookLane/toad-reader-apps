@@ -43,7 +43,7 @@ const {
 
 const pageStyles = {
   position: 'absolute',
-  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : -20,
   bottom: 0,
   left: 0,
   right: 0,
@@ -62,7 +62,7 @@ const pagesStyles = {
 
 const zoomStyles = {
   position: 'absolute',
-  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : 0,
+  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : -20,
   bottom: 0,
   left: 0,
   right: 0,
