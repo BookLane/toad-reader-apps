@@ -91,7 +91,7 @@ const LibraryCovers = ({
           }))
       }
     },
-    [ coversPerRow, bookList ],
+    [ coversPerRow, bookList, books ],
   )
 
   const flatListRef = useRef()
