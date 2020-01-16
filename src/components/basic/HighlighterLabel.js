@@ -76,6 +76,7 @@ const notesForUndo = {}
 
 const HighlighterLabel = React.memo(({
   selectionInfo,
+  endEditingNote,
   bookId,
   highlight,
   isEditingNote,
@@ -206,7 +207,7 @@ const HighlighterLabel = React.memo(({
       {!!isEditingNote &&
         <Button
           // style={styles.doneButton}
-          // onPress={() => {}}  // unneeded since blur does the same
+          onPress={endEditingNote}
           size="small"
           status="basic"
         >

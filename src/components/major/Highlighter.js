@@ -142,6 +142,7 @@ const Highlighter = React.memo(({
         bookId={bookId}
         highlight={highlight.current}
         // setSelectionText={setSelectionText}
+        endEditingNote={endEditingNote}
         isEditingNote={isEditingNote}
       />
       {!!highlight.current && 
