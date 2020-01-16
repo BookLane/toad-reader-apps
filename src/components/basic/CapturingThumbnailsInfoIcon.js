@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-// import { i18n } from "inline-i18n"
+import { i18n } from "inline-i18n"
 
 const styles = StyleSheet.create({
   container: {
@@ -21,14 +21,7 @@ const styles = StyleSheet.create({
 const CapturingThumbnailsInfoIcon = React.memo(() => {
 
   const showInfo = useCallback(
-    () => {
-      // TODO
-      // Toast.show({
-      //   text: i18n("We will create thumbnail images in the background when you are reading."),
-      //   buttonText: i18n("Okay"),
-      //   duration: 15000,
-      // })
-    },
+    () => Alert.alert(i18n("We will create thumbnail images in the background when you are reading.")),
     [],
   )
 
