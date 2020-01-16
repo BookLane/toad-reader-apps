@@ -20,10 +20,12 @@ const MAX_QUOTE_CHARACTER_LENGTH = 1500
 const styles = StyleSheet.create({
   share: {
     paddingHorizontal: 8,
-    paddingVertical: 6,
-    marginTop: 1,
+    paddingVertical: 5,
+    marginTop: 2,
     fontSize: 21,
     lineHeight: 21,
+    height: 31,
+    maxHeight: 31,
   },
   shareDialog: {
     maxWidth: 'none',

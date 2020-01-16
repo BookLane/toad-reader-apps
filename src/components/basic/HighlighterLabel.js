@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 4,
     fontSize: 18,
-    backgroundColor: 'rgba(0,0,0,.1)',
+    backgroundColor: '#bec8d6',
     height: 26,
     width: 26,
     lineHeight: 20,
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     paddingTop: [ 'ios', 'web' ].includes(Platform.OS) ? 2 : 0,
     paddingLeft: 7,
+    paddingRight: 7,
   },
   highlight1: {
     backgroundColor: 'rgba(28,96,171,.2)',
