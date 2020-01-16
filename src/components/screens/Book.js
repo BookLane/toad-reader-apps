@@ -916,6 +916,7 @@ const Book = React.memo(({
               requestShowPages={requestShowPages}
               showSettings={showSettings}
               requestHideSettings={requestHideSettings}
+              bookLoaded={bookLoaded}
               indicateLoaded={indicateLoaded}
               hrefToGoTo={hrefToGoTo}
               cfiToGoTo={cfiToGoTo}

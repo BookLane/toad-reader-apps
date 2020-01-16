@@ -9,6 +9,7 @@ import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
 import Highlighter from "./Highlighter"
 import BookPageMessage from "../basic/BookPageMessage"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
@@ -26,6 +27,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  spin: {
+    backgroundColor: 'white',
+  },
 })
 
 const BookPage = React.memo(props => {
@@ -42,6 +46,7 @@ const BookPage = React.memo(props => {
     toolCfiCounts,
     // capturingSnapshots,
     bookId,
+    bookLoaded,
     indicateLoaded,
     requestShowPages,
     temporarilyPauseProcessing,
@@ -379,6 +384,7 @@ const BookPage = React.memo(props => {
           />
         }
       </View>
+      {!bookLoaded && <CoverAndSpin style={styles.spin} />}
       {!!selectionInfo &&
         <Highlighter
           bookId={bookId}
