@@ -94,6 +94,8 @@ const BookHeader = React.memo(({
               })
 
               history.go(-2)
+
+              Alert.alert(i18n("The book was removed."))
             },
             // style: 'destructive',
           },

@@ -10,18 +10,20 @@ import { i18n } from "inline-i18n"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
 
-const LibraryBook = props => {
-  const {
-    books,
-    bookId,
-    removeFromBookDownloadQueue,
-    setDownloadStatus,
-    pushToBookDownloadQueue,
-    clearTocAndSpines,
-    clearUserDataExceptProgress,
-    history,
-    children,
-  } = props
+const LibraryBook = ({
+  bookId,
+  children,
+
+  books,
+
+  removeFromBookDownloadQueue,
+  setDownloadStatus,
+  pushToBookDownloadQueue,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
+
+  history,
+}) => {
 
   const getDownloadStatus = useCallback(
     bookId => books[bookId].downloadStatus,
@@ -69,6 +71,8 @@ const LibraryBook = props => {
                   clearTocAndSpines,
                   clearUserDataExceptProgress,
                 })
+
+                Alert.alert(i18n("The book was removed."))
               },
               // style: 'destructive',
             },
@@ -90,10 +94,8 @@ const LibraryBook = props => {
   )
 }
 
-const mapStateToProps = ({ books, idps, accounts }) => ({
+const mapStateToProps = ({ books }) => ({
   books,
-  idps,
-  accounts,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

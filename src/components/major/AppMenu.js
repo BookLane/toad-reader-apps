@@ -59,11 +59,17 @@ const styles = StyleSheet.create({
 const AppMenu = ({
   history,
   location,
-  changeLibraryScope,
+  onImportBooks,
+
   accounts,
   idps,
   books,
-  onImportBooks,
+
+  removeFromBookDownloadQueue,
+  setDownloadStatus,
+  clearTocAndSpines,
+  clearUserDataExceptProgress,
+  changeLibraryScope,
 }) => {
 
   const { online } = useNetwork()
@@ -184,6 +190,8 @@ const AppMenu = ({
                 clearTocAndSpines,
                 clearUserDataExceptProgress,
               })
+
+              Alert.alert(i18n("All books have been removed."))
             },
             // style: 'destructive',
           },
