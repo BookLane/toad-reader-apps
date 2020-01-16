@@ -112,7 +112,7 @@ const HighlighterShareIcon = React.memo(({
 
       }
     },
-    [ showShare, highlight.share_code ],
+    [ showShare, highlight.share_code, syncStatus ],
   )
 
   const setShowShareToFalse = useCallback(() => setShowShare(false), [])
