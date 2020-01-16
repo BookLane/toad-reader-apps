@@ -1,12 +1,12 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { TouchableOpacity, Platform } from "react-native"
+import { TouchableOpacity, Platform, Alert } from "react-native"
 import { withRouter } from "react-router"
 
 // import { debounce, getBooksDir } from "../../utils/toolbox"
-import { confirmRemoveEPub } from "../../utils/removeEpub"
-// import { i18n } from "inline-i18n"
+import { removeEpub } from "../../utils/removeEpub"
+import { i18n } from "inline-i18n"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
 
@@ -49,10 +49,35 @@ const LibraryBook = props => {
       if(getDownloadStatus(bookId) == 0) {
         onPress()
       } else {
-        confirmRemoveEPub({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
+        Alert.alert(
+          i18n("Remove from device"),
+          i18n("Are you sure you want to remove “{{book_title}}” from this device?", {
+            book_title: books[bookId].title,
+          }),
+          [
+            {
+              text: i18n("Cancel"),
+              style: 'cancel',
+            },
+            {
+              text: i18n("Remove"),
+              onPress: async () => {
+                await removeEpub({
+                  bookId,
+                  removeFromBookDownloadQueue,
+                  setDownloadStatus,
+                  clearTocAndSpines,
+                  clearUserDataExceptProgress,
+                })
+              },
+              // style: 'destructive',
+            },
+          ],
+          { cancelable: false }
+        )
       }
     },
-    [ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress ],
+    [ books, bookId ],
   )
 
   if(Platform.OS === 'web') return children

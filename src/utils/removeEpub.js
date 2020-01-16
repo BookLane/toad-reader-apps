@@ -17,7 +17,7 @@ const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2019-03-06"
 // change each time there is a modification to the apps that may change the layout
 // flow of the epubs.
 
-const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
+export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
   const localBaseUri = `${getBooksDir()}${bookId}/`
 
   removeFromBookDownloadQueue({ bookId })
@@ -63,81 +63,14 @@ export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCf
   console.log(`Done removing snapshots for book ${bookId}.`)
 }
 
-export const confirmRemoveEPub = ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, done }) => {
-
-  if(Platform.OS === 'web') return
-
-  // TODO
-  // ActionSheet.show(
-  //   {
-  //     options: [
-  //       { text: i18n("Remove from device"), icon: "remove-circle", iconColor: REMOVE_ICON_COLOR },
-  //       { text: i18n("Cancel"), icon: "close" }
-  //     ],
-  //     destructiveButtonIndex: 0,
-  //     cancelButtonIndex: 1,
-  //     title: i18n("Are you sure you want to remove “{{book_title}}” from this device?", {
-  //         book_title: books[bookId].title,
-  //     }),
-  //   },
-  //   async buttonIndex => {
-  //     if(buttonIndex == 0) {
-  //       await removeEpub({ bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
-  //       done && done()
-  //     }
-  //   }
-  // )
+export const removeAllEPubs = async ({ books, ...otherParams }) => {
+  await Promise.all(Object.keys(books).map(bookId => (
+    removeEpub({ bookId, ...otherParams })
+  )))
 }
 
-export const confirmRemoveAllEPubs = ({ books, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
-
-  if(Platform.OS === 'web') return
-
-  // TODO
-  // ActionSheet.show(
-  //   {
-  //     options: [
-  //       { text: i18n("Remove all books"), icon: "remove-circle", iconColor: REMOVE_ICON_COLOR },
-  //       { text: i18n("Cancel"), icon: "close" }
-  //     ],
-  //     destructiveButtonIndex: 0,
-  //     cancelButtonIndex: 1,
-  //     title: i18n("Are you sure you want to remove all books from this device?"),
-  //   },
-  //   async buttonIndex => {
-  //     if(buttonIndex == 0) {
-  //       await Promise.all(Object.keys(books).map(bookId => (
-  //         removeEpub({ bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress })
-  //       )))
-  //       Toast.show({
-  //         text: i18n("All books removed."),
-  //         buttonText: i18n("Okay"),
-  //         duration: 5000,
-  //       })
-  //     }
-  //   }
-  // )
-}
-
-export const confirmRemoveAccountEPubs = ({ books, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }, callback) => {
-  // TODO
-  // ActionSheet.show(
-  //   {
-  //     options: [
-  //       { text: i18n("Log out"), icon: "log-out", iconColor: REMOVE_ICON_COLOR },
-  //       { text: i18n("Cancel"), icon: "close" }
-  //     ],
-  //     destructiveButtonIndex: 0,
-  //     cancelButtonIndex: 1,
-  //     title: i18n("Are you sure you want to log out and remove all books from this device?"),
-  //   },
-  //   async buttonIndex => {
-  //     if(buttonIndex == 0) {
-  //       await Promise.all(Object.keys(books).map(bookId => (
-  //         removeEpub({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover: true })
-  //       )))
-  //       callback()
-  //     }
-  //   }
-  // )
+export const removeAccountEPubs = async ({ books, ...otherParams }) => {
+  await Promise.all(Object.keys(books).map(bookId => (
+    removeEpub({ books, bookId, ...otherParams, removeCover: true })
+  )))
 }

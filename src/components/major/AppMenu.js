@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react"
+import React, { useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text } from "react-native"
+import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
 import { i18n } from "inline-i18n"
@@ -13,7 +13,7 @@ import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 
-import { confirmRemoveAllEPubs, confirmRemoveAccountEPubs } from "../../utils/removeEpub"
+import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
 
 import useHasNoAuth from "../../hooks/useHasNoAuth"
 
@@ -108,15 +108,33 @@ const AppMenu = ({
         return
       }
 
-      confirmRemoveAccountEPubs(
-        {
-          books,
-          removeFromBookDownloadQueue,
-          setDownloadStatus,
-          clearTocAndSpines,
-          clearUserDataExceptProgress,
-        },
-        doLogOut,
+      Alert.alert(
+        i18n("Log out"),
+        i18n("Are you sure you want to log out and remove all books from this device?"),
+        [
+          {
+            text: i18n("Cancel"),
+            style: 'cancel',
+          },
+          {
+            text: i18n("Log out"),
+            onPress: async () => {
+              await removeAccountEPubs(
+                {
+                  books,
+                  removeFromBookDownloadQueue,
+                  setDownloadStatus,
+                  clearTocAndSpines,
+                  clearUserDataExceptProgress,
+                },
+              )
+
+              doLogOut()
+            },
+            // style: 'destructive',
+          },
+        ],
+        { cancelable: false }
       )
     },
     [ accounts, idps, history, books ],
@@ -146,15 +164,32 @@ const AppMenu = ({
     [ accounts, idps, history ],
   )
 
-  const removeAllEPubs = useCallback(
+  const confirmRemoveAllEPubs = useCallback(
     () => {
-      confirmRemoveAllEPubs({
-        books,
-        removeFromBookDownloadQueue,
-        setDownloadStatus,
-        clearTocAndSpines,
-        clearUserDataExceptProgress,
-      })
+      Alert.alert(
+        i18n("Remove all books"),
+        i18n("Are you sure you want to remove all books from this device?"),
+        [
+          {
+            text: i18n("Cancel"),
+            style: 'cancel',
+          },
+          {
+            text: i18n("Remove all books"),
+            onPress: async () => {
+              await removeAllEPubs({
+                books,
+                removeFromBookDownloadQueue,
+                setDownloadStatus,
+                clearTocAndSpines,
+                clearUserDataExceptProgress,
+              })
+            },
+            // style: 'destructive',
+          },
+        ],
+        { cancelable: false }
+      )
     },
     [ books ],
   )
@@ -255,7 +290,7 @@ const AppMenu = ({
       {
         title: i18n("Remove all books"),
         // icon: removeIcon,
-        onSelect: removeAllEPubs,
+        onSelect: confirmRemoveAllEPubs,
       },
     ]),
     ...(hasNoAuth ? [] : [

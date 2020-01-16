@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, Platform, Linking } from "react-native"
+import { StyleSheet, Platform, Linking, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -11,7 +11,7 @@ import HeaderIcon from "../basic/HeaderIcon"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { confirmRemoveEPub } from "../../utils/removeEpub"
+import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, getIdsFromAccountId } from "../../utils/toolbox"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
@@ -72,17 +72,34 @@ const BookHeader = React.memo(({
 
   const removeFromDevice = useCallback(
     () => {
-      confirmRemoveEPub({
-        books,
-        removeFromBookDownloadQueue,
-        setDownloadStatus,
-        clearTocAndSpines,
-        clearUserDataExceptProgress,
-        bookId,
-        done: () => {
-          history.go(-2)
-        }
-      })
+      Alert.alert(
+        i18n("Remove from device"),
+        i18n("Are you sure you want to remove “{{book_title}}” from this device?", {
+          book_title: books[bookId].title,
+        }),
+        [
+          {
+            text: i18n("Cancel"),
+            style: 'cancel',
+          },
+          {
+            text: i18n("Remove"),
+            onPress: async () => {
+              await removeEpub({
+                bookId,
+                removeFromBookDownloadQueue,
+                setDownloadStatus,
+                clearTocAndSpines,
+                clearUserDataExceptProgress,
+              })
+
+              history.go(-2)
+            },
+            // style: 'destructive',
+          },
+        ],
+        { cancelable: false }
+      )
     },
     [ books, bookId ],
   )
