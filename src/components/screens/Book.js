@@ -858,6 +858,15 @@ const Book = React.memo(({
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
       {mode === 'page' && <CustomKeepAwake />}
+
+      {Platform.OS !== 'web' &&
+        <PageCaptureManager
+          bookId={bookId}
+          setCapturingSnapshots={setCapturingSnapshots}
+          processingPaused={processingPaused}
+        />
+      }
+
       <View
         style={styles.panels}
         onStartShouldSetResponderCapture={blurEvents}
@@ -979,14 +988,6 @@ const Book = React.memo(({
             <ToolChip {...toolMoveInfo.chipProps} />
           </View>
         </>
-      }
-
-      {Platform.OS !== 'web' &&
-        <PageCaptureManager
-          bookId={bookId}
-          setCapturingSnapshots={setCapturingSnapshots}
-          processingPaused={processingPaused}
-        />
       }
 
     </SafeLayout>
