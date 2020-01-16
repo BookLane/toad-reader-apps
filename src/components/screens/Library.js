@@ -106,6 +106,8 @@ const Library = ({
     : null
 
   const getLocationPathname = useInstanceValue(location.pathname)
+  const getBooks = useInstanceValue(books)
+  const getIdps = useInstanceValue(idps)
 
   useEffect(
     () => {
@@ -193,6 +195,11 @@ const Library = ({
   const getCovers = useCallback(
     ({ idpId }) => {
 
+      const books = getBooks()
+      const idps = getIdps()
+
+      if(Platform.OS === 'web') return
+
       for(let bookId in books) {
         const book = books[bookId]
 
@@ -218,7 +225,7 @@ const Library = ({
         }
       }
     },
-    [ books, idps ],
+    [],
   )
 
   const updateBooks = useCallback(
