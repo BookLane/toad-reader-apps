@@ -124,7 +124,7 @@ const BookPages = React.memo(({
       }
 
     },
-    [ spines, height ],
+    [ spines, height, pageCfisKey ],
   )
 
   const getItemLayout = useCallback(
@@ -193,7 +193,7 @@ const BookPages = React.memo(({
       })
 
     },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight ],
+    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey ],
   )
 
   if(
@@ -206,7 +206,6 @@ const BookPages = React.memo(({
   }
 
   const [ setScrollToLatestTimeout ] = useSetTimeout()
-
 
   const renderItem = useCallback(
     ({ item }) => {
