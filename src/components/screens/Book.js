@@ -390,7 +390,6 @@ const Book = React.memo(({
 
   const zoomToPage = useCallback(
     ({ zoomToInfo, snapshotCoords }) => {
-      const { spineIdRef, cfi } = zoomToInfo  // must also include pageIndexInSpine
 
       setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
 
@@ -443,10 +442,10 @@ const Book = React.memo(({
 
       startRecordReading({
         bookId,
-        spineIdRef,
+        spineIdRef: zoomToInfo.spineIdRef,
       })
     },
-    [ spineIdRef, cfi, idps, accounts, books ],
+    [ spineIdRef, cfi, bookId ],
   )
 
   const goTo = useCallback(
@@ -655,7 +654,9 @@ const Book = React.memo(({
 
   const blurEvents = useCallback(
     ({ nativeEvent: { target } }) => {
-      // TODO: This will not work on native apps  
+      // TODO: This does not yet work on native apps
+      if(Platform.OS !== 'web') return
+
       if(!target.closest('[data-id=highlighter]')) {
         setSelectionInfo()
       }
