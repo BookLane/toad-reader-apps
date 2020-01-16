@@ -97,7 +97,10 @@ const ZoomPage = ({
     [ zoomed ],
   )
 
-  if(JSON.stringify(snapshotCoords) !== JSON.stringify(prevSnapshotCoords)) {
+  if(
+    !translateX.current
+    || JSON.stringify(snapshotCoords) !== JSON.stringify(prevSnapshotCoords)
+  ) {
 
     let outputRangeX = 1
     let outputRangeY = 1
@@ -147,7 +150,7 @@ const ZoomPage = ({
     ],
     opacity: opacity.current,
   }
-    
+
   return (
     <Animated.View
       style={[
