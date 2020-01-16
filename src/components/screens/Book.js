@@ -209,7 +209,7 @@ const Book = React.memo(({
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
-  const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -10)
+  const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -75)
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
 
