@@ -73,7 +73,7 @@ const BookPage = React.memo(props => {
   const [ noteInEdit, setNoteInEdit ] = useState(null)
 
   const loaded = useRef(false)
-  const doAfterLoaded = useRef()
+  const doAfterLoaded = useRef([])
   const webView = useRef()
   const view = useRef()
 
@@ -125,7 +125,13 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      postMessage(webView.current, 'insertTools', { toolCfiCounts })
+      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
+      
+      if(loaded.current) {
+        insertTools()
+      } else {
+        doAfterLoaded.current.push(insertTools)
+      }
     },
     [ toolCfiCounts ],
   )
@@ -137,17 +143,17 @@ const BookPage = React.memo(props => {
       if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
       // the prevPageIndexInSpine === -1 check is to ensure that it previously did not have snapshots
   
-      doAfterLoaded.current = () => {
-        doAfterLoaded.current = undefined
+      doAfterLoaded.current.push(() => {
         postMessage(webView.current, 'goToPage', {
           spineIdRef,
           pageIndexInSpine: Math.max(pageIndexInSpine, 0),
         })
-      }
+      })
   
       // TODO: This will need to change as I do the "Do you want to go to the latest location" functionality.
       if(loaded.current) {
-        doAfterLoaded.current && doAfterLoaded.current()
+        doAfterLoaded.current.forEach(func => func())
+        doAfterLoaded.current = []
       }
     },
     [ spineIdRef, pageIndexInSpine ],
@@ -202,8 +208,9 @@ const BookPage = React.memo(props => {
 
           indicateLoaded()
           loaded.current = true
-          doAfterLoaded.current && doAfterLoaded.current()
-
+          doAfterLoaded.current.forEach(func => func())
+          doAfterLoaded.current = []
+  
           // await this.doTakeSnapshot()
 
           return false  // i.e. still process pageChanged in the general PageWebView component
