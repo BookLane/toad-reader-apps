@@ -41,9 +41,17 @@ const {
   PAGE_ZOOM_MILLISECONDS,
 } = Constants.manifest.extra
 
+const pageTop = Platform.OS === 'android'
+  ? (StatusBar.currentHeight || 0) * -1
+  : (
+    Platform.OS === 'ios'
+      ? -20
+      : 0
+  )
+
 const pageStyles = {
   position: 'absolute',
-  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : -20,
+  top: pageTop,
   bottom: 0,
   left: 0,
   right: 0,
@@ -62,7 +70,7 @@ const pagesStyles = {
 
 const zoomStyles = {
   position: 'absolute',
-  top: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) * -1 : -20,
+  top: pageTop,
   bottom: 0,
   left: 0,
   right: 0,
