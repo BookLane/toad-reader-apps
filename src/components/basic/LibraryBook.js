@@ -71,8 +71,6 @@ const LibraryBook = ({
                   clearTocAndSpines,
                   clearUserDataExceptProgress,
                 })
-
-                Alert.alert(i18n("The book was removed."))
               },
               // style: 'destructive',
             },
