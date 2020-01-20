@@ -7,7 +7,7 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, isIPhoneX, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight } from "../../utils/toolbox"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -20,20 +20,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     bottom: 0,
-    right: 0,
-  },
-  containerOffset1: {
-    position: 'absolute',
-    top: 200,
-    left: 0,
-    bottom: -200,
-    right: 0,
-  },
-  containerOffset2: {
-    position: 'absolute',
-    top: -200,
-    left: 0,
-    bottom: 200,
     right: 0,
   },
   wideModeShift: {
@@ -117,6 +103,7 @@ const PageWebView = ({
   const webView= webViewRef || webViewLocalRef
 
   let { width, height } = useDimensions().window
+  if(isIPhoneX) height -= 40
   const wideMode = useWideMode()
 
   const { routerState } = useRouterState({ location })
@@ -211,10 +198,6 @@ const PageWebView = ({
 
   const initialToolSpotsInThisSpine = []
 
-  // Special containers needed because otherwise the iOS status bar pushes the view down.
-  // However, on iphoneX, we want it pushed down.
-  const doPushDownPreventionTrick = Platform.OS === 'ios' && !isIPhoneX
-
   const initialQueryStringParams = {
     epub: (
       Platform.OS === 'web'
@@ -269,43 +252,39 @@ const PageWebView = ({
 
   return (
     <View
-      style={doPushDownPreventionTrick ? styles.containerOffset1 : styles.containerNormal}
+      style={[
+        styles.containerNormal,
+        wideMode ? styles.wideModeShift : null,
+        style,
+      ]}
+      collapsable={false}
+      ref={viewRef}
     >
-      <View
+      <WebView
         style={[
-          (doPushDownPreventionTrick ? styles.containerOffset2 : styles.containerNormal),
-          wideMode ? styles.wideModeShift : null,
+          {
+            width,
+            height,
+            minHeight: height,
+          },
           style,
         ]}
-        collapsable={false}
-        ref={viewRef}
-      >
-        <WebView
-          style={[
-            {
-              width,
-              height,
-              minHeight: height,
-            },
-            style,
-          ]}
-          source={source}
-          onError={onError}
-          onMessage={onMessageEvent}
-          forwardRef={webView}
+        source={source}
+        onError={onError}
+        onMessage={onMessageEvent}
+        forwardRef={webView}
 
-          // The rest of the props are ignored when on web platform
-          injectedJavaScript={`
-            window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
-            window.isReactNativeWebView = true;
-          `}
-          allowUniversalAccessFromFileURLs={true}
-          allowFileAccess={true}
-          originWhitelist={['*']}
-          mixedContentMode="always"
-          bounces={false}
-        />
-      </View>
+        // The rest of the props are ignored when on web platform
+        injectedJavaScript={`
+          window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
+          window.isReactNativeWebView = true;
+        `}
+        allowUniversalAccessFromFileURLs={true}
+        allowFileAccess={true}
+        originWhitelist={['*']}
+        mixedContentMode="always"
+        bounces={false}
+      />
     </View>
   )
 }

@@ -3,6 +3,7 @@ import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
+import { isIphoneX } from "react-native-iphone-x-helper"
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
@@ -175,13 +176,9 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   }
 }
 
-export const isIPhoneX = false
-export const getFooterHeight = () => 50
+export const isIPhoneX = isIphoneX()
+export const getFooterHeight = () => 55
 export const getToolbarHeight = () => 56
-// TODO
-// export const isIPhoneX = nativeBasePlatformVariables.isIphoneX
-// export const getFooterHeight = () => nativeBasePlatformVariables.footerHeight - (isIPhoneX ? 34 : 0)
-// export const getToolbarHeight = () => nativeBasePlatformVariables.toolbarHeight
 
 export const isPhoneSize = () => {
   const { width, height } = Dimensions.get('window')

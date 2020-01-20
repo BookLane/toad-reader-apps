@@ -6,7 +6,7 @@ import { withRouter } from "react-router"
 
 import PageWebView from "./PageWebView"
 
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox'
+import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX } from '../../utils/toolbox'
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
@@ -223,14 +223,16 @@ const PageCapture = ({
 
   if(processingPaused) return null
 
+  const adjustedHeight = height - (isIPhoneX ? 40 : 0)
+
   return (
     <PageWebView
       key={uriAsKey}
       style={{
         position: 'absolute',
         width,
-        height,
-        minHeight: height,
+        height: adjustedHeight,
+        minHeight: adjustedHeight,
       }}
       bookId={bookId}
       webViewRef={webView}
