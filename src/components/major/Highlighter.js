@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from "react"
-import { StyleSheet, KeyboardAvoidingView, Platform, Dimensions, View } from "react-native"
+import { StyleSheet, KeyboardAvoidingView, Platform, View } from "react-native"
 import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -13,6 +13,7 @@ import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighli
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
 import useUnmount from "react-use/lib/useUnmount"
+import useDimensions from "../../hooks/useDimensions"
 
 import { setHighlight } from "../../redux/actions"
 
@@ -84,6 +85,7 @@ const Highlighter = React.memo(({
   const { widget } = routerState
 
   const wideMode = useWideMode()
+  const { height } = useDimensions().window
 
   const noteTextInputRef = useRef()
 
@@ -129,7 +131,7 @@ const Highlighter = React.memo(({
         (selectionInfo.copyTooltipInLowerHalf && wideMode && !widget && styles.containerTopWideMode),
       ]}
       data-id="highlighter"
-      keyboardVerticalOffset={Platform.OS === 'android' ? 450 - Dimensions.get('window').height : 0}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 450 - height : 0}
       behavior="padding"
     >
       <HighlighterInstructorHighlightSection

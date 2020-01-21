@@ -1,12 +1,14 @@
 import React, { useCallback } from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, Platform, View, Dimensions } from "react-native"
+import { StyleSheet, Platform, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import ProgressDot from "../basic/ProgressDot"
 
 import { getFooterHeight } from '../../utils/toolbox'
+
+import useDimensions from "../../hooks/useDimensions"
 
 // import {  } from "../../redux/actions"
 
@@ -49,7 +51,7 @@ const BookProgress = ({
   capturingSnapshots,
 }) => {
 
-  const { width } = Dimensions.get('window')
+  const { width } = useDimensions().window
 
   const onResponderGrantAndMove = useCallback(
     event => {

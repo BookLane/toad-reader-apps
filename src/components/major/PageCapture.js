@@ -7,13 +7,14 @@ import * as FileSystem from 'expo-file-system'
 
 import PageWebView from "./PageWebView"
 
-import { getPageSize, getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX } from '../../utils/toolbox'
+import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX, iPhoneXFooter, statusBarHeight } from '../../utils/toolbox'
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
 import takeSnapshot from "../../utils/takeSnapshot"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useSetTimeout from "../../hooks/useSetTimeout"
+import usePageSize from "../../hooks/usePageSize"
 
 import { addSpinePageCfis } from "../../redux/actions"
 
@@ -43,6 +44,8 @@ const PageCapture = ({
   const unmounted = useRef(false)
   const webView = useRef()
   const view = useRef()
+
+  const { pageWidth, pageHeight } = usePageSize()
 
   const getProcessingPaused = useInstanceValue(processingPaused)
 
@@ -210,7 +213,6 @@ const PageCapture = ({
 
         reportInfoOrCapture(uriAsKey)
 
-        const { pageWidth, pageHeight } = getPageSize({ width, height })
         const uri = getSnapshotURI({
           bookId,
           spineIdRef,
@@ -243,7 +245,7 @@ const PageCapture = ({
 
   if(processingPaused) return null
 
-  const adjustedHeight = height - (isIPhoneX ? 40 : 0)
+  const adjustedHeight = height - (isIPhoneX ? (statusBarHeight + iPhoneXFooter) : 0)
 
   return (
     <PageWebView

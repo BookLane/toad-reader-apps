@@ -3,14 +3,12 @@ import { StyleSheet, TouchableOpacity, Linking, View, Text, Alert } from "react-
 import { withRouter } from "react-router"
 import { i18n } from "inline-i18n"
 
-import { isIPhoneX } from "../../utils/toolbox"
-
 import useRouterState from "../../hooks/useRouterState"
 
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: isIPhoneX ? -25 : 0,
+    bottom: 0,
     left: 0,
     right: 0,
     padding: 10,

@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useCallback } from "react"
 import Constants from 'expo-constants'
-import { Dimensions } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import PageCapture from "./PageCapture"
 
+import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox"
+
 import useForceUpdate from "../../hooks/useForceUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useSetTimeouts from "../../hooks/useSetTimeouts"
 import useInstanceValue from "../../hooks/useInstanceValue"
-import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox"
+import useDimensions from "../../hooks/useDimensions"
 
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
@@ -37,6 +38,8 @@ const PageCaptureManager = ({
   const forceUpdate = useForceUpdate()
   const getProcessingPaused = useInstanceValue(processingPaused)
 
+  let { width, height } = useDimensions().window
+
   const [ setCaptureTimeout, clearCaptureTimeout ] = useSetTimeout()
   const [ setTryAgainTimeout ] = useSetTimeouts()
 
@@ -55,7 +58,6 @@ const PageCaptureManager = ({
   pageCaptureProps.current = null
   if(bookId && books && books[bookId] && displaySettings) {
 
-    let { width, height } = Dimensions.get('window')
     const { spines, downloadStatus} = books[bookId]
     let pageCfisKey, spineIdRef
 

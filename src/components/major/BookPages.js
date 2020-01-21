@@ -7,7 +7,7 @@ import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
 import BookProgress from "./BookProgress"
 
-import { getFooterHeight, getToolbarHeight } from '../../utils/toolbox'
+import { getFooterHeight, getToolbarHeight, statusBarHeightSafe } from '../../utils/toolbox'
 import useDimensions from "../../hooks/useDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
@@ -42,7 +42,6 @@ const BookPages = React.memo(({
   pageCfisKey,
   bookId,
   updateSnapshotCoords,
-  statusBarHeight,
   capturingSnapshots,
   zoomToPage,
 }) => {
@@ -152,7 +151,7 @@ const BookPages = React.memo(({
         return
       }
 
-      const heightWithoutStatusBar = height - statusBarHeight
+      const heightWithoutStatusBar = height - statusBarHeightSafe
       let index = 0
       let indexInRow = 0
 
@@ -183,17 +182,16 @@ const BookPages = React.memo(({
       // since this might not be immediately rendered (given the FlatList), let's calculate its position
       const thisItemOffset = getItemLayout(list, index).offset
       const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-      const middleYPos = heightWithoutStatusBar/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2
+      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeightSafe
       const lastItemLayout = getItemLayout(list, list.length - 1)
       const scrolledToBottomYPos = heightWithoutStatusBar - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
       updateSnapshotCoords({
         x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
-        // I am not sure why I need statusBarHeight in the next line, given that it is not shown, but I do
         y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
       })
 
     },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey ],
+    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeightSafe, pageWidth, pageHeight, pageCfisKey ],
   )
 
   if(

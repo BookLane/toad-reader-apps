@@ -3,13 +3,9 @@ import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
-import { isIphoneX } from "react-native-iphone-x-helper"
+import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 
 const {
-  PAGE_LIST_MAXIMUM_PAGE_SIZE,
-  PAGES_HORIZONTAL_MARGIN,
-  LIBRARY_COVERS_HORIZONTAL_MARGIN,
-  LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
@@ -18,52 +14,6 @@ const {
 const cachedSizes = {}
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
-
-const getSizes = ({
-  type,
-  width,
-  height,
-  maxSize,
-  horizontalMargin,
-}) => {
-
-  const cacheKey = `${type}:${width}x${height},${maxSize},${horizontalMargin}`
-
-  if(!cachedSizes[cacheKey]) {
-    const maxWidth = height < width ? maxSize : maxSize * ( width / height )
-    const itemsPerRow = parseInt(width / maxWidth)
-    const itemWidth = (width - ((itemsPerRow + 1) * horizontalMargin)) / itemsPerRow
-    const itemHeight = itemWidth / ( width / height )
-
-    cachedSizes[cacheKey] = {
-      [`${type}Width`]: itemWidth,
-      [`${type}Height`]: itemHeight,
-      [`${type}sPerRow`]: itemsPerRow,
-    }
-  }
-
-  return cachedSizes[cacheKey]
-}
-
-export const getPageSize = ({ width, height }=Dimensions.get('window')) => (
-  getSizes({
-    width,
-    height,
-    type: 'page',
-    maxSize: PAGE_LIST_MAXIMUM_PAGE_SIZE,
-    horizontalMargin: PAGES_HORIZONTAL_MARGIN,
-  })
-)
-
-export const getCoverSize = ({ width }=Dimensions.get('window')) => (
-  getSizes({
-    width,
-    height: width/.75,
-    type: 'cover',
-    maxSize: LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
-    horizontalMargin: LIBRARY_COVERS_HORIZONTAL_MARGIN,
-  })
-)
 
 // copied from readium-js/readium-shared-js/plugins/highlights
 const parseContentCfi = cont => (
@@ -177,13 +127,11 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
 }
 
 export const isIPhoneX = isIphoneX()
-export const getFooterHeight = () => 55
+export const getFooterHeight = () => 0 //56
 export const getToolbarHeight = () => 56
-
-export const isPhoneSize = () => {
-  const { width, height } = Dimensions.get('window')
-  return Math.min(width, height) < 500
-}
+export const statusBarHeight = getStatusBarHeight()
+export const statusBarHeightSafe = getStatusBarHeight(true)
+export const iPhoneXFooter = 16
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 

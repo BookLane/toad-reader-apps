@@ -1,5 +1,8 @@
 import { useMemo } from "react"
 import Constants from 'expo-constants'
+
+import { isIPhoneX, iPhoneXFooter, statusBarHeight } from "../utils/toolbox"
+
 import useDimensions from './useDimensions'
 
 const {
@@ -9,7 +12,11 @@ const {
 
 const usePageSize = () => {
 
-  const { width, height } = useDimensions().window
+  let { width, height } = useDimensions().window
+
+  if(isIPhoneX) {
+    height -= (statusBarHeight + iPhoneXFooter)
+  }
 
   const size = useMemo(
     () => {
@@ -17,11 +24,13 @@ const usePageSize = () => {
       const pagesPerRow = parseInt(width / maxWidth)
       const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
       const pageHeight = pageWidth / ( width / height )
+      const zoomScale = pageWidth / width
     
       return {
         pageWidth,
         pageHeight,
         pagesPerRow,
+        zoomScale,
       }
     },
     [ width, height ],

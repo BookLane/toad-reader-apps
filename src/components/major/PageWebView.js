@@ -7,7 +7,7 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX } from "../../utils/toolbox"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX, iPhoneXFooter, statusBarHeight } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -103,7 +103,7 @@ const PageWebView = ({
   const webView= webViewRef || webViewLocalRef
 
   let { width, height } = useDimensions().window
-  if(isIPhoneX) height -= 40
+  if(isIPhoneX) height -= (statusBarHeight + iPhoneXFooter)
   const wideMode = useWideMode()
 
   const { routerState } = useRouterState({ location })

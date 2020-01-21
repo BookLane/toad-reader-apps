@@ -1,11 +1,13 @@
 import React from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, Platform, Animated, Dimensions } from "react-native"
+import { StyleSheet, Platform, Animated } from "react-native"
 // import { i18n } from "inline-i18n"
 
 import ProgressDotLabel from "./ProgressDotLabel"
 
 import { getFooterHeight } from "../../utils/toolbox"
+
+import useDimensions from "../../hooks/useDimensions"
 
 const {
   PROGRESS_BAR_SIDE_SPACING,
@@ -28,7 +30,7 @@ const ProgressDot = ({
   capturingSnapshots,
 }) => {
 
-  const { width } = Dimensions.get('window')
+  const { width } = useDimensions().window
 
   const translateX = animatedScrollPosition.interpolate({
     inputRange: [0, maxScroll],

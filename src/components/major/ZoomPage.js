@@ -1,9 +1,12 @@
 import React, { useRef, useEffect } from "react"
 import Constants from 'expo-constants'
-import { Animated, Easing, StyleSheet, Dimensions, StatusBar } from "react-native"
+import { Animated, Easing, StyleSheet, Image } from "react-native"
+
+import { getSnapshotURI, isIPhoneX, iPhoneXFooter, statusBarHeight } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
-import { getPageSize, getSnapshotURI } from '../../utils/toolbox'
+import useDimensions from "../../hooks/useDimensions"
+import usePageSize from "../../hooks/usePageSize"
 
 const {
   PAGE_ZOOM_MILLISECONDS,
@@ -25,14 +28,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  snapshotImage: {
+    position: 'absolute',
+    top: 0,
+    bottom: isIPhoneX ? iPhoneXFooter : 0,
+    left: 0,
+    right: 0,
+  },
 })
-
-const getZoomOutScale = () => {
-  const { width } = Dimensions.get('window')
-  const { pageWidth } = getPageSize()
-
-  return pageWidth / width
-}
 
 const ZoomPage = ({
   bookId,
@@ -46,11 +49,14 @@ const ZoomPage = ({
   pageCfiKnown,
 }) => {
 
-  const scale = useRef(new Animated.Value(zoomed ? 1 : getZoomOutScale()))
+  const { pageWidth, pageHeight, zoomScale } = usePageSize()
+  let { width, height } = useDimensions().window
+
+  const scale = useRef(new Animated.Value(zoomed ? 1 : zoomScale))
   const opacity = useRef(new Animated.Value(1))
   const translateX = useRef()
   const translateY = useRef()
-  
+
   const prevSnapshotCoords = usePrevious(snapshotCoords)
 
   useEffect(
@@ -72,7 +78,7 @@ const ZoomPage = ({
             Animated.timing(
               scale.current,
               {
-                toValue: getZoomOutScale(),
+                toValue: zoomScale,
                 easing: Easing.inOut(Easing.cubic),
                 duration: PAGE_ZOOM_MILLISECONDS,
               }
@@ -94,7 +100,7 @@ const ZoomPage = ({
         }    
       })
     },
-    [ zoomed ],
+    [ zoomed, zoomScale ],
   )
 
   if(
@@ -107,23 +113,19 @@ const ZoomPage = ({
 
     if(snapshotCoords) {
       const left = snapshotCoords.x
-      const top = snapshotCoords.y + (StatusBar.currentHeight || 0)
-      const { width, height } = Dimensions.get('window')
-      const { pageWidth, pageHeight } = getPageSize({ width, height })
+      const top = snapshotCoords.y - (isIPhoneX ? statusBarHeight : 0)
 
       outputRangeX = left - (width/2 - pageWidth/2)
-      outputRangeY = top - (height/2 - pageHeight/2)
+      outputRangeY = top - ((height - (isIPhoneX ? statusBarHeight : 0))/2 - pageHeight/2)
     }
 
-    const zoomOutScale = getZoomOutScale()
-
     translateX.current = scale.current.interpolate({
-      inputRange: [zoomOutScale, 1],
+      inputRange: [zoomScale, 1],
       outputRange: [outputRangeX, 0],
     })
 
     translateY.current = scale.current.interpolate({
-      inputRange: [zoomOutScale, 1],
+      inputRange: [zoomScale, 1],
       outputRange: [outputRangeY, 0],
     })
 
@@ -158,13 +160,17 @@ const ZoomPage = ({
         zoomStyles1,
       ]}
     >
-      <Animated.Image
-        source={{ uri: pageCfiKnown ? uri : undefined }}
+      <Animated.View
         style={[
           styles.snapshot,
           zoomStyles2,
         ]}
-      />
+      >
+        <Image
+          source={{ uri: pageCfiKnown ? uri : undefined }}
+          style={styles.snapshotImage}
+        />
+      </Animated.View>
     </Animated.View>
   )
 }

@@ -22,7 +22,7 @@ import ToolChip from "../basic/ToolChip"
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getSpineAndPage, getToolbarHeight, getPageSize,
+import { getPageCfisKey, getSpineAndPage, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
@@ -32,6 +32,7 @@ import useSetState from "react-use/lib/useSetState"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import usePageSize from "../../hooks/usePageSize"
 
 import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
@@ -41,13 +42,7 @@ const {
   PAGE_ZOOM_MILLISECONDS,
 } = Constants.manifest.extra
 
-const pageTop = Platform.OS === 'android'
-  ? (StatusBar.currentHeight || 0) * -1
-  : (
-    Platform.OS === 'ios'
-      ? -20
-      : 0
-  )
+const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
 
 const pageStyles = {
   position: 'absolute',
@@ -217,9 +212,9 @@ const Book = React.memo(({
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
-  const statusBarHeight = StatusBar.currentHeight || (isIPhoneX ? 24 : -75)
   const { width, height } = useDimensions().window
   const wideMode = useWideMode()
+  const { pageWidth } = usePageSize()
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
@@ -520,8 +515,6 @@ const Book = React.memo(({
 
   const backToReading = useCallback(
     () => {
-      const { pageWidth } = getPageSize({ width, height })
-
       const snapshotCoords = {
         x: width / 2  - pageWidth / 2,
         y: height,
@@ -548,7 +541,7 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef, width, height ],
+    [ bookId, spineIdRef, width, height, pageWidth ],
   )
 
   const requestShowPages = useCallback(
@@ -845,7 +838,7 @@ const Book = React.memo(({
     [ unselectTool, selectedToolUid ],
   )
 
-  const pageCfisKey = getPageCfisKey({ displaySettings })
+  const pageCfisKey = getPageCfisKey({ displaySettings, width, height })
   const { title } = (books && books[bookId]) || {}
 
   if(!books[bookId]) {
@@ -910,7 +903,6 @@ const Book = React.memo(({
                 spines={bookLoaded && books[bookId].spines}
                 zoomToPage={zoomToPage}
                 updateSnapshotCoords={setSnapshotCoords}
-                statusBarHeight={statusBarHeight}
                 capturingSnapshots={capturingSnapshots}
               />
             </View>

@@ -13,7 +13,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX, iPhoneXFooter } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     ...(!isIPhoneX ? {} : {
-      marginBottom: 40,
+      marginBottom: iPhoneXFooter,
     }),
   },
   spin: {
