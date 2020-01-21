@@ -142,17 +142,19 @@ const PageCapture = ({
 
             const shift = pageIndexInSpine.current * (width - platformOffset) * -1 + platformOffset
 
+            // getBoundingClientRect combined with the timeout [hopefully] ensures
+            // paint is done before the postMessage call.
             webView.current.injectJavaScript(`
               document.documentElement.style.transform = "translate(${shift}px)";
-              document.documentElement.getBoundingClientRect();  // ensures paint is done before postMessage call
-              requestAnimationFrame(() => {
+              document.documentElement.getBoundingClientRect();
+              setTimeout(() => {
                 window.ReactNativeWebView.postMessage(JSON.stringify({
                   identifier: "docElShifted",
                   payload: {
                     spineIdRef: "${spineIdRef.replace(/"/g, '\\"')}",
                   },
                 }));
-              });
+              }, 16);
             `)
 
           }
