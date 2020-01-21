@@ -3,6 +3,7 @@ import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
+import * as FileSystem from 'expo-file-system'
 
 import PageWebView from "./PageWebView"
 
@@ -134,10 +135,27 @@ const PageCapture = ({
         }
 
         await new Promise(resolve => {
-          getCfisOrShiftAndSnap.current = () => {
+          getCfisOrShiftAndSnap.current = async () => {
             reportInfoOrCapture(uriAsKey)
 
             if(getProcessingPaused()) return
+
+            // pre-skip pages which already exist
+            while(
+              (await FileSystem.getInfoAsync(
+                getSnapshotURI({
+                  bookId,
+                  spineIdRef,
+                  width,
+                  height,
+                  displaySettings,
+                  pageIndexInSpine: pageIndexInSpine.current,
+                })
+              )).exists
+            ) {
+              pageIndexInSpine.current++
+            }
+
             if(pageIndexInSpine.current >= numPages) return resolve()
 
             const shift = pageIndexInSpine.current * (width - platformOffset) * -1 + platformOffset
