@@ -40,7 +40,7 @@ export default function(state = initialState, action) {
           accounts: {
             ...((state[book.id] && state[book.id].accounts) || {}),
             [action.accountId]: {
-              ...!((book.link_href && book.link_label) ? {} : {
+              ...(!(book.link_href && book.link_label) ? {} : {
                 link: {
                   href: book.link_href,
                   label: book.link_label,
