@@ -282,7 +282,7 @@ const BookPages = React.memo(({
         ref={flatList}
       />
       {/* <Animated.View style={[ styles.headerBottomBorder, { opacity } ]} /> */}
-      {maxScroll
+      {/* {maxScroll
         ?
           <BookProgress
             animatedScrollPosition={animatedScrollPosition}
@@ -291,7 +291,7 @@ const BookPages = React.memo(({
             capturingSnapshots={capturingSnapshots}
           />
         : null
-      }
+      } */}
     </View>
   )
 
