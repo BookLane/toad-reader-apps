@@ -254,7 +254,7 @@ export const setStatusBarHidden = setHidden => {
     StatusBar.setHidden(setHidden)
   } else if(Platform.OS === 'android') {
     StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
-    // StatusBar.setBarStyle(setHidden ? 'dark-content' : 'light-content', true)
+    StatusBar.setBarStyle(setHidden ? 'light-content' : 'dark-content', true)
   }
   statusBarIsHidden = !!setHidden
 }

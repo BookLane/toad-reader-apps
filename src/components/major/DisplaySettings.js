@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Button } from "react-native-ui-kitten"
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, Platform } from "react-native"
 
 import Dialog from "./Dialog"
 import Icon from "../basic/Icon"
@@ -119,6 +119,7 @@ const DisplaySettings = React.memo(({
       <Dialog
         open={open}
         title={i18n("Display settings")}
+        invisibleBackdrop={Platform.OS === 'android'}
         message={(
           <>
             <View style={styles.setting}>

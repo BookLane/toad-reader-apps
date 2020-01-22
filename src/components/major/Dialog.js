@@ -13,6 +13,9 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     opacity: 0.5,
   },
+  modalBackdropInvisible: {
+    backgroundColor: "transparent",
+  },
   container: {
     minWidth: 280,
     maxWidth: 500,
@@ -20,6 +23,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     paddingBottom: 10,
     backgroundColor: "white",
+    elevation: 4,
   },
   title: {
     fontSize: 18,
@@ -58,6 +62,7 @@ const Dialog = React.memo(({
   title,
   message,
   style,
+  invisibleBackdrop,
   submitting,
 
   // specific to type="info"
@@ -142,7 +147,7 @@ const Dialog = React.memo(({
     <Modal
       visible={!!open}
       allowBackdrop={true}
-      backdropStyle={styles.modalBackdrop}
+      backdropStyle={invisibleBackdrop ? styles.modalBackdropInvisible : styles.modalBackdrop}
     >
       <View style={{ width }}>
         <ScrollView style={[
