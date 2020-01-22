@@ -5,7 +5,7 @@ import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Imag
 // import PagesBookmark from "./PagesBookmark"
 import CapturingThumbnailsInfoIcon from "./CapturingThumbnailsInfoIcon"
 
-import { getSnapshotURI } from '../../utils/toolbox'
+import { getSnapshotURI, statusBarHeight } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 const {
@@ -80,7 +80,10 @@ const PagesPage = React.memo(({
           cfi,
           pageIndexInSpine,
         },
-        snapshotCoords: { x, y },
+        snapshotCoords: {
+          x,
+          y: y + (Platform.OS === 'android' ? statusBarHeight : 0),
+        },
       }))
 
       setDoubleTapTimeout(() => preventDoubleTap.current = false, 1000)
