@@ -345,6 +345,19 @@ const BookPage = React.memo(props => {
     [],
   )
 
+  const onError = useCallback(
+    e => {
+      console.log('ERROR: BookPage webview had an error on load', e)
+      history.goBack()
+      setTimeout(() => {
+        historyPush("/error", {
+          message: i18n("Failed to load book."),
+        })
+      }, 100)
+    },
+    [],
+  )
+
 //   doTakeSnapshot = async () => {
 //     await takeSnapshot({
 //       view,
@@ -376,6 +389,7 @@ const BookPage = React.memo(props => {
           bookId={bookId}
           webViewRef={webView}
           onMessage={onMessageEvent}
+          onError={onError}
           initialLocation={initialLocation}
           initialDisplaySettings={initialDisplaySettings}
           initialToolCfiCountsInThisSpine={toolCfiCounts}

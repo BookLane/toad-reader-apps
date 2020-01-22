@@ -71,6 +71,7 @@ const PageWebView = ({
 
   // We need these up-to-date
   onMessage,
+  onError,
   sidePanelSettings,
 
   ...props
@@ -98,6 +99,11 @@ const PageWebView = ({
   } = initialProps
 
   const [ unloaded, setUnloaded ] = useState(false)
+  
+  // See https://github.com/react-native-community/react-native-webview/issues/656 for an
+  // explanation of this hack.
+  const [ renderedOnce, setRenderedOnce ] = useState(Platform.OS !== 'android')
+  const setRenderedOnceTrue = useCallback(() => setRenderedOnce(true), [])
 
   const webViewLocalRef = useRef()
   const webView= webViewRef || webViewLocalRef
@@ -187,8 +193,6 @@ const PageWebView = ({
     [ onMessage ],
   )
 
-  const onError = useCallback(e => console.log('webview error', e), [])
-
   if(unloaded) return null
 
   const initialHighlightsInThisSpine = getHighlightsForThisSpine({
@@ -269,9 +273,10 @@ const PageWebView = ({
           },
           style,
         ]}
-        source={source}
+        source={renderedOnce ? source : undefined}
         onError={onError}
         onMessage={onMessageEvent}
+        onLoad={setRenderedOnceTrue}
         forwardRef={webView}
 
         // The rest of the props are ignored when on web platform

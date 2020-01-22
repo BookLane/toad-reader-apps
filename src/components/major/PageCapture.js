@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -92,6 +92,14 @@ const PageCapture = ({
   )
 
   useEffect(() => () => unmounted.current = true, [])
+
+  const onError = useCallback(
+    e => {
+      console.log('ERROR: PageCapture webview had an error on load', uriAsKey, e)
+      reportFinished(uriAsKey)
+    },
+    [ reportFinished, uriAsKey ],
+  )
 
   const onMessageEvent = async (webView2, data) => {
     if(webView2 !== webView.current || unmounted.current) return // just in case
@@ -260,6 +268,7 @@ const PageCapture = ({
       webViewRef={webView}
       viewRef={view}
       onMessage={onMessageEvent}
+      onError={onError}
       initialLocation={JSON.stringify({ idref: spineIdRef })}
       initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
       instructorHighlights={instructorHighlights}
