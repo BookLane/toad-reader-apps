@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   },
   containerTop: {
     top: 0,
+    paddingTop: Platform.OS === 'android' ? 10 : 0,
   },
   containerTopWideMode: {
     paddingTop: Platform.OS === 'web' ? getToolbarHeight() - 1 : 0,

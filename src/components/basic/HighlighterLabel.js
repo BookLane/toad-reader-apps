@@ -13,7 +13,7 @@ import { setHighlight, deleteHighlight } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
-    padding: Platform.OS === 'android' ? 25 : 15,
+    padding: 15,
     flexDirection: 'row',
     maxWidth: '100%',
     lineHeight: 34,
