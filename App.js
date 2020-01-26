@@ -4,7 +4,7 @@ import './src/themes/style'
 // import * as Font from 'expo-font'
 
 import { AppLoading } from "expo"
-import { AsyncStorage, Platform } from "react-native"
+import { AsyncStorage, Platform, StatusBar } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
@@ -127,6 +127,10 @@ const App = () => {
           fetchLocale: async locale => translations,
         })
 
+        if(Platform.OS === 'ios') {
+          StatusBar.setBarStyle('dark-content')
+        }
+        
         setIsReady(true)
 
         // no need to wait for the following, but preload anyway

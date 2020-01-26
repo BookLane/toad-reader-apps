@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { StyleSheet, StatusBar, View, Platform, AppState } from "react-native"
+import { StyleSheet, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
