@@ -285,6 +285,7 @@ const PageWebView = ({
           window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
           window.isReactNativeWebView = true;
         `}
+        allowingReadAccessToURL={FileSystem.documentDirectory}
         allowUniversalAccessFromFileURLs={true}
         allowFileAccess={true}
         originWhitelist={['*']}
