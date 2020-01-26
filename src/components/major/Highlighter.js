@@ -13,7 +13,6 @@ import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighli
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
 import useUnmount from "react-use/lib/useUnmount"
-import useDimensions from "../../hooks/useDimensions"
 
 import { setHighlight } from "../../redux/actions"
 
@@ -87,7 +86,6 @@ const Highlighter = React.memo(({
   const { widget } = routerState
 
   const wideMode = useWideMode()
-  const { height } = useDimensions().window
 
   const noteTextInputRef = useRef()
 
