@@ -18,7 +18,7 @@ import { addAccount } from "../../redux/actions"
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: 'rgba(51, 102, 255, .1)',
+    alignItems: 'center',
   },
   title: {
     textAlign: 'center',
@@ -29,11 +29,10 @@ const styles = StyleSheet.create({
   },
   box: {
     maxWidth: 300,
-    marginHorizontal: 'auto',
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.2)',
     borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, .9)',
+    backgroundColor: 'rgba(51, 102, 255, .1)',
     padding: 20,
   },
   linkContainer: {
