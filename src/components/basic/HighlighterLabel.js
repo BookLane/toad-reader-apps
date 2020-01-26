@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback } from "react"
-import { StyleSheet, TouchableNativeFeedback, TouchableHighlight, Platform, Text, View } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
     display: 'flex',
-    paddingTop: [ 'ios', 'web' ].includes(Platform.OS) ? 2 : 0,
+    paddingTop: 2,
     paddingLeft: 7,
     paddingRight: 7,
   },
@@ -132,7 +132,7 @@ const HighlighterLabel = React.memo(({
 
   const toggleHighlight1 = useCallback(() => toggleHighlight(1), toggleHighlightDependencies)
 
-  const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
+  const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity
 
   let highlightButton = (
     <View
