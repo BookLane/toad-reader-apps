@@ -1,5 +1,5 @@
-import React, { useRef, useCallback } from "react"
-import { StyleSheet, KeyboardAvoidingView, Platform, View } from "react-native"
+import React, { useRef, useCallback, useState, useEffect } from "react"
+import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
   },
   container: {
     position: 'absolute',
-    bottom: 0,
     right: 0,
     left: 0,
     zIndex: 3,
@@ -38,8 +37,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,.2)',
     backgroundColor: 'white',
   },
+  containerBottom: {
+    bottom: 0,
+  },
   containerTop: {
-    bottom: 'auto',
     top: 0,
   },
   containerTopWideMode: {
@@ -89,6 +90,28 @@ const Highlighter = React.memo(({
 
   const noteTextInputRef = useRef()
 
+  const [ keyboardShowing, setKeyboardShowing ] = useState(false)
+
+  useEffect(
+    () => {
+      const show = () => setKeyboardShowing(true)
+      const hide = () => setKeyboardShowing(false)
+
+      const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', show)
+      const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', show)
+      const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', hide)
+      const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', hide)
+
+      return () => {
+        keyboardDidShowListener.remove()
+        keyboardWillShowListener.remove()
+        keyboardDidHideListener.remove()
+        keyboardWillHideListener.remove()
+      }
+    },
+    [],
+  )
+
   const setEditingNote = useCallback(
     (editingNote, skipSetSelectionText) => {
       const { spineIdRef, cfi } = selectionInfo || {}
@@ -123,16 +146,14 @@ const Highlighter = React.memo(({
   return [
     ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
     <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
-    <KeyboardAvoidingView
+    <View
       key="container"
       style={[
         styles.container,
-        (selectionInfo.copyTooltipInLowerHalf && styles.containerTop),
-        (selectionInfo.copyTooltipInLowerHalf && wideMode && !widget && styles.containerTopWideMode),
+        ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing) ? styles.containerTop : styles.containerBottom),
+        ((selectionInfo.copyTooltipInLowerHalf && wideMode && !widget) ? styles.containerTopWideMode : null),
       ]}
       data-id="highlighter"
-      keyboardVerticalOffset={Platform.OS === 'android' ? 450 - height : 0}
-      behavior="padding"
     >
       <HighlighterInstructorHighlightSection
         bookId={bookId}
@@ -155,7 +176,7 @@ const Highlighter = React.memo(({
           noteTextInputRef={noteTextInputRef}
         />
       }
-    </KeyboardAvoidingView>
+    </View>
   ]
 })
 
