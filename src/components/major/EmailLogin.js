@@ -184,6 +184,12 @@ const EmailLogin = ({
                 value={email}
                 onChangeText={setEmail}
                 disabled={stage === 'SENDING_EMAIL'}
+                autoCorrect={false}
+                autoCapitalize="none"
+                autoFocus={true}
+                autoCompleteType="email"
+                keyboardType="email-address"
+                textContentType="emailAddress"
               />
               <View style={styles.buttonContainer}>
                 <Button
@@ -204,7 +210,7 @@ const EmailLogin = ({
           {[ 'AWAITING_CODE', 'SENDING_CODE' ].includes(stage) &&
             <>
               <Text style={styles.instructions}>
-                {i18n("Email sent. Check your inbox and then enter the code from that email below.")}
+                {i18n("Email sent. Check your inbox and enter the code from that email.")}
               </Text>
               <Input
                 label={i18n("Login code")}
@@ -212,6 +218,10 @@ const EmailLogin = ({
                 value={code}
                 onChangeText={setCode}
                 disabled={stage === 'SENDING_CODE'}
+                autoCorrect={false}
+                autoCapitalize="characters"
+                autoFocus={true}
+                autoCompleteType="off"
               />
               <View style={styles.buttonContainer}>
                 <Button
