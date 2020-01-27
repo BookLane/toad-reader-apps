@@ -138,9 +138,9 @@ const StatusAndActions = React.memo(({
   }
 
   const publishedStatusMessages = {
-    published: i18n("No changes since last publish."),
-    edited: i18n("Contains unpublished changes."),
-    new: i18n("Not yet published."),
+    published: i18n("No changes since last publish.", "", "enhanced"),
+    edited: i18n("Contains unpublished changes.", "", "enhanced"),
+    new: i18n("Not yet published.", "", "enhanced"),
   }
 
   const publishedStatus = viewingFrontMatter
@@ -181,14 +181,14 @@ const StatusAndActions = React.memo(({
           style={styles.button}
           disabled={syncStatus !== 'synced' || !online || publishedStatus === 'published' || !isReadyToPublish}
         >
-          {i18n("Publish")}
+          {i18n("Publish", "", "enhanced")}
         </Button>
         <Button
           onPress={onDelete}
           status="basic"
           disabled={viewingFrontMatter && publishedStatus === 'published'}
         >
-          {(viewingFrontMatter || selectedTool.currently_published_tool_uid) ? i18n("Discard changes") : i18n("Remove")}
+          {(viewingFrontMatter || selectedTool.currently_published_tool_uid) ? i18n("Discard changes", "", "enhanced") : i18n("Remove", "", "enhanced")}
         </Button>
       </View>
       <Text
@@ -204,7 +204,7 @@ const StatusAndActions = React.memo(({
       <View style={styles.previewContainer}>
         <TouchableOpacity onPress={onPreview}>
           <Text style={styles.preview}>
-            {i18n("Preview")}
+            {i18n("Preview", "", "enhanced")}
           </Text>
         </TouchableOpacity>
       </View>

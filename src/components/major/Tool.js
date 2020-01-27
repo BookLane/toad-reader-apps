@@ -93,7 +93,7 @@ const Tool = React.memo(({
         {inEditMode &&
           <TouchableOpacity onPress={onExitPreview}>
             <Text style={styles.exitPreview}>
-              {i18n("Exit preview")}
+              {i18n("Exit preview", "", "enhanced")}
             </Text>
           </TouchableOpacity>
         }

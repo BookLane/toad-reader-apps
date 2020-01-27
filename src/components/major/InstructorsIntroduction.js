@@ -56,7 +56,7 @@ const InstructorsIntroduction = React.memo(({
           {
             name: 'introduction',
             type: 'text',
-            placeholder: i18n("Enter your introduction here."),
+            placeholder: i18n("Enter your introduction here.", "", "enhanced"),
           },
         ]}
         data={data}

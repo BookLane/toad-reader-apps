@@ -93,7 +93,7 @@ const EnhancedHomepage = React.memo(({
 
   const tabs = [
     {
-      title: i18n("Connecting"),
+      title: i18n("Connecting", "", "enhanced"),
       content: (
         <EnhancedConnecting
           bookId={bookId}
@@ -102,28 +102,28 @@ const EnhancedHomepage = React.memo(({
       ),
     },
     // {
-    //   title: i18n("Analytics"),
+    //   title: i18n("Analytics", "", "enhanced"),
     //   content: (
     //     <EnhancedAnalytics
     //     />
     //   ),
     // },
     // {
-    //   title: i18n("Scores"),
+    //   title: i18n("Scores", "", "enhanced"),
     //   content: (
     //     <EnhancedScores
     //     />
     //   ),
     // },
     // {
-    //   title: i18n("Surveys"),
+    //   title: i18n("Surveys", "", "enhanced"),
     //   content: (
     //     <EnhancedSurveys
     //     />
     //   ),
     // },
     // {
-    //   title: i18n("Discussions"),
+    //   title: i18n("Discussions", "", "enhanced"),
     //   content: (
     //     <EnhancedDiscussions
     //     />

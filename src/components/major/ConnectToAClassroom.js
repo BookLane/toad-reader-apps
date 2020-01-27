@@ -62,7 +62,7 @@ const ConnectToAClassroom = React.memo(({
 
       if(!response || response.status >= 400) {
         historyPush("/error", {
-          message: i18n("Failed to connect to the classroom. Check the code and try again."),
+          message: i18n("Failed to connect to the classroom. Check the code and try again.", "", "enhanced"),
         })
         return
       }
@@ -76,7 +76,7 @@ const ConnectToAClassroom = React.memo(({
 
       if(!success) {
         historyPush("/error", {
-          message: i18n("You successfully connected to the classroom. However, we are unable to load the classroom data."),
+          message: i18n("You successfully connected to the classroom. However, we are unable to load the classroom data.", "", "enhanced"),
         })
         setConnecting(false)
         return
@@ -101,16 +101,16 @@ const ConnectToAClassroom = React.memo(({
       <Dialog
         open={!!open}
         type="confirm"
-        title={i18n("Connect to a classroom")}
+        title={i18n("Connect to a classroom", "", "enhanced")}
         message={
           <DialogInput
             value={code}
             onChangeText={onChangeText}
-            label={i18n("Code")}
-            placeholder={i18n("Eg. U76RE9")}
+            label={i18n("Code", "", "enhanced")}
+            placeholder={i18n("Eg. U76RE9", "", "enhanced")}
           />
         }
-        confirmButtonText={i18n("Connect")}
+        confirmButtonText={i18n("Connect", "", "enhanced")}
         confirmButtonStatus="primary"
         onCancel={requestHide}
         onConfirm={connectToAClassroom}

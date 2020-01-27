@@ -37,7 +37,7 @@
     "expo-av": "~7.0.0",
     "expo-document-picker": "~7.0.0",
     "find-in-files": "^0.5.0",
-    "inline-i18n": "github:educational-resources-and-services/inline-i18n#a98d2547345ef73486f930e6b8e737b6b0c14f39",
+    "inline-i18n": "github:educational-resources-and-services/inline-i18n#d44421bfd684ceddf38e13c7f437ada9fa98432b",
     "jszip": "3.1.5",
     "node-libs-browser": "2.1.0",
     "react": "16.8.3",

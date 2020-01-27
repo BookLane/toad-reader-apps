@@ -59,11 +59,11 @@ const EnhancedConnecting = React.memo(({
     <View style={styles.container}>
       <View style={styles.codeSection}>
         <Text style={styles.codeSectionLabel}>
-          {i18n("Students")}
+          {i18n("Students", "", "enhanced")}
         </Text>
         <View style={styles.codeLine}>
           <Text style={styles.textCodeLabel}>
-            {i18n("Text code:")}
+            {i18n("Text code:", "", "enhanced")}
           </Text>
           <Text style={styles.textCode}>
             {access_code}
@@ -71,13 +71,13 @@ const EnhancedConnecting = React.memo(({
         </View>
         {/* <View style={styles.codeLine}>
           <Text style={styles.textCodeLabel}>
-            {i18n("Or use the QR code:")}
+            {i18n("Or use the QR code:", "", "enhanced")}
           </Text>
         </View> */}
       </View>
       <View style={styles.codeSection}>
         <Text style={styles.codeSectionLabel}>
-          {i18n("Instructors")}
+          {i18n("Instructors", "", "enhanced")}
         </Text>
         {!showInstructorAccessCode &&
           <Text>
@@ -85,14 +85,14 @@ const EnhancedConnecting = React.memo(({
               style={styles.showForInstructors}
               onPress={setShowInstructorAccessCodeTrue}
             >
-              {i18n("Connect additional instructors")}
+              {i18n("Connect additional instructors", "", "enhanced")}
             </Text>
           </Text>
         }
         {!!showInstructorAccessCode &&
           <View style={styles.codeLine}>
             <Text style={styles.textCodeLabel}>
-              {i18n("Text code:")}
+              {i18n("Text code:", "", "enhanced")}
             </Text>
             <Text style={styles.textCode}>
               {instructor_access_code}

@@ -131,8 +131,8 @@ const EditTool = React.memo(({
         <View style={styles.basicDetails}>
           <View style={styles.basicDetailLine}>
             <Input
-              placeholder={i18n("Unnamed")}
-              label={i18n("Tool name")}
+              placeholder={i18n("Unnamed", "", "enhanced")}
+              label={i18n("Tool name", "", "enhanced")}
               value={nameInEdit}
               onChangeText={onToolNameChange}
             />
@@ -140,7 +140,7 @@ const EditTool = React.memo(({
           <View style={styles.basicDetailLine}>
             <Select
               key={tool.uid}
-              label={i18n("Tool type")}
+              label={i18n("Tool type", "", "enhanced")}
               data={toolTypes}
               selectedOption={toolTypes.filter(({ toolType }) => toolType === tool.toolType)[0]}
               onSelect={onSelectToolType}

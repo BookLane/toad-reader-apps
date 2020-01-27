@@ -158,7 +158,7 @@ const FrontMatter = React.memo(({
 
   const tabs = [
     ...(!showSyllabus ? [] : [{
-      title: i18n("Syllabus"),
+      title: i18n("Syllabus", "", "enhanced"),
       content: (
         <Syllabus
           bookId={bookId}
@@ -169,14 +169,14 @@ const FrontMatter = React.memo(({
       ),
     }]),
     // {
-    //   title: i18n("Reading schedule"),
+    //   title: i18n("Reading schedule", "", "enhanced"),
     //   content: (
     //     <ReaderSchedule
     //     />
     //   ),
     // },
     ...(!showIntroduction ? [] : [{
-      title: i18n("Instructor’s introduction"),
+      title: i18n("Instructor’s introduction", "", "enhanced"),
       content: (
         <InstructorsIntroduction
           bookId={bookId}
@@ -187,7 +187,7 @@ const FrontMatter = React.memo(({
       ),
     }]),
     // {
-    //   title: i18n("Options"),
+    //   title: i18n("Options", "", "enhanced"),
     //   content: (
     //     <ClassroomOptions
     //     />
@@ -203,7 +203,7 @@ const FrontMatter = React.memo(({
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.heading}>
-          {i18n("Front matter")}
+          {i18n("Front matter", "", "enhanced")}
         </Text>
         {(inEditMode && !viewingPreview) &&
           <StatusAndActions
@@ -214,7 +214,7 @@ const FrontMatter = React.memo(({
         {inEditMode && viewingPreview &&
           <TouchableOpacity onPress={onExitPreview}>
             <Text style={styles.exitPreview}>
-              {i18n("Exit preview")}
+              {i18n("Exit preview", "", "enhanced")}
             </Text>
           </TouchableOpacity>
         }

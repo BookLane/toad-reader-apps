@@ -15,15 +15,15 @@ import { setTextSize, setTextSpacing, setTheme } from "../../redux/actions"
 // const themeOptions = [
 //   {
 //     id: "author-theme",
-//     label: i18n("Author's theme"),
+//     label: i18n ("Author's theme"),
 //   },
 //   {
 //     id: "default-theme",
-//     label: i18n("High contrast"),
+//     label: i18n ("High contrast"),
 //   },
 //   {
 //     id: "night-theme",
-//     label: i18n("Low light"),
+//     label: i18n ("Low light"),
 //   },
 // ]
 
@@ -140,7 +140,7 @@ const DisplaySettings = React.memo(({
             </View>
 
             {/* <View style={styles.setting}>
-              <Text style={styles.heading}>{i18n("Spacing")}</Text>
+              <Text style={styles.heading}>{i18n ("Spacing")}</Text>
               <View style={styles.buttonRow}>
                 <Button light
                   style={styles.addRemoveButton}
@@ -158,7 +158,7 @@ const DisplaySettings = React.memo(({
             </View> */}
 
             {/* <View style={styles.setting}>
-              <Text style={styles.heading}>{i18n("Theme")}</Text>
+              <Text style={styles.heading}>{i18n ("Theme")}</Text>
               <View>
                 {themeOptions.map(themeOption => (
                   <TouchableComponent

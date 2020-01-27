@@ -75,10 +75,10 @@ const CreateClassroom = React.memo(({
     () => sortedClassrooms.map(({ uid, name }) => ({
       text: (
         uid === defaultClassroomUid
-          ? i18n("Book default")
+          ? i18n("Book default", "", "enhanced")
           : (
             !uid
-              ? i18n("None")  
+              ? i18n("None", "", "enhanced")  
               : name
           )
       ),
@@ -95,17 +95,17 @@ const CreateClassroom = React.memo(({
       <Dialog
         open={!!open}
         type="confirm"
-        title={i18n("Create a new classroom")}
+        title={i18n("Create a new classroom", "", "enhanced")}
         message={(
           <View style={styles.container}>
             <DialogInput
               value={name}
               onChangeText={onChangeText}
-              label={i18n("Classroom name")}
-              placeholder={i18n("Eg. Fall 2020")}
+              label={i18n("Classroom name", "", "enhanced")}
+              placeholder={i18n("Eg. Fall 2020", "", "enhanced")}
             />
             <Select
-              label={i18n("Based off...")}
+              label={i18n("Based off...", "", "enhanced")}
               style={styles.select}
               data={basedOffOptions}
               selectedOption={basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0]}
@@ -113,7 +113,7 @@ const CreateClassroom = React.memo(({
             />
           </View>
         )}
-        confirmButtonText={i18n("Create")}
+        confirmButtonText={i18n("Create", "", "enhanced")}
         confirmButtonStatus="primary"
         onCancel={requestHide}
         onConfirm={createNewClassroom}

@@ -137,7 +137,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
       ))}
       {myRole === 'INSTRUCTOR' && hasIsMineInstructorHighlight && iHaveANote &&
         <Text style={styles.mynote}>
-          {i18n("Students can also view your notes below.")}
+          {i18n("Students can also view your notes below.", "", "enhanced")}
           {othersInstructorHighlights.length > 0 && iHaveANote &&
             <>
               {" "}
@@ -145,7 +145,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
                 style={styles.clickable}
                 onPress={toggleAsInstructorHighlight}
               >
-                {i18n("Remove")}
+                {i18n("Remove", "", "enhanced")}
               </Text>
             </>
           }
@@ -157,19 +157,19 @@ const HighlighterInstructorHighlightSection = React.memo(({
             style={styles.clickable}
             onPress={toggleAsInstructorHighlight}
           >
-            {i18n("Show students my note")}
+            {i18n("Show students my note", "", "enhanced")}
           </Text>
         </Text>
       }
     </ScrollView>
       /* <Dialog
         open={!!showShare}
-        title={i18n("Instructor’s highlight")}
+        title={i18n("Instructor’s highlight", "", "enhanced")}
         message={
           <View style={styles.classroomOptions}>
             <Text style={styles.instructions}>
-              {i18n("Share this highlight and any associated note with your classrooms.")}
-              {i18n("Changes to the notes will automatically update for students as well.")}
+              {i18n("Share this highlight and any associated note with your classrooms.", "", "enhanced")}
+              {i18n("Changes to the notes will automatically update for students as well.", "", "enhanced")}
             </Text>
             <View>
               {.map(({ }) => (

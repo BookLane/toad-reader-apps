@@ -117,10 +117,10 @@ const ManageClassrooms = React.memo(({
         <Dialog
           open={!!open}
           style={styles.dialog}
-          title={i18n("Whoops!")}
+          title={i18n("Whoops!", "", "enhanced")}
           message={(
             <Text>
-              {i18n("You must have an active internet connection and be fully synced to manage classrooms.")}
+              {i18n("You must have an active internet connection and be fully synced to manage classrooms.", "", "enhanced")}
             </Text>
           )}
           onClose={requestHide}
@@ -135,7 +135,7 @@ const ManageClassrooms = React.memo(({
       <Dialog
         open={!!open}
         style={styles.dialog}
-        title={i18n("Manage classrooms")}
+        title={i18n("Manage classrooms", "", "enhanced")}
         message={(
           <>
             <View
@@ -152,7 +152,7 @@ const ManageClassrooms = React.memo(({
                     styles.button,
                   ]}
                 >
-                  {i18n("Create a new classroom")}
+                  {i18n("Create a new classroom", "", "enhanced")}
                 </Button>
               }
               {['INSTRUCTOR', 'ENHANCED'].includes(bookVersion) &&
@@ -165,7 +165,7 @@ const ManageClassrooms = React.memo(({
                     styles.button,
                   ]}
                 >
-                  {i18n("Connect to a classroom")}
+                  {i18n("Connect to a classroom", "", "enhanced")}
                 </Button>
               }
             </View>
@@ -206,7 +206,7 @@ const ManageClassrooms = React.memo(({
           </>
         )}
         onClose={requestHide}
-        closeButtonText={i18n("Done")}
+        closeButtonText={i18n("Done", "", "enhanced")}
         submitting={syncStatus !== 'synced'}
       />
       <CreateClassroom

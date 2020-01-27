@@ -89,7 +89,7 @@ const ReflectionQuestionTool = React.memo(({
         {question}
       </Text>
       <TextInput
-        placeholder={i18n("Enter your answer here.")}
+        placeholder={i18n("Enter your answer here.", "", "enhanced")}
         multiline
         value={answerValue}
         onChangeText={onChangeText}
@@ -97,8 +97,8 @@ const ReflectionQuestionTool = React.memo(({
       />
       <Text style={styles.info}>
         {isDefaultClassroom
-          ? i18n("This is a reflection question. Your answer is private.")
-          : i18n("This is a reflection question. Your answer may be seen by you and your instructor(s).")
+          ? i18n("This is a reflection question. Your answer is private.", "", "enhanced")
+          : i18n("This is a reflection question. Your answer may be seen by you and your instructor(s).", "", "enhanced")
         }
       </Text>
     </View>

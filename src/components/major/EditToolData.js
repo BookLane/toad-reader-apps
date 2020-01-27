@@ -316,10 +316,10 @@ const EditToolData = React.memo(({
               {!!dataSegment[name] &&
                 <React.Fragment>
                   <Text style={styles.fileName}>
-                    {i18n("File name: {{name}}", dataSegment[name])}
+                    {i18n("File name: {{name}}", "", "enhanced", dataSegment[name])}
                   </Text>
                   <Text style={styles.size}>
-                    {i18n("Size: {{size}}", { size: getMBSizeStr(dataSegment[name].size) })}
+                    {i18n("Size: {{size}}", "", "enhanced", { size: getMBSizeStr(dataSegment[name].size) })}
                   </Text>
                   <View style={styles.buttonContainer}>
                     <Button
@@ -327,7 +327,7 @@ const EditToolData = React.memo(({
                       size="small"
                       onPress={() => onChangeInfo({ id, value: null, info: type })}
                     >
-                      {i18n("Remove")}
+                      {i18n("Remove", "", "enhanced")}
                     </Button>
                   </View>
                 </React.Fragment>
@@ -357,7 +357,7 @@ const EditToolData = React.memo(({
                       })
                     }}
                   >
-                    {i18n("Upload file")}
+                    {i18n("Upload file", "", "enhanced")}
                   </Button>
                 </View>
               }
@@ -371,10 +371,10 @@ const EditToolData = React.memo(({
               {(dataSegment[name] || []).map((file, idx) => (
                 <View key={file.filename} style={styles.file}>
                   <Text style={styles.fileName}>
-                    {i18n("File name: {{name}}", file)}
+                    {i18n("File name: {{name}}", "", "enhanced", file)}
                   </Text>
                   <Text style={styles.size}>
-                    {i18n("Size: {{size}}", { size: getMBSizeStr(file.size) })}
+                    {i18n("Size: {{size}}", "", "enhanced", { size: getMBSizeStr(file.size) })}
                   </Text>
                   <View style={styles.buttonContainer}>
                     <Button
@@ -391,7 +391,7 @@ const EditToolData = React.memo(({
                         })
                       }}
                     >
-                      {i18n("Remove")}
+                      {i18n("Remove", "", "enhanced")}
                     </Button>
                   </View>
                 </View>
@@ -424,7 +424,7 @@ const EditToolData = React.memo(({
                     })
                   }}
                 >
-                  {i18n("Upload files")}
+                  {i18n("Upload files", "", "enhanced")}
                 </Button>
               </View>
             </View>

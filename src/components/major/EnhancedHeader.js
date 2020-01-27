@@ -168,10 +168,10 @@ const EnhancedHeader = React.memo(({
     ...sortedClassrooms.map(({ uid, name }) => ({
       title: (
         uid === defaultClassroomUid
-          ? i18n("Book default")
+          ? i18n("Book default", "", "enhanced")
           : (
             !uid
-              ? i18n("Off")  
+              ? i18n("Off", "", "enhanced")  
               : name
           )
       ),
@@ -186,7 +186,7 @@ const EnhancedHeader = React.memo(({
     ...(!(bookVersion === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
-          {i18n("Manage classrooms")}
+          {i18n("Manage classrooms", "", "enhanced")}
         </Text>
       ),
       onPress: toggleShowManageClassrooms,
@@ -194,7 +194,7 @@ const EnhancedHeader = React.memo(({
     ...(!(bookVersion === 'ENHANCED' && classrooms.length === 1) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
-          {i18n("Connect to a classroom")}
+          {i18n("Connect to a classroom", "", "enhanced")}
         </Text>
       ),
       onPress: toggleShowConnectToAClassroom,
@@ -205,13 +205,13 @@ const EnhancedHeader = React.memo(({
 
   const classroomName = (
     isDefaultClassroom
-      ? i18n("Book default")
+      ? i18n("Book default", "", "enhanced")
       : (
         classroom
           ? classroom.name
           : (
             <Text style={styles.off}>
-              {i18n("Off")}
+              {i18n("Off", "", "enhanced")}
             </Text>
           )
       )
@@ -234,7 +234,7 @@ const EnhancedHeader = React.memo(({
           }
           <Text style={styles.line}>
             <Text style={styles.enhanced}>
-              {i18n("Enhanced")}
+              {i18n("Enhanced", "", "enhanced")}
             </Text>
             {"  "}
             {classroomName}
@@ -272,7 +272,7 @@ const EnhancedHeader = React.memo(({
         >
           <View style={viewingFrontMatter ? styles.lineContainerSelected : styles.lineContainer}>
             <Text style={(inEditMode && hasDraftData) ? styles.frontMatterEdited : styles.frontMatter}>
-              {inEditMode ? i18n("Front matter and options") : i18n("Front matter")}
+              {inEditMode ? i18n("Front matter and options", "", "enhanced") : i18n("Front matter", "", "enhanced")}
             </Text>
           </View>
         </TouchableOpacity>

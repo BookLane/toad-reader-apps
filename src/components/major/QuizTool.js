@@ -177,10 +177,10 @@ const QuizTool = React.memo(({
                   {currentQuestionSubmitted && (
                     <Text style={styles.feedback}>
                       {answersSelection === selectedAnswers[origQuestionIdx]
-                        ? i18n("Correct!")
+                        ? i18n("Correct!", "", "enhanced")
                         : (
                           <Text style={styles.feedbackCorrect}>
-                            {i18n("Whoops. That’s incorrect.")}
+                            {i18n("Whoops. That’s incorrect.", "", "enhanced")}
                           </Text>
                         )
                       }
@@ -193,7 +193,7 @@ const QuizTool = React.memo(({
                         disabled={selectedAnswers[origQuestionIdx] == null}
                         onPress={() => setCurrentQuestionSubmitted(true)}
                       >
-                        {i18n("Check my answer")}
+                        {i18n("Check my answer", "", "enhanced")}
                       </Button>
                     </View>
                   }
@@ -207,8 +207,8 @@ const QuizTool = React.memo(({
                         }}
                       >
                         {pageIdx === preppedQuestions.length - 1
-                          ? i18n("View my score")
-                          : i18n("Go to next question")
+                          ? i18n("View my score", "", "enhanced")
+                          : i18n("Go to next question", "", "enhanced")
                         }
                       </Button>
                     </View>
@@ -220,9 +220,14 @@ const QuizTool = React.memo(({
           ))}
           <View style={styles.container}>
             <Text style={styles.score}>
-              {i18n("Score: {{percent}}%", {
-                percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
-              })}
+              {i18n(
+                "Score: {{percent}}%",
+                "",
+                "enhanced",
+                {
+                  percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
+                },
+              )}
             </Text>
             <View style={styles.buttonContainer}>
               <Button
@@ -233,7 +238,7 @@ const QuizTool = React.memo(({
                   executeShuffles()
                 }}
               >
-                {i18n("Retake this quiz")}
+                {i18n("Retake this quiz", "", "enhanced")}
               </Button>
             </View>
           </View>

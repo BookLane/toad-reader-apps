@@ -7,12 +7,12 @@ export const getToolInfo = () => {
       toolType: 'NOTES_INSERT',
       name: 'lead-pencil',
       pack: 'materialCommunity',
-      text: i18n("Notes insert"),
+      text: i18n("Notes insert", "", "enhanced"),
       dataStructure: [
         {
           name: 'content',
           type: 'text',
-          placeholder: i18n("Enter your notes here."),
+          placeholder: i18n("Enter your notes here.", "", "enhanced"),
         },
       ],
       readyToPublish: ({ content }) => nonEmpty(content),
@@ -20,7 +20,7 @@ export const getToolInfo = () => {
     {
       toolType: 'QUIZ',
       name: 'md-checkbox',
-      text: i18n("Quiz"),
+      text: i18n("Quiz", "", "enhanced"),
       dataStructure: [
         {
           name: 'questions',
@@ -28,27 +28,27 @@ export const getToolInfo = () => {
             {
               name: 'question',
               type: 'string',
-              label: i18n("Question"),
+              label: i18n("Question", "", "enhanced"),
             },
             {
               name: 'answers',
               type: ['choice'],
-              label: i18n("Answers"),
+              label: i18n("Answers", "", "enhanced"),
               maxItems: 10,
             },
             {
               name: 'shuffle',
               type: 'boolean',
-              label: i18n("Shuffle answers on each attempt"),
+              label: i18n("Shuffle answers on each attempt", "", "enhanced"),
             },
           ],
-          addLabel: i18n("Add a question"),
+          addLabel: i18n("Add a question", "", "enhanced"),
           maxItems: 50,
         },
         {
           name: 'shuffle',
           type: 'boolean',
-          label: i18n("Shuffle questions on each attempt"),
+          label: i18n("Shuffle questions on each attempt", "", "enhanced"),
         },
       ],
       readyToPublish: ({ questions=[] }) => (
@@ -67,12 +67,12 @@ export const getToolInfo = () => {
       toolType: 'LTI',
       name: 'wrench',
       pack: 'materialCommunity',
-      text: i18n("Learning (LTI) tool"),
+      text: i18n("Learning (LTI) tool", "", "enhanced"),
       dataStructure: [
         {
           name: 'url',
           type: 'string',
-          label: i18n("Launch URL"),
+          label: i18n("Launch URL", "", "enhanced"),
         },
       ],
       readyToPublish: ({ url }) => validUrl(url),
@@ -81,25 +81,25 @@ export const getToolInfo = () => {
       toolType: 'VIDEO',
       name: 'youtube-play',
       pack: 'fontAwesome',
-      text: i18n("Video"),
+      text: i18n("Video", "", "enhanced"),
       dataStructure: [
         {
           name: 'videoLink',
           type: 'string',
-          label: i18n("YouTube, Vimeo, MP4 or WebM link"),
+          label: i18n("YouTube, Vimeo, MP4 or WebM link", "", "enhanced"),
         },
         {
           name: 'startTime',
           type: 'string',
           variant: 'short',
-          label: i18n("Start time (optional)"),
+          label: i18n("Start time (optional)", "", "enhanced"),
           placeholder: 'Eg. 3:12',
         },
         {
           name: 'endTime',
           type: 'string',
           variant: 'short',
-          label: i18n("End time (optional)"),
+          label: i18n("End time (optional)", "", "enhanced"),
           placeholder: 'Eg. 12:14',
         },
       ],
@@ -109,12 +109,12 @@ export const getToolInfo = () => {
     //   toolType: 'DISCUSSION_QUESTION',
     //   name: 'question-answer',
     //   pack: 'material',
-    //   text: i18n("Discussion question"),
+    //   text: i18n("Discussion question", "", "enhanced"),
     //   dataStructure: [
     //     {
     //       name: 'question',
     //       type: 'string',
-    //       label: i18n("Question"),
+    //       label: i18n("Question", "", "enhanced"),
     //     },
     //   ],
     // },
@@ -122,12 +122,12 @@ export const getToolInfo = () => {
       toolType: 'REFLECTION_QUESTION',
       name: 'comment-question',
       pack: 'materialCommunity',
-      text: i18n("Reflection question"),
+      text: i18n("Reflection question", "", "enhanced"),
       dataStructure: [
         {
           name: 'question',
           type: 'string',
-          label: i18n("Question"),
+          label: i18n("Question", "", "enhanced"),
         },
       ],
       readyToPublish: ({ question }) => nonEmpty(question),
@@ -136,24 +136,24 @@ export const getToolInfo = () => {
     //   toolType: 'POLL',
     //   name: 'poll',
     //   pack: 'materialCommunity',
-    //   text: i18n("Poll question"),
+    //   text: i18n("Poll question", "", "enhanced"),
     //   dataStructure: [
     //     {
     //       name: 'question',
     //       type: 'string',
-    //       label: i18n("Question"),
+    //       label: i18n("Question", "", "enhanced"),
     //     },
     //     {
     //       name: 'choices',
     //       type: ['string'],
-    //       label: i18n("Choices"),
+    //       label: i18n("Choices", "", "enhanced"),
     //     },
     //   ],
     // },
     // {
     //   toolType: 'DOCUMENT',
     //   name: 'md-document',
-    //   text: i18n("Document"),
+    //   text: i18n("Document", "", "enhanced"),
     //   dataStructure: [
     //     {
     //       name: 'filename',
@@ -169,7 +169,7 @@ export const getToolInfo = () => {
     // {
     //   toolType: 'IMAGES',
     //   name: 'md-image',
-    //   text: i18n("Images"),
+    //   text: i18n("Images", "", "enhanced"),
     //   dataStructure: [
     //     {
     //       name: 'filenames',
@@ -188,7 +188,7 @@ export const getToolInfo = () => {
     //   toolType: 'AUDIO',
     //   name: 'audiotrack',
     //   pack: 'material',
-    //   text: i18n("Audio"),
+    //   text: i18n("Audio", "", "enhanced"),
     //   dataStructure: [
     //     {
     //       name: 'filename',
@@ -203,7 +203,7 @@ export const getToolInfo = () => {
       toolType: 'INSTRUCTOR_HIGHLIGHT',
       name: 'marker',
       pack: 'materialCommunity',
-      text: i18n("Instructor’s highlight"),
+      text: i18n("Instructor’s highlight", "", "enhanced"),
     },
   ]
 
