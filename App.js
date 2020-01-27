@@ -103,25 +103,27 @@ const App = () => {
           }
         }
 
-        // listen for a new version
-        Updates.fetchUpdateAsync({
-          eventListener: ({ type }) => {
-            if(type === Updates.EventType.DOWNLOAD_FINISHED) {
-              updateExists = true
-            }
+        if(Platform.OS !== 'web') {
+          // listen for a new version
+          Updates.fetchUpdateAsync({
+            eventListener: ({ type }) => {
+              if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+                updateExists = true
+              }
 
-            if(
-              [
-                Updates.EventType.NO_UPDATE_AVAILABLE,
-                Updates.EventType.ERROR,
-                Updates.EventType.DOWNLOAD_FINISHED,
-              ].includes(type)
-            ) {
-              newVersionCheckComplete = true
-              setIsReadyIfReady()
-            }
-          },
-        })
+              if(
+                [
+                  Updates.EventType.NO_UPDATE_AVAILABLE,
+                  Updates.EventType.ERROR,
+                  Updates.EventType.DOWNLOAD_FINISHED,
+                ].includes(type)
+              ) {
+                newVersionCheckComplete = true
+                setIsReadyIfReady()
+              }
+            },
+          })
+        }
 
         // re-route old links
         if(Platform.OS === 'web' && !/^\/?$/.test(window.location.pathname)) {
@@ -184,7 +186,7 @@ const App = () => {
 
         initialTasksComplete = true
 
-        if(numUserOpens === 1 && !newVersionCheckComplete) {
+        if(Platform.OS !== 'web' && numUserOpens === 1 && !newVersionCheckComplete) {
           setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*10)
         } else {
           setIsReadyIfReady(true)
