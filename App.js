@@ -3,7 +3,7 @@ import Constants from 'expo-constants'
 import './src/themes/style'
 // import * as Font from 'expo-font'
 
-import { AppLoading } from "expo"
+import { AppLoading, Updates } from "expo"
 import { AsyncStorage, Platform, StatusBar } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
@@ -29,6 +29,8 @@ import { getDataOrigin } from './src/utils/toolbox'
 
 import Library from "./src/components/screens/Library"
 import CoverAndSpin from "./src/components/basic/CoverAndSpin"
+
+import useSetTimeout from './src/hooks/useSetTimeout'
 
 const {
   LANGUAGE_CODE='en',
@@ -65,6 +67,8 @@ const App = () => {
   const [ isReady, setIsReady ] = useState(false)
   const [ theme, setTheme ] = useState('lightTheme')
 
+  const [ setInitialOpenTimeout ] = useSetTimeout()
+
   const changeTheme = useCallback(
     theme => {
       if(!themes[theme]) return
@@ -76,6 +80,48 @@ const App = () => {
   useEffect(
     () => {
       (async () => {
+
+        let initialTasksComplete = false
+        let newVersionCheckComplete = false
+        let updateExists = false
+
+        const setIsReadyIfReady = force => {
+          if(
+            force
+            || (
+              initialTasksComplete
+              && newVersionCheckComplete
+            )
+          ) {
+
+            if(updateExists) {
+              Updates.reloadFromCache()
+            } else {
+              setIsReady(true)
+            }
+
+          }
+        }
+
+        // listen for a new version
+        Updates.fetchUpdateAsync({
+          eventListener: ({ type }) => {
+            if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+              updateExists = true
+            }
+
+            if(
+              [
+                Updates.EventType.NO_UPDATE_AVAILABLE,
+                Updates.EventType.ERROR,
+                Updates.EventType.DOWNLOAD_FINISHED,
+              ].includes(type)
+            ) {
+              newVersionCheckComplete = true
+              setIsReadyIfReady()
+            }
+          },
+        })
 
         // re-route old links
         if(Platform.OS === 'web' && !/^\/?$/.test(window.location.pathname)) {
@@ -130,8 +176,19 @@ const App = () => {
         if(Platform.OS === 'ios') {
           StatusBar.setBarStyle('dark-content')
         }
-        
-        setIsReady(true)
+
+        // record number of opens
+        const numUserOpensKey = `numUserOpens`
+        const numUserOpens = (parseInt(await AsyncStorage.getItem(numUserOpensKey), 10) || 0) + 1
+        await AsyncStorage.setItem(numUserOpensKey, `${numUserOpens}`)
+
+        initialTasksComplete = true
+
+        if(numUserOpens === 1 && !newVersionCheckComplete) {
+          setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*10)
+        } else {
+          setIsReadyIfReady(true)
+        }
 
         // no need to wait for the following, but preload anyway
         // Asset.fromModule(require('./assets/images/drawer.png')).downloadAsync(),

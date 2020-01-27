@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from "react"
-import { Updates, ScreenOrientation } from "expo"
+import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
+import { ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
@@ -95,8 +95,6 @@ const Library = ({
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
 
-  const JSUpdateReady = useRef(false)
-
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
@@ -158,21 +156,6 @@ const Library = ({
 
       if(Platform.OS !== 'web') {
         ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
-      }
-    },
-    [],
-  )
-
-  useEffect(
-    () => {
-      const eventSubscription = Updates.addListener(({ type }) => {
-        if(type === Updates.EventType.DOWNLOAD_FINISHED) {
-          JSUpdateReady.current = true
-        }
-      })
-
-      return () => {
-        eventSubscription.remove()
       }
     },
     [],
@@ -312,16 +295,7 @@ const Library = ({
     [ idps, accounts, refreshLibraryAccountId ],
   )
 
-  const onLoginSuccess = useCallback(
-    () => {
-      if(JSUpdateReady.current) {
-        Updates.reloadFromCache()
-      } else {
-        setShowLogin(false)
-      }
-    },
-    [],
-  )
+  const onLoginSuccess = useCallback(() => setShowLogin(false), [])
 
   const logOutUrlOnLoad = useCallback(
     async () => {
