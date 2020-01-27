@@ -21,7 +21,10 @@ const styles = StyleSheet.create({
 const CapturingThumbnailsInfoIcon = React.memo(() => {
 
   const showInfo = useCallback(
-    () => Alert.alert(i18n("We will create thumbnail images in the background when you are reading.")),
+    () => Alert.alert(
+      i18n("Note"),
+      i18n("We will create thumbnail images in the background when you are reading.")
+    ),
     [],
   )
 
