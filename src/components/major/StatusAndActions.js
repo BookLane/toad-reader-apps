@@ -169,6 +169,11 @@ const StatusAndActions = React.memo(({
     && bookVersion !== 'PUBLISHER'
   )
 
+  // make sure there is not more than a single LTI configuration per domain-createdByPublisher combo
+  const hasDuplicateLTIConfigs = ltiConfigurations => (
+    ltiConfigurations.length !== [...new Set(ltiConfigurations.map(({ domain, createdByPublisher }) => `${domain} ${!!createdByPublisher}`))].length
+  )
+
   const isReadyToPublish = viewingFrontMatter
     ? (
       ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret, createdByPublisher }) => (
@@ -178,6 +183,7 @@ const StatusAndActions = React.memo(({
           || (key && secret)
         )
       ))
+      && !hasDuplicateLTIConfigs((classroom.draftData || {}).lti_configurations || [])
     )
     : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
 
