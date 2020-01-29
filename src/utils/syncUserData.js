@@ -119,6 +119,18 @@ export const patch = () => setTimeout(() => {
           classroomHasUpdate = true
         }
 
+        if(isPublisherAndThisIsTheDefaultClassroom && classroom.updated_at > lastSuccessfulPatch) {
+          classroomToPush = {
+            lti_configurations: classroom.lti_configurations,
+            draftData: !classroom.draftData ? null : {
+              lti_configurations: classroom.draftData.lti_configurations,
+            },
+            updated_at: classroom.updated_at,
+            ...classroomToPush,
+          }
+          classroomHasUpdate = true
+        }
+
         if(isInstructor) {
           members.forEach(member => {
             if(member.updated_at > lastSuccessfulPatch) {

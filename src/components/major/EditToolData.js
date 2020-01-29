@@ -100,9 +100,11 @@ const styles = StyleSheet.create({
 
 const EditToolData = React.memo(({
   classroomUid,
+  isDefaultClassroom,
   toolUid,
   accountId,
   dataStructure,
+  transformData,
   data,
   goUpdateTool,
 }) => {
@@ -164,6 +166,8 @@ const EditToolData = React.memo(({
         dataSegment.splice(spliceFrom, dataSegment.length)
       }
 
+      transformData && transformData({ data, classroomUid, isDefaultClassroom })
+
       setDataInEdit(data)
       setToolDataSaveTimeout(
         () => {
@@ -172,7 +176,7 @@ const EditToolData = React.memo(({
         300,
       )
     },
-    [ goUpdateTool ],
+    [ goUpdateTool, transformData ],
   )
 
   const onDeleteArrayItem = useCallback(
@@ -181,6 +185,8 @@ const EditToolData = React.memo(({
   )
 
   const onDoneImportingFile = useCallback(() => setFileImportInfo({}), [])
+
+  const returnFalse = useCallback(() => false, [])
 
   const TrashButtonIcon = useCallback(
     style => (
@@ -208,6 +214,9 @@ const EditToolData = React.memo(({
       variant,
       fileTypes,
       label,
+      isDisabled=returnFalse,
+      isHidden=returnFalse,
+      isHiddenWithMessage=returnFalse,
       addLabel,
       maxItems,
       placeholder,
@@ -218,6 +227,12 @@ const EditToolData = React.memo(({
       switch(type) {
 
         case 'string': {
+          if(isHidden({ dataSegment })) {
+            return null
+          }
+
+          const hiddenMessage = isHiddenWithMessage({ data, dataSegment, classroomUid })
+
           return (
             <View key={id} style={styles.dataLine}>
               <View style={styles.inputContainer}>
@@ -225,9 +240,10 @@ const EditToolData = React.memo(({
                   id={id}
                   placeholder={placeholder}
                   label={label}
-                  value={dataSegment[name] || ""}
+                  value={hiddenMessage || dataSegment[name] || ""}
                   onChangeInfo={onChangeInfo}
                   style={variant === 'short' ? styles.shortInput : styles.input}
+                  disabled={!!hiddenMessage || isDisabled({ dataSegment })}
                 />
                 {!!dataSegmentParentIsComplexArray && dataStructureIndex === 0 &&
                   <MemoButton

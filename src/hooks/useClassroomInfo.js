@@ -66,19 +66,35 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   }
 
   const enhancedIsOff = !classroomUid
-  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction)
+  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || (classroom || {}).lti_configurations)
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
   const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
-  if(
-    enhancedIsOff
-    || (
-      ['FRONT MATTER', 'ENHANCED HOMEPAGE'].includes(selectedToolUid)
-      && isDefaultClassroom
+  const canViewEnhancedHomepage = myRole === 'INSTRUCTOR' && !isDefaultClassroom && !enhancedIsOff
+
+  const canViewFrontMatter = isDefaultClassroom
+    ? bookVersion === 'PUBLISHER'
+    : (
+      !enhancedIsOff
+      && (
+        hasFrontMatter
+        || inEditMode
+      )
     )
+
+  if(
+    !canViewEnhancedHomepage
+    && selectedToolUid === 'ENHANCED HOMEPAGE'
+  ) {
+    selectedToolUid = null
+  }
+
+  if(
+    !canViewFrontMatter
+    && selectedToolUid === 'FRONT MATTER'
   ) {
     selectedToolUid = null
   }
@@ -170,6 +186,8 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     defaultClassroomUid,
     classroom,  // requires userDataByBookId to be sent in
     hasFrontMatter,  // requires userDataByBookId to be sent in
+    canViewEnhancedHomepage,  // requires userDataByBookId to be sent in
+    canViewFrontMatter,  // requires userDataByBookId and inEditMode to be sent in
     hasDraftData,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in

@@ -59,6 +59,7 @@ const Syllabus = React.memo(({
       <EditToolData
         key={changeIndex}
         classroomUid={uid}
+        isDefaultClassroom={false}
         accountId={accountId}
         dataStructure={[
           {

@@ -100,8 +100,8 @@ const EnhancedHeader = React.memo(({
 }) => {
 
   const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid, sortedClassrooms,
-          enhancedIsOff, bookVersion, myRole, viewingEnhancedHomepage,
-          viewingFrontMatter, iCanEdit, hasFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+          bookVersion, canViewEnhancedHomepage, canViewFrontMatter, viewingEnhancedHomepage,
+          viewingFrontMatter, iCanEdit, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const [ showOptions, setShowOptions ] = useState(false)
   const [ showManageClassrooms, setShowManageClassrooms ] = useState(false)
@@ -217,15 +217,13 @@ const EnhancedHeader = React.memo(({
       )
   )
 
-  const homepageClickable = myRole === 'INSTRUCTOR' && !isDefaultClassroom && !enhancedIsOff
-
   return (
     <View style={styles.container} data-id="EnhancedHeader">
       <TouchableOpacity
-        onPress={homepageClickable ? selectEnhancedHomepage : null}
+        onPress={canViewEnhancedHomepage ? selectEnhancedHomepage : null}
       >
         <View style={viewingEnhancedHomepage ? styles.lineContainerSelected : styles.lineContainer}>
-          {homepageClickable &&
+          {canViewEnhancedHomepage &&
             <Icon
               name="home"
               pack="fontAwesome"
@@ -266,13 +264,20 @@ const EnhancedHeader = React.memo(({
           </OverflowMenu>
         </View>
       </TouchableOpacity>
-      {!isDefaultClassroom && !enhancedIsOff && (hasFrontMatter || inEditMode) &&
+      {canViewFrontMatter &&
         <TouchableOpacity
           onPress={selectFrontMatter}
         >
           <View style={viewingFrontMatter ? styles.lineContainerSelected : styles.lineContainer}>
             <Text style={(inEditMode && hasDraftData) ? styles.frontMatterEdited : styles.frontMatter}>
-              {inEditMode ? i18n("Front matter and options", "", "enhanced") : i18n("Front matter", "", "enhanced")}
+              {isDefaultClassroom
+                ? i18n("Settings", "", "enhanced")
+                : (
+                  inEditMode
+                    ? i18n("Front matter and options", "", "enhanced")
+                    : i18n("Front matter", "", "enhanced")
+                )
+              }
             </Text>
           </View>
         </TouchableOpacity>

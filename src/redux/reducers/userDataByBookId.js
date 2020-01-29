@@ -359,6 +359,7 @@ export default function(state = initialState, action) {
             ;[
               'syllabus',
               'introduction',
+              'lti_configurations',
               'classroom_highlights_mode',
               'closes_at',
               'draftData',
@@ -430,6 +431,7 @@ export default function(state = initialState, action) {
             'instructor_access_code',
             'syllabus',
             'introduction',
+            'lti_configurations',
             'classroom_highlights_mode',
             'closes_at',
             'draftData',

@@ -60,7 +60,7 @@ const EditTool = React.memo(({
 
   const { toolTypes, toolInfoByType } = getToolInfo()
 
-  const { accountId, classroomUid } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroomUid, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -162,9 +162,11 @@ const EditTool = React.memo(({
       >
         <EditToolData
           classroomUid={classroomUid}
+          isDefaultClassroom={isDefaultClassroom}
           toolUid={tool.uid}
           accountId={accountId}
           dataStructure={toolInfoByType[tool.toolType].dataStructure}
+          transformData={toolInfoByType[tool.toolType].transformData}
           data={tool.data}
           goUpdateTool={goUpdateTool}
         />

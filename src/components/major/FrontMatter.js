@@ -7,6 +7,7 @@ import { ViewPager } from "react-native-ui-kitten"
 
 import Syllabus from "./Syllabus"
 import InstructorsIntroduction from "./InstructorsIntroduction"
+import LTIConfigurations from "./LTIConfigurations"
 import StatusAndActions from "./StatusAndActions"
 
 import { i18n } from "inline-i18n"
@@ -102,7 +103,7 @@ const FrontMatter = React.memo(({
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
-  const { classroom, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroom, viewingFrontMatter, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
@@ -124,35 +125,56 @@ const FrontMatter = React.memo(({
 
   if(!viewingFrontMatter) return null
 
-  const { syllabus, introduction } = classroom
+  const { syllabus, introduction, lti_configurations } = classroom
   const draftSyllabus = (classroom.draftData || {}).syllabus
   const draftIntroduction = (classroom.draftData || {}).introduction
+  const draftLTIConfigurations = (classroom.draftData || {}).lti_configurations
 
   const showSyllabus = !!(
-    viewingPreview
-      ? (
-        draftSyllabus !== undefined
-          ? draftSyllabus
-          : syllabus
-      )
-      : (
-        inEditMode
-          ? true
-          : syllabus
-      )
+    !isDefaultClassroom
+    && (
+      viewingPreview
+        ? (
+          draftSyllabus !== undefined
+            ? draftSyllabus
+            : syllabus
+        )
+        : (
+          inEditMode
+            ? true
+            : syllabus
+        )
+    )
   )
 
   const showIntroduction = !!(
+    !isDefaultClassroom
+    && (
+      viewingPreview
+        ? nonEmpty(
+          draftIntroduction !== undefined
+            ? draftIntroduction
+            : introduction
+        )
+        : (
+          inEditMode
+            ? true
+            : nonEmpty(introduction)
+        )
+    )
+  )
+
+  const showLTIConfigurations = !!(
     viewingPreview
-      ? nonEmpty(
-        draftIntroduction !== undefined
-          ? draftIntroduction
-          : introduction
+      ? (
+        draftLTIConfigurations !== undefined
+          ? draftLTIConfigurations
+          : lti_configurations
       )
       : (
         inEditMode
           ? true
-          : nonEmpty(introduction)
+          : lti_configurations
       )
   )
 
@@ -186,6 +208,17 @@ const FrontMatter = React.memo(({
         />
       ),
     }]),
+    ...(!showLTIConfigurations ? [] : [{
+      title: i18n("LTI Configurations", "", "enhanced"),
+      content: (
+        <LTIConfigurations
+          bookId={bookId}
+          inEditMode={inEditMode}
+          viewingPreview={viewingPreview}
+          goUpdateClassroom={goUpdateClassroom}
+        />
+      ),
+    }]),
     // {
     //   title: i18n("Options", "", "enhanced"),
     //   content: (
@@ -203,7 +236,14 @@ const FrontMatter = React.memo(({
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.heading}>
-          {i18n("Front matter", "", "enhanced")}
+          {isDefaultClassroom
+            ? i18n("Settings", "", "enhanced")
+            : (
+              inEditMode
+                ? i18n("Front matter and options", "", "enhanced")
+                : i18n("Front matter", "", "enhanced")
+            )
+          }
         </Text>
         {(inEditMode && !viewingPreview) &&
           <StatusAndActions

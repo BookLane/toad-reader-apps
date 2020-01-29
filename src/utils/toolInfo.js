@@ -73,8 +73,27 @@ export const getToolInfo = () => {
           name: 'url',
           type: 'string',
           label: i18n("Launch URL", "", "enhanced"),
+          isHiddenWithMessage: ({ data, classroomUid }) => {
+            const { originalClassroomUid } = (data || {}).ltiConfigurationRestriction || {}
+
+            return (
+              originalClassroomUid
+              && originalClassroomUid !== classroomUid
+              && i18n("Created by the publisher. You may remove this tool, but you may not edit it.")
+            )
+          },
         },
       ],
+      transformData: ({ data, classroomUid, isDefaultClassroom }) => {
+        if(isDefaultClassroom) {
+          if(!data.ltiConfigurationRestriction) {
+            data.ltiConfigurationRestriction = {}
+          }
+          if(!data.ltiConfigurationRestriction.originalClassroomUid) {
+            data.ltiConfigurationRestriction.originalClassroomUid = classroomUid
+          }
+        }
+      },
       readyToPublish: ({ url }) => validUrl(url),
     },
     {
