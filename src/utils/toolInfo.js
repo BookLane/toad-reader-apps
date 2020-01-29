@@ -15,7 +15,7 @@ export const getToolInfo = () => {
           placeholder: i18n("Enter your notes here.", "", "enhanced"),
         },
       ],
-      readyToPublish: ({ content }) => nonEmpty(content),
+      readyToPublish: ({ data: { content } }) => nonEmpty(content),
     },
     {
       toolType: 'QUIZ',
@@ -51,7 +51,7 @@ export const getToolInfo = () => {
           label: i18n("Shuffle questions on each attempt", "", "enhanced"),
         },
       ],
-      readyToPublish: ({ questions=[] }) => (
+      readyToPublish: ({ data: { questions=[] } }) => (
         questions.length > 0
         && questions.every(({ question, answers=[], answersSelection }) => (
           nonEmpty(question)
@@ -73,28 +73,38 @@ export const getToolInfo = () => {
           name: 'url',
           type: 'string',
           label: i18n("Launch URL", "", "enhanced"),
-          isHiddenWithMessage: ({ data, classroomUid }) => {
-            const { originalClassroomUid } = (data || {}).ltiConfigurationRestriction || {}
+          isHiddenWithMessage: ({ data, isDefaultClassroom }) => {
+            const { defaultClassroomOnly } = (data || {}).ltiConfigurationRestrictions || {}
 
             return (
-              originalClassroomUid
-              && originalClassroomUid !== classroomUid
+              defaultClassroomOnly
+              && !isDefaultClassroom
               && i18n("Created by the publisher. You may remove this tool, but you may not edit it.")
             )
           },
         },
       ],
-      transformData: ({ data, classroomUid, isDefaultClassroom }) => {
+      transformData: ({ data, isDefaultClassroom }) => {
         if(isDefaultClassroom) {
-          if(!data.ltiConfigurationRestriction) {
-            data.ltiConfigurationRestriction = {}
+          if(!data.ltiConfigurationRestrictions) {
+            data.ltiConfigurationRestrictions = {}
           }
-          if(!data.ltiConfigurationRestriction.originalClassroomUid) {
-            data.ltiConfigurationRestriction.originalClassroomUid = classroomUid
-          }
+          data.ltiConfigurationRestrictions.defaultClassroomOnly = true
         }
       },
-      readyToPublish: ({ url }) => validUrl(url),
+      readyToPublish: ({ data, classroom }) => {
+        const { url, ltiConfigurationRestrictions } = data || {}
+        const { defaultClassroomOnly } = ltiConfigurationRestrictions || {}
+        const { lti_configurations=[] } = classroom
+
+        return (
+          validUrl(url)
+          && lti_configurations.some(({ domain, createdByPublisher }) => (
+            url.replace(/^https?:\/\/([^\/]*).*$/, '$1') === domain
+            && !!createdByPublisher === !!defaultClassroomOnly
+          ))
+        )
+      },
     },
     {
       toolType: 'VIDEO',
@@ -122,7 +132,7 @@ export const getToolInfo = () => {
           placeholder: 'Eg. 12:14',
         },
       ],
-      readyToPublish: ({ videoLink }) => validUrl(videoLink),
+      readyToPublish: ({ data: { videoLink } }) => validUrl(videoLink),
     },
     // {
     //   toolType: 'DISCUSSION_QUESTION',
@@ -149,7 +159,7 @@ export const getToolInfo = () => {
           label: i18n("Question", "", "enhanced"),
         },
       ],
-      readyToPublish: ({ question }) => nonEmpty(question),
+      readyToPublish: ({ data: { question } }) => nonEmpty(question),
     },
     // {
     //   toolType: 'POLL',

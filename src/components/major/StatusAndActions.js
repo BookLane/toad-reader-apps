@@ -164,22 +164,22 @@ const StatusAndActions = React.memo(({
         )
     )
 
-  const isRestricted = originalClassroomUid => (
-    originalClassroomUid === defaultClassroomUid
+  const isRestricted = createdByPublisher => (
+    createdByPublisher
     && bookVersion !== 'PUBLISHER'
   )
 
   const isReadyToPublish = viewingFrontMatter
     ? (
-      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret, originalClassroomUid }) => (
+      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret, createdByPublisher }) => (
         validDomain(domain)
         && (
-          isRestricted(originalClassroomUid)
+          isRestricted(createdByPublisher)
           || (key && secret)
         )
       ))
     )
-    : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
+    : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
 
   return (
     <View

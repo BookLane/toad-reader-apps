@@ -166,7 +166,7 @@ const EditToolData = React.memo(({
         dataSegment.splice(spliceFrom, dataSegment.length)
       }
 
-      transformData && transformData({ data, classroomUid, isDefaultClassroom })
+      transformData && transformData({ data, isDefaultClassroom })
 
       setDataInEdit(data)
       setToolDataSaveTimeout(
@@ -231,7 +231,7 @@ const EditToolData = React.memo(({
             return null
           }
 
-          const hiddenMessage = isHiddenWithMessage({ data, dataSegment, classroomUid })
+          const hiddenMessage = isHiddenWithMessage({ data, dataSegment, isDefaultClassroom })
 
           return (
             <View key={id} style={styles.dataLine}>

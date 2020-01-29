@@ -38,15 +38,15 @@ const LTIConfigurations = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, isDefaultClassroom, defaultClassroomUid, hasDraftData, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, isDefaultClassroom, hasDraftData, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
 
   const transformData = useCallback(
-    ({ data, classroomUid }) => {
+    ({ data }) => {
       data.lti_configurations.forEach(ltiConfiguration => {
-        if(!ltiConfiguration.originalClassroomUid) {
-          ltiConfiguration.originalClassroomUid = classroomUid
+        if(isDefaultClassroom) {
+          ltiConfiguration.createdByPublisher = true
         }
         if(ltiConfiguration.domain) {
           ltiConfiguration.domain = ltiConfiguration.domain.trim()
@@ -78,8 +78,8 @@ const LTIConfigurations = React.memo(({
     data.lti_configurations = lti_configurations
   }
 
-  const isRestricted = originalClassroomUid => (
-    originalClassroomUid === defaultClassroomUid
+  const isRestricted = createdByPublisher => (
+    createdByPublisher
     && bookVersion !== 'PUBLISHER'
   )
 
@@ -101,10 +101,10 @@ const LTIConfigurations = React.memo(({
                 label: i18n("Domain", "", "enhanced"),
                 placeholder: i18n("Eg. toadreader.com"),
                 isHiddenWithMessage: ({ dataSegment }) => {
-                  const { originalClassroomUid } = dataSegment
+                  const { createdByPublisher } = dataSegment
 
                   return (
-                    isRestricted(originalClassroomUid)
+                    isRestricted(createdByPublisher)
                     && i18n("{{domain}} (Configured by the publisher. Used by LTI tools from the Book Default.)", dataSegment)
                   )
                 },
@@ -113,13 +113,13 @@ const LTIConfigurations = React.memo(({
                 name: 'key',
                 type: 'string',
                 label: i18n("Key", "", "enhanced"),
-                isHidden: ({ dataSegment: { originalClassroomUid } }) => isRestricted(originalClassroomUid),
+                isHidden: ({ dataSegment: { createdByPublisher } }) => isRestricted(createdByPublisher),
               },
               {
                 name: 'secret',
                 type: 'string',
                 label: i18n("Secret", "", "enhanced"),
-                isHidden: ({ dataSegment: { originalClassroomUid } }) => isRestricted(originalClassroomUid),
+                isHidden: ({ dataSegment: { createdByPublisher } }) => isRestricted(createdByPublisher),
               },
             ],
             addLabel: i18n("Add another LTI configuration", "", "enhanced"),
@@ -136,17 +136,17 @@ const LTIConfigurations = React.memo(({
   return (
     <View style={styles.container}>
       {(data.lti_configurations || [])
-        .filter(({ domain, key, secret, originalClassroomUid }) => (
+        .filter(({ domain, key, secret, createdByPublisher }) => (
           validDomain(domain)
           && (
-            isRestricted(originalClassroomUid)
+            isRestricted(createdByPublisher)
             || (key && secret)
           )
         ))
-        .map(({ domain, originalClassroomUid }) => (
+        .map(({ domain, createdByPublisher }) => (
           <Text style={styles.previewLine}>
             {domain}
-            {isRestricted(originalClassroomUid) &&
+            {isRestricted(createdByPublisher) &&
               <Text style={styles.byPublisher}>
                 {" "}
                 {i18n("Configured by the publisher. Used by LTI tools from the Book Default.")}
