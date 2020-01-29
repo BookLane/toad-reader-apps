@@ -136,14 +136,11 @@ const LTIConfigurations = React.memo(({
   return (
     <View style={styles.container}>
       {(data.lti_configurations || [])
-        .filter(({ domain, key="", secret="", originalClassroomUid }) => (
+        .filter(({ domain, key, secret, originalClassroomUid }) => (
           validDomain(domain)
           && (
             isRestricted(originalClassroomUid)
-            || (
-              key.trim()
-              && secret.trim()
-            )
+            || (key && secret)
           )
         ))
         .map(({ domain, originalClassroomUid }) => (

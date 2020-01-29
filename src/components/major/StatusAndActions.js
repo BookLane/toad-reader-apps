@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Button } from "react-native-ui-kitten"
 
 import { i18n } from "inline-i18n"
-// import {  } from '../../utils/toolbox'
+import { validDomain } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
 
 import useWideMode from "../../hooks/useWideMode"
@@ -64,7 +64,8 @@ const StatusAndActions = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+  const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
+          hasDraftData, defaultClassroomUid, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
@@ -163,8 +164,21 @@ const StatusAndActions = React.memo(({
         )
     )
 
+  const isRestricted = originalClassroomUid => (
+    originalClassroomUid === defaultClassroomUid
+    && bookVersion !== 'PUBLISHER'
+  )
+
   const isReadyToPublish = viewingFrontMatter
-    ? true
+    ? (
+      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret, originalClassroomUid }) => (
+        validDomain(domain)
+        && (
+          isRestricted(originalClassroomUid)
+          || (key && secret)
+        )
+      ))
+    )
     : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish(selectedTool.data)
 
   return (
