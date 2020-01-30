@@ -164,24 +164,17 @@ const StatusAndActions = React.memo(({
         )
     )
 
-  const isRestricted = createdByPublisher => (
-    createdByPublisher
-    && bookVersion !== 'PUBLISHER'
-  )
-
-  // make sure there is not more than a single LTI configuration per domain-createdByPublisher combo
+  // make sure there is not more than a single LTI configuration per domain
   const hasDuplicateLTIConfigs = ltiConfigurations => (
-    ltiConfigurations.length !== [...new Set(ltiConfigurations.map(({ domain, createdByPublisher }) => `${domain} ${!!createdByPublisher}`))].length
+    ltiConfigurations.length !== [...new Set(ltiConfigurations.map(({ domain }) => domain))].length
   )
 
   const isReadyToPublish = viewingFrontMatter
     ? (
-      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret, createdByPublisher }) => (
+      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret }) => (
         validDomain(domain)
-        && (
-          isRestricted(createdByPublisher)
-          || (key && secret)
-        )
+        && key
+        && secret
       ))
       && !hasDuplicateLTIConfigs((classroom.draftData || {}).lti_configurations || [])
     )

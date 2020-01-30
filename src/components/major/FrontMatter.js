@@ -164,7 +164,7 @@ const FrontMatter = React.memo(({
     )
   )
 
-  const showLTIConfigurations = ((
+  const showLTIConfigurations = !!(
     viewingPreview
       ? (
         draftLTIConfigurations !== undefined
@@ -176,7 +176,7 @@ const FrontMatter = React.memo(({
           ? [{}]  // i.e. show for sure
           : lti_configurations
       )
-  ) || []).some(({ createdByPublisher }) => (!createdByPublisher || isDefaultClassroom))
+  )
 
   const tabs = [
     ...(!showSyllabus ? [] : [{

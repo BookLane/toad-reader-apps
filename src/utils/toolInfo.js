@@ -74,10 +74,10 @@ export const getToolInfo = () => {
           type: 'string',
           label: i18n("Launch URL", "", "enhanced"),
           isHiddenWithMessage: ({ data, isDefaultClassroom }) => {
-            const { defaultClassroomOnly } = (data || {}).ltiConfigurationRestrictions || {}
+            const { fromDefaultClassroom } = data || {}
 
             return (
-              defaultClassroomOnly
+              fromDefaultClassroom
               && !isDefaultClassroom
               && i18n("Created by the publisher. You may remove this tool, but you may not edit it.")
             )
@@ -86,14 +86,11 @@ export const getToolInfo = () => {
       ],
       transformData: ({ data, isDefaultClassroom }) => {
         if(isDefaultClassroom) {
-          if(!data.ltiConfigurationRestrictions) {
-            data.ltiConfigurationRestrictions = {}
-          }
-          data.ltiConfigurationRestrictions.defaultClassroomOnly = true
+          data.fromDefaultClassroom = true
         }
       },
-      readyToPublish: ({ data: { url, ltiConfigurationRestrictions }, classroom }) => (
-        validLTIUrl({ url, ltiConfigurationRestrictions, classroom })
+      readyToPublish: ({ data: { url, fromDefaultClassroom }, classroom }) => (
+        validLTIUrl({ url, fromDefaultClassroom, classroom })
       ),
     },
     {

@@ -68,8 +68,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const enhancedIsOff = !classroomUid
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const hasEditableLTIConfigurations = ((classroom || {}).lti_configurations || []).filter(({ createdByPublisher }) => (!createdByPublisher || isDefaultClassroom)).length > 0
-  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || hasEditableLTIConfigurations)
+  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || (classroom || {}).lti_configurations)
   const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
@@ -84,15 +83,13 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
 
   const canViewEnhancedHomepage = myRole === 'INSTRUCTOR' && !isDefaultClassroom && !enhancedIsOff
 
-  const canViewFrontMatter = isDefaultClassroom
-    ? bookVersion === 'PUBLISHER'
-    : !!(
-      !enhancedIsOff
-      && (
-        hasFrontMatter
-        || inEditMode
-      )
+  const canViewFrontMatter = !!(
+    !enhancedIsOff
+    && (
+      hasFrontMatter
+      || inEditMode
     )
+  )
 
   if(
     !canViewEnhancedHomepage

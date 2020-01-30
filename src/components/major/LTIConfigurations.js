@@ -40,9 +40,6 @@ const LTIConfigurations = React.memo(({
   const transformData = useCallback(
     ({ data }) => {
       data.lti_configurations.forEach(ltiConfiguration => {
-        if(isDefaultClassroom) {
-          ltiConfiguration.createdByPublisher = true
-        }
         if(ltiConfiguration.domain) {
           ltiConfiguration.domain = ltiConfiguration.domain.trim()
           if(validUrl(ltiConfiguration.domain)) {
@@ -73,11 +70,6 @@ const LTIConfigurations = React.memo(({
     data.lti_configurations = lti_configurations
   }
 
-  const isRestricted = createdByPublisher => (
-    createdByPublisher
-    && bookVersion !== 'PUBLISHER'
-  )
-
   if(inEditMode && !viewingPreview) {
 
     return (
@@ -89,7 +81,6 @@ const LTIConfigurations = React.memo(({
         dataStructure={[
           {
             name: 'lti_configurations',
-            isHidden: ({ dataSegment: { createdByPublisher } }) => console.log('dataSegment here') || isRestricted(createdByPublisher),
             type: [
               {
                 name: 'domain',

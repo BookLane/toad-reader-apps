@@ -1,11 +1,14 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Linking } from "react-native"
+import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import { i18n } from "inline-i18n"
-import { validLTIUrl } from "../../utils/toolbox"
+import { validLTIUrl, getDataOrigin, safeFetch, getReqOptionsWithAdditions } from "../../utils/toolbox"
+
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useRouterState from "../../hooks/useRouterState"
 
 import Button from "../basic/Button"
 
@@ -27,27 +30,53 @@ const LTITool = React.memo(({
   toolUid,
 
   url,
-  ltiConfigurationRestrictions,
+  fromDefaultClassroom,
 
+  idps,
+  accounts,
   books,
   userDataByBookId,
+
+  history,
 }) => {
 
-  const { classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { idpId, accountId, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { historyPush } = useRouterState({ history })
 
   const launch = useCallback(
-    () =>  {
-      alert('go!')
+    async () =>  {
 
-      // get a JWT from the backend which includes expiry time, lti link, info to post to that link
-      // fetch
+      try {
 
-      // open https://za.read.biblemesh.com/lti/{jwt} in a new tab
+        // get a JWT from the backend which includes expiry time, lti link, info to post to that link
+        const getLaunchLinkUrl = `${getDataOrigin(idps[idpId])}/getltilaunchlink/${toolUid}`
+        const response = await safeFetch(getLaunchLinkUrl, getReqOptionsWithAdditions({
+          headers: {
+            "x-cookie-override": accounts[accountId].cookie,
+          },
+        }))
+
+        if(response.status !== 200) {
+          throw new Error('Server-side error.')
+        }
+
+        const { success, error, launchLink } = await response.json()
+
+        if(!success) {
+          throw new Error(error)
+        }
+
+        Linking.openURL(launchLink)
+
+      } catch(err) {
+        historyPush("/error", err)
+      }
+
     },
     [],
   )
 
-  const invalidSetup = !validLTIUrl({ url, ltiConfigurationRestrictions, classroom })
+  const invalidSetup = !validLTIUrl({ url, fromDefaultClassroom, classroom })
 
   return (
     <View style={styles.container}>
@@ -62,14 +91,16 @@ const LTITool = React.memo(({
       </View>
       {!!invalidSetup &&
         <Text style={styles.noLTISetup}>
-          {i18n("There is not a LTI configuration with a domain matching this tool’s url.")}
+          {i18n("There is not a LTI configuration with a domain matching this tool’s Launch URL.")}
         </Text>
       }
     </View>
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+  idps,
+  accounts,
   books,
   userDataByBookId,
 })
@@ -77,4 +108,4 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(LTITool)
+export default withRouter(connect(mapStateToProps, matchDispatchToProps)(LTITool))
