@@ -1,5 +1,5 @@
 import { i18n } from "inline-i18n"
-import { nonEmpty, validUrl } from './toolbox'
+import { nonEmpty, validUrl, validLTIUrl } from './toolbox'
 
 export const getToolInfo = () => {
   const toolTypes = [
@@ -92,19 +92,9 @@ export const getToolInfo = () => {
           data.ltiConfigurationRestrictions.defaultClassroomOnly = true
         }
       },
-      readyToPublish: ({ data, classroom }) => {
-        const { url, ltiConfigurationRestrictions } = data || {}
-        const { defaultClassroomOnly } = ltiConfigurationRestrictions || {}
-        const { lti_configurations=[] } = classroom
-
-        return (
-          validUrl(url)
-          && lti_configurations.some(({ domain, createdByPublisher }) => (
-            url.replace(/^https?:\/\/([^\/]*).*$/, '$1') === domain
-            && !!createdByPublisher === !!defaultClassroomOnly
-          ))
-        )
-      },
+      readyToPublish: ({ data: { url, ltiConfigurationRestrictions }, classroom }) => (
+        validLTIUrl({ url, ltiConfigurationRestrictions, classroom })
+      ),
     },
     {
       toolType: 'VIDEO',

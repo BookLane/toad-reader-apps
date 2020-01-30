@@ -9,6 +9,7 @@ import VideoTool from './VideoTool'
 import ReflectionQuestionTool from './ReflectionQuestionTool'
 import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
+import LTITool from "./LTITool"
 
 const styles = StyleSheet.create({
   topSection: {
@@ -80,6 +81,10 @@ const Tool = React.memo(({
     }
     case 'QUIZ': {
       ToolComponent = QuizTool
+      break
+    }
+    case 'LTI': {
+      ToolComponent = LTITool
       break
     }
   }
