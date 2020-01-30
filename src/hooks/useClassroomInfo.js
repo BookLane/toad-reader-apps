@@ -66,18 +66,27 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   }
 
   const enhancedIsOff = !classroomUid
-  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || (classroom || {}).lti_configurations)
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
+  const hasEditableLTIConfigurations = ((classroom || {}).lti_configurations || []).filter(({ createdByPublisher }) => (!createdByPublisher || isDefaultClassroom)).length > 0
+  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || hasEditableLTIConfigurations)
   const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
+
+  if(rawInEditMode !== undefined) {
+    inEditMode = !!(
+      rawInEditMode
+      && iCanEdit
+      && !['ENHANCED HOMEPAGE'].includes(selectedToolUid)
+    )
+  }
 
   const canViewEnhancedHomepage = myRole === 'INSTRUCTOR' && !isDefaultClassroom && !enhancedIsOff
 
   const canViewFrontMatter = isDefaultClassroom
     ? bookVersion === 'PUBLISHER'
-    : (
+    : !!(
       !enhancedIsOff
       && (
         hasFrontMatter
@@ -97,14 +106,6 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     && selectedToolUid === 'FRONT MATTER'
   ) {
     selectedToolUid = null
-  }
-
-  if(rawInEditMode !== undefined) {
-    inEditMode = !!(
-      rawInEditMode
-      && iCanEdit
-      && !['ENHANCED HOMEPAGE'].includes(selectedToolUid)
-    )
   }
 
   if(
@@ -197,7 +198,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     selectedToolUid,  // requires userDataByBookId and inEditMode to be sent in to be most accurate
     selectedTool,  // requires userDataByBookId and inEditMode to be sent in
     viewingEnhancedHomepage,
-    viewingFrontMatter,
+    viewingFrontMatter,  // requires inEditMode to be sent in
     instructorHighlights,  // requires userDataByBookId to be sent in
     draftToolByCurrentlyPublishedToolUid,  // requires userDataByBookId to be sent in
     visibleTools,  // requires userDataByBookId and inEditMode to be sent in

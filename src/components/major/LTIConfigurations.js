@@ -21,11 +21,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
   },
-  byPublisher: {
-    marginLeft: 5,
-    fontWeight: '200',
-    fontSize: 12,
-  },
 })
 
 const LTIConfigurations = React.memo(({
@@ -94,32 +89,23 @@ const LTIConfigurations = React.memo(({
         dataStructure={[
           {
             name: 'lti_configurations',
+            isHidden: ({ dataSegment: { createdByPublisher } }) => console.log('dataSegment here') || isRestricted(createdByPublisher),
             type: [
               {
                 name: 'domain',
                 type: 'string',
                 label: i18n("Domain", "", "enhanced"),
                 placeholder: i18n("Eg. toadreader.com"),
-                isHiddenWithMessage: ({ dataSegment }) => {
-                  const { createdByPublisher } = dataSegment
-
-                  return (
-                    isRestricted(createdByPublisher)
-                    && i18n("{{domain}} (Configured by the publisher. Used by LTI tools from the Book Default.)", dataSegment)
-                  )
-                },
               },
               {
                 name: 'key',
                 type: 'string',
                 label: i18n("Key", "", "enhanced"),
-                isHidden: ({ dataSegment: { createdByPublisher } }) => isRestricted(createdByPublisher),
               },
               {
                 name: 'secret',
                 type: 'string',
                 label: i18n("Secret", "", "enhanced"),
-                isHidden: ({ dataSegment: { createdByPublisher } }) => isRestricted(createdByPublisher),
               },
             ],
             addLabel: i18n("Add another LTI configuration", "", "enhanced"),
@@ -136,22 +122,14 @@ const LTIConfigurations = React.memo(({
   return (
     <View style={styles.container}>
       {(data.lti_configurations || [])
-        .filter(({ domain, key, secret, createdByPublisher }) => (
+        .filter(({ domain, key, secret }) => (
           validDomain(domain)
-          && (
-            isRestricted(createdByPublisher)
-            || (key && secret)
-          )
+          && key
+          && secret
         ))
-        .map(({ domain, createdByPublisher }) => (
+        .map(({ domain }) => (
           <Text style={styles.previewLine}>
             {domain}
-            {isRestricted(createdByPublisher) &&
-              <Text style={styles.byPublisher}>
-                {" "}
-                {i18n("Configured by the publisher. Used by LTI tools from the Book Default.")}
-              </Text>
-            }
           </Text>
         ))
       }

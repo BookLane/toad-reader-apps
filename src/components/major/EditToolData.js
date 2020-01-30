@@ -96,6 +96,9 @@ const styles = StyleSheet.create({
     ...trashButtonStyles,
     backgroundColor: 'transparent',
   },
+  hidden: {
+    display: 'none',
+  },
 })
 
 const EditToolData = React.memo(({
@@ -224,13 +227,13 @@ const EditToolData = React.memo(({
 
       const id = ['tooldata', ...dataNameStack, name].join('.')
 
+      if(isHidden({ dataSegment })) {
+        return null
+      }
+
       switch(type) {
 
         case 'string': {
-          if(isHidden({ dataSegment })) {
-            return null
-          }
-
           const hiddenMessage = isHiddenWithMessage({ data, dataSegment, isDefaultClassroom })
 
           return (
@@ -471,7 +474,7 @@ const EditToolData = React.memo(({
                 {simpleArray
                   ? (
                     dataArray.map((x, idx) => (
-                      <View key={idx} style={styles.simpleArrayContainer}>
+                      <View key={idx} style={isHidden({ dataSegment: dataArray[idx] }) ? styles.hidden : styles.simpleArrayContainer}>
                         {getDataStructureSet({
                           dataStructure: [{
                             name: idx,
@@ -489,7 +492,7 @@ const EditToolData = React.memo(({
                   )
                   : (
                     dataArray.map((item, idx) => (
-                      <View key={idx} style={styles.componentSetInArray}>
+                      <View key={idx} style={isHidden({ dataSegment: dataArray[idx] }) ? styles.hidden : styles.componentSetInArray}>
                         {getDataStructureSet({
                           dataStructure: type,
                           dataSegment: item,

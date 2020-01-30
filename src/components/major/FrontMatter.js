@@ -103,7 +103,7 @@ const FrontMatter = React.memo(({
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
-  const { classroom, viewingFrontMatter, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroom, viewingFrontMatter, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
@@ -164,7 +164,7 @@ const FrontMatter = React.memo(({
     )
   )
 
-  const showLTIConfigurations = !!(
+  const showLTIConfigurations = ((
     viewingPreview
       ? (
         draftLTIConfigurations !== undefined
@@ -173,10 +173,10 @@ const FrontMatter = React.memo(({
       )
       : (
         inEditMode
-          ? true
+          ? [{}]  // i.e. show for sure
           : lti_configurations
       )
-  )
+  ) || []).some(({ createdByPublisher }) => (!createdByPublisher || isDefaultClassroom))
 
   const tabs = [
     ...(!showSyllabus ? [] : [{

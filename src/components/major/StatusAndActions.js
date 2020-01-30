@@ -65,7 +65,7 @@ const StatusAndActions = React.memo(({
 }) => {
 
   const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
-          hasDraftData, defaultClassroomUid, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+          hasDraftData, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
