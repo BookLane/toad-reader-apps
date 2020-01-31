@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, Platform, Linking, Alert } from "react-native"
+import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
@@ -12,7 +12,7 @@ import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { removeEpub } from "../../utils/removeEpub"
-import { getFirstBookLinkInfo, getIdsFromAccountId } from "../../utils/toolbox"
+import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 
@@ -59,13 +59,7 @@ const BookHeader = React.memo(({
   const goToBookLink = useCallback(
     () => {
       const bookLinkInfo = getFirstBookLinkInfo(book)
-
-      Linking.openURL(bookLinkInfo.href).catch(err => {
-        console.log('ERROR: Request to open URL failed.', err)
-        historyPush("/error", {
-          message: i18n("Your device is not allowing us to open this link."),
-        })
-      })
+      openURL({ url: bookLinkInfo.href, newTab: false, historyPush })
     },
     [ book ],
   )

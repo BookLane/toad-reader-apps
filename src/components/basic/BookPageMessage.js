@@ -1,8 +1,9 @@
 import React, { useCallback } from "react"
-import { StyleSheet, TouchableOpacity, Linking, View, Text, Alert } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Text, Alert } from "react-native"
 import { withRouter } from "react-router"
-import { i18n } from "inline-i18n"
+// import { i18n } from "inline-i18n"
 
+import { openURL } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
 
 const styles = StyleSheet.create({
@@ -33,14 +34,8 @@ const BookPageMessage = ({
     () =>  {
       if(moreInfoText) {
         Alert.alert(text, moreInfoText)
-
       } else if(externalHref) {
-        Linking.openURL(externalHref).catch(err => {
-          console.log('ERROR: Request to open URL failed.', err)
-          historyPush("/error", {
-            message: i18n("Your device is not allowing us to open this link."),
-          })
-        })
+        openURL({ url: externalHref, historyPush })
       }
     },
     [ moreInfoText, externalHref, history ],

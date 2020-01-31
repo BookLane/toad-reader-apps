@@ -1,11 +1,11 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text, Linking } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import { i18n } from "inline-i18n"
-import { validLTIUrl, getDataOrigin, safeFetch, getReqOptionsWithAdditions } from "../../utils/toolbox"
+import { validLTIUrl, getDataOrigin, safeFetch, getReqOptionsWithAdditions, openURL } from "../../utils/toolbox"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
@@ -66,7 +66,7 @@ const LTITool = React.memo(({
           throw new Error(error)
         }
 
-        Linking.openURL(launchLink)
+        openURL({ url: launchLink, historyPush })
 
       } catch(err) {
         historyPush("/error", err)

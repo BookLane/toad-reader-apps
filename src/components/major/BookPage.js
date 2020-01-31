@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { View, Linking, Platform, StyleSheet } from "react-native"
+import { View, Platform, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
 import { i18n } from "inline-i18n"
 
@@ -13,7 +13,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX, iPhoneXFooter } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX, iPhoneXFooter, openURL } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
@@ -291,12 +291,7 @@ const BookPage = React.memo(props => {
         }
 
         case 'openURL': {
-          Linking.openURL(data.payload.url).catch(err => {
-            console.log('ERROR: Request to open URL failed.', err)
-            historyPush("/error", {
-              message: i18n("Your device is not allowing us to open this link."),
-            })
-          })
+          openURL({ url: data.payload.url, historyPush })
           return true
         }
 

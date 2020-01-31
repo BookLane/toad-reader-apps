@@ -4,11 +4,11 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { withRouter } from "react-router"
-import { Image, StyleSheet, Linking, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
+import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "react-native-ui-kitten"
 import { i18n } from "inline-i18n"
-import { getIdsFromAccountId } from "../../utils/toolbox"
+import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
@@ -203,14 +203,7 @@ const AppMenu = ({
   )
 
   const goToToadReaderMarketingSite = useCallback(
-    () => {
-      Linking.openURL("https://toadreader.com").catch(err => {
-        console.log('ERROR: Request to open URL failed.', err)
-        historyPush("/error", {
-          message: i18n("Your device is not allowing us to open this link."),
-        })
-      })
-    },
+    () => openURL({ url: "https://toadreader.com", historyPush }),
     [ history ],
   )
 

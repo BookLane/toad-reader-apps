@@ -387,7 +387,7 @@ export const textToReactNative = text => {
               <Text
                 style={{ color: 'blue' }}
                 onPress={() => {
-                  Linking.openURL(linkWithSchemeRegEx.test(piece) ? piece : `https://${piece}`)
+                  openURL({ url: linkWithSchemeRegEx.test(piece) ? piece : `https://${piece}` })
                 }}
               >
                 {piece}
@@ -465,4 +465,19 @@ export const validLTIUrl = ({ url, fromDefaultClassroom, classroom }) => {
       ))
     )
   )
+}
+
+export const openURL = ({ url, newTab=true, historyPush }) => {
+  if(Platform.OS === 'web' && newTab) {
+    const urlToOpen = new URL(url, window.location).toString()
+    window.open(urlToOpen, '_blank')
+    return
+  }
+
+  Linking.openURL(url).catch(err => {
+    console.log('ERROR: Request to open URL failed.', err)
+    historyPush && historyPush("/error", {
+      message: i18n("Your device is not allowing us to open this link."),
+    })
+  })
 }
