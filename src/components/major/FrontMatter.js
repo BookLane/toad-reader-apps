@@ -101,6 +101,7 @@ const FrontMatter = React.memo(({
 }) => {
 
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
+  const [ previewSelectedTabIndex, setPreviewSelectedTabIndex ] = useState(0)
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
   const { classroom, viewingFrontMatter, isDefaultClassroom, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
@@ -233,7 +234,8 @@ const FrontMatter = React.memo(({
 
   if(tabs.length === 0 && !viewingPreview) return null
 
-  const correctedSelectedTabIndex = Math.min(selectedTabIndex || 0, tabs.length - 1)
+  const tabIndex = viewingPreview ? previewSelectedTabIndex : selectedTabIndex
+  const setTabIndex = viewingPreview ? setPreviewSelectedTabIndex : setSelectedTabIndex
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
@@ -265,16 +267,17 @@ const FrontMatter = React.memo(({
       {tabs.length > 0 &&
         <>
           <ScrollView
+            key={viewingPreview ? `preview-tabs` : `draft-tabs`}
             style={styles.tabs}
             horizontal={true}
           >
             {tabs.map(({ title }, idx) => (
               <TouchableOpacity
                 key={idx}
-                onPress={() => setSelectedTabIndex(idx)}
+                onPress={() => setTabIndex(idx)}
               >
                 <Text
-                  style={idx === correctedSelectedTabIndex ? styles.selectedTabTitle : styles.tabTitle}
+                  style={idx === tabIndex ? styles.selectedTabTitle : styles.tabTitle}
                 >
                   {title}
                 </Text>
@@ -282,9 +285,10 @@ const FrontMatter = React.memo(({
             ))}
           </ScrollView>
           <ViewPager
+            key={viewingPreview ? `preview-content` : `draft-content`}
             style={styles.tabsContent}
-            selectedIndex={correctedSelectedTabIndex}
-            onSelect={setSelectedTabIndex}
+            selectedIndex={tabIndex}
+            onSelect={setTabIndex}
           >
             {tabs.map(({ content }, idx) => (
               <ScrollView
