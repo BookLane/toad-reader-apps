@@ -115,7 +115,7 @@ const QuizTool = React.memo(({
         ...q.question,
         answers: (q.question.answers || []).map((answer, origAnswerIdx) => ({ answer, origAnswerIdx })),
       }
-      if(shuffle) {
+      if(q.question.shuffle) {
         q.question.answers = shuffleArray(q.question.answers)
       }
     })
