@@ -68,8 +68,15 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const enhancedIsOff = !classroomUid
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const hasFrontMatter = !!((classroom || {}).syllabus || (classroom || {}).introduction || (classroom || {}).lti_configurations)
   const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
+  const hasFrontMatter = !!(
+    (classroom || {}).syllabus
+    || (classroom || {}).introduction
+    || (
+      ((classroom || {}).lti_configurations || []).length > 0
+      && bookVersion === 'PUBLISHER'
+    )
+  )
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = (bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom)
 
