@@ -3,7 +3,7 @@ import Constants from 'expo-constants'
 import './src/themes/style'
 // import * as Font from 'expo-font'
 
-import { AppLoading, Updates } from "expo"
+import { SplashScreen, Updates, AppLoading } from "expo"
 import { AsyncStorage, Platform, StatusBar } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
@@ -27,6 +27,7 @@ import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
 import { getDataOrigin } from './src/utils/toolbox'
 
+import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
 import CoverAndSpin from "./src/components/basic/CoverAndSpin"
 
@@ -62,8 +63,13 @@ const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
 setStore(store)
 
+SplashScreen.preventAutoHide()
+
 const App = () => {
 
+  const [ isFirstRender, setIsFirstRender ] = useState(true)
+  const [ showDelayText, setShowDelayText ] = useState(false)
+  const [ isLoaded, setIsLoaded ] = useState(false)
   const [ isReady, setIsReady ] = useState(false)
   const [ theme, setTheme ] = useState('lightTheme')
 
@@ -77,6 +83,8 @@ const App = () => {
     [],
   )
 
+  useEffect(() => { setIsFirstRender(false) }, [])
+
   useEffect(
     () => {
       (async () => {
@@ -84,6 +92,15 @@ const App = () => {
         let initialTasksComplete = false
         let newVersionCheckComplete = false
         let updateExists = false
+
+        // record number of opens
+        const numUserOpensKey = `numUserOpens`
+        const numUserOpens = (parseInt(await AsyncStorage.getItem(numUserOpensKey), 10) || 0) + 1
+        await AsyncStorage.setItem(numUserOpensKey, `${numUserOpens}`)
+
+        if(Platform.OS !== 'web' && !__DEV__ && numUserOpens === 1) {
+          setShowDelayText(true)
+        }
 
         const setIsReadyIfReady = force => {
           if(
@@ -103,7 +120,7 @@ const App = () => {
           }
         }
 
-        if(Platform.OS !== 'web') {
+        if(Platform.OS !== 'web' && !__DEV__) {
           // listen for a new version
           Updates.fetchUpdateAsync({
             eventListener: ({ type }) => {
@@ -179,15 +196,13 @@ const App = () => {
           StatusBar.setBarStyle('dark-content')
         }
 
-        // record number of opens
-        const numUserOpensKey = `numUserOpens`
-        const numUserOpens = (parseInt(await AsyncStorage.getItem(numUserOpensKey), 10) || 0) + 1
-        await AsyncStorage.setItem(numUserOpensKey, `${numUserOpens}`)
+        setIsLoaded(true)
 
         initialTasksComplete = true
 
-        if(Platform.OS !== 'web' && numUserOpens === 1 && !newVersionCheckComplete) {
-          setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*10)
+        if(Platform.OS !== 'web' && !__DEV__ && numUserOpens === 1 && !newVersionCheckComplete) {
+          // only wait for 6 seconds at most
+          setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*6)
         } else {
           setIsReadyIfReady(true)
         }
@@ -202,29 +217,37 @@ const App = () => {
 
   const Loading = Platform.OS === 'web' ? CoverAndSpin : AppLoading
 
-  if(!isReady) {
+  if(isFirstRender) {
+    // needed to prevent an ugly flash on android
     return <Loading />
   }
 
   return (
-    <Router>
-      <ApplicationProvider
-        mapping={mapping}
-        customMapping={customMapping}
-        theme={themes[theme]}
-      >
-        <SafeAreaProvider>
-          <Provider store={store}>
-            <PersistGate 
-              persistor={persistor} 
-              loading={<Loading />}
-            >
-              <Library changeTheme={changeTheme} />
-            </PersistGate>
-          </Provider>
-        </SafeAreaProvider>
-      </ApplicationProvider>
-    </Router>
+    <>
+      {!!isLoaded &&
+        <Router>
+          <ApplicationProvider
+            mapping={mapping}
+            customMapping={customMapping}
+            theme={themes[theme]}
+          >
+            <SafeAreaProvider>
+              <Provider store={store}>
+                <PersistGate persistor={persistor}>
+                  <Library changeTheme={changeTheme} />
+                </PersistGate>
+              </Provider>
+            </SafeAreaProvider>
+          </ApplicationProvider>
+        </Router>
+      }
+      {Platform.OS !== 'web' &&
+        <Splash
+          showDelayText={showDelayText}
+          isReady={isReady}
+        />
+      }
+    </>
   )
 }
 
