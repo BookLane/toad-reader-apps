@@ -70,6 +70,7 @@ const App = () => {
   const [ isFirstRender, setIsFirstRender ] = useState(true)
   const [ showDelayText, setShowDelayText ] = useState(false)
   const [ isLoaded, setIsLoaded ] = useState(false)
+  const [ updateExists, setUpdateExists ] = useState(false)
   const [ isReady, setIsReady ] = useState(false)
   const [ theme, setTheme ] = useState('lightTheme')
 
@@ -91,7 +92,6 @@ const App = () => {
 
         let initialTasksComplete = false
         let newVersionCheckComplete = false
-        let updateExists = false
 
         // record number of opens
         const numUserOpensKey = `numUserOpens`
@@ -111,11 +111,7 @@ const App = () => {
             )
           ) {
 
-            if(updateExists) {
-              Updates.reloadFromCache()
-            } else {
-              setIsReady(true)
-            }
+            setIsReady(true)
 
           }
         }
@@ -125,7 +121,7 @@ const App = () => {
           Updates.fetchUpdateAsync({
             eventListener: ({ type }) => {
               if(type === Updates.EventType.DOWNLOAD_FINISHED) {
-                updateExists = true
+                setUpdateExists(true)
               }
 
               if(
@@ -202,7 +198,7 @@ const App = () => {
 
         if(Platform.OS !== 'web' && !__DEV__ && numUserOpens === 1 && !newVersionCheckComplete) {
           // only wait for 6 seconds at most
-          setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*6)
+          setInitialOpenTimeout(() => setIsReadyIfReady(true), 1000*5)
         } else {
           setIsReadyIfReady(true)
         }
@@ -245,6 +241,7 @@ const App = () => {
         <Splash
           showDelayText={showDelayText}
           isReady={isReady}
+          updateExists={updateExists}
         />
       }
     </>

@@ -186,7 +186,7 @@ const EmailLogin = ({
                 disabled={stage === 'SENDING_EMAIL'}
                 autoCorrect={false}
                 autoCapitalize="none"
-                autoFocus={true}
+                // autoFocus={true}  // This is not good for the inital load
                 autoCompleteType="email"
                 keyboardType="email-address"
                 textContentType="emailAddress"

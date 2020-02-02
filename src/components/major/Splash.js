@@ -1,9 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Animated, StyleSheet, Dimensions } from 'react-native'
-import { SplashScreen } from 'expo'
+import { SplashScreen, Updates } from 'expo'
 import Constants from 'expo-constants'
 
-import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 
 const {
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
 const Splash = ({
   isReady,
   showDelayText,
+  updateExists,
 }) => {
 
   const splashAnimation = useRef(new Animated.Value(0)).current
@@ -65,19 +65,21 @@ const Splash = ({
   const [ textAnimationComplete, setTextAnimationComplete ] = useState(false)
   const [ splashAnimationComplete, setSplashAnimationComplete ] = useState(false)
 
-  const [ setAnimationTimeout ] = useSetTimeout()
-
   const getShowDelayText = useInstanceValue(showDelayText)
 
   useEffect(
     () => {
       if(isReady && (!showDelayText || textAnimationComplete)) {
 
-        Animated.timing(splashAnimation, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start(() => setSplashAnimationComplete(true))
+        if(updateExists) {
+          Updates.reloadFromCache()
+        } else {
+          Animated.timing(splashAnimation, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }).start(() => setSplashAnimationComplete(true))
+        }
 
       }
     },
@@ -94,21 +96,19 @@ const Splash = ({
           opacityLine1,
           {
             toValue: 1,
-            duration: 1000,
+            duration: 1500,
             useNativeDriver: true,
           },
         ).start(() => {
-          setAnimationTimeout(() => {
-            // show second line
-            Animated.timing(
-              opacityLine2,
-              {
-                toValue: 1,
-                duration: 1000,
-                useNativeDriver: true,
-              },
-            ).start(() => setTextAnimationComplete(true))
-          }, 1000)
+          // show second line
+          Animated.timing(
+            opacityLine2,
+            {
+              toValue: 1,
+              duration: 1500,
+              useNativeDriver: true,
+            },
+          ).start(() => setTextAnimationComplete(true))
         })
       }
     },
