@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
@@ -11,6 +11,7 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
 
 import Button from "../basic/Button"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   container: {
@@ -19,6 +20,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
+  },
+  buttonWrapper: {
+    position: 'relative',
   },
   noLTISetup: {
     marginTop: 20,
@@ -43,8 +47,12 @@ const LTITool = React.memo(({
   const { idpId, accountId, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
   const { historyPush } = useRouterState({ history })
 
+  const [ showWaiting, setShowWaiting ] = useState(false)
+
   const launch = useCallback(
     async () =>  {
+
+      setShowWaiting(true)
 
       try {
 
@@ -72,6 +80,8 @@ const LTITool = React.memo(({
         historyPush("/error", err)
       }
 
+      setShowWaiting(false)
+
     },
     [],
   )
@@ -81,13 +91,16 @@ const LTITool = React.memo(({
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <Button
-          status="primary"
-          onPress={launch}
-          disabled={invalidSetup}
-        >
-          {i18n("Launch")}
-        </Button>
+        <View style={styles.buttonWrapper}>
+          <Button
+            status="primary"
+            onPress={launch}
+            disabled={invalidSetup || showWaiting}
+          >
+            {i18n("Launch")}
+          </Button>
+          {showWaiting && <CoverAndSpin />}
+        </View>
       </View>
       {!!invalidSetup &&
         <Text style={styles.noLTISetup}>
