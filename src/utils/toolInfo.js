@@ -1,6 +1,12 @@
 import { i18n } from "inline-i18n"
 import { nonEmpty, validUrl, validLTIUrl } from './toolbox'
 
+const hasErrorWithMessageForTime = time => (
+  nonEmpty(time)
+  && !/^(?:[0-9]+)(?::[0-9]+)$/.test(time)
+  && i18n("Invalid time.", "", "enhanced")
+)
+
 export const getToolInfo = () => {
   const toolTypes = [
     {
@@ -13,6 +19,7 @@ export const getToolInfo = () => {
           name: 'content',
           type: 'text',
           placeholder: i18n("Enter your notes here.", "", "enhanced"),
+          required: true,
         },
       ],
       readyToPublish: ({ data: { content } }) => nonEmpty(content),
@@ -29,11 +36,13 @@ export const getToolInfo = () => {
               name: 'question',
               type: 'string',
               label: i18n("Question", "", "enhanced"),
+              required: true,
             },
             {
               name: 'answers',
               type: ['choice'],
               label: i18n("Answers", "", "enhanced"),
+              required: true,
               maxItems: 10,
             },
             {
@@ -80,9 +89,22 @@ export const getToolInfo = () => {
             return (
               fromDefaultClassroom
               && !isDefaultClassroom
-              && i18n("Created by the publisher. You may remove this tool, but you may not edit it.")
+              && i18n("Created by the publisher. You may remove this tool, but you may not edit it.", "", "enhanced")
             )
           },
+          required: true,
+          hasErrorWithMessage: ({ data: { url, fromDefaultClassroom }, classroom }) => (
+            nonEmpty(url)
+            && (
+              !validUrl(url)
+                ? i18n("Invalid URL.", "", "enhanced")
+                : (
+                  !validLTIUrl({ url, fromDefaultClassroom, classroom })
+                    ? i18n("There is not a published LTI configuration for this domain.", "", "enhanced")
+                    : false
+                )
+            )
+          ),
         },
       ],
       transformData: ({ data, isDefaultClassroom }) => {
@@ -105,6 +127,15 @@ export const getToolInfo = () => {
           type: 'string',
           label: i18n("YouTube, Vimeo, MP4 or WebM link", "", "enhanced"),
           placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "https://www.youtube.com/watch?v=Y80wHFoYrrQ" }),
+          required: true,
+          hasErrorWithMessage: ({ data: { videoLink } }) => (
+            nonEmpty(videoLink)
+            && (
+              !validUrl(videoLink)
+                ? i18n("Invalid URL.", "", "enhanced")
+                : false
+            )
+          ),
         },
         {
           name: 'startTime',
@@ -112,6 +143,7 @@ export const getToolInfo = () => {
           variant: 'short',
           label: i18n("Start time (optional)", "", "enhanced"),
           placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "3:12" }),
+          hasErrorWithMessage: ({ data: { startTime } }) => hasErrorWithMessageForTime(startTime),
         },
         {
           name: 'endTime',
@@ -119,9 +151,14 @@ export const getToolInfo = () => {
           variant: 'short',
           label: i18n("End time (optional)", "", "enhanced"),
           placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "12:14" }),
+          hasErrorWithMessage: ({ data: { endTime } }) => hasErrorWithMessageForTime(endTime),
         },
       ],
-      readyToPublish: ({ data: { videoLink } }) => validUrl(videoLink),
+      readyToPublish: ({ data: { videoLink, startTime, endTime } }) => (
+        validUrl(videoLink)
+        && !hasErrorWithMessageForTime(startTime)
+        && !hasErrorWithMessageForTime(endTime)
+      ),
     },
     // {
     //   toolType: 'DISCUSSION_QUESTION',
@@ -133,6 +170,7 @@ export const getToolInfo = () => {
     //       name: 'question',
     //       type: 'string',
     //       label: i18n("Question", "", "enhanced"),
+    //       required: true,
     //     },
     //   ],
     // },
@@ -146,6 +184,7 @@ export const getToolInfo = () => {
           name: 'question',
           type: 'string',
           label: i18n("Question", "", "enhanced"),
+          required: true,
         },
       ],
       readyToPublish: ({ data: { question } }) => nonEmpty(question),
@@ -160,11 +199,13 @@ export const getToolInfo = () => {
     //       name: 'question',
     //       type: 'string',
     //       label: i18n("Question", "", "enhanced"),
+    //       required: true,
     //     },
     //     {
     //       name: 'choices',
     //       type: ['string'],
     //       label: i18n("Choices", "", "enhanced"),
+    //       required: true,
     //     },
     //   ],
     // },
@@ -181,6 +222,7 @@ export const getToolInfo = () => {
     //         'application/msword',
     //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     //       ],
+    //       required: true,
     //     },
     //   ],
     // },
@@ -199,6 +241,7 @@ export const getToolInfo = () => {
     //         'image/svg+xml',
     //         'image/webp',
     //       ],
+    //       required: true,
     //     },
     //   ],
     // },
@@ -214,6 +257,7 @@ export const getToolInfo = () => {
     //       fileTypes: [
     //         'audio/mpeg',
     //       ],
+    //       required: true,
     //     },
     //   ],
     // },

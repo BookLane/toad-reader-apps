@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
-import { cloneObj, getMBSizeStr } from '../../utils/toolbox'
+import { cloneObj, getMBSizeStr, nonEmpty } from '../../utils/toolbox'
 
 import Icon from "../basic/Icon"
 import Radio from "../basic/Radio"
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
 
 const EditToolData = React.memo(({
   classroomUid,
+  classroom,
   isDefaultClassroom,
   toolUid,
   accountId,
@@ -210,6 +211,7 @@ const EditToolData = React.memo(({
     dataSegmentParent,
     dataSegmentKey,
     dataSegmentParentIsComplexArray,
+    allRequired=false,
   }) => (
     dataStructure.map(({
       name,
@@ -220,6 +222,8 @@ const EditToolData = React.memo(({
       isDisabled=returnFalse,
       isHidden=returnFalse,
       isHiddenWithMessage=returnFalse,
+      hasErrorWithMessage=returnFalse,
+      required=false,
       addLabel,
       maxItems,
       placeholder,
@@ -231,10 +235,13 @@ const EditToolData = React.memo(({
         return null
       }
 
+      const isRequired = allRequired || required
+
       switch(type) {
 
         case 'string': {
           const hiddenMessage = isHiddenWithMessage({ data, dataSegment, isDefaultClassroom })
+          const errorText = classroom ? hasErrorWithMessage({ data, dataSegment, classroom }) : false
 
           return (
             <View key={id} style={styles.dataLine}>
@@ -247,6 +254,16 @@ const EditToolData = React.memo(({
                   onChangeInfo={onChangeInfo}
                   style={variant === 'short' ? styles.shortInput : styles.input}
                   disabled={!!hiddenMessage || isDisabled({ dataSegment })}
+                  status={
+                    errorText
+                      ? 'danger'
+                      : (
+                        (!isRequired || hiddenMessage || nonEmpty(dataSegment[name] || ""))
+                          ? 'basic'
+                          : 'warning'
+                      )
+                  }
+                  caption={typeof errorText === 'string' ? errorText : ''}
                 />
                 {!!dataSegmentParentIsComplexArray && dataStructureIndex === 0 &&
                   <MemoButton
@@ -284,6 +301,11 @@ const EditToolData = React.memo(({
                   value={dataSegment[name] || ""}
                   onChangeInfo={onChangeInfo}
                   style={variant === 'short' ? styles.shortInput : styles.input}
+                  status={
+                    (!isRequired || nonEmpty(dataSegment[name] || ""))
+                      ? 'basic'
+                      : 'warning'
+                  }
                 />
                 <MemoButton
                   id={id}
@@ -459,9 +481,20 @@ const EditToolData = React.memo(({
               ? [...dataSegment[name]]
               : [simpleArray ? "" : {}]
 
-            if(simpleArray && type[0] === 'choice' && dataArray.length < maxItems) {
-              // Always have a blank option at the bottom
-              dataArray.push("")
+            if(simpleArray && type[0] === 'choice') {
+              if(dataArray.length < maxItems) {
+                // Always have a blank option at the bottom
+                dataArray.push("")
+              }
+              dataSegment[`${name}Selection`] = (
+                Math.max(
+                  Math.min(
+                    dataSegment[`${name}Selection`] || 0,
+                    dataArray.length - (dataArray.slice(-1)[0] ? 1 : 2)
+                  ),
+                  0
+                )
+              )
             }
 
             return (
@@ -485,6 +518,7 @@ const EditToolData = React.memo(({
                           dataNameStack: [ ...dataNameStack, name ],
                           dataSegmentParent: dataSegment,
                           dataSegmentKey: name,
+                          allRequired: required && !(type[0] === 'choice' && idx === dataArray.length - 1 && idx > 0),
                         })}
                         {/* {getActionIcons({ idx })} */}
                       </View>

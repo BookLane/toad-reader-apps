@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import EditToolData from './EditToolData'
 
 import { i18n } from "inline-i18n"
-import { validDomain, validUrl } from '../../utils/toolbox'
+import { nonEmpty, validDomain, validUrl } from '../../utils/toolbox'
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useChangeIndex from '../../hooks/useChangeIndex'
@@ -33,7 +33,7 @@ const LTIConfigurations = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, isDefaultClassroom, hasDraftData, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, isDefaultClassroom, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
 
@@ -76,6 +76,7 @@ const LTIConfigurations = React.memo(({
       <EditToolData
         key={changeIndex}
         classroomUid={uid}
+        classroom={classroom}
         isDefaultClassroom={isDefaultClassroom}
         accountId={accountId}
         dataStructure={[
@@ -87,16 +88,24 @@ const LTIConfigurations = React.memo(({
                 type: 'string',
                 label: i18n("Domain", "", "enhanced"),
                 placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "toadreader.com" }),
+                required: true,
+                hasErrorWithMessage: ({ dataSegment: { domain } }) => (
+                  nonEmpty(domain)
+                  && !validDomain(domain)
+                  && i18n("Invalid domain.", "", "enhanced")
+                ),
               },
               {
                 name: 'key',
                 type: 'string',
                 label: i18n("Key", "", "enhanced"),
+                required: true,
               },
               {
                 name: 'secret',
                 type: 'string',
                 label: i18n("Secret", "", "enhanced"),
+                required: true,
               },
             ],
             addLabel: i18n("Add another LTI configuration", "", "enhanced"),

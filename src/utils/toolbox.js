@@ -454,13 +454,13 @@ export const validUrl = url => /^https?:\/\/[^.]+\.[^.]/.test(url || "")
 export const validDomain = domain => /^[-a-z0-9]+\.[-.a-z0-9]+$/i.test(domain || "")
 
 export const validLTIUrl = ({ url, fromDefaultClassroom, classroom }) => {
-  const { lti_configurations=[] } = classroom
+  const { lti_configurations } = classroom
 
   return (
     validUrl(url)
     && (
       fromDefaultClassroom
-      || lti_configurations.some(({ domain }) => (
+      || (lti_configurations || []).some(({ domain }) => (
         url.replace(/^https?:\/\/([^\/]*).*$/, '$1') === domain
       ))
     )
