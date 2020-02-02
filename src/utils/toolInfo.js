@@ -73,6 +73,7 @@ export const getToolInfo = () => {
           name: 'url',
           type: 'string',
           label: i18n("Launch URL", "", "enhanced"),
+          placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "https://www.some-lti-tool-provider.com/tools/123" }),
           isHiddenWithMessage: ({ data, isDefaultClassroom }) => {
             const { fromDefaultClassroom } = data || {}
 
@@ -103,6 +104,7 @@ export const getToolInfo = () => {
           name: 'videoLink',
           type: 'string',
           label: i18n("YouTube, Vimeo, MP4 or WebM link", "", "enhanced"),
+          placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "https://www.youtube.com/watch?v=Y80wHFoYrrQ" }),
         },
         {
           name: 'startTime',
