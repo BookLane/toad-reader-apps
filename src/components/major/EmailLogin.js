@@ -214,7 +214,7 @@ const EmailLogin = ({
               </Text>
               <Input
                 label={i18n("Login code")}
-                placeholder={i18n("Eg. U876TV")}
+                placeholder={i18n("Eg. {{example}}", { example: "U876TV" })}
                 value={code}
                 onChangeText={setCode}
                 disabled={stage === 'SENDING_CODE'}

@@ -86,7 +86,7 @@ const LTIConfigurations = React.memo(({
                 name: 'domain',
                 type: 'string',
                 label: i18n("Domain", "", "enhanced"),
-                placeholder: i18n("Eg. toadreader.com"),
+                placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "toadreader.com" }),
               },
               {
                 name: 'key',

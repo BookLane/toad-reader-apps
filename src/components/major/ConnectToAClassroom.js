@@ -107,7 +107,7 @@ const ConnectToAClassroom = React.memo(({
             value={code}
             onChangeText={onChangeText}
             label={i18n("Code", "", "enhanced")}
-            placeholder={i18n("Eg. U76RE9", "", "enhanced")}
+            placeholder={i18n("Eg. {{example}}", "", "enhanced", { example: "U76RE9" })}
           />
         }
         confirmButtonText={i18n("Connect", "", "enhanced")}
