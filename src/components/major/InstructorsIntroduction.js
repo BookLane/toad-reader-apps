@@ -1,9 +1,10 @@
-import React, { useState } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import React from "react"
+import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import EditToolData from './EditToolData'
+import FlipEditor from '../basic/FlipEditor'
 
 import { i18n } from "inline-i18n"
 import { textToReactNative } from "../../utils/toolbox"
@@ -68,9 +69,10 @@ const InstructorsIntroduction = React.memo(({
 
   return (
     <View style={styles.container}>
-      <Text>
-        {textToReactNative(data.introduction)}
-      </Text>
+      <FlipEditor
+        mode="display"
+        initialContent={data.introduction || ""}
+      />
     </View>
   )
 })
