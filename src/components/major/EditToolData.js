@@ -8,9 +8,9 @@ import Radio from "../basic/Radio"
 import { default as MemoButton } from "../basic/Button"
 import { Button } from 'react-native-ui-kitten'
 import Input from "../basic/Input"
-import TextInput from "../basic/TextInput"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"
+import FlipEditor from "../basic/FlipEditor"
 
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
@@ -45,10 +45,8 @@ const styles = StyleSheet.create({
     width: 200,
   },
   textEditor: {
-    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     flex: 1,
-    margin: -30,
-    padding: 30,
+    marginBottom: -20,
   },
   label: {
     color: 'rgb(143, 155, 179)',
@@ -113,7 +111,7 @@ const EditToolData = React.memo(({
   goUpdateTool,
 }) => {
 
-  const [ dataInEdit, setDataInEdit ] = useState({})
+  const [ dataInEdit, setDataInEdit ] = useState(data || {})
   const [ fileImportInfo, setFileImportInfo ] = useState({})
 
   useEffect(
@@ -340,14 +338,15 @@ const EditToolData = React.memo(({
 
         case 'text': {
           return (
-            <TextInput
+            <FlipEditor
               id={id}
               key={id}
-              placeholder={placeholder}
-              multiline
-              value={dataSegment[name] || ""}
+              mode="edit"
+              initialContent={dataSegment[name] || ""}
               onChangeInfo={onChangeInfo}
+              fillHeight={true}
               style={styles.textEditor}
+              // placeholder={placeholder}
             />
           )
         }

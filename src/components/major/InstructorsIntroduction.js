@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
     paddingHorizontal: 30,
+    flex: 1,
   },
 })
 
@@ -67,14 +68,42 @@ const InstructorsIntroduction = React.memo(({
     )
   }
 
-  return (
-    <View style={styles.container}>
+  let content
+
+  try {
+    // Check if this is JSON. If not, the following
+    // line will throw an error and go to the catch block.
+    JSON.parse(data.introduction)
+
+    content = (
       <FlipEditor
         mode="display"
         initialContent={data.introduction || ""}
+        style={{
+          marginVertical: -20,
+          marginHorizontal: -30,
+
+        }}
+        wrapperStyle={{
+          overflow: 'auto',
+          padding: '20px 30px',
+        }}
       />
+    )
+  } catch(e) {
+    content = (
+      <Text>
+        {textToReactNative(data.introduction)}
+      </Text>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      {content}
     </View>
   )
+
 })
 
 const mapStateToProps = ({ books, userDataByBookId }) => ({
