@@ -1,12 +1,13 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View } from "react-native"
 
-import { textToReactNative } from '../../utils/toolbox'
+import FlipEditorContent from '../basic/FlipEditorContent'
 
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
     paddingHorizontal: 30,
+    flex: 1,
   },
 })
 
@@ -16,9 +17,9 @@ const NotesInsertTool = React.memo(({
 
   return (
     <View style={styles.container}>
-      <Text>
-        {textToReactNative(content)}
-      </Text>
+      <FlipEditorContent
+        content={content}
+      />
     </View>
   )
 })

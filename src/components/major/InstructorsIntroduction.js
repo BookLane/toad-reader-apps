@@ -4,10 +4,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import EditToolData from './EditToolData'
-import FlipEditor from '../basic/FlipEditor'
+import FlipEditorContent from '../basic/FlipEditorContent'
 
 import { i18n } from "inline-i18n"
-import { textToReactNative } from "../../utils/toolbox"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useChangeIndex from '../../hooks/useChangeIndex'
@@ -68,39 +67,11 @@ const InstructorsIntroduction = React.memo(({
     )
   }
 
-  let content
-
-  try {
-    // Check if this is JSON. If not, the following
-    // line will throw an error and go to the catch block.
-    JSON.parse(data.introduction)
-
-    content = (
-      <FlipEditor
-        mode="display"
-        initialContent={data.introduction || ""}
-        style={{
-          marginVertical: -20,
-          marginHorizontal: -30,
-
-        }}
-        wrapperStyle={{
-          overflow: 'auto',
-          padding: '20px 30px',
-        }}
-      />
-    )
-  } catch(e) {
-    content = (
-      <Text>
-        {textToReactNative(data.introduction)}
-      </Text>
-    )
-  }
-
   return (
     <View style={styles.container}>
-      {content}
+      <FlipEditorContent
+        content={data.introduction}
+      />
     </View>
   )
 
