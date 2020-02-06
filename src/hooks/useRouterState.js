@@ -1,12 +1,11 @@
-import { useCallback } from "react"
+import { useCallback, useRef } from "react"
+import { useHistory } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
-// This is not yet working for native
-// import { useHistory, useLocation } from "react-router"
+const useRouterState = () => {
 
-const useRouterState = ({ history, location }) => {
-
-  // const history = useHistory()
-  // const location = useLocation()
+  const history = useHistory()
+  const location = useLocation()
 
   const historyPush = useCallback(
     (route, state) => history.push(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
@@ -18,13 +17,20 @@ const useRouterState = ({ history, location }) => {
     [ history, location ],
   )
 
-  let routerState = {}
+  const routerState = useRef({})
 
   try {
-    routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
+    routerState.current = JSON.parse(decodeURIComponent(location.hash).slice(1))
   } catch(e) {}
 
-  return { historyPush, historyReplace, routerState }
+  return {
+    historyPush,
+    historyReplace,
+    historyGoBack: history.goBack,
+    historyGo: history.go,
+    routerState: routerState.current,
+    ...location,
+  }
 }
 
 export default useRouterState

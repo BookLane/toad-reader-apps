@@ -3,7 +3,6 @@ import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
-import { withRouter } from "react-router"
 import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "@ui-kitten/components"
@@ -12,10 +11,9 @@ import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
+import useHasNoAuth from "../../hooks/useHasNoAuth"
 
 import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
-
-import useHasNoAuth from "../../hooks/useHasNoAuth"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions"
@@ -57,8 +55,6 @@ const styles = StyleSheet.create({
 })
 
 const AppMenu = ({
-  history,
-  location,
   onImportBooks,
 
   accounts,
@@ -73,24 +69,24 @@ const AppMenu = ({
 }) => {
 
   const { online } = useNetwork()
-  const { historyPush, historyReplace } = useRouterState({ history })
+  const { historyPush, historyReplace, historyGoBack, pathname } = useRouterState()
 
   const hasNoAuth = useHasNoAuth(accounts)
 
   const showAll = useCallback(
     () => {
       changeLibraryScope({ scope: "all" })
-      history.goBack()
+      historyGoBack()
     },
-    [ changeLibraryScope, history ],
+    [ changeLibraryScope ],
   )
 
   const showDeviceOnly = useCallback(
     () => {
       changeLibraryScope({ scope: "device" })
-      history.goBack()
+      historyGoBack()
     },
-    [ changeLibraryScope, history ],
+    [ changeLibraryScope ],
   )
 
   const confirmLogOut = useCallback(
@@ -101,7 +97,7 @@ const AppMenu = ({
       if(!idpId || !idps[idpId]) return
 
       const doLogOut = () => {
-        history.goBack()
+        historyGoBack()
         setTimeout(() => {
           historyReplace("/", {
             logOutAccountId: accountId,
@@ -143,7 +139,7 @@ const AppMenu = ({
         { cancelable: false }
       )
     },
-    [ accounts, idps, history, books ],
+    [ accounts, idps, books ],
   )
 
   const reLogin = useCallback(
@@ -160,14 +156,14 @@ const AppMenu = ({
       // listing. In other words, I basically need to call the next line and run the whole
       // login process again, but hidden.
 
-      history.goBack()
+      historyGoBack()
       setTimeout(() => {
         historyReplace("/", {
           refreshLibraryAccountId: accountId,
         })
       }, 100)
     },
-    [ accounts, idps, history ],
+    [ accounts, idps ],
   )
 
   const confirmRemoveAllEPubs = useCallback(
@@ -204,7 +200,7 @@ const AppMenu = ({
 
   const goToToadReaderMarketingSite = useCallback(
     () => openURL({ url: "https://toadreader.com", historyPush }),
-    [ history ],
+    [],
   )
 
   const accountIdpIds = []
@@ -269,7 +265,7 @@ const AppMenu = ({
       // icon: libraryIcon,
       onSelect: () => {
         changeLibraryScope({ scope: id })
-        history.goBack()
+        historyGoBack()
       },
     }))),
     {
@@ -328,7 +324,7 @@ const AppMenu = ({
     if(route.onSelect) {
       route.onSelect()
     } else if(route.path) {
-      history.push(route.path)
+      historyPush(route.path)
     }
   }
 
@@ -356,7 +352,7 @@ const AppMenu = ({
         header={renderHeader}
         footer={renderFooter}
       />
-      {location.pathname === '/drawer' && <BackFunction func={history.goBack} />}
+      {pathname === '/drawer' && <BackFunction func={historyGoBack} />}
     </Layout>
   )
 }
@@ -375,4 +371,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   changeLibraryScope,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(AppMenu))
+export default connect(mapStateToProps, matchDispatchToProps)(AppMenu)

@@ -2,7 +2,6 @@ import React, { useEffect, useCallback, useRef, useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Platform, StyleSheet } from "react-native"
-import { withRouter } from "react-router"
 import { i18n } from "inline-i18n"
 
 import PageWebView from "./PageWebView"
@@ -53,8 +52,6 @@ const BookPage = React.memo(props => {
     indicateLoaded,
     requestShowPages,
     temporarilyPauseProcessing,
-    history,
-    location,
     requestHideSettings,
     latest_location,
     inEditMode,
@@ -80,7 +77,7 @@ const BookPage = React.memo(props => {
   const webView = useRef()
   const view = useRef()
 
-  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
   const { visibleTools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
@@ -327,7 +324,7 @@ const BookPage = React.memo(props => {
 
       }
     },
-    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, location, reportSpots, inEditMode ],
+    [ bookId, books, spines, toc, spineIdRef, indicateLoaded, requestShowPages, reportSpots, inEditMode ],
   )
 
   const setSelectionText = useCallback(
@@ -343,7 +340,7 @@ const BookPage = React.memo(props => {
   const onError = useCallback(
     e => {
       console.log('ERROR: BookPage webview had an error on load', e)
-      history.goBack()
+      historyGoBack()
       setTimeout(() => {
         historyPush("/error", {
           message: i18n("Failed to load book."),
@@ -432,4 +429,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookPage))
+export default connect(mapStateToProps, matchDispatchToProps)(BookPage)

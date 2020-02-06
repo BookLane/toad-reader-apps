@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, Platform } from "react-native"
-import { withRouter } from "react-router"
 import { Button } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -18,6 +17,7 @@ import CheckBox from "./CheckBox"
 import CoverAndSpin from "./CoverAndSpin"
 
 import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
+import useRouterState from "../../hooks/useRouterState"
 
 import { deleteBook, setSubscriptions } from "../../redux/actions"
 
@@ -72,8 +72,6 @@ const BookInfo = ({
   bookInfo,
   isFirstRow,
 
-  history,
-
   accounts,
   idps,
 
@@ -82,6 +80,8 @@ const BookInfo = ({
 }) => {
 
   const { title, author, isbn, subscriptions } = bookInfo
+
+  const { historyPush } = useRouterState()
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
   const [ updatingSubscriptions, setUpdatingSubscriptions ] = useState(false)
@@ -120,7 +120,7 @@ const BookInfo = ({
       if(result.status === 200 && ((await result.json()) || {}).success) {
         setDeleteStatus('done')
       } else {
-        history.push("/error")
+        historyPush("/error")
       }
 
     },
@@ -169,11 +169,11 @@ const BookInfo = ({
           })
 
         } else {
-          history.push("/error")
+          historyPush("/error")
         }
 
       } catch(err) {
-        history.push("/error", {
+        historyPush("/error", {
           message: err.message,
         })
       }
@@ -272,4 +272,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSubscriptions,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookInfo))
+export default connect(mapStateToProps, matchDispatchToProps)(BookInfo)

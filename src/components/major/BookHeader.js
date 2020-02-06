@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
@@ -10,6 +9,7 @@ import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useRouterState from "../../hooks/useRouterState"
 
 import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
@@ -56,6 +56,8 @@ const BookHeader = React.memo(({
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
 
+  const { historyGo } = useRouterState()
+
   const goToBookLink = useCallback(
     () => {
       const bookLinkInfo = getFirstBookLinkInfo(book)
@@ -87,7 +89,7 @@ const BookHeader = React.memo(({
                 clearUserDataExceptProgress,
               })
 
-              history.go(-2)
+              historyGo(-2)
             },
             // style: 'destructive',
           },
@@ -211,4 +213,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   toggleSidePanelOpen,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookHeader))
+export default connect(mapStateToProps, matchDispatchToProps)(BookHeader)

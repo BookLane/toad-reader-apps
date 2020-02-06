@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useRef } from "react"
 // import { StyleSheet, Platform } from "react-native"
-import { withRouter } from "react-router"
 import { i18n } from "inline-i18n"
 
 import AppHeader from "../basic/AppHeader"
@@ -16,10 +15,7 @@ import useRouterState from "../../hooks/useRouterState"
 //   },
 // })
 
-const ErrorMessageHeader = React.memo(({
-  history,
-  location,
-}) => {
+const ErrorMessageHeader = React.memo(() => {
 
   const priorStatusBarHiddenValue = useRef(isStatusBarHidden())
   const [ setHideStatusBarTimeout ] = useSetTimeout()
@@ -29,15 +25,16 @@ const ErrorMessageHeader = React.memo(({
     [],
   )
 
+  const { historyGoBack, routerState } = useRouterState()
+
   const onBackPress = useCallback(
     () => {
       setStatusBarHidden(priorStatusBarHiddenValue.current)
-      history.goBack()
+      historyGoBack()
     },
-    [ history ],
+    [],
   )
 
-  const { routerState } = useRouterState({ history, location })
   const { title, critical } = routerState
 
   return (
@@ -53,4 +50,4 @@ const ErrorMessageHeader = React.memo(({
   )
 })
 
-export default withRouter(ErrorMessageHeader)
+export default ErrorMessageHeader

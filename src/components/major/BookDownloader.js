@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 import { i18n } from "inline-i18n"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
@@ -24,7 +23,6 @@ const BookDownloader = ({
   setDownloadStatus,
   setTocAndSpines,
   updateAccount,
-  history,
 }) => {
 
   const [ currentDownloadBookId, setCurrentDownloadBookId ] = useState(null)
@@ -32,7 +30,7 @@ const BookDownloader = ({
   const [ setThrottleTimeout ] = useSetTimeout()
   const getDownloadPaused = useInstanceValue(downloadPaused)
   const getBooks = useInstanceValue(books)
-  const { historyPush } = useRouterState({ history })
+  const { historyPush } = useRouterState()
 
   if(currentDownloadBookId) return null
   if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return null
@@ -155,4 +153,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateAccount,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(BookDownloader))
+export default connect(mapStateToProps, matchDispatchToProps)(BookDownloader)

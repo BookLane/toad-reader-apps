@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
 import Input from "../basic/Input"
@@ -12,6 +11,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { safeFetch, getReqOptionsWithAdditions, getDataOrigin, isValidEmail } from "../../utils/toolbox"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useRouterState from "../../hooks/useRouterState"
 
 import { addAccount } from "../../redux/actions"
 
@@ -264,4 +264,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addAccount,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(EmailLogin))
+export default connect(mapStateToProps, matchDispatchToProps)(EmailLogin)

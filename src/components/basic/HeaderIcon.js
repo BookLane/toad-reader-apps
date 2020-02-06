@@ -1,7 +1,8 @@
 import React, { useCallback } from "react"
 import { TouchableOpacity, StyleSheet } from "react-native"
-import { withRouter } from "react-router"
 import { styled } from '@ui-kitten/components'
+
+import useRouterState from "../../hooks/useRouterState"
 
 import Icon from './Icon'
 
@@ -18,19 +19,20 @@ const styles = StyleSheet.create({
   },
 })
 
-const HeaderIcon = ({
+const HeaderIcon = React.forwardRef(({
   themedStyle,
   style,
   pack,
   name,
   path,
   onPress,
-  history,
   ...otherProps
-}) => {
+}, ref) => {
+
+  const { historyPush } = useRouterState()
 
   const goPath = useCallback(
-    () => history.push(path),
+    () => historyPush(path),
     [ path ],
   )
 
@@ -39,6 +41,7 @@ const HeaderIcon = ({
       onPress={path ? goPath : onPress}
       style={styles.container}
       {...otherProps}
+      ref={ref}
     >
       <Icon
         style={[
@@ -51,8 +54,8 @@ const HeaderIcon = ({
       />
     </TouchableOpacity>
   )
-}
+})
 
 HeaderIcon.styledComponentName = 'HeaderIcon'
 
-export default styled(withRouter(HeaderIcon))
+export default styled(HeaderIcon)

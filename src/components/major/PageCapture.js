@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useCallback } from "react"
 import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 import * as FileSystem from 'expo-file-system'
 
 import PageWebView from "./PageWebView"
@@ -15,6 +14,7 @@ import takeSnapshot from "../../utils/takeSnapshot"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import usePageSize from "../../hooks/usePageSize"
+import useRouterState from "../../hooks/useRouterState"
 
 import { addSpinePageCfis } from "../../redux/actions"
 
@@ -27,7 +27,6 @@ const PageCapture = ({
   reportInfoOrCapture,
   reportFinished,
   processingPaused,
-  history,
   
   books,
   userDataByBookId,
@@ -36,6 +35,8 @@ const PageCapture = ({
 }) => {
 
   const { instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const { historyPush } = useRouterState()
 
   const loadSpineAndGetPagesInfoAlreadyCalled = useRef(false)
   const getCfisOrShiftAndSnap = useRef()
@@ -113,8 +114,7 @@ const PageCapture = ({
         reportInfoOrCapture(uriAsKey)
 
         if(data.payload.startIndex !== pageCfis.current.length) {
-          // TODO: use historyPush from useRouterState
-          history.push("/error", {
+          historyPush("/error", {
             message: i18n("Invalid book."),
           })
           reportFinished(uriAsKey)
@@ -285,4 +285,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addSpinePageCfis,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(PageCapture))
+export default connect(mapStateToProps, matchDispatchToProps)(PageCapture)

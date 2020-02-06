@@ -1,6 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react"
 import { StyleSheet, Platform, View, Keyboard } from "react-native"
-import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { getToolbarHeight } from '../../utils/toolbox'
@@ -54,7 +53,6 @@ const Highlighter = React.memo(({
   bookId,
   setSelectionText,
   updateNoteInEdit,
-  location,
   
   userDataByBookId,
 
@@ -82,7 +80,7 @@ const Highlighter = React.memo(({
 
   }
 
-  const { routerState } = useRouterState({ location })
+  const { routerState } = useRouterState()
   const { widget } = routerState
 
   const wideMode = useWideMode()
@@ -187,4 +185,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setHighlight,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Highlighter))
+export default connect(mapStateToProps, matchDispatchToProps)(Highlighter)

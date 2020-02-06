@@ -4,7 +4,6 @@ import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
 import { Switch, Route } from "../routers/react-router"
-import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SideMenu from "react-native-side-menu"
@@ -85,9 +84,6 @@ const Library = ({
   clearAllSpinePageCfis,
   autoUpdateCoreIdps,
 
-  history,
-  location,
-
 }) => {
 
   const [ downloadPaused, setDownloadPaused ] = useState(false)
@@ -97,13 +93,13 @@ const Library = ({
 
   const hasNoAuth = useHasNoAuth(accounts)
 
-  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
   const { widget, parent_domain, logOutAccountId, refreshLibraryAccountId } = routerState
   const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
     ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
     : null
 
-  const getLocationPathname = useInstanceValue(location.pathname)
+  const getLocationPathname = useInstanceValue(pathname)
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
 
@@ -112,9 +108,9 @@ const Library = ({
       // If it is a direct load to something other than the Library, then add
       // the Library to the browser history so that calling back on the router
       // works properly.
-      if(location.pathname !== '/') {
+      if(pathname !== '/') {
         historyReplace('/')
-        historyPush(location.pathname, routerState)
+        historyPush(pathname, routerState)
       }
     },
     [],
@@ -136,7 +132,7 @@ const Library = ({
         safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
           .then(result => result.json())
           .then(({ redirectToDomain }) => {
-            if(redirectToDomain && redirectToDomain !== location.host) {
+            if(redirectToDomain && redirectToDomain !== window.location.host) {
               if(isStaging()) {
                 redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
               }
@@ -162,17 +158,19 @@ const Library = ({
   )
 
   useEffect(
-    () => setDownloadPaused(/^\/book\//.test(location.pathname)),
-    [ location ],
+    () => {
+      setDownloadPaused(/^\/book\//.test(pathname))
+    },
+    [],
   )
 
   useLayoutEffect(
     () => {
-      if(location.pathname === '/') {
+      if(pathname === '/') {
         reSort()
       }
     },
-    [ location ],
+    [],
   )
 
   const getCovers = useCallback(
@@ -327,7 +325,7 @@ const Library = ({
   const sideMenuOnChange = useCallback(
     isOpen => {
       if(!isOpen && getLocationPathname() === '/drawer') {
-        history.goBack()
+        historyGoBack()
       }
     },
     [],
@@ -336,7 +334,7 @@ const Library = ({
   const openImportBooks = useCallback(
     () => {
       setImportingBooks(true)
-      history.goBack()
+      historyGoBack()
     },
     [],
   )
@@ -347,11 +345,11 @@ const Library = ({
     () => {
       // If they have clicked on one of the links in the import
       // results, close the import dialog.
-      if(location.pathname !== '/') {
+      if(pathname !== '/') {
         setImportingBooks(false)
       }
     },
-    [ location ],
+    [],
   )
 
   const scope = library.scope || "all"
@@ -410,7 +408,7 @@ const Library = ({
     <SideMenu
       menu={<AppMenu onImportBooks={openImportBooks} />}
       openMenuOffset={280}
-      isOpen={location.pathname === '/drawer'}
+      isOpen={pathname === '/drawer'}
       onChange={sideMenuOnChange}
       disableGestures={true}
     >
@@ -504,4 +502,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   autoUpdateCoreIdps,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Library))
+export default connect(mapStateToProps, matchDispatchToProps)(Library)

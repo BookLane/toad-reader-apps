@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 // import { StyleSheet } from "react-native"
 
 import Dialog from "./Dialog"
@@ -28,14 +27,12 @@ const ConnectToAClassroom = React.memo(({
   books,
 
   setCurrentClassroom,
-
-  history,
 }) => {
 
   const [ code, setCode ] = useState("")
   const [ connecting, setConnecting ] = useState(false)
 
-  const { historyPush } = useRouterState({ history })
+  const { historyPush } = useRouterState()
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
@@ -130,4 +127,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCurrentClassroom,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(ConnectToAClassroom))
+export default connect(mapStateToProps, matchDispatchToProps)(ConnectToAClassroom)

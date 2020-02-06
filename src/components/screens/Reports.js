@@ -6,6 +6,8 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { safeFetch, getDataOrigin, getIdsFromAccountId, getReqOptionsWithAdditions } from "../../utils/toolbox"
 
+import useRouterState from "../../hooks/useRouterState"
+
 import { Table, Row, Rows } from 'react-native-table-component'
 import AppHeader from "../basic/AppHeader"
 import SafeLayout from "../basic/SafeLayout"
@@ -65,8 +67,6 @@ const styles = StyleSheet.create({
 })
 
 const Reports = ({
-  history,
-  
   idps,
   accounts,
 }) => {
@@ -77,6 +77,8 @@ const Reports = ({
 
   const accountId = Object.keys(accounts)[0]
   const { idpId } = getIdsFromAccountId(accountId)
+
+  const { historyGoBack } = useRouterState()
 
   useEffect(
     () => {
@@ -113,14 +115,14 @@ const Reports = ({
 
   return (
     <SafeLayout>
-      <BackFunction func={history.goBack} />
+      <BackFunction func={historyGoBack} />
       <AppHeader
         title={i18n("Reports")}
         titleCentered={true}
         leftControl={
           <HeaderIcon
             name="md-arrow-back"
-            onPress={history.goBack}
+            onPress={historyGoBack}
           />
         }
       />

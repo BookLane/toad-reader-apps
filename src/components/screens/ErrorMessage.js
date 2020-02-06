@@ -18,10 +18,10 @@ const styles = StyleSheet.create({
   },
 })
 
-const ErrorMessage = ({ location }) => {
+const ErrorMessage = () => {
 
   const [ setReloadTimeout ] = useSetTimeout()
-  const { routerState } = useRouterState({ location })
+  const { routerState } = useRouterState()
   const { message, critical } = routerState
 
   useEffect(

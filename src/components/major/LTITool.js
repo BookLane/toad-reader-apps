@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
-import { withRouter } from "react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -40,12 +39,10 @@ const LTITool = React.memo(({
   accounts,
   books,
   userDataByBookId,
-
-  history,
 }) => {
 
   const { idpId, accountId, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const { historyPush } = useRouterState({ history })
+  const { historyPush } = useRouterState()
 
   const [ showWaiting, setShowWaiting ] = useState(false)
 
@@ -121,4 +118,4 @@ const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(LTITool))
+export default connect(mapStateToProps, matchDispatchToProps)(LTITool)

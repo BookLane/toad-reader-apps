@@ -9,7 +9,7 @@ const Accounts = ({ history }) => (
       {/* <Left>
         <Button
           transparent
-          onPress={history.goBack}
+          onPress={historyGoBack}
         >
           <Ionicons name="md-arrow-back" />
         </Button>

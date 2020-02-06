@@ -3,6 +3,7 @@ import { StyleSheet, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { useParams } from "react-router-dom"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
 
@@ -150,10 +151,6 @@ const styles = StyleSheet.create({
 
 const Book = React.memo(({
 
-  history,
-  location,
-  match,
-
   idps,
   accounts,
   books,
@@ -200,7 +197,7 @@ const Book = React.memo(({
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
 
-  const { historyPush, historyReplace, routerState } = useRouterState({ history, location })
+  const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { widget } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
@@ -208,7 +205,7 @@ const Book = React.memo(({
   const [ setGetTOCTimeout ] = useSetTimeout()
   const [ setTemporarilyPauseProcessingTimeout, clearTemporarilyPauseProcessingTimeout ] = useSetTimeout()
 
-  const { bookId } = match.params
+  const { bookId } = useParams()
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
 
@@ -620,7 +617,7 @@ const Book = React.memo(({
   // const recommendBook = useCallback(() => alert('Recommend this book'), [])
 
   // const goToHighlights = useCallback(
-  //   () => history.push(`${match.url}/highlights`),
+  //   () => historyPush(`${match.url}/highlights`),
   //   [ match ],
   // )
 
@@ -834,7 +831,7 @@ const Book = React.memo(({
   )
 
   const onBackPress = useCallback(
-    () => (selectedToolUid ? unselectTool : history.goBack)(),
+    () => (selectedToolUid ? unselectTool : historyGoBack)(),
     [ unselectTool, selectedToolUid ],
   )
 

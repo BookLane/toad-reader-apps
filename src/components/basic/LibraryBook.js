@@ -2,7 +2,8 @@ import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { TouchableOpacity, Platform, Alert } from "react-native"
-import { withRouter } from "react-router"
+
+import useRouterState from "../../hooks/useRouterState"
 
 // import { debounce, getBooksDir } from "../../utils/toolbox"
 import { removeEpub } from "../../utils/removeEpub"
@@ -21,9 +22,9 @@ const LibraryBook = ({
   pushToBookDownloadQueue,
   clearTocAndSpines,
   clearUserDataExceptProgress,
-
-  history,
 }) => {
+
+  const { historyPush } = useRouterState()
 
   const getDownloadStatus = useCallback(
     bookId => books[bookId].downloadStatus,
@@ -36,14 +37,14 @@ const LibraryBook = ({
       // const accountId = Object.keys(books[bookId].accounts)[0]
 
       if(downloadStatus == 2 || Platform.OS === 'web') {
-        history.push(`/book/${bookId}`)
+        historyPush(`/book/${bookId}`)
         
       } else if(downloadStatus == 0) {
         setDownloadStatus({ bookId, downloadStatus: 1 })
         pushToBookDownloadQueue({ bookId })
       }
     },
-    [ bookId, setDownloadStatus, pushToBookDownloadQueue, books, history ],
+    [ bookId, setDownloadStatus, pushToBookDownloadQueue, books ],
   )
   
   const onLongPress = useCallback(
@@ -104,4 +105,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   clearUserDataExceptProgress,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(LibraryBook))
+export default connect(mapStateToProps, matchDispatchToProps)(LibraryBook)

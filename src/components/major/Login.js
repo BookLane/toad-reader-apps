@@ -3,7 +3,6 @@ import { StyleSheet, Platform } from "react-native"
 import WebView from './WebView'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
 
@@ -39,7 +38,6 @@ const styles = StyleSheet.create({
 })
 
 const Login = ({
-  history,
   idpId,
   onSuccess,
   addAccount,
@@ -57,7 +55,7 @@ const Login = ({
   const askedForLoginInfoAtLeastOnce = useRef()
 
   const { online } = useNetwork()
-  const { historyPush } = useRouterState({ history })
+  const { historyPush } = useRouterState()
   const hasNoAuth = useHasNoAuth(accounts)
 
   const [ setReloadTimeout ] = useSetTimeout()
@@ -235,4 +233,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addAccount,
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(Login))
+export default connect(mapStateToProps, matchDispatchToProps)(Login)

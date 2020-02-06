@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Platform } from "react-native"
-import { withRouter } from "react-router"
 import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
@@ -91,8 +90,6 @@ const PageWebView = ({
     webViewRef,
     style,
 
-    location,
-  
     idps,
     accounts,
     // userDataByBookId,  // used in getHighlightsArray and getLatestLocation functions
@@ -112,7 +109,7 @@ const PageWebView = ({
   if(isIPhoneX) height -= (statusBarHeight + iPhoneXFooter)
   const wideMode = useWideMode()
 
-  const { routerState } = useRouterState({ location })
+  const { routerState } = useRouterState()
   const { widget } = routerState
 
   if(wideMode) height -= (getToolbarHeight() - 30)
@@ -306,4 +303,4 @@ const mapStateToProps = ({ idps, accounts, userDataByBookId, sidePanelSettings }
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default withRouter(connect(mapStateToProps, matchDispatchToProps)(PageWebView))
+export default connect(mapStateToProps, matchDispatchToProps)(PageWebView)

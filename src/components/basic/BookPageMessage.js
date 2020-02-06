@@ -1,6 +1,5 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity, View, Text, Alert } from "react-native"
-import { withRouter } from "react-router"
 // import { i18n } from "inline-i18n"
 
 import { openURL } from "../../utils/toolbox"
@@ -25,10 +24,9 @@ const BookPageMessage = ({
   text,
   moreInfoText,
   externalHref,
-  history,
 }) => {
 
-  const { historyPush } = useRouterState({ history })
+  const { historyPush } = useRouterState()
 
   const showMoreInfo = useCallback(
     () =>  {
@@ -38,7 +36,7 @@ const BookPageMessage = ({
         openURL({ url: externalHref, historyPush })
       }
     },
-    [ moreInfoText, externalHref, history ],
+    [ moreInfoText, externalHref ],
   )
 
   return (
@@ -57,4 +55,4 @@ const BookPageMessage = ({
   )
 }
 
-export default withRouter(BookPageMessage)
+export default BookPageMessage
