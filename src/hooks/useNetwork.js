@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { NetInfo } from "react-native"
+import NetInfo from '@react-native-community/netinfo'
 import useUpdate from "react-use/lib/useUpdate"
 
 // The logic is outside of the component in this hook because
@@ -15,7 +15,7 @@ const onConnectionChange = ({ type, effectiveType }) => {
   connectionInfo.effectiveType = effectiveType
 }
 
-NetInfo.getConnectionInfo().then(onConnectionChange)
+NetInfo.fetch().then(onConnectionChange)
 NetInfo.addEventListener('connectionChange', onConnectionChange)
 
 const useNetwork = () => {
