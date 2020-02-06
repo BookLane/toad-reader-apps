@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { Button, OverflowMenu } from "react-native-ui-kitten"
+import { Button, OverflowMenu } from "@ui-kitten/components"
 import Icon from '../basic/Icon'
 import HeaderIcon from "../basic/HeaderIcon"
 import ManageClassrooms from "./ManageClassrooms"

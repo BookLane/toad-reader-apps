@@ -3,7 +3,7 @@ import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, 
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
-import { Button } from "react-native-ui-kitten"
+import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"

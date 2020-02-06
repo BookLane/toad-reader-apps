@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-nati
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { ViewPager } from "react-native-ui-kitten"
+import { ViewPager } from "@ui-kitten/components"
 
 import EnhancedConnecting from "./EnhancedConnecting"
 

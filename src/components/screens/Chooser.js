@@ -1,7 +1,7 @@
 import React from "react"
 import { Text, View } from "react-native"
 import { withRouter } from "react-router"
-import { Button } from "react-native-ui-kitten"
+import { Button } from "@ui-kitten/components"
 import SafeLayout from "../basic/SafeLayout"
 
 // const styles = StyleSheet.create({

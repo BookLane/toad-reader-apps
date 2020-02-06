@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Platform } from "react-native"
-import { Input as UIKittenInput } from "react-native-ui-kitten"
+import { Input as UIKittenInput } from "@ui-kitten/components"
 
 const styles = StyleSheet.create({
   inputText: {

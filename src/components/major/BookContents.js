@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from "react"
 import { StyleSheet } from "react-native"
-import { List } from "react-native-ui-kitten"
+import { List } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { Radio as UIKittenRadio } from "react-native-ui-kitten"
+import { Radio as UIKittenRadio } from "@ui-kitten/components"
 
 const Radio = React.memo(({
   id,

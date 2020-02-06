@@ -1,6 +1,6 @@
 import React from "react"
 // import { Ionicons } from "@expo/vector-icons"
-// import { Button } from "react-native-ui-kitten"
+// import { Button } from "@ui-kitten/components"
 import AppHeader from "../basic/AppHeader"
 import SafeLayout from "../basic/SafeLayout"
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 // import { StyleSheet } from "react-native"
-import { CheckBox as UIKittenCheckBox } from "react-native-ui-kitten"
+import { CheckBox as UIKittenCheckBox } from "@ui-kitten/components"
 
 // const styles = StyleSheet.create({
 // })

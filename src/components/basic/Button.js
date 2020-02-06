@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { Button as UIKittenButton } from "react-native-ui-kitten"
+import { Button as UIKittenButton } from "@ui-kitten/components"
 
 const Button = React.memo(({
   id,

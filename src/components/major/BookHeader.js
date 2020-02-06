@@ -3,7 +3,7 @@ import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { OverflowMenu } from "react-native-ui-kitten"
+import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
 import AppHeader from "../basic/AppHeader"

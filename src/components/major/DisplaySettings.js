@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Button } from "react-native-ui-kitten"
+import { Button } from "@ui-kitten/components"
 import { StyleSheet, Text, View, Platform } from "react-native"
 
 import Dialog from "./Dialog"

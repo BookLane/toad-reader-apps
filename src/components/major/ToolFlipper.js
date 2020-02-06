@@ -3,7 +3,7 @@ import { Platform, StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { ViewPager, Button } from "react-native-ui-kitten"
+import { ViewPager, Button } from "@ui-kitten/components"
 import Tool from "./Tool"
 import Icon from "../basic/Icon"
 

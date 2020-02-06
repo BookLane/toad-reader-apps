@@ -1,5 +1,5 @@
 import React from "react"
-import { ModalService } from 'react-native-ui-kitten'
+import { ModalService } from '@ui-kitten/components'
 
 import ToastContainer from '../components/basic/ToastContainer'
 

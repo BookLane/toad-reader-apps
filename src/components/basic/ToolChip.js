@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View } from "react-native"
-import { styled, Button } from 'react-native-ui-kitten'
+import { styled, Button } from '@ui-kitten/components'
 
 import Icon from "./Icon"
 import { getToolInfo } from "../../utils/toolInfo"

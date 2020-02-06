@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import { OverflowMenu } from "react-native-ui-kitten"
+import { OverflowMenu } from "@ui-kitten/components"
 
 import { getIdsFromAccountId } from "../../utils/toolbox"
 

@@ -14,7 +14,7 @@ import { Provider } from "react-redux"
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { mapping } from "@eva-design/eva"
-import { ApplicationProvider } from "react-native-ui-kitten"
+import { ApplicationProvider } from "@ui-kitten/components"
 import lightTheme from "./src/themes/light"
 import darkTheme from "./src/themes/dark"
 import contrastTheme from "./src/themes/contrast"

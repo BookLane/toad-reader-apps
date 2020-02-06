@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View } from "react-native"
-import { Select } from "react-native-ui-kitten"
+import { Select } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
 import { i18n } from "inline-i18n"
 

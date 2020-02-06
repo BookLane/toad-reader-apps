@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { ViewPager, Button, RadioGroup, Radio } from "react-native-ui-kitten"
+import { ViewPager, Button, RadioGroup, Radio } from "@ui-kitten/components"
 
 import { i18n } from "inline-i18n"
 import { shuffleArray } from '../../utils/toolbox'

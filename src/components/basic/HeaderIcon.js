@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { TouchableOpacity, StyleSheet } from "react-native"
 import { withRouter } from "react-router"
-import { styled } from 'react-native-ui-kitten'
+import { styled } from '@ui-kitten/components'
 
 import Icon from './Icon'
 

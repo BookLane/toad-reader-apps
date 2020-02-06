@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, View, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Select } from "react-native-ui-kitten"
+import { Select } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
 
 import Input from "../basic/Input"

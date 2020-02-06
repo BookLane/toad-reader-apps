@@ -6,7 +6,7 @@ import { cloneObj, getMBSizeStr, nonEmpty } from '../../utils/toolbox'
 import Icon from "../basic/Icon"
 import Radio from "../basic/Radio"
 import { default as MemoButton } from "../basic/Button"
-import { Button } from 'react-native-ui-kitten'
+import { Button } from '@ui-kitten/components'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"

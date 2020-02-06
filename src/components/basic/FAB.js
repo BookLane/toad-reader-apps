@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet } from "react-native"
-import { styled, Button } from 'react-native-ui-kitten'
+import { styled, Button } from '@ui-kitten/components'
 
 import Icon from "./Icon"
 

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, Platform } from "react-native"
 import { withRouter } from "react-router"
-import { Button } from "react-native-ui-kitten"
+import { Button } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
