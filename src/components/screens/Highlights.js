@@ -4,7 +4,7 @@ import React from "react"
 import AppHeader from "../basic/AppHeader"
 import SafeLayout from "../basic/SafeLayout"
 
-const Highlights = ({ history }) => (
+const Highlights = () => (
   <SafeLayout>
     <AppHeader>
       {/* <Left>

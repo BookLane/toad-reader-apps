@@ -45,8 +45,6 @@ const BookHeader = React.memo(({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   toggleSidePanelOpen,
-
-  history,
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)

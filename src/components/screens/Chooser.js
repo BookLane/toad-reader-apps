@@ -10,7 +10,7 @@ import useRouterState from "../../hooks/useRouterState"
 //   },
 // })
 
-const Chooser = ({ history }) => {
+const Chooser = () => {
 
   const { historyGoBack } = useRouterState()
 

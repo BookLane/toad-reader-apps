@@ -97,7 +97,7 @@ const Login = ({
       setReloadTimeout(webView.current.reload, 15000)
       setError(i18n("Error. Trying again..."))
     },
-    [ history ],
+    [],
   )
 
   const onNavigationStateChange = useCallback(
@@ -159,7 +159,7 @@ const Login = ({
 
       }
     },
-    [ history, addAccount, idpId, onSuccess ],
+    [ addAccount, idpId, onSuccess ],
   )
 
   const { authMethod, devAuthMethod } = idps[idpId]

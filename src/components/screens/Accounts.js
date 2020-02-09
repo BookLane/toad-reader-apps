@@ -3,7 +3,7 @@ import React from "react"
 import SafeLayout from "../basic/SafeLayout"
 import AppHeader from "../basic/AppHeader"
 
-const Accounts = ({ history }) => (
+const Accounts = () => (
   <SafeLayout>
     <AppHeader>
       {/* <Left>
