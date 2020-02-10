@@ -6,7 +6,6 @@ import { Platform, StyleSheet, View, Text } from "react-native"
 import { Switch, Route } from "../routers/react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import SideMenu from "react-native-side-menu"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
 import downloadAsync from "../../utils/downloadAsync"
@@ -16,6 +15,7 @@ import BookImporter from "../major/BookImporter"
 import Book from "./Book"
 import Reports from "./Reports"
 import ErrorMessage from "./ErrorMessage"
+import SideMenu from "react-native-simple-side-menu"
 import AppMenu from "../major/AppMenu"
 import LibraryHeader from "../major/LibraryHeader"
 import LibraryCovers from "../major/LibraryCovers"
@@ -322,15 +322,6 @@ const Library = ({
     [ idps, accounts, logOutAccountId, refreshLibraryAccountId ],
   )
 
-  const sideMenuOnChange = useCallback(
-    isOpen => {
-      if(!isOpen && getLocationPathname() === '/drawer') {
-        historyGoBack()
-      }
-    },
-    [],
-  )
-
   const openImportBooks = useCallback(
     () => {
       setImportingBooks(true)
@@ -405,13 +396,14 @@ const Library = ({
   const doingInitialFetch = fetchingBooks && bookList.length == 0
 
   return (
-    <SideMenu
-      menu={<AppMenu onImportBooks={openImportBooks} />}
-      openMenuOffset={280}
-      isOpen={pathname === '/drawer'}
-      onChange={sideMenuOnChange}
-      disableGestures={true}
-    >
+    <>
+
+      <SideMenu
+        open={pathname === '/drawer'}
+        onClose={historyGoBack}
+      >
+        <AppMenu onImportBooks={openImportBooks} />
+      </SideMenu>
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
@@ -477,7 +469,7 @@ const Library = ({
         }))
       }
 
-    </SideMenu>
+    </>
   )
 }
 
