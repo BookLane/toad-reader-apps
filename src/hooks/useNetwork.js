@@ -1,12 +1,21 @@
-import { useNetInfo } from '@react-native-community/netinfo'
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
+
+export const connectionInfo = {
+  online: false,
+}
+
+const updateConnectionInfo = ({ type }) => {
+  connectionInfo.online = type !== 'none'
+}
+
+NetInfo.fetch().then(updateConnectionInfo)
 
 const useNetwork = () => {
+  const netInfo = useNetInfo()
 
-  const { type } = useNetInfo()
+  updateConnectionInfo(netInfo)
 
-  return {
-    online: type !== 'none',
-  }
+  return connectionInfo
 }
 
 export default useNetwork
