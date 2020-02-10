@@ -594,7 +594,7 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 }))
 
 console.log('Setting up event listeners for patch and reportReadings...')
-// NetInfo.addEventListener('connectionChange', () => patch())
+// NetInfo.addEventListener(() => patch())
 AppState.addEventListener('change', () => patch())
-// NetInfo.addEventListener('connectionChange', () => reportReadings())
+// NetInfo.addEventListener(() => reportReadings())
 AppState.addEventListener('change', () => reportReadings())
