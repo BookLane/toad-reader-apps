@@ -33,7 +33,6 @@ export default function(state = initialState, action) {
           version: book.version,
           totalCharacterCount: book.totalCharacterCount,
           coverHref: book.coverHref,
-          subscriptions: book.subscriptions,
           downloadStatus: (state[book.id] && state[book.id].downloadStatus) || 0,
           toc: (state[book.id] && state[book.id].toc) || undefined,
           spines: (state[book.id] && state[book.id].spines) || undefined,
@@ -49,6 +48,7 @@ export default function(state = initialState, action) {
               version: book.version || 'BASE',
               ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
               ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
+              subscriptions: book.subscriptions,
               lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || Date.now(),
             },
           },
@@ -58,6 +58,8 @@ export default function(state = initialState, action) {
 
     case "DELETE_BOOK":
       delete newState[action.bookId]
+      // If we support multiple accounts, this will need to be changed to delete
+      // the book.accounts[accountId] and only delete the book if book.accounts is thus emptied.
       return newState
 
     case "SET_COVER_FILENAME":
@@ -188,7 +190,12 @@ export default function(state = initialState, action) {
         if(newState[action.bookId]) {
           newState[action.bookId] = {
             ...newState[action.bookId],
-            subscriptions: action.subscriptions,
+            accounts: {
+              ...newState[action.bookId].accounts,
+              [action.accountId]: {
+                subscriptions: action.subscriptions,
+              },
+            },
           }
           return newState
         }

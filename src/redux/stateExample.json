@@ -25,14 +25,16 @@
       "email": "demo@email.com",
       "isAdmin": false,
       "cookie": "connect.sid=lkjsdfljasdflkjsdf;",
-      "serverTimeOffset": 60
+      "serverTimeOffset": 60,
+      "libraryHash": "78e731027d8fd50ed642340b7c9a63b3"
     },
     "2:3": {
       "fullname": "Bill Smith",
       "email": "bill@email.com",
       "isAdmin": true,
       "cookie": "connect.sid=lkjsdfljasdflkjsdsdff;",
-      "serverTimeOffset": -20
+      "serverTimeOffset": -20,
+      "libraryHash": "340b778fd50ed642c9a63b38e731027d"
     }
   },
   "fetchingBooks": false,
@@ -49,9 +51,9 @@
       "version": "PUBLISHER",
       "totalCharacterCount": 938004,
       "coverFilename": "cover.png",
-      "subscriptions": [],
       "accounts": {
         "1:-1": {
+          "subscriptions": [],
           "link": {
             "href": "https://www.desiringgod.org",
             "label": "More resources from Desiring God"
@@ -69,14 +71,15 @@
       "version": "BASE",
       "totalCharacterCount": 231004,
       "coverFilename": "cover.png",
-      "subscriptions": [
-        {
-          "id": -1,
-          "version": "BASE"
-        }
-      ],
       "accounts": {
-        "1:-1": {}
+        "1:-1": {
+          "subscriptions": [
+            {
+              "id": -1,
+              "version": "BASE"
+            }
+          ]
+        }
       },
       "downloadStatus": 0
     },
@@ -88,12 +91,13 @@
       "version": "INSTRUCTOR",
       "totalCharacterCount": 383021,
       "coverFilename": "cover.jpg",
-      "subscriptions": [],
       "accounts": {
         "1:-1": {
+          "subscriptions": [],
           "lastSuccessfulPatch": 1506078483419
         },
         "2:3": {
+          "subscriptions": [],
           "lastSuccessfulPatch": 1506078483422
         }
       },

@@ -16,15 +16,17 @@ export const removeAccount = ({ accountId }) => ({
   accountId,
 })
 
-export const addBooks = ({ books, accountId }) => ({
+export const addBooks = ({ books, accountId, hash }) => ({
   type: "ADD_BOOKS",
   books,
   accountId,
+  hash,
 })
 
-export const deleteBook = ({ bookId }) => ({
+export const deleteBook = ({ bookId, accountId }) => ({
   type: "DELETE_BOOK",
   bookId,
+  accountId,
 })
 
 export const setCoverFilename = ({ bookId, coverFilename }) => ({
@@ -247,9 +249,10 @@ export const clearAllSpinePageCfis = ({ bookId }) => ({
   bookId,
 })
 
-export const setSubscriptions = ({ bookId, subscriptions }) => ({
+export const setSubscriptions = ({ bookId, accountId, subscriptions }) => ({
   type: "SET_SUBSCRIPTIONS",
   bookId,
+  accountId,
   subscriptions,
 })
 

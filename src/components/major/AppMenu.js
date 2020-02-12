@@ -8,7 +8,7 @@ import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from
 import { Layout, Drawer } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
-import useNetwork from "../../hooks/useNetwork"
+// import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -68,7 +68,7 @@ const AppMenu = ({
   changeLibraryScope,
 }) => {
 
-  const { online } = useNetwork()
+  // const { online } = useNetwork()
   const { historyPush, historyReplace, historyGoBack, pathname } = useRouterState()
 
   const hasNoAuth = useHasNoAuth(accounts)
@@ -142,30 +142,6 @@ const AppMenu = ({
     [ accounts, idps, books ],
   )
 
-  const reLogin = useCallback(
-    async () => {
-      const accountId = Object.keys(accounts)[0] || ""
-      const { idpId } = getIdsFromAccountId(accountId)
-
-      if(!idpId || !idps[idpId]) return
-      
-      // To force a refresh on the library, I need to call the url below and then open
-      // up a webview with the userDataUrl since the shibboleth 
-      // login process includes javascript onload calls. When that process was over and it
-      // arrives back at the userDataUrl, then I would want to continue to get the library
-      // listing. In other words, I basically need to call the next line and run the whole
-      // login process again, but hidden.
-
-      historyGoBack()
-      setTimeout(() => {
-        historyReplace("/", {
-          refreshLibraryAccountId: accountId,
-        })
-      }, 100)
-    },
-    [ accounts, idps ],
-  )
-
   const confirmRemoveAllEPubs = useCallback(
     () => {
       Alert.alert(
@@ -203,12 +179,12 @@ const AppMenu = ({
     [],
   )
 
-  const accountIdpIds = []
-  const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
-    const { idpId } = getIdsFromAccountId(accountId)
-    if(accountIdpIds.includes(idpId)) return true
-    accountIdpIds.push(idpId)
-  })
+  // const accountIdpIds = []
+  // const hasMultipleAccountsForSingleIdp = Object.keys(accounts).some(accountId => {
+  //   const { idpId } = getIdsFromAccountId(accountId)
+  //   if(accountIdpIds.includes(idpId)) return true
+  //   accountIdpIds.push(idpId)
+  // })
 
   const renderHeader = useCallback(
     () => (
@@ -268,21 +244,16 @@ const AppMenu = ({
         historyGoBack()
       },
     }))),
-    {
-      style: styles.separator,
-    },
+    ...((Platform.OS === 'web' && hasNoAuth) ? [] : [
+      {
+        style: styles.separator,
+      },
+    ]),
     // {
     //   title: i18n("Accounts"),
     //   icon: accountsIcon,
     //   path: `${match.url}/accounts`,
     // },
-    {
-      title: i18n("Refresh book list"),
-      // icon: refreshIcon,
-      onSelect: confirmLogOut,
-      // onSelect: online ? reLogin : null,
-      disabled: !online,
-    },
     ...(Platform.OS === 'web' ? [] : [
       {
         title: i18n("Remove all books"),
@@ -297,10 +268,12 @@ const AppMenu = ({
         onSelect: confirmLogOut,
       },
     ]),
-    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+    ...(!isAdmin ? [] : [
       {
         style: styles.separator,
       },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
         title: i18n("Import books to server"),
         // icon: onDeviceIcon,

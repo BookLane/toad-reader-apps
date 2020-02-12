@@ -79,7 +79,7 @@ const BookInfo = ({
   setSubscriptions,
 }) => {
 
-  const { title, author, isbn, subscriptions } = bookInfo
+  const { title, author, isbn } = bookInfo
 
   const { historyPush } = useRouterState()
 
@@ -91,9 +91,13 @@ const BookInfo = ({
     const { isAdmin, cookie } = accounts[accountId] || {}
 
     if(isAdmin) {
+      const { subscriptions } = bookInfo.accounts[accountId]
+    
       adminInfo = {
         idpId: getIdsFromAccountId(accountId).idpId,
+        accountId,
         cookie,
+        subscriptions,
       }
       return true
     }
@@ -135,7 +139,12 @@ const BookInfo = ({
   const updateLibrary = useCallback(
     () => {
       setDeleteStatus('none')
-      requestAnimationFrame(() => deleteBook({ bookId }))
+      requestAnimationFrame(() => {
+        deleteBook({
+          bookId,
+          accountId: adminInfo.accountId,
+        })
+      })
     },
     [ bookId ],
   )
@@ -148,8 +157,8 @@ const BookInfo = ({
       const path = `${getDataOrigin(idps[adminInfo.idpId])}/setsubscriptions/${bookId}`
 
       const newSubscriptions = checked
-        ? [ ...(subscriptions || []), { id: adminInfo.idpId * -1, version: "BASE" }]
-        : (subscriptions || []).filter(({ id }) => id !== adminInfo.idpId * -1)
+        ? [ ...(adminInfo.subscriptions || []), { id: adminInfo.idpId * -1, version: "BASE" }]
+        : (adminInfo.subscriptions || []).filter(({ id }) => id !== adminInfo.idpId * -1)
 
       try {
 
@@ -165,6 +174,7 @@ const BookInfo = ({
         if(result.status === 200 && ((await result.json()) || {}).success) {
           setSubscriptions({
             bookId,
+            accountId: adminInfo.accountId,
             subscriptions: newSubscriptions,
           })
 
@@ -181,7 +191,7 @@ const BookInfo = ({
       setUpdatingSubscriptions(false)
 
     },
-    [ bookId, subscriptions ],
+    [ bookId, JSON.stringify(adminInfo) ],
   )
 
   return (
@@ -206,7 +216,7 @@ const BookInfo = ({
                 <View style={styles.checkBoxContainer}>
                   <CheckBox
                     text={i18n("Accessible to all users")}
-                    checked={!!(adminInfo && (subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1))}
+                    checked={!!(adminInfo && (adminInfo.subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1))}
                     onChange={setDefaultSubscription}
                   />
                 </View>

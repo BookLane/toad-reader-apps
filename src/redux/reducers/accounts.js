@@ -30,7 +30,19 @@ export default function(state = initialState, action) {
       delete newState[action.accountId]
       return newState
     }
-      
+
+    case "ADD_BOOKS": {
+      newState[action.accountId].libraryHash = action.hash
+      return newState
+    }
+
+    case "DELETE_BOOK":
+    case "SET_SUBSCRIPTIONS": {
+      // we no longer know the proper hash
+      delete newState[action.accountId].libraryHash
+      return newState
+    }
+
   }
 
   return state

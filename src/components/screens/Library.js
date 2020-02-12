@@ -32,8 +32,9 @@ import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFet
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
+import usePrevious from "react-use/lib/usePrevious"
 
-import { addBooks, setCoverFilename, reSort, setSort, setFetchingBooks,
+import { addBooks, setCoverFilename, reSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
 
 const {
@@ -76,7 +77,6 @@ const Library = ({
   addBooks,
   setCoverFilename,
   reSort,
-  setSort,
   setFetchingBooks,
   removeAccount,
   updateAccount,
@@ -94,14 +94,14 @@ const Library = ({
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
-  const { widget, parent_domain, logOutAccountId, refreshLibraryAccountId } = routerState
-  const logOutUrl = (logOutAccountId || refreshLibraryAccountId)
-    ? `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`
-    : null
+  const { widget, parent_domain, logOutAccountId } = routerState
 
-  const getLocationPathname = useInstanceValue(pathname)
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
+
+  const previousPathname = usePrevious(pathname)
+  const numAccounts = Object.keys(accounts).length
+  const previousNumAccounts = usePrevious(numAccounts)
 
   useEffect(
     () => {
@@ -212,12 +212,15 @@ const Library = ({
   const updateBooks = useCallback(
     async ({ accountId }) => {
 
-      const { idpId } = getIdsFromAccountId(accountId)
+      console.log(`Fetch books (accountId: ${accountId})...`)
 
-      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json`
+      const { idpId } = getIdsFromAccountId(accountId)
+      const { cookie, libraryHash } = accounts[accountId]
+
+      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json?hash=${libraryHash}`
       let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
         headers: {
-          "x-cookie-override": accounts[accountId].cookie,
+          "x-cookie-override": cookie,
         },
       }))
       // I do not catch the no internet connection error because I only get here immediately after logging in,
@@ -235,91 +238,92 @@ const Library = ({
         return
       }
 
-      const newBooks = await response.json()
+      const { books: newBooks, hash, noChange } = await response.json()
+
+      if(noChange) {
+        console.log(`...done fetching books (accountId: ${accountId}) - no change.`)
+        return
+      }
 
       addBooks({
         books: newBooks,
         accountId,
+        hash,
       })
       reSort()
 
       requestAnimationFrame(() => getCovers({ idpId }))
 
+      console.log(`...done fetching books (accountId: ${accountId}).`)
+
     },
     [ idps, accounts, books ],
   )
 
-  useEffect(  // fetch all
+  useEffect(  // fetch books
     () => {
-      (async () => {
 
-        const account = Object.values(accounts)[0]
-        if(!account || account.needToLogInAgain) {
-          // when I move to multiple accounts, this will instead need to go to the Accounts screen
-          setShowLogin(true)
-          return
-        }
+      const account = Object.values(accounts)[0]
+      if(!account || account.needToLogInAgain) {
+        // when I move to multiple accounts, this will instead need to go to the Accounts screen
+        setShowLogin(true)
+        return
+      }
 
-        // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
-        setFetchingBooks({ value: true })
-        for(let accountId in accounts) {
-          try {
+      if(
+        (
+          pathname === '/'
+          && !['/drawer', '/'].includes(previousPathname)
+        )
+        || numAccounts > previousNumAccounts  // i.e. they just logged in
+      ) {
+        (async () => {
 
-            const { idpId } = getIdsFromAccountId(accountId)
+          // TODO: presently it gets the account libraries just one at a time; could get these in parallel to be quicker
+          setFetchingBooks({ value: true })
+          for(let accountId in accounts) {
+            try {
 
-            // no need to get the library listing if we already have it
-            if(!refreshLibraryAccountId && Object.values(books).some(book => book.accounts[accountId])) {
-              requestAnimationFrame(() => getCovers({ idpId }))
-              continue
+              await updateBooks({ accountId })
+
+            } catch(error) {
+              console.log("Update books ERROR", error)
+
+              if(Object.values(books).some(book => book.accounts[accountId])) {
+                // if we already have the library listing from before, fail quietly
+
+              } else {
+                historyPush("/error", {
+                  message: error.message || null,
+                })
+              }
+
             }
-
-            // update books
-            await updateBooks({ accountId })
-
-            if(refreshLibraryAccountId) {
-              historyReplace()
-            }
-            
-          } catch(error) {
-            console.log("ERROR", error)
-            historyPush("/error", {
-              message: error.message || null,
-            })
           }
-        }
-        setFetchingBooks({ value: false })
-      })()
+          setFetchingBooks({ value: false })
+
+        })()
+      }
     },
-    [ idps, accounts, refreshLibraryAccountId ],
+    [ idps, accounts, pathname ],
   )
 
   const onLoginSuccess = useCallback(() => setShowLogin(false), [])
 
-  const logOutUrlOnLoad = useCallback(
+  const logOutOnLoad = useCallback(
     async () => {
       // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
-      const logOutCallbackUrl = `${getDataOrigin(idps[(logOutAccountId || refreshLibraryAccountId).split(':')[0]])}/logout/callback?noredirect=1`
+      const logOutCallbackUrl = `${getDataOrigin(idps[logOutAccountId.split(':')[0]])}/logout/callback?noredirect=1`
       await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
         headers: {
-          "x-cookie-override": accounts[logOutAccountId || refreshLibraryAccountId].cookie,
+          "x-cookie-override": accounts[logOutAccountId].cookie,
         },
       }))
 
-      if(refreshLibraryAccountId) {
-        updateAccount({
-          accountId: refreshLibraryAccountId,
-          accountInfo: {
-            needToLogInAgain: true,
-          },
-        })
-      }
-
-      if(logOutAccountId) {
-        removeAccount({ accountId: logOutAccountId })
-        historyReplace()
-      }
+      removeAccount({ accountId: logOutAccountId })
+      historyReplace()
     },
-    [ idps, accounts, logOutAccountId, refreshLibraryAccountId ],
+    [ idps, accounts, logOutAccountId ],
   )
 
   const openImportBooks = useCallback(
@@ -366,20 +370,20 @@ const Library = ({
     )
   }
 
-  if(logOutUrl) {
+  if(logOutAccountId) {
     return (
       <SafeLayout>
         <AppHeader hide={true} />
         <WebView
           style={styles.flex1}
           source={getReqOptionsWithAdditions({
-            uri: logOutUrl,
+            uri: `${getDataOrigin(idps[logOutAccountId.split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`,
             headers: {
-              "x-cookie-override": (accounts[logOutAccountId || refreshLibraryAccountId] || {}).cookie,
+              "x-cookie-override": (accounts[logOutAccountId] || {}).cookie,
             },
           })}
-          onLoad={logOutUrlOnLoad}
-          onError={logOutUrlOnLoad}  // Even if it fails, log them out on the device at least
+          onLoad={logOutOnLoad}
+          onError={logOutOnLoad}  // Even if it fails, log them out on the device at least
         />
         <CoverAndSpin
           text={
@@ -485,7 +489,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
   setCoverFilename,
   reSort,
-  setSort,
   setFetchingBooks,
   removeAccount,
   updateAccount,
