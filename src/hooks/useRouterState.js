@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react"
+import { useCallback } from "react"
 import { useHistory } from "react-router-dom"
 import { useLocation } from "react-router-dom"
 
@@ -17,10 +17,10 @@ const useRouterState = () => {
     [ history, location ],
   )
 
-  const routerState = useRef({})
+  let routerState = {}
 
   try {
-    routerState.current = JSON.parse(decodeURIComponent(location.hash).slice(1))
+    routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
   } catch(e) {}
 
   return {
@@ -28,7 +28,7 @@ const useRouterState = () => {
     historyReplace,
     historyGoBack: history.goBack,
     historyGo: history.go,
-    routerState: routerState.current,
+    routerState,
     ...location,
   }
 }
