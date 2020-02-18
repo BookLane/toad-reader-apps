@@ -18,10 +18,6 @@ import { setTextSize, setTextSpacing, setTheme } from "../../redux/actions"
 //     label: i18n ("Author's theme"),
 //   },
 //   {
-//     id: "default-theme",
-//     label: i18n ("High contrast"),
-//   },
-//   {
 //     id: "night-theme",
 //     label: i18n ("Low light"),
 //   },
