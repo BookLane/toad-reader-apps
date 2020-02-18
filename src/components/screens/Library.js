@@ -22,7 +22,6 @@ import LibraryCovers from "../major/LibraryCovers"
 import LibraryList from "../major/LibraryList"
 import Spin from "../basic/Spin"
 import CoverAndSpin from "../basic/CoverAndSpin"
-import AppHeader from "../basic/AppHeader"
 import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
@@ -373,7 +372,6 @@ const Library = ({
   if(logOutAccountId) {
     return (
       <SafeLayout>
-        <AppHeader hide={true} />
         <WebView
           style={styles.flex1}
           source={getReqOptionsWithAdditions({
