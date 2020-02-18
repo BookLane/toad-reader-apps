@@ -24,6 +24,7 @@ const WebView = ({
   onMessage,  // Need custom code in readium-js-viewer
   onError,
   onLoad,
+  iframeProps={},
   // injectedJavaScript,
   // onNavigationStateChange,
   // originWhitelist,
@@ -165,6 +166,7 @@ const WebView = ({
           styles.iframe,
           style,
         ]}
+        {...iframeProps}
       />
       {!loaded && (
         <CoverAndSpin />

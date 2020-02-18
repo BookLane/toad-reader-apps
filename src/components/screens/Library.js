@@ -382,6 +382,13 @@ const Library = ({
           })}
           onLoad={logOutOnLoad}
           onError={logOutOnLoad}  // Even if it fails, log them out on the device at least
+          iframeProps={{
+            // I am not sure if I need this for BibleMesh only, or in general.
+            // I also don't know if it will break things for another tenant.
+            // Without it, BibleMesh produces strange space to the right of the iframe.
+            // It is the lack of allow-scripts that avoids that issue.
+            sandbox: "allow-forms allow-same-origin allow-top-navigation",
+          }}
         />
         <CoverAndSpin
           text={
