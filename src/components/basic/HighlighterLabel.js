@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
     padding: 15,
     flexDirection: 'row',
     maxWidth: '100%',
-    lineHeight: 34,
   },
   emptySpace: {
     flexGrow: 1,
