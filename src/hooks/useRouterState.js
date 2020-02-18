@@ -1,6 +1,5 @@
 import { useCallback } from "react"
-import { useHistory } from "react-router-dom"
-import { useLocation } from "react-router-dom"
+import { useHistory, useLocation } from "react-router-dom"
 
 const useRouterState = () => {
 

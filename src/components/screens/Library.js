@@ -400,14 +400,11 @@ const Library = ({
   const doingInitialFetch = fetchingBooks && bookList.length == 0
 
   return (
-    <>
-
-      <SideMenu
-        open={pathname === '/drawer'}
-        onClose={historyGoBack}
-      >
-        <AppMenu onImportBooks={openImportBooks} />
-      </SideMenu>
+    <SideMenu
+      open={pathname === '/drawer'}
+      onClose={historyGoBack}
+      menu={<AppMenu onImportBooks={openImportBooks} />}
+    >
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
@@ -473,7 +470,7 @@ const Library = ({
         }))
       }
 
-    </>
+    </SideMenu>
   )
 }
 
