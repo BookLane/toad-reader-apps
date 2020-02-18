@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View } from "react-native"
-import { styled, Button } from '@ui-kitten/components'
+import { Button } from '@ui-kitten/components'
+
+import styled from "../../utils/styled"
+import { getToolInfo } from "../../utils/toolInfo"
 
 import Icon from "./Icon"
-import { getToolInfo } from "../../utils/toolInfo"
 
 const onMoveShouldSetResponderCapture = () => true
 
@@ -51,10 +53,9 @@ const ToolChip = React.memo(({
   onPress,
   onToolMove,
   onToolRelease,
+  baseThemedStyle,
   style,
   iconStyle,
-
-  themedStyle,
 }) => {
 
   const [ hideTool, setHideTool ] = useState(false)
@@ -109,7 +110,7 @@ const ToolChip = React.memo(({
       <Button
         style={[
           styles.button,
-          themedStyle,
+          baseThemedStyle,
           style,
         ]}
         size='tiny'
@@ -124,6 +125,4 @@ const ToolChip = React.memo(({
   )
 })
 
-ToolChip.styledComponentName = 'ToolChip'
-
-export default styled(ToolChip)
+export default styled(ToolChip, 'ToolChip')
