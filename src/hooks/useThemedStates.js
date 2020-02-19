@@ -4,14 +4,14 @@ import { Interaction } from '@ui-kitten/components'
 
 const useThemedStates = ({ dispatch, states=[] }) => {
 
-  const onPressIn = useCallback(() => dispatch([ Interaction.ACTIVE ]), [])
-  const onPressOut = useCallback(() => dispatch([]), [])
+  const onPressIn = useCallback(() => dispatch([ Interaction.ACTIVE ]), [ dispatch ])
+  const onPressOut = useCallback(() => dispatch([]), [ dispatch ])
 
-  const onFocus = useCallback(() => dispatch([ Interaction.FOCUSED ]), [])
-  const onBlur = useCallback(() => dispatch([]), [])
+  const onFocus = useCallback(() => dispatch([ Interaction.FOCUSED ]), [ dispatch ])
+  const onBlur = useCallback(() => dispatch([]), [ dispatch ])
 
-  const onMouseEnter = useCallback(() => dispatch([ Interaction.HOVER ]), [])
-  const onMouseLeave = useCallback(() => dispatch([]), [])
+  const onMouseEnter = useCallback(() => dispatch([ Interaction.HOVER ]), [ dispatch ])
+  const onMouseLeave = useCallback(() => dispatch([]), [ dispatch ])
 
   let themedStates = {}
 

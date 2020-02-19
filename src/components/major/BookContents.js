@@ -44,8 +44,11 @@ const BookContents = React.memo(({
 }) => {
 
   const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
-          myRole, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+          myRole, viewingFrontMatter, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
+  const { latest_location } = userDataByBookId[bookId] || {}
+  const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+        
   const showAddToolButton = (
     (
       bookVersion === 'INSTRUCTOR'
@@ -193,19 +196,26 @@ const BookContents = React.memo(({
   )
 
   const renderItem = useCallback(
-    ({ item }, index) => (
-      <BookContentsLine
-        {...item}
-        bookId={bookId}
-        goTo={goTo}
-        reportLineHeight={reportLineHeight}
-        index={index}
-        onToolMove={onToolMove}
-        onToolRelease={onToolRelease}
-        inEditMode={inEditMode}
-      />
-    ),
-    [ bookId, goTo, reportLineHeight, inEditMode ],
+    ({ item }, index) => {
+
+      const selected = item.toolType
+        ? (item.uid === selectedToolUid)
+        : (!selectedToolUid && item.spineIdRef === currentSpineIdRef)
+
+      return (
+        <BookContentsLine
+          {...item}
+          bookId={bookId}
+          goTo={goTo}
+          reportLineHeight={reportLineHeight}
+          index={index}
+          onToolMove={onToolMove}
+          onToolRelease={onToolRelease}
+          status={selected ? "selected" : "unselected"}
+        />
+      )
+    },
+    [ selectedToolUid, currentSpineIdRef, bookId, goTo, reportLineHeight ],
   )
 
   const createNewTool = useCallback(
@@ -220,8 +230,6 @@ const BookContents = React.memo(({
         ordering =  selectedTool.ordering + 1
 
       } else {
-        const { latest_location } = userDataByBookId[bookId] || {}
-        const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
         const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
         visibleTools.forEach(tool => {
@@ -245,7 +253,7 @@ const BookContents = React.memo(({
         // toolType,
       })
     },
-    [ bookId, classroomUid, book, displaySettings, JSON.stringify(visibleTools), selectedTool ],
+    [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],
   )
 
   if(!toc) return null

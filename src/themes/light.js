@@ -156,7 +156,7 @@ const theme = {
   // "color-primary-disabled-border": "$color-primary-disabled",
 
   // "color-primary-transparent-focus": "$color-primary-transparent-300",
-  // "color-primary-transparent-hover": "$color-primary-transparent-200",
+  "color-primary-transparent-hover": "$color-primary-transparent-100",
   // "color-primary-transparent-default": "$color-primary-transparent-100",
   // "color-primary-transparent-active": "$color-primary-transparent-300",
   // "color-primary-transparent-disabled": "$color-basic-transparent-200",

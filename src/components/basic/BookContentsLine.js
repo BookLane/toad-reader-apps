@@ -2,15 +2,14 @@ import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { getSpineAndPage } from '../../utils/toolbox'
+import { useLayout } from 'react-native-hooks'
+import { styled } from '@ui-kitten/components'
+
+import useThemedStates from "../../hooks/useThemedStates"
+import { setSelectedToolUid } from "../../redux/actions"
 
 import ToolChip from './ToolChip'
 import GroupedToolsChip from './GroupedToolsChip'
-
-import { useLayout } from 'react-native-hooks'
-import useClassroomInfo from "../../hooks/useClassroomInfo"
-
-import { setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   listItem: {
@@ -23,9 +22,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 8,
     flexDirection: 'row',
-  },
-  selected: {
-    backgroundColor: 'rgb(199, 211, 234)',
   },
   label: {
     flexShrink: 1,
@@ -47,17 +43,14 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
-  inEditMode,
-
-  books,
-  userDataByBookId,
 
   setSelectedToolUid,
+
+  themedStyle,
+  dispatch,
 }) => {
 
-  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
-  const { latest_location } = userDataByBookId[bookId] || {}
-  const currentSpineIdRef = getSpineAndPage({ latest_location }).spineIdRef
+  const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
 
   const onPress = useCallback(
     () => {
@@ -77,10 +70,6 @@ const BookContentsLine = ({
 
   reportLineHeight({ index, height })
 
-  const selected = toolType
-    ? (uid === selectedToolUid)
-    : (!selectedToolUid && spineIdRef === currentSpineIdRef)
-
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
 
   if(toolType) {
@@ -89,8 +78,8 @@ const BookContentsLine = ({
         onLayout={onLayout}
         style={[
           styles.listItemWithTool,
+          themedStyle,
           indentStyle,
-          selected ? styles.selected : null,
         ]}
       >
         <ToolChip
@@ -108,14 +97,15 @@ const BookContentsLine = ({
 
   return (
     <TouchableOpacity
+      {...themedStateEvents}
       onLayout={onLayout}
       onPress={!toolType ? onPress : null}
     >
       <View
         style={[
           styles.listItem,
+          themedStyle,
           indentStyle,
-          selected ? styles.selected : null,
         ]}
       >
         <Text style={styles.label}>{label}</Text>
@@ -130,13 +120,13 @@ const BookContentsLine = ({
   )
 }
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
-  books,
-  userDataByBookId,
+const mapStateToProps = () => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookContentsLine)
+BookContentsLine.styledComponentName = 'BookContentsLine'
+
+export default connect(mapStateToProps, matchDispatchToProps)(styled(BookContentsLine))

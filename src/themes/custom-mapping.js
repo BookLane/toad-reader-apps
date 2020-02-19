@@ -22,6 +22,7 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
     }
   }
 
+  addToStates('none')  // It is unclear why this is needed, but it is.
   Object.keys(state || {}).forEach(stateValue => addToStates(stateValue))
 
   for(let group in variantGroups) {
@@ -54,7 +55,7 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
       ...(!isCustom ? {} : {
         variantGroups: objectMap(variantGroups, group => (
           objectMap(group, (val, key, index) => ({
-            default: index === 0,
+            default: false,
           }))
         )),
         states,
@@ -139,13 +140,30 @@ const mapping = {
       component: 'GroupedToolsChip',
       parameters: {
         backgroundColor: 'background-alternative-color-4',
-        color: 'background-basic-color-1',
+        color: 'text-alternate-color',
       },
       variantGroups: {
         status: {
-          published: {},  // first is the default
+          published: {},
           draft: {
             fontStyle: 'italic',
+          },
+        },
+      },
+    },
+    {
+      component: 'BookContentsLine',
+      variantGroups: {
+        status: {
+          unselected: {
+            state: {
+              hover: {
+                backgroundColor: 'color-primary-transparent-hover',
+              },
+            },
+          },
+          selected: {
+            backgroundColor: 'color-primary-transparent-active',
           },
         },
       },
