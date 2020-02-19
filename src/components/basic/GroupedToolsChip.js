@@ -2,6 +2,8 @@ import React from "react"
 import { StyleSheet, Text } from "react-native"
 import { styled } from '@ui-kitten/components'
 
+// import useThemedStates from "../../hooks/useThemedStates"
+
 const styles = StyleSheet.create({
   numWithin: {
     borderRadius: 10,
@@ -22,17 +24,24 @@ const GroupedToolsChip = ({
   numToolsWithin,
   themedStyle,
   style,
-}) => (
-  <Text
-    style={[
-      styles.numWithin,
-      themedStyle,
-      style,
-    ]}
-  >
-    {numToolsWithin}
-  </Text>
-)
+  // dispatch,
+}) => {
+
+  const themedStateEvents = {} //useThemedStates(dispatch)
+
+  return (
+    <Text
+      {...themedStateEvents}
+      style={[
+        styles.numWithin,
+        themedStyle,
+        style,
+      ]}
+    >
+      {numToolsWithin}
+    </Text>
+  )
+}
 
 GroupedToolsChip.styledComponentName = 'GroupedToolsChip'
 
