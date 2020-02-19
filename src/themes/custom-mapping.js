@@ -128,6 +128,33 @@ const mapping = {
         },
       },
     },
+    GroupedToolsChip: {
+      meta: {
+        parameters: {
+          backgroundColor: {
+            type: "string",
+          },
+          color: {
+            type: "string",
+          },
+        },
+        variantGroups: {},
+        states: {},
+        appearances: {
+          filled: {
+            default: true,
+          },
+        },
+      },
+      appearances: {
+        filled: {
+          mapping: {
+            backgroundColor: 'background-alternative-color-4',
+            color: 'background-basic-color-1',
+          },
+        },
+      },
+    },
   },
   
   // TODO: I need to lay this over top at each level of the object

@@ -5,27 +5,12 @@ import { connect } from "react-redux"
 import { getSpineAndPage } from '../../utils/toolbox'
 
 import ToolChip from './ToolChip'
+import GroupedToolsChip from './GroupedToolsChip'
 
 import { useLayout } from 'react-native-hooks'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { setSelectedToolUid } from "../../redux/actions"
-
-const numWithin = {
-  backgroundColor: 'rgb(0, 0, 0)',
-  borderRadius: 10,
-  color: 'white',
-  width: 19,
-  height: 19,
-  flexShrink: 0,
-  lineHeight: 18,
-  textAlign: 'center',
-  fontSize: 10,
-  fontWeight: '600',
-  marginVertical: -6,
-  marginLeft: 8,
-  paddingRight: 1, // not sure why I need this
-}
 
 const styles = StyleSheet.create({
   listItem: {
@@ -44,13 +29,6 @@ const styles = StyleSheet.create({
   },
   label: {
     flexShrink: 1,
-  },
-  numWithin: {
-    ...numWithin,
-  },
-  numWithinDraft: {
-    ...numWithin,
-    fontStyle: 'italic',
   },
 })
 
@@ -141,7 +119,12 @@ const BookContentsLine = ({
         ]}
       >
         <Text style={styles.label}>{label}</Text>
-        {!!numToolsWithin && <Text style={isDraft ? styles.numWithinDraft : styles.numWithin}>{numToolsWithin}</Text>}
+        {!!numToolsWithin &&
+          <GroupedToolsChip
+            isDraft={isDraft}
+            numToolsWithin={numToolsWithin}
+          />
+        }
       </View>
     </TouchableOpacity>
   )
