@@ -61,6 +61,7 @@ const BookContentsLine = ({
           uid,
         })
       } else {
+        setSelectedToolUid({ bookId })  // unselects any tool
         goTo({ href, spineIdRef })
       }
     },

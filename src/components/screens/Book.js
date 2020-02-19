@@ -658,16 +658,8 @@ const Book = React.memo(({
       if(!target.closest('[data-id=highlighter]')) {
         setSelectionInfo()
       }
-      if(
-        !target.closest('[data-id=BookLeft]')
-        && !target.closest('[data-id=EnhancedHeader]')
-        && !target.closest('[data-id=FAB_addTool]')
-        && selectedToolUid
-      ) {
-        unselectTool()
-      }
     },
-    [ selectedToolUid, unselectTool ],
+    [ selectedToolUid ],
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
@@ -876,7 +868,6 @@ const Book = React.memo(({
             styles.mainPanel,
             mode !== 'contents' ? showStyles : null,
           ]}
-          data-id="BookLeft"
         >
           {!widget &&
             <BookHeader

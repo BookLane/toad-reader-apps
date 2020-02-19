@@ -218,7 +218,7 @@ const EnhancedHeader = React.memo(({
   )
 
   return (
-    <View style={styles.container} data-id="EnhancedHeader">
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={canViewEnhancedHomepage ? selectEnhancedHomepage : null}
       >
