@@ -211,7 +211,7 @@ const BookContents = React.memo(({
           index={index}
           onToolMove={onToolMove}
           onToolRelease={onToolRelease}
-          status={selected ? "selected" : "unselected"}
+          uiStatus={selected ? "selected" : "unselected"}
         />
       )
     },

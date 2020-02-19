@@ -172,7 +172,7 @@ const mapping = {
     {
       component: 'BookContentsLine',
       variantGroups: {
-        status: {
+        uiStatus: {
           unselected: {
             state: {
               hover: {
@@ -182,6 +182,32 @@ const mapping = {
           },
           selected: {
             backgroundColor: 'color-primary-transparent-active',
+          },
+        },
+      },
+    },
+    {
+      component: 'EnhancedHeaderLine',
+      variantGroups: {
+        status: {
+          published: {},
+          draft: {
+            fontStyle: 'italic',
+          },
+        },
+        uiStatus: {
+          unselected: {
+            state: {
+              hover: {
+                backgroundColor: 'color-primary-transparent-hover',
+              },
+            },
+          },
+          selected: {
+            backgroundColor: 'color-primary-transparent-active',
+          },
+          disabled: {
+
           },
         },
       },

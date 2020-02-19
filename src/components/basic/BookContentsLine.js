@@ -43,7 +43,7 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
-  status,
+  uiStatus,
 
   setSelectedToolUid,
 
@@ -111,7 +111,7 @@ const BookContentsLine = ({
     </View>
   )
 
-  if(status === 'unselected') {
+  if(uiStatus === 'unselected') {
     return (
       <TouchableOpacity onPress={onPress}>
         {line}
