@@ -1,4 +1,6 @@
 import Constants from 'expo-constants'
+import deepmerge from 'deepmerge'
+
 import { objectMap } from '../utils/toolbox'
 
 const {
@@ -27,6 +29,14 @@ const getComponentSetup = ({ parameters={}, state="default", isCustom=true }={})
   },
 })
 
+const getComponentMapping = componentInfos => (
+  deepmerge.all(
+    componentInfos.map(({ component, ...info }) => ({
+      [component]: getComponentSetup(info),
+    }))
+  )
+)
+
 const mapping = {
 
   // See https://github.com/eva-design/eva/blob/master/packages/eva/mapping.json  
@@ -44,44 +54,53 @@ const mapping = {
   //   },
   // },
   
-  components: {
-    Layout: getComponentSetup({
+  components: getComponentMapping([
+    {
+      component: 'Layout',
       parameters: {
         flex: 1,
       },
       isCustom: false,
-    }),
-    OverflowMenu: getComponentSetup({
+    },
+    {
+      component: 'OverflowMenu',
       parameters: {
         borderWidth: 1,
         borderColor: "border-basic-color-3",
         borderRadius: 0,
       },
       isCustom: false,
-    }),
-    HeaderIcon: getComponentSetup(),
-    FAB: getComponentSetup({ state: 'filled' }),
-    ToolChip: getComponentSetup({
+    },
+    {
+      component: 'HeaderIcon',
+    },
+    {
+      component: 'FAB',
+      state: 'filled',
+    },
+    {
+      component: 'ToolChip',
       parameters: {
         backgroundColor: 'background-alternative-color-4',
         iconTintColor: 'color-primary-300',
       },
-    }),
-    AppHeader: getComponentSetup({
+    },
+    {
+      component: 'AppHeader',
       parameters: {
         backgroundColor: 'background-basic-color-1',
       },
-    }),
-    GroupedToolsChip: getComponentSetup({
+    },
+    {
+      component: 'GroupedToolsChip',
       parameters: {
         backgroundColor: 'background-alternative-color-4',
         color: 'background-basic-color-1',
       },
-    }),
-  },
+    },
+    ...MAPPING_CUSTOMIZATION,
+  ]),
   
-  // TODO: I need to lay this over top at each level of the object
-  // ...MAPPING_CUSTOMIZATION,
 }
 
 export default mapping
