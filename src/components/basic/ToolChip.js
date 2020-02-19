@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View } from "react-native"
-import { Button } from '@ui-kitten/components'
+import { Button, styled } from '@ui-kitten/components'
 
-import styled from "../../utils/styled"
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import { getToolInfo } from "../../utils/toolInfo"
 
 import Icon from "./Icon"
@@ -14,12 +14,6 @@ const text = {
   fontSize: 12,
 }
 
-const icon = {
-  tintColor: 'rgb(149, 174, 224)',
-  height: 13,
-  marginRight: 0,
-}
-
 const styles = StyleSheet.create({
   text: {
     ...text,
@@ -29,14 +23,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   icon: {
-    ...icon,
-  },
-  draftIcon: {
-    ...icon,
-    // tintColor: '#fdf594',
+    height: 13,
+    marginRight: 0,
   },
   button: {
-    backgroundColor: 'black',
     borderColor: 'transparent',
     borderRadius: 17,
   },
@@ -53,13 +43,14 @@ const ToolChip = React.memo(({
   onPress,
   onToolMove,
   onToolRelease,
-  baseThemedStyle,
+  themedStyle,
   style,
   iconStyle,
 }) => {
 
   const [ hideTool, setHideTool ] = useState(false)
   const { toolInfoByType } = getToolInfo()
+  const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
 
   const onResponderMove = useCallback(
     ({ nativeEvent }) => {
@@ -89,8 +80,8 @@ const ToolChip = React.memo(({
       <Icon
         {...toolInfoByType[toolType]}
         style={[
-          isDraft ? styles.draftIcon : styles.icon,
-          // iconStyle,
+          styles.icon,
+          iconThemedStyle,
         ]}
       />
     ),
@@ -125,4 +116,6 @@ const ToolChip = React.memo(({
   )
 })
 
-export default styled(ToolChip, 'ToolChip')
+ToolChip.styledComponentName = 'ToolChip'
+
+export default styled(ToolChip)

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { TouchableOpacity, StyleSheet } from "react-native"
-import styled from "../../utils/styled"
+import { styled } from '@ui-kitten/components'
 
 import useRouterState from "../../hooks/useRouterState"
 
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 })
 
 const HeaderIcon = React.forwardRef(({
-  baseThemedStyle,
+  themedStyle,
   style,
   pack,
   name,
@@ -46,7 +46,7 @@ const HeaderIcon = React.forwardRef(({
       <Icon
         style={[
           styles.icon,
-          baseThemedStyle,
+          themedStyle,
           style,
         ]}
         name={name}
@@ -56,4 +56,6 @@ const HeaderIcon = React.forwardRef(({
   )
 })
 
-export default styled(HeaderIcon, 'HeaderIcon')
+HeaderIcon.styledComponentName = 'HeaderIcon'
+
+export default styled(HeaderIcon)

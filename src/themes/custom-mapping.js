@@ -78,7 +78,56 @@ const mapping = {
     },
     HeaderIcon: getCustomComponentSetup(),
     FAB: getCustomComponentSetup({ defaultKey: 'filled' }),
-    ToolChip: getCustomComponentSetup({ defaultKey: 'filled' }),
+    ToolChip: {
+      meta: {
+        parameters: {
+          backgroundColor: {
+            type: "string",
+          },
+          iconTintColor: {
+            type: "string",
+          },
+        },
+        variantGroups: {},
+        states: {},
+        appearances: {
+          filled: {
+            default: true,
+          },
+        },
+      },
+      appearances: {
+        filled: {
+          mapping: {
+            backgroundColor: 'background-alternative-color-4',
+            iconTintColor: 'color-primary-300',
+          },
+        },
+      },
+    },
+    AppHeader: {
+      meta: {
+        parameters: {
+          backgroundColor: {
+            type: "string",
+          },
+        },
+        variantGroups: {},
+        states: {},
+        appearances: {
+          filled: {
+            default: true,
+          },
+        },
+      },
+      appearances: {
+        filled: {
+          mapping: {
+            backgroundColor: 'background-basic-color-1',
+          },
+        },
+      },
+    },
   },
   
   // TODO: I need to lay this over top at each level of the object

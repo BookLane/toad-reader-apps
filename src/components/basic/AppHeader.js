@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { getToolbarHeight } from '../../utils/toolbox'
+import { styled } from '@ui-kitten/components'
 
 import useWideMode from "../../hooks/useWideMode"
 
@@ -17,7 +18,6 @@ const styles = StyleSheet.create({
     height: getToolbarHeight(),
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'white',
   },
   titleView: {
     flexShrink: 1,
@@ -58,8 +58,9 @@ const AppHeader = ({
   titleCentered,
   leftControl,
   rightControls=[],
+  themedStyle,
+  style,
   titleStyle,
-  ...topNavigationProps
 }) => {
 
   const wideMode = useWideMode()
@@ -69,7 +70,13 @@ const AppHeader = ({
   titleCentered = titleCentered && wideMode
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        themedStyle,
+        style,
+      ]}
+    >
       {!!leftControl &&
         <View style={titleCentered ? styles.titleCenteredControlsGroupLeft : null}>
           {leftControl}
@@ -107,4 +114,6 @@ const AppHeader = ({
   )
 }
 
-export default AppHeader
+AppHeader.styledComponentName = 'AppHeader'
+
+export default styled(AppHeader)

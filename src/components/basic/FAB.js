@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
 import { StyleSheet } from "react-native"
-import { Button } from '@ui-kitten/components'
+import { Button, styled } from '@ui-kitten/components'
 
-import styled from "../../utils/styled"
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 
 import Icon from "./Icon"
 
@@ -26,14 +26,15 @@ const styles = StyleSheet.create({
 })
 
 const FAB = ({
-  baseThemedStyle,
-  iconThemedStyle,
+  themedStyle,
   style,
   iconName,
   iconPack,
   iconStyle,
   ...buttonProps
 }) => {
+
+  const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
 
   const ButtonIcon = useCallback(
     style => (
@@ -63,4 +64,6 @@ const FAB = ({
   )
 }
 
-export default styled(FAB, 'FAB')
+FAB.styledComponentName = 'FAB'
+
+export default styled(FAB)
