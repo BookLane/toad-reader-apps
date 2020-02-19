@@ -13,14 +13,7 @@ import HeaderIcon from "../basic/HeaderIcon"
 import ManageClassrooms from "./ManageClassrooms"
 import ConnectToAClassroom from "./ConnectToAClassroom"
 import EnhancedHeaderLine from "../basic/EnhancedHeaderLine"
-
-const editButton = {
-  borderRadius: 20,
-  width: 40,
-  height: 40,
-  marginVertical: -12,
-  borderColor: 'transparent',  
-}
+import EnhancedEditButton from "../basic/EnhancedEditButton"
 
 const styles = StyleSheet.create({
   container: {
@@ -30,16 +23,6 @@ const styles = StyleSheet.create({
   },
   enhanced: {
     fontWeight: 'bold',
-  },
-  editButton: {
-    ...editButton,  
-  },
-  editButtonActive: {
-    ...editButton,  
-    backgroundColor: 'rgba(0, 0, 0, .15)',
-  },
-  editIconActive: {
-    tintColor: 'rgb(51, 102, 255)',
   },
   optionsIconContainer: {
     position: 'relative',
@@ -212,12 +195,9 @@ const EnhancedHeader = React.memo(({
         buttons={
           <>
             {iCanEdit && !viewingEnhancedHomepage &&
-              <Button
-                style={inEditMode ? styles.editButtonActive : styles.editButton}
-                appearance="ghost"
-                status="basic"
-                icon={EditButtonIcon}
+              <EnhancedEditButton
                 onPress={toggleInEditMode}
+                status={inEditMode ? "on" : "off"}
               />
             }
             <OverflowMenu

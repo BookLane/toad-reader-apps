@@ -212,6 +212,30 @@ const mapping = {
         },
       },
     },
+    {
+      component: 'EnhancedEditButton',
+      variantGroups: {
+        status: {
+          on: {
+            backgroundColor: 'color-basic-transparent-500',
+            iconTintColor: 'color-primary-500',
+            state: {
+              hover: {
+                backgroundColor: 'color-basic-transparent-300',
+              },
+            },
+          },
+          off: {
+            iconTintColor: "color-basic-600",
+            state: {
+              hover: {
+                backgroundColor: 'color-basic-transparent-300',
+              },
+            },
+          },
+        },
+      },
+    },
     ...MAPPING_CUSTOMIZATION,
   ]),
   
