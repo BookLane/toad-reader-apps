@@ -118,6 +118,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
           toolType="INSTRUCTOR_HIGHLIGHT"
           onPress={(myRole === 'INSTRUCTOR' && othersInstructorHighlights.length === 0) ? toggleAsInstructorHighlight : null}
           style={!hasInstructorHighlight ? styles.unselectedToolChip : styles.toolChip}
+          type="button"
         />
         {othersInstructorHighlightsWithoutNotes.length > 0 &&
           <Text style={styles.authorInHeading}>

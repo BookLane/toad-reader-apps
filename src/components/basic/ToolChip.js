@@ -1,34 +1,32 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View } from "react-native"
-import { Button, styled } from '@ui-kitten/components'
+import { StyleSheet, TouchableWithoutFeedback, View, Text } from "react-native"
+import { styled } from '@ui-kitten/components'
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
+import useThemedStates from "../../hooks/useThemedStates"
 import { getToolInfo } from "../../utils/toolInfo"
 
 import Icon from "./Icon"
 
 const onMoveShouldSetResponderCapture = () => true
 
-const text = {
-  fontWeight: '400',
-  fontSize: 12,
-}
-
 const styles = StyleSheet.create({
-  text: {
-    ...text,
-  },
-  draftText: {
-    ...text,
-    fontStyle: 'italic',
+  chip: {
+    borderRadius: 17,
+    flexDirection: 'row',
+    height: 28,
+    alignItems: 'center',
+    paddingHorizontal: 13,
+    paddingBottom: 1,
   },
   icon: {
     height: 13,
-    marginRight: 0,
+    marginRight: 3,
   },
-  button: {
-    borderColor: 'transparent',
-    borderRadius: 17,
+  label: {
+    paddingHorizontal: 3,
+    fontWeight: '400',
+    fontSize: 12,
   },
   hide: {
     opacity: 0,
@@ -45,13 +43,17 @@ const ToolChip = React.memo(({
   onToolRelease,
   style,
   iconStyle,
+  labelStyle,
+  type,
 
   themedStyle,
+  dispatch,
 }) => {
 
   const [ hideTool, setHideTool ] = useState(false)
   const { toolInfoByType } = getToolInfo()
-  const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
+  const { baseThemedStyle, iconThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
+  const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
 
   const onResponderMove = useCallback(
     ({ nativeEvent }) => {
@@ -76,19 +78,6 @@ const ToolChip = React.memo(({
     [ onToolRelease ],
   )
 
-  const ButtonIcon = useCallback(
-    iconStyle => (
-      <Icon
-        {...toolInfoByType[toolType]}
-        style={[
-          styles.icon,
-          iconThemedStyle,
-        ]}
-      />
-    ),
-    [ toolType, isDraft ],
-  )
-
   return (
     <View
       {...(!onToolMove ? {} : {
@@ -99,20 +88,34 @@ const ToolChip = React.memo(({
         style: hideTool ? styles.hide : null,
       })}
     >
-      <Button
-        style={[
-          styles.button,
-          baseThemedStyle,
-          style,
-        ]}
-        size='tiny'
-        icon={ButtonIcon}
-        iconStyle={iconStyle}
-        textStyle={isDraft ? styles.draftText : styles.text}
-        onPress={onPress}
-      >
-        {label || toolInfoByType[toolType].text}
-      </Button>
+      <TouchableWithoutFeedback onPress={onPress}>
+        <View
+          style={[
+            styles.chip,
+            baseThemedStyle,
+            style,
+          ]}
+          {...themedStateEvents}
+        >
+          <Icon
+            {...toolInfoByType[toolType]}
+            style={[
+              styles.icon,
+              iconThemedStyle,
+              iconStyle,
+            ]}
+          />
+          <Text
+            style={[
+              styles.label,
+              labelThemedStyle,
+              labelStyle,
+            ]}
+          >
+            {label || toolInfoByType[toolType].text}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
     </View>
   )
 })

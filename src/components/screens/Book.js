@@ -720,7 +720,8 @@ const Book = React.memo(({
                     uid,
                   })}
                   onToolMove={onToolMove}
-                  onToolRelease={onToolRelease}        
+                  onToolRelease={onToolRelease}
+                  type="button"
                 />
               </View>
             )

@@ -73,16 +73,17 @@ const BookContentsLine = ({
 
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
 
-  if(toolType) {
-    return (
-      <View
-        onLayout={onLayout}
-        style={[
-          styles.listItemWithTool,
-          themedStyle,
-          indentStyle,
-        ]}
-      >
+  const line = (
+    <View
+      {...themedStateEvents}
+      onLayout={onLayout}
+      style={[
+        (toolType ? styles.listItemWithTool : styles.listItem),
+        themedStyle,
+        indentStyle,
+      ]}
+    >
+      {!!toolType &&
         <ToolChip
           uid={uid}
           label={label}
@@ -91,28 +92,21 @@ const BookContentsLine = ({
           onPress={onPress}
           onToolMove={onToolMove}
           onToolRelease={onToolRelease}
-        />
-      </View>
-    )
-  }
-
-  const line = (
-    <View
-      {...themedStateEvents}
-      onLayout={onLayout}
-      style={[
-        styles.listItem,
-        themedStyle,
-        indentStyle,
-      ]}
-    >
-      <Text style={styles.label}>{label}</Text>
-      {!!numToolsWithin &&
-        <GroupedToolsChip
           status={isDraft ? "draft" : "published"}
-          numToolsWithin={numToolsWithin}
         />
       }
+      {!toolType &&
+        <>
+          <Text style={styles.label}>{label}</Text>
+          {!!numToolsWithin &&
+            <GroupedToolsChip
+              status={isDraft ? "draft" : "published"}
+              numToolsWithin={numToolsWithin}
+            />
+          }
+        </>
+      }
+      
     </View>
   )
 

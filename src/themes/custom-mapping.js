@@ -128,6 +128,24 @@ const mapping = {
       parameters: {
         backgroundColor: 'background-alternative-color-4',
         iconTintColor: 'color-primary-300',
+        labelColor: 'text-alternate-color',
+      },
+      variantGroups: {
+        status: {
+          published: {},
+          draft: {
+            labelFontStyle: 'italic',
+          },
+        },
+        type: {
+          button: {
+            state: {
+              hover: {
+                opacity: .3,
+              },
+            },
+          },
+        },
       },
     },
     {
