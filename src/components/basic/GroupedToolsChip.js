@@ -16,13 +16,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingRight: 1, // not sure why I need this
   },
-  numWithinDraft: {
-    fontStyle: 'italic',
-  },
 })
 
 const GroupedToolsChip = ({
-  isDraft,
   numToolsWithin,
   themedStyle,
   style,
@@ -30,7 +26,6 @@ const GroupedToolsChip = ({
   <Text
     style={[
       styles.numWithin,
-      isDraft ? styles.numWithinDraft : null,
       themedStyle,
       style,
     ]}

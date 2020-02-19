@@ -7,27 +7,72 @@ const {
   MAPPING_CUSTOMIZATION={},
 } = Constants.manifest.extra
 
-const getComponentSetup = ({ parameters={}, state="default", isCustom=true }={}) => ({
-  meta: {
-    parameters: objectMap(parameters, val => ({
-      type: typeof val,
-    })),
-    ...(!isCustom ? {} : {
-      variantGroups: {},
-      states: {},
-      appearances: {
-        [state]: {
-          default: true,
-        },
-      },  
-    }),
-  },
-  appearances: {
-    [state]: {
-      mapping: parameters,
+const getComponentSetup = ({ parameters={}, appearance="default", variantGroups={}, isCustom=true }={}) => {
+
+  let { state, ...parametersIncludingFromVariantGroups } = parameters
+  const states = {}
+
+  const addToStates = stateValue => {
+    if(!states[stateValue]) {
+      states[stateValue] = {
+        default: false,
+        priority: Object.keys(states).length,
+        scope: 'all',
+      }
+    }
+  }
+
+  Object.keys(state || {}).forEach(stateValue => addToStates(stateValue))
+
+  for(let group in variantGroups) {
+    for(let groupValue in variantGroups[group]) {
+
+      const { state={}, ...params } = variantGroups[group][groupValue]
+
+      parametersIncludingFromVariantGroups = {
+        ...parametersIncludingFromVariantGroups,
+        ...params,
+      }
+
+      for(let stateValue in state) {
+        parametersIncludingFromVariantGroups = {
+          ...parametersIncludingFromVariantGroups,
+          ...state[stateValue],
+        }
+
+        addToStates(stateValue)
+      }
+
+    }
+  }
+
+  return {
+    meta: {
+      parameters: objectMap(parametersIncludingFromVariantGroups, val => ({
+        type: typeof val,
+      })),
+      ...(!isCustom ? {} : {
+        variantGroups: objectMap(variantGroups, group => (
+          objectMap(group, (val, key, index) => ({
+            default: index === 0,
+          }))
+        )),
+        states,
+        appearances: {
+          [appearance]: {
+            default: appearance === 'default',
+          },
+        },  
+      }),
     },
-  },
-})
+    appearances: {
+      [appearance]: {
+        mapping: parameters,
+        variantGroups,
+      },
+    },
+  }
+}
 
 const getComponentMapping = componentInfos => (
   deepmerge.all(
@@ -76,7 +121,6 @@ const mapping = {
     },
     {
       component: 'FAB',
-      state: 'filled',
     },
     {
       component: 'ToolChip',
@@ -96,6 +140,14 @@ const mapping = {
       parameters: {
         backgroundColor: 'background-alternative-color-4',
         color: 'background-basic-color-1',
+      },
+      variantGroups: {
+        status: {
+          published: {},  // first is the default
+          draft: {
+            fontStyle: 'italic',
+          },
+        },
       },
     },
     ...MAPPING_CUSTOMIZATION,

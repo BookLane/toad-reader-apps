@@ -121,7 +121,7 @@ const BookContentsLine = ({
         <Text style={styles.label}>{label}</Text>
         {!!numToolsWithin &&
           <GroupedToolsChip
-            isDraft={isDraft}
+            status={isDraft ? "draft" : "published"}
             numToolsWithin={numToolsWithin}
           />
         }
