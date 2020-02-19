@@ -70,8 +70,8 @@ const mapping = {
         default: {
           mapping: {
             borderWidth: 1,
-            borderColor: "rgb(237, 241, 247)",
-            borderRadius: 8,
+            borderColor: "border-basic-color-3",
+            borderRadius: 0,
           },
         },
       },
