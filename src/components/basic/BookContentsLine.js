@@ -43,6 +43,7 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
+  status,
 
   setSelectedToolUid,
 
@@ -95,29 +96,37 @@ const BookContentsLine = ({
     )
   }
 
-  return (
-    <TouchableOpacity
+  const line = (
+    <View
       {...themedStateEvents}
       onLayout={onLayout}
-      onPress={!toolType ? onPress : null}
+      style={[
+        styles.listItem,
+        themedStyle,
+        indentStyle,
+      ]}
     >
-      <View
-        style={[
-          styles.listItem,
-          themedStyle,
-          indentStyle,
-        ]}
-      >
-        <Text style={styles.label}>{label}</Text>
-        {!!numToolsWithin &&
-          <GroupedToolsChip
-            status={isDraft ? "draft" : "published"}
-            numToolsWithin={numToolsWithin}
-          />
-        }
-      </View>
-    </TouchableOpacity>
+      <Text style={styles.label}>{label}</Text>
+      {!!numToolsWithin &&
+        <GroupedToolsChip
+          status={isDraft ? "draft" : "published"}
+          numToolsWithin={numToolsWithin}
+        />
+      }
+    </View>
   )
+
+  if(status === 'unselected') {
+    return (
+      <TouchableOpacity onPress={onPress}>
+        {line}
+      </TouchableOpacity>
+    )
+
+  } else {
+    return line
+  }
+
 }
 
 const mapStateToProps = () => ({
