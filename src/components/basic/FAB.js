@@ -26,11 +26,13 @@ const styles = StyleSheet.create({
 })
 
 const FAB = ({
-  themedStyle,
   style,
   iconName,
   iconPack,
   iconStyle,
+
+  themedStyle,
+
   ...buttonProps
 }) => {
 

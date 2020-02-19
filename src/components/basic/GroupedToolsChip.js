@@ -22,12 +22,13 @@ const styles = StyleSheet.create({
 
 const GroupedToolsChip = ({
   numToolsWithin,
-  themedStyle,
   style,
+  
+  themedStyle,
   // dispatch,
 }) => {
 
-  const themedStateEvents = {} //useThemedStates(dispatch)
+  const themedStateEvents = {} //useThemedStates({ dispatch, states: [ 'hover' ] })
 
   return (
     <Text

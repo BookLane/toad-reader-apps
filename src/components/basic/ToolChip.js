@@ -43,9 +43,10 @@ const ToolChip = React.memo(({
   onPress,
   onToolMove,
   onToolRelease,
-  themedStyle,
   style,
   iconStyle,
+
+  themedStyle,
 }) => {
 
   const [ hideTool, setHideTool ] = useState(false)

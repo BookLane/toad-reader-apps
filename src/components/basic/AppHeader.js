@@ -58,9 +58,10 @@ const AppHeader = ({
   titleCentered,
   leftControl,
   rightControls=[],
-  themedStyle,
   style,
   titleStyle,
+
+  themedStyle,
 }) => {
 
   const wideMode = useWideMode()

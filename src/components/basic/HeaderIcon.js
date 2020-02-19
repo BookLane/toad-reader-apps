@@ -20,12 +20,14 @@ const styles = StyleSheet.create({
 })
 
 const HeaderIcon = React.forwardRef(({
-  themedStyle,
   style,
   pack,
   name,
   path,
   onPress,
+
+  themedStyle,
+
   ...otherProps
 }, ref) => {
 
