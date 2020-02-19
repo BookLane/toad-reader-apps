@@ -17,10 +17,6 @@ import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 
 const styles = StyleSheet.create({
-  faded: {
-    opacity: .35,
-    fontWeight: '200',
-  },
   selected: {
     opacity: 1,
   },
@@ -135,28 +131,28 @@ const BookHeader = React.memo(({
 
   const rightControls = [
     <HeaderIcon
-      name="format-size"
-      pack="materialCommunity"
+      iconName="format-size"
+      iconPack="materialCommunity"
       onPress={showDisplaySettings}
-      style={wideMode ? styles.faded : {}}
+      uiStatus={wideMode ? "faded" : null}
     />,
     // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
     //   <HeaderIcon
-    //     name="md-apps"
+    //     iconName="md-apps"
     //     onPress={togglePageBrowser}
-    //     style={styles.faded}
+    //     uiStatus="faded"
     //   />
     // ]),
     ...(!(wideMode) ? [] : [
       <HeaderIcon
-        name="md-list"
+        iconName="md-list"
         onPress={toggleSidePanelOpen}
-        style={sidePanelSettings.open ? null : styles.faded}
+        uiStatus={sidePanelSettings.open ? null : "faded"}
       />
     ]),
     ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
       <HeaderIcon
-        name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
+        iconName={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
         onPress={toggleBookView}
       />
     ]),
@@ -169,9 +165,9 @@ const BookHeader = React.memo(({
         placement='bottom end'
       >
         <HeaderIcon
-          name="md-more"
+          iconName="md-more"
           onPress={toggleShowOptions}
-          style={wideMode ? styles.faded : {}}
+          uiStatus={wideMode ? "faded" : null}
         />
       </OverflowMenu>,
     ]),
@@ -186,9 +182,9 @@ const BookHeader = React.memo(({
         titleCentered={true}
         leftControl={
           <HeaderIcon
-            name="md-arrow-back"
+            iconName="md-arrow-back"
             onPress={onBackPress}
-            style={wideMode ? styles.faded : {}}
+            uiStatus={wideMode ? "faded" : null}
           />
         }
         rightControls={!hideOptions ? rightControls : []}

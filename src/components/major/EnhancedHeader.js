@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
   },
   optionsIconContainer: {
     position: 'relative',
+    width: 25,
+    alignSelf: 'stretch',
   },
   optionsIcon: {
     position: 'absolute',
@@ -33,8 +35,8 @@ const styles = StyleSheet.create({
     bottom: -4,
     right: 0,
     left: 0,
-    paddingHorizontal: 10,
-    color: 'rgb(143, 155, 179)',
+    height: 'auto',
+    paddingHorizontal: 8,
   },
   off: {
     fontStyle: 'italic',
@@ -210,9 +212,10 @@ const EnhancedHeader = React.memo(({
             >
               <View style={styles.optionsIconContainer}>
                 <HeaderIcon
-                  name="md-more"
+                  iconName="md-more"
                   onPress={toggleShowOptions}
                   style={styles.optionsIcon}
+                  uiStatus="faded"
                 />
               </View>
             </OverflowMenu>

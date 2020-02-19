@@ -119,6 +119,18 @@ const mapping = {
     },
     {
       component: 'HeaderIcon',
+      variantGroups: {
+        uiStatus: {
+          faded: {
+            iconTintColor: "color-basic-600",
+            state: {
+              hover: {
+                iconTintColor: "color-basic-1100",
+              },
+            },
+          },
+        },
+      },
     },
     {
       component: 'FAB',
