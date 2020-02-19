@@ -1,23 +1,29 @@
 import Constants from 'expo-constants'
-import { cloneObj } from '../utils/toolbox'
+import { objectMap } from '../utils/toolbox'
 
 const {
   MAPPING_CUSTOMIZATION={},
 } = Constants.manifest.extra
 
-const getCustomComponentSetup = ({ defaultKey='default' }={}) => cloneObj({
+const getComponentSetup = ({ parameters={}, state="default", isCustom=true }={}) => ({
   meta: {
-    parameters: {},
-    variantGroups: {},
-    states: {},
-    appearances: {
-      [defaultKey]: {
-        default: true,
-      },
-    },
+    parameters: objectMap(parameters, val => ({
+      type: typeof val,
+    })),
+    ...(!isCustom ? {} : {
+      variantGroups: {},
+      states: {},
+      appearances: {
+        [state]: {
+          default: true,
+        },
+      },  
+    }),
   },
   appearances: {
-    [defaultKey]: {},
+    [state]: {
+      mapping: parameters,
+    },
   },
 })
 
@@ -39,122 +45,39 @@ const mapping = {
   // },
   
   components: {
-    Layout: {
-      meta: {
-        parameters: {
-          flex: {
-            type: "number",
-          },
-        },
+    Layout: getComponentSetup({
+      parameters: {
+        flex: 1,
       },
-      appearances: {
-        default: {
-          mapping: {
-            flex: 1,
-          },
-        },
+      isCustom: false,
+    }),
+    OverflowMenu: getComponentSetup({
+      parameters: {
+        borderWidth: 1,
+        borderColor: "border-basic-color-3",
+        borderRadius: 0,
       },
-    },
-    OverflowMenu: {
-      meta: {
-        parameters: {
-          borderWidth: {
-            type: "number",
-          },
-          borderColor: {
-            type: "string",
-          },
-        },
+      isCustom: false,
+    }),
+    HeaderIcon: getComponentSetup(),
+    FAB: getComponentSetup({ state: 'filled' }),
+    ToolChip: getComponentSetup({
+      parameters: {
+        backgroundColor: 'background-alternative-color-4',
+        iconTintColor: 'color-primary-300',
       },
-      appearances: {
-        default: {
-          mapping: {
-            borderWidth: 1,
-            borderColor: "border-basic-color-3",
-            borderRadius: 0,
-          },
-        },
+    }),
+    AppHeader: getComponentSetup({
+      parameters: {
+        backgroundColor: 'background-basic-color-1',
       },
-    },
-    HeaderIcon: getCustomComponentSetup(),
-    FAB: getCustomComponentSetup({ defaultKey: 'filled' }),
-    ToolChip: {
-      meta: {
-        parameters: {
-          backgroundColor: {
-            type: "string",
-          },
-          iconTintColor: {
-            type: "string",
-          },
-        },
-        variantGroups: {},
-        states: {},
-        appearances: {
-          filled: {
-            default: true,
-          },
-        },
+    }),
+    GroupedToolsChip: getComponentSetup({
+      parameters: {
+        backgroundColor: 'background-alternative-color-4',
+        color: 'background-basic-color-1',
       },
-      appearances: {
-        filled: {
-          mapping: {
-            backgroundColor: 'background-alternative-color-4',
-            iconTintColor: 'color-primary-300',
-          },
-        },
-      },
-    },
-    AppHeader: {
-      meta: {
-        parameters: {
-          backgroundColor: {
-            type: "string",
-          },
-        },
-        variantGroups: {},
-        states: {},
-        appearances: {
-          filled: {
-            default: true,
-          },
-        },
-      },
-      appearances: {
-        filled: {
-          mapping: {
-            backgroundColor: 'background-basic-color-1',
-          },
-        },
-      },
-    },
-    GroupedToolsChip: {
-      meta: {
-        parameters: {
-          backgroundColor: {
-            type: "string",
-          },
-          color: {
-            type: "string",
-          },
-        },
-        variantGroups: {},
-        states: {},
-        appearances: {
-          filled: {
-            default: true,
-          },
-        },
-      },
-      appearances: {
-        filled: {
-          mapping: {
-            backgroundColor: 'background-alternative-color-4',
-            color: 'background-basic-color-1',
-          },
-        },
-      },
-    },
+    }),
   },
   
   // TODO: I need to lay this over top at each level of the object
