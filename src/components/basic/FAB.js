@@ -30,10 +30,10 @@ const FAB = ({
   iconName,
   iconPack,
   iconStyle,
+  status,
+  onPress,
 
   themedStyle,
-
-  ...buttonProps
 }) => {
 
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
@@ -61,7 +61,8 @@ const FAB = ({
         style,
       ]}
       icon={ButtonIcon}
-      {...buttonProps}
+      status={status}
+      onPress={onPress}
     />
   )
 }
