@@ -165,6 +165,7 @@ const EditTool = React.memo(({
           isDefaultClassroom={isDefaultClassroom}
           classroom={classroom}
           toolUid={tool.uid}
+          isDraft={!tool.published_at}
           accountId={accountId}
           dataStructure={toolInfoByType[tool.toolType].dataStructure}
           transformData={toolInfoByType[tool.toolType].transformData}
