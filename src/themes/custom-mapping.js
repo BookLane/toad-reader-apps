@@ -281,6 +281,9 @@ const mapping = {
     {
       component: 'BookInfoAuthor',
     },
+    {
+      component: 'BookInfoId',
+    },
     ...MAPPING_CUSTOMIZATION,
   ]),
   
