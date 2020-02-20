@@ -599,6 +599,8 @@ const Book = React.memo(({
     () => {
       pauseProcessing()
 
+      setSelectedToolUid({ bookId })
+
       setState({
         showSettings: true,
         mode: 'page',
@@ -884,7 +886,6 @@ const Book = React.memo(({
               backToReading={backToReading}
               showDisplaySettings={showDisplaySettings}
               width={width}  // By sending this as a prop, I force a rerender
-              hideOptions={!!selectedToolUid}
               onBackPress={onBackPress}
             />
           }

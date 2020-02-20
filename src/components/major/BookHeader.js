@@ -29,8 +29,6 @@ const BookHeader = React.memo(({
   mode,
   showDisplaySettings,
   toggleBookView,
-  backToReading,
-  hideOptions,
   onBackPress,
 
   books,
@@ -187,7 +185,7 @@ const BookHeader = React.memo(({
             uiStatus={wideMode ? "faded" : null}
           />
         }
-        rightControls={!hideOptions ? rightControls : []}
+        rightControls={rightControls}
         uiStatus={wideMode ? "faded" : null}
       />
     </>
