@@ -4,7 +4,7 @@ import deepmerge from 'deepmerge'
 import { objectMap } from '../utils/toolbox'
 
 const {
-  MAPPING_CUSTOMIZATION={},
+  MAPPING_CUSTOMIZATION=[],
 } = Constants.manifest.extra
 
 const getComponentSetup = ({ parameters={}, appearance="default", variantGroups={}, isCustom=true }={}) => {
