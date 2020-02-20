@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   titleViewCentered: {
     justifyContent: 'center',
     flexShrink: 1,
-    maxWidth: '50%',
+    maxWidth: '45%',
   },
   title: {
     fontSize: 19,

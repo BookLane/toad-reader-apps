@@ -1,24 +1,27 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, Platform, Alert } from "react-native"
+import { StyleSheet, Platform, Alert, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu, Tooltip } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
-import AppHeader from "../basic/AppHeader"
-import HeaderIcon from "../basic/HeaderIcon"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
-
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
+import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   selected: {
     opacity: 1,
+  },
+  spin: {
+    backgroundColor: 'white',
   },
 })
 
@@ -33,6 +36,7 @@ const BookHeader = React.memo(({
 
   books,
   sidePanelSettings,
+  syncStatus,
 
   removeFromBookDownloadQueue,
   setDownloadStatus,
@@ -42,6 +46,7 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, setShowOptions ] = useState(false)
+  const [ showSyncStatus, setShowSyncStatus ] = useState(false)
   const wideMode = useWideMode()
 
   const { book } = useClassroomInfo({ books, bookId })
@@ -116,6 +121,11 @@ const BookHeader = React.memo(({
     [ showOptions ],
   )
 
+  const toggleShowSyncStatus = useCallback(
+    () => setShowSyncStatus(!showSyncStatus),
+    [ showSyncStatus ],
+  )
+
   const selectOption = useCallback(
     selectedIndex => {
       const { onPress } = moreOptions[selectedIndex]
@@ -127,7 +137,55 @@ const BookHeader = React.memo(({
     [ bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
+  const syncStatusIconName = {
+    synced: "check",
+    error: "warning",
+    offline: "cloud-off",
+  }
+
+  const syncStatusMessages = {
+    synced: i18n("Saved."),
+    patching: i18n("Saving to server..."),
+    refreshing: i18n("Saving to server..."),
+    error: i18n("Unable to save to server."),
+    offline: i18n("You are not connected to the internet. Changes saved offline."),
+  }
+
+  const syncStatusUIStatus = {
+    error: "error",
+    offline: "offline",
+  }
+
   const rightControls = [
+    <Tooltip
+      visible={showSyncStatus}
+      text={syncStatusMessages[syncStatus]}
+      onBackdropPress={toggleShowSyncStatus}
+    >
+      <TouchableOpacity
+        onPress={toggleShowSyncStatus}
+      >
+        <HeaderIcon
+          iconName={syncStatusIconName[syncStatus] || "check"}
+          iconPack="material"
+          onPress={toggleShowSyncStatus}
+          uiStatus={
+            syncStatusUIStatus[syncStatus]
+            || (
+              wideMode
+                ? "faded"
+                : null
+            )
+          }
+        />
+        {[ 'patching', 'refreshing' ].includes(syncStatus) &&
+          <CoverAndSpin
+            size="small"
+            style={styles.spin}
+          />
+        }
+      </TouchableOpacity>
+    </Tooltip>,
     <HeaderIcon
       iconName="format-size"
       iconPack="materialCommunity"
@@ -192,9 +250,10 @@ const BookHeader = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, sidePanelSettings }) => ({
+const mapStateToProps = ({ books, sidePanelSettings, syncStatus }) => ({
   books,
   sidePanelSettings,
+  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

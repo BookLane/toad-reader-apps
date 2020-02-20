@@ -25,6 +25,7 @@ const CoverAndSpin = ({
   style,
   text,
   percentage,
+  size,
 }) => (
   <View style={[
     styles.spinnerContainer,
@@ -32,6 +33,7 @@ const CoverAndSpin = ({
   ]}>
     <View style={styles.spacer} />
     <Spin
+      size={size}
       percentage={percentage}
     />
     {!!text &&

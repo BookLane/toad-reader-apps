@@ -129,6 +129,22 @@ const mapping = {
               },
             },
           },
+          error: {
+            iconTintColor: "color-danger-600",
+            state: {
+              hover: {
+                iconTintColor: "color-danger-800",
+              },
+            },
+          },
+          offline: {
+            iconTintColor: "color-warning-400",
+            state: {
+              hover: {
+                iconTintColor: "color-warning-600",
+              },
+            },
+          },
         },
       },
     },

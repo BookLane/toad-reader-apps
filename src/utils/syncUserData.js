@@ -1,4 +1,4 @@
-import { AppState } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
          safeFetch, createAccessCode } from "./toolbox"
@@ -58,7 +58,10 @@ export const patch = () => setTimeout(() => {
 
   const { idps, accounts, books, userDataByBookId } = store.getState()
 
-  if(!connectionInfo.online) return
+  if(!connectionInfo.online) {
+    store.dispatch(setSyncStatus("offline"))
+    return
+  }
 
   Object.keys(accounts).forEach(accountId => {
 
@@ -487,7 +490,10 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
-  if(!connectionInfo.online) return resolve()
+  if(!connectionInfo.online) {
+    store.dispatch(setSyncStatus("offline"))
+    return resolve()
+  }
 
   store.dispatch(setSyncStatus("refreshing"))
 
@@ -594,7 +600,7 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 }))
 
 console.log('Setting up event listeners for patch and reportReadings...')
-// NetInfo.addEventListener(() => patch())
-AppState.addEventListener('change', () => patch())
-// NetInfo.addEventListener(() => reportReadings())
-AppState.addEventListener('change', () => reportReadings())
+NetInfo.addEventListener('change', patch)
+// AppState.addEventListener('change', () => patch())
+NetInfo.addEventListener('change', reportReadings)
+// AppState.addEventListener('change', () => reportReadings())

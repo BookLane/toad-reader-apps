@@ -131,13 +131,6 @@ const StatusAndActions = React.memo(({
 
   const onPreview = useCallback(() => setViewingPreview(true), [])
 
-  const syncStatusMessages = {
-    synced: i18n("Saved."),
-    patching: i18n("Saving to server..."),
-    refreshing: i18n("Saving to server..."),
-    error: i18n("Unable to save to server."),
-  }
-
   const publishedStatusMessages = {
     published: i18n("No changes since last publish.", "", "enhanced"),
     edited: i18n("Contains unpublished changes.", "", "enhanced"),
@@ -210,8 +203,6 @@ const StatusAndActions = React.memo(({
           wideMode ? styles.statusWideMode : null,
         ]}
       >
-        {syncStatusMessages[syncStatus]}
-        {" "}
         {publishedStatusMessages[publishedStatus]}
       </Text>
       <View style={styles.previewContainer}>
