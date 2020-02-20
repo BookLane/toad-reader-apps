@@ -713,6 +713,7 @@ const Book = React.memo(({
                   })}
                   onToolMove={onToolMove}
                   onToolRelease={onToolRelease}
+                  status={!published_at ? "draft" : "published"}
                   type="button"
                 />
               </View>
