@@ -967,6 +967,7 @@ const Book = React.memo(({
               onScroll={onBookContentsScroll}
               inEditMode={inEditMode}
               toggleInEditMode={toggleInEditMode}
+              backToReading={!wideMode ? backToReading : null}
             />
           </View>
         }
