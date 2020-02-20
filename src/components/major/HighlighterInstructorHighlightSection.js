@@ -3,15 +3,15 @@ import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { Toggle } from '@ui-kitten/components'
 
 import { textToReactNative, combineItems } from '../../utils/toolbox'
-
-import ToolChip from '../basic/ToolChip'
-// import Dialog from "./Dialog"
-
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-
 import { createInstructorHighlight, deleteInstructorHighlight } from "../../redux/actions"
+
+import InstructorsHighlightLabel from "../basic/InstructorsHighlightLabel"
+
+
 
 const author = {
   fontWeight: '100',
@@ -34,13 +34,8 @@ const styles = StyleSheet.create({
   },
   author: {
     ...author,
-    paddingTop: 3,
     padding: 15,
-  },
-  authorInHeading: {
-    ...author,
-    lineHeight: 28,
-    marginLeft: 8,
+    paddingTop: 3,
   },
   mynote: {
     fontStyle: 'italic',
@@ -48,12 +43,6 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     fontSize: 13,
     opacity: .5,
-  },
-  toolChip: {
-    opacity: 1,
-  },
-  unselectedToolChip: {
-    opacity: .2,
   },
   clickable: {
     textDecorationLine: 'underline',
@@ -114,16 +103,20 @@ const HighlighterInstructorHighlightSection = React.memo(({
   return (
     <ScrollView style={styles.container}>
       <View style={styles.heading}>
-        <ToolChip
-          toolType="INSTRUCTOR_HIGHLIGHT"
-          onPress={(myRole === 'INSTRUCTOR' && othersInstructorHighlights.length === 0) ? toggleAsInstructorHighlight : null}
-          style={!hasInstructorHighlight ? styles.unselectedToolChip : styles.toolChip}
-          type="button"
-        />
-        {othersInstructorHighlightsWithoutNotes.length > 0 &&
-          <Text style={styles.authorInHeading}>
-            {combineItems(...othersInstructorHighlightsWithoutNotes.map(({ author_fullname }) => author_fullname))}
-          </Text>
+        {myRole === 'INSTRUCTOR' &&
+          <Toggle
+            text={
+              hasInstructorHighlight
+                ? i18n("Shared with this classroom")
+                : i18n("Click to share with this classroom")
+            }
+            checked={!!hasInstructorHighlight}
+            onChange={toggleAsInstructorHighlight}
+            disabled={othersInstructorHighlights.length !== 0}
+          />
+        }
+        {myRole !== 'INSTRUCTOR' &&
+          <InstructorsHighlightLabel />
         }
       </View>
       {othersInstructorHighlightsWithNotes.map(({ note, author_id, author_fullname }) => (
@@ -136,6 +129,11 @@ const HighlighterInstructorHighlightSection = React.memo(({
           </Text>
         </View>
       ))}
+      {othersInstructorHighlightsWithoutNotes.length > 0 &&
+        <Text style={styles.author}>
+          {combineItems(...othersInstructorHighlightsWithoutNotes.map(({ author_fullname }) => author_fullname))}
+        </Text>
+      }
       {myRole === 'INSTRUCTOR' && hasIsMineInstructorHighlight && iHaveANote &&
         <Text style={styles.mynote}>
           {i18n("Students can also view your notes below.", "", "enhanced")}

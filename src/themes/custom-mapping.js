@@ -256,6 +256,12 @@ const mapping = {
         },
       },
     },
+    {
+      component: 'InstructorsHighlightLabel',
+      parameters: {
+        iconTintColor: 'color-warning-400',
+      },
+    },
     ...MAPPING_CUSTOMIZATION,
   ]),
   
