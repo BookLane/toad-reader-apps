@@ -833,11 +833,6 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
-  const onBackPress = useCallback(
-    () => (selectedToolUid ? unselectTool : historyGoBack)(),
-    [ unselectTool, selectedToolUid ],
-  )
-
   const pageCfisKey = getPageCfisKey({ displaySettings, width, height })
   const { title } = (books && books[bookId]) || {}
 
@@ -888,7 +883,7 @@ const Book = React.memo(({
               backToReading={backToReading}
               showDisplaySettings={showDisplaySettings}
               width={width}  // By sending this as a prop, I force a rerender
-              onBackPress={onBackPress}
+              onBackPress={historyGoBack}
             />
           }
           {Platform.OS !== 'web' &&
