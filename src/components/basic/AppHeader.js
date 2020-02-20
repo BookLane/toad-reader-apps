@@ -4,6 +4,7 @@ import { getToolbarHeight } from '../../utils/toolbox'
 import { styled } from '@ui-kitten/components'
 
 import useWideMode from "../../hooks/useWideMode"
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 
 const titleCenteredControlsGroup = {
   flexBasis: 300,
@@ -59,10 +60,12 @@ const AppHeader = ({
   leftControl,
   rightControls=[],
   style,
-  titleStyle,
+  labelStyle,
 
   themedStyle,
 }) => {
+
+  const { baseThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
 
   const wideMode = useWideMode()
 
@@ -74,7 +77,7 @@ const AppHeader = ({
     <View
       style={[
         styles.container,
-        themedStyle,
+        baseThemedStyle,
         style,
       ]}
     >
@@ -89,7 +92,8 @@ const AppHeader = ({
           numberOfLines={1}
           style={[
             styles.title,
-            titleStyle,
+            labelThemedStyle,
+            labelStyle,
           ]}
         >
           {title}

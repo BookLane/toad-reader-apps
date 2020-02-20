@@ -188,7 +188,7 @@ const BookHeader = React.memo(({
           />
         }
         rightControls={!hideOptions ? rightControls : []}
-        titleStyle={wideMode ? styles.faded : {}}
+        uiStatus={wideMode ? "faded" : null}
       />
     </>
   )

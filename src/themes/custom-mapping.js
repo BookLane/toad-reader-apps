@@ -165,6 +165,14 @@ const mapping = {
       parameters: {
         backgroundColor: 'background-basic-color-1',
       },
+      variantGroups: {
+        uiStatus: {
+          faded: {
+            labelColor: "color-basic-600",
+            labelFontWeight: '200',
+          },
+        }
+      },
     },
     {
       component: 'GroupedToolsChip',
