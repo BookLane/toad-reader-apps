@@ -6,6 +6,7 @@ import { useLayout } from 'react-native-hooks'
 import { styled } from '@ui-kitten/components'
 
 import useThemedStates from "../../hooks/useThemedStates"
+import useWideMode from "../../hooks/useWideMode"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import ToolChip from './ToolChip'
@@ -52,6 +53,7 @@ const BookContentsLine = ({
 }) => {
 
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
+  const wideMode = useWideMode()
 
   const onPress = useCallback(
     () => {
@@ -116,7 +118,7 @@ const BookContentsLine = ({
     </View>
   )
 
-  if(uiStatus === 'unselected') {
+  if(uiStatus === 'unselected' || !wideMode) {
     return (
       <TouchableOpacity onPress={onPress}>
         {line}
