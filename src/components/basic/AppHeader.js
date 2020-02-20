@@ -1,10 +1,10 @@
 import React from "react"
 import { StyleSheet, View, Text } from "react-native"
-import { getToolbarHeight } from '../../utils/toolbox'
 import { styled } from '@ui-kitten/components'
 
 import useWideMode from "../../hooks/useWideMode"
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
+import { getToolbarHeight } from '../../utils/toolbox'
 
 const titleCenteredControlsGroup = {
   flexBasis: 300,

@@ -278,6 +278,9 @@ const mapping = {
         iconTintColor: 'color-warning-400',
       },
     },
+    {
+      component: 'BookInfoAuthor',
+    },
     ...MAPPING_CUSTOMIZATION,
   ]),
   

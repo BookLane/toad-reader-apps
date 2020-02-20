@@ -1,5 +1,6 @@
 import React from "react"
 import { StyleSheet, Text } from "react-native"
+import { styled } from '@ui-kitten/components'
 
 const styles = StyleSheet.create({
   author: {
@@ -7,8 +8,23 @@ const styles = StyleSheet.create({
   },
 })
 
-const BookInfoAuthor = ({ children }) => (
-  <Text style={styles.author}>{children}</Text>
+const BookInfoAuthor = ({
+  children,
+  style,
+
+  themedStyle,
+}) => (
+  <Text
+    style={[
+      styles.author,
+      themedStyle,
+      style,
+    ]}
+  >
+    {children}
+  </Text>
 )
 
-export default BookInfoAuthor
+BookInfoAuthor.styledComponentName = 'BookInfoAuthor'
+
+export default styled(BookInfoAuthor)
