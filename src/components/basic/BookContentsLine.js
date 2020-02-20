@@ -98,7 +98,12 @@ const BookContentsLine = ({
       }
       {!toolType &&
         <>
-          <Text style={styles.label}>{label}</Text>
+          <Text
+            style={styles.label}
+            selectable={false}
+          >
+            {label}
+          </Text>
           {!!numToolsWithin &&
             <GroupedToolsChip
               status={isDraft ? "draft" : "published"}

@@ -111,6 +111,7 @@ const ToolChip = React.memo(({
               labelThemedStyle,
               labelStyle,
             ]}
+            selectable={false}
           >
             {label || toolInfoByType[toolType].text}
           </Text>

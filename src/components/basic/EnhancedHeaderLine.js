@@ -67,6 +67,7 @@ const EnhancedHeaderLine = React.memo(({
           labelThemedStyle,
           labelStyle,
         ]}
+        selectable={false}
       >
         {label}
       </Text>
