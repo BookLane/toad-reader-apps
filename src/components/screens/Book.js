@@ -219,6 +219,7 @@ const Book = React.memo(({
   const getVisibleTools = useInstanceValue(visibleTools)
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
+  const getSelectedToolUid = useInstanceValue(selectedToolUid)
 
   const toolCfiCounts = useMemo(
     () => {
@@ -784,6 +785,10 @@ const Book = React.memo(({
 
       }
 
+      if(getSelectedToolUid()) {
+        setSelectedToolUid({ bookId })
+      }
+
       setToolMoveInfo({
         ...moveInfo,
         chipProps: {
@@ -800,7 +805,7 @@ const Book = React.memo(({
 
       return true
     },
-    [ width ],
+    [ bookId, width ],
   )
 
   const onToolRelease = useCallback(
