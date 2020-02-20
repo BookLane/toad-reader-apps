@@ -44,6 +44,7 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
+  setModeToPage,
   uiStatus,
 
   setSelectedToolUid,
@@ -58,6 +59,7 @@ const BookContentsLine = ({
   const onPress = useCallback(
     () => {
       if(toolType) {
+        setModeToPage && setModeToPage()
         setSelectedToolUid({
           bookId,
           uid,

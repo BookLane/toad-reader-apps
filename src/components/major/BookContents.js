@@ -40,6 +40,7 @@ const BookContents = React.memo(({
   inEditMode,
   toggleInEditMode,
   backToReading,
+  setModeToPage,
 
   books,
   userDataByBookId,
@@ -217,6 +218,7 @@ const BookContents = React.memo(({
           onToolMove={onToolMove}
           onToolRelease={onToolRelease}
           uiStatus={selected ? "selected" : "unselected"}
+          setModeToPage={setModeToPage}
         />
       )
     },
@@ -269,6 +271,7 @@ const BookContents = React.memo(({
         bookId={bookId}
         inEditMode={inEditMode}
         toggleInEditMode={toggleInEditMode}
+        setModeToPage={setModeToPage}
       />
       <List
         style={styles.list}

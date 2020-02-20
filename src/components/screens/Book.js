@@ -542,6 +542,8 @@ const Book = React.memo(({
     [ bookId, spineIdRef, width, height, pageWidth ],
   )
 
+  const setModeToPage = useCallback(() => setState({ mode: 'page' }), [])
+
   const requestShowPages = useCallback(
     () => {
 
@@ -968,6 +970,7 @@ const Book = React.memo(({
               inEditMode={inEditMode}
               toggleInEditMode={toggleInEditMode}
               backToReading={!wideMode ? backToReading : null}
+              setModeToPage={!wideMode ? setModeToPage : null}
             />
           </View>
         }

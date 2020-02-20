@@ -51,6 +51,7 @@ const EnhancedHeader = React.memo(({
   bookId,
   inEditMode,
   toggleInEditMode,
+  setModeToPage,
 
   books,
   userDataByBookId,
@@ -80,6 +81,7 @@ const EnhancedHeader = React.memo(({
 
   const selectEnhancedHomepage = useCallback(
     () => {
+      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
         uid: 'ENHANCED HOMEPAGE',
@@ -90,6 +92,7 @@ const EnhancedHeader = React.memo(({
 
   const selectFrontMatter = useCallback(
     () => {
+      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
         uid: 'FRONT MATTER',
