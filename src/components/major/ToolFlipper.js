@@ -70,6 +70,7 @@ const ToolFlipper = React.memo(({
   bookId,
   inEditMode,
   goTo,
+  closeToolAndExitReading,
 
   books,
   userDataByBookId,
@@ -142,6 +143,11 @@ const ToolFlipper = React.memo(({
     [],
   )
 
+  const closeTool = useCallback(
+    () => setSelectedToolUid({ bookId }),
+    [ bookId ],
+  )
+
   if(!selectedTool) return null
 
   if(selectedTool.cfi) {  // no pager needed
@@ -156,6 +162,7 @@ const ToolFlipper = React.memo(({
           bookId={bookId}
           inEditMode={inEditMode}
           tool={selectedTool}
+          xOutOfTool={closeTool}
         />
       </View>
     )  
@@ -185,6 +192,7 @@ const ToolFlipper = React.memo(({
               bookId={bookId}
               inEditMode={inEditMode}
               tool={tool}
+              xOutOfTool={closeToolAndExitReading}
             />
           </View>
         ))}

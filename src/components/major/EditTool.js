@@ -4,19 +4,18 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Select } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
-
-import Input from "../basic/Input"
-
 import { i18n } from "inline-i18n"
-import { getToolInfo } from '../../utils/toolInfo'
-import StatusAndActions from "./StatusAndActions"
 
+import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-
 import { updateTool, createTool } from "../../redux/actions"
+
+import StatusAndActions from "./StatusAndActions"
+import Input from "../basic/Input"
 import EditToolData from "./EditToolData"
+import HeaderIcon from "../basic/HeaderIcon"
 
 const styles = StyleSheet.create({
   topSection: {
@@ -44,12 +43,21 @@ const styles = StyleSheet.create({
   },
   bottomSectionWideMode: {
   },
+  closeContainer: {
+    height: 30,
+  },
+  close: {
+    position: 'absolute',
+    top: -5,
+    right: -12,
+  },
 })
 
 const EditTool = React.memo(({
   bookId,
   tool,
   setViewingPreview,
+  xOutOfTool,
 
   books,
   userDataByBookId,
@@ -129,6 +137,16 @@ const EditTool = React.memo(({
         ]}
       >
         <View style={styles.basicDetails}>
+          {!wideMode &&
+            <View style={styles.closeContainer}>
+              <HeaderIcon
+                iconName="md-close"
+                onPress={xOutOfTool}
+                uiStatus="faded"
+                style={styles.close}
+              />
+            </View>
+          }
           <View style={styles.basicDetailLine}>
             <Input
               placeholder={i18n("Unnamed", "", "enhanced")}
@@ -151,6 +169,7 @@ const EditTool = React.memo(({
         <StatusAndActions
           bookId={bookId}
           setViewingPreview={setViewingPreview}
+          xOutOfTool={wideMode ? xOutOfTool : null}
         />
       </View>
       <ScrollView

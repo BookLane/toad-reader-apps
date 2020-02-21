@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from "react-native"
-
 import { i18n } from "inline-i18n"
+
 import { getToolInfo } from '../../utils/toolInfo'
+import useWideMode from '../../hooks/useWideMode'
 
 import NotesInsertTool from './NotesInsertTool'
 import VideoTool from './VideoTool'
@@ -10,13 +11,30 @@ import ReflectionQuestionTool from './ReflectionQuestionTool'
 import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
 import LTITool from "./LTITool"
+import HeaderIcon from "../basic/HeaderIcon"
+
+const topSection = {
+  paddingHorizontal: 30,
+  paddingTop: 35,
+  paddingBottom: 10,
+  flexDirection: 'row',
+}
+
+const close = {
+  position: 'absolute',
+  top: -33,
+  bottom: -20,
+  right: -14,
+  height: 40,
+}
 
 const styles = StyleSheet.create({
   topSection: {
-    paddingHorizontal: 30,
+    ...topSection,
+  },
+  topSectionWideMode: {
+    ...topSection,
     paddingTop: 20,
-    paddingBottom: 10,
-    flexDirection: 'row',
   },
   bottomSection: {
     borderTopWidth: 1,
@@ -38,15 +56,29 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 'auto',
   },
+  closeContainer: {
+    alignSelf: 'center',
+  },
+  close: {
+    ...close,
+  },
+  closeWideMode: {
+    ...close,
+    top: -20,
+    right: -10,
+  },
 })
 
 const Tool = React.memo(({
   bookId,
   inEditMode,
   tool,
+  xOutOfTool,
 }) => {
 
   const [ viewingPreview, setViewingPreview ] = useState(false)
+
+  const wideMode = useWideMode()
 
   const { toolInfoByType } = getToolInfo()
 
@@ -58,11 +90,13 @@ const Tool = React.memo(({
         bookId={bookId}
         tool={tool}
         setViewingPreview={setViewingPreview}
+        xOutOfTool={xOutOfTool}
       />
     )
   }
 
-  const { toolType, name, data } = tool
+  const { toolType, name, data, cfi } = tool
+  const isInlineTool = !!cfi
 
   let ToolComponent = View
 
@@ -91,7 +125,7 @@ const Tool = React.memo(({
 
   return (
     <>
-      <View style={styles.topSection}>
+      <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.name}>
           {name || toolInfoByType[toolType].text}
         </Text>
@@ -101,6 +135,16 @@ const Tool = React.memo(({
               {i18n("Exit preview", "", "enhanced")}
             </Text>
           </TouchableOpacity>
+        }
+        {!inEditMode && (isInlineTool || !wideMode) &&
+          <View style={styles.closeContainer}>
+            <HeaderIcon
+              iconName="md-close"
+              onPress={xOutOfTool}
+              uiStatus="faded"
+              style={wideMode ? styles.closeWideMode : styles.close}
+            />
+          </View>
         }
       </View>
       <ScrollView

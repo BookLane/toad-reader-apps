@@ -544,6 +544,14 @@ const Book = React.memo(({
 
   const setModeToPage = useCallback(() => setState({ mode: 'page' }), [])
 
+  const closeToolAndExitReading = useCallback(
+    () => {
+      setSelectedToolUid({ bookId })
+      setState({ mode: Platform.OS === 'web' ? 'contents' : 'pages' })
+    },
+    [ bookId ],
+  )
+
   const requestShowPages = useCallback(
     () => {
 
@@ -940,13 +948,16 @@ const Book = React.memo(({
             bookId={bookId}
             inEditMode={inEditMode}
             goTo={goTo}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
           <EnhancedHomepage
             bookId={bookId}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
           <FrontMatter
             bookId={bookId}
             inEditMode={inEditMode}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
         </View>
         {!widget &&
