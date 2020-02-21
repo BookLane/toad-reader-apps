@@ -203,6 +203,7 @@ const mapping = {
         state: {
           hover: {
             backgroundColor: 'color-primary-500',
+            borderColor: 'color-primary-500',
           },
         },
       },
