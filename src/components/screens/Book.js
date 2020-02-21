@@ -133,6 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: 0,
     zIndex: 6,
+    left: 'auto',
+    top: 0,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -271,6 +273,19 @@ const Book = React.memo(({
       setRawInEditMode(!inEditMode)
     },
     [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid, viewingFrontMatter ],
+  )
+
+  useEffect(
+    () => {
+      if(wideMode && Platform.OS === 'web' && mode !== 'page') {
+        // On web in wide mode, 'page' is the only valid mode.
+        setState({
+          mode: 'page',
+          snapshotZoomed: true,
+        })
+      }
+    },
+    [ wideMode ],
   )
 
   useEffect(
@@ -732,7 +747,7 @@ const Book = React.memo(({
 
       }
     },
-    [ bookId, spineIdRef, inEditMode ],
+    [ bookId, spineIdRef, inEditMode, wideMode ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
