@@ -1,18 +1,17 @@
 import React, { useState, useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-// import { StyleSheet } from "react-native"
-
-import Dialog from "./Dialog"
-import DialogInput from "../basic/DialogInput"
 import { i18n } from "inline-i18n"
-import { refreshUserData } from "../../utils/syncUserData"
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
-
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
+import { refreshUserData } from "../../utils/syncUserData"
 import { setCurrentClassroom } from "../../redux/actions"
+
+import Dialog from "./Dialog"
+import DialogInput from "../basic/DialogInput"
+import Toast from "../../utils/Toast"
 
 // const styles = StyleSheet.create({
 // })
@@ -20,7 +19,7 @@ import { setCurrentClassroom } from "../../redux/actions"
 const ConnectToAClassroom = React.memo(({
   open,
   requestHide,
-  bookId,
+  bookId: currentBookId,
 
   idps,
   accounts,
@@ -32,9 +31,9 @@ const ConnectToAClassroom = React.memo(({
   const [ code, setCode ] = useState("")
   const [ connecting, setConnecting ] = useState(false)
 
-  const { historyPush } = useRouterState()
+  const { historyPush, historyReplace } = useRouterState()
 
-  const book = books[bookId] || {}
+  const book = books[currentBookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
   const { idpId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
@@ -64,7 +63,7 @@ const ConnectToAClassroom = React.memo(({
         return
       }
 
-      const { uid } = await response.json()
+      const { uid, bookId, role } = await response.json()
 
       const { success } = await refreshUserData({
         accountId,
@@ -79,6 +78,10 @@ const ConnectToAClassroom = React.memo(({
         return
       }
 
+      if(bookId !== parseInt(currentBookId, 10)) {
+        historyReplace(`/book/${bookId}`)
+      }
+
       setCurrentClassroom({
         bookId,
         uid,
@@ -86,8 +89,17 @@ const ConnectToAClassroom = React.memo(({
       setConnecting(false)
       requestHide({ hideAll: true })
 
+      Toast.show({
+        text: (
+          role === 'INSTRUCTOR'
+            ? i18n("You are now connected as an instructor.")
+            : i18n("You are now connected as an student.")
+        ),
+        duration: 4000,
+      })
+
     },
-    [ idp, accounts, books, idpId, accountId, bookId, code ],
+    [ idp, accounts, books, idpId, accountId, currentBookId, code ],
   )
 
   const onChangeText = useCallback(code => setCode(code), [])
