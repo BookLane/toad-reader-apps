@@ -17,6 +17,10 @@ import Input from "../basic/Input"
 import EditToolData from "./EditToolData"
 import HeaderIcon from "../basic/HeaderIcon"
 
+const basicDetailLine = {
+  marginBottom: 10,
+}
+
 const styles = StyleSheet.create({
   topSection: {
     paddingHorizontal: 30,
@@ -30,8 +34,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   basicDetailLine: {
+    ...basicDetailLine,
+  },
+  basicDetailLineWideMode: {
+    ...basicDetailLine,
     width: 350,
-    marginBottom: 10,
   },
   bottomSection: {
     borderTopWidth: 1,
@@ -147,7 +154,7 @@ const EditTool = React.memo(({
               />
             </View>
           }
-          <View style={styles.basicDetailLine}>
+          <View style={wideMode ? styles.basicDetailLineWideMode : styles.basicDetailLine}>
             <Input
               placeholder={i18n("Unnamed", "", "enhanced")}
               label={i18n("Tool name", "", "enhanced")}
@@ -155,7 +162,7 @@ const EditTool = React.memo(({
               onChangeText={onToolNameChange}
             />
           </View>
-          <View style={styles.basicDetailLine}>
+          <View style={wideMode ? styles.basicDetailLineWideMode : styles.basicDetailLine}>
             <Select
               key={tool.uid}
               label={i18n("Tool type", "", "enhanced")}
