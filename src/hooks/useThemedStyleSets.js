@@ -8,6 +8,7 @@ const useThemedStyleSets = themedStyle => {
       const baseThemedStyle = { ...themedStyle }
       const iconThemedStyle = {}
       const labelThemedStyle = {}
+      const altThemedStyleSets = []
     
       for(let key in baseThemedStyle) {
         if(/^icon/.test(key)) {
@@ -22,12 +23,23 @@ const useThemedStyleSets = themedStyle => {
           labelThemedStyle[labelKey] = baseThemedStyle[key]
           delete baseThemedStyle[key]
         }
+        if(/^alt[0-9]/.test(key)) {
+          let selectedKey = key.replace(/^alt[0-9]/, '')
+          selectedKey = `${selectedKey[0].toLowerCase()}${selectedKey.substr(1)}` 
+          const altIndex = parseInt(key.replace(/^alt([0-9]).*$/, '$1'))
+          if(!altThemedStyleSets[altIndex]) {
+            altThemedStyleSets[altIndex] = {}
+          }
+          altThemedStyleSets[altIndex][selectedKey] = baseThemedStyle[key]
+          delete baseThemedStyle[key]
+        }
       }
 
       return {
         baseThemedStyle,
         iconThemedStyle,
         labelThemedStyle,
+        altThemedStyleSets,
       }
 
     },
