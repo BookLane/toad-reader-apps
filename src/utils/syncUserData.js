@@ -70,7 +70,10 @@ export const patch = () => setTimeout(() => {
     const newUserData = {}
     let somethingToPatch = false
 
-    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) return
+    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) {
+      store.dispatch(setSyncStatus("localonly"))
+      return
+    }
 
     // Filter down the userData object to only new items
     // Also, ignore things I did not and cannot modify

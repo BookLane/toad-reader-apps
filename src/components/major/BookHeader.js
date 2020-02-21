@@ -133,6 +133,7 @@ const BookHeader = React.memo(({
     synced: "check",
     error: "warning",
     offline: "cloud-off",
+    localonly: "cloud-off",
   }
 
   const syncStatusMessages = {
@@ -141,6 +142,7 @@ const BookHeader = React.memo(({
     refreshing: i18n("Saving to server..."),
     error: i18n("Unable to save to server."),
     offline: i18n("You are not connected to the internet. Changes saved offline."),
+    localonly: i18n("Without a login, your changes are only saved locally."),
   }
 
   const syncStatusUIStatus = {
