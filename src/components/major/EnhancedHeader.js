@@ -1,14 +1,14 @@
-import React, { useState, useCallback } from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Button, OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
+import useToggle from "react-use/lib/useToggle"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
 
-import Icon from '../basic/Icon'
 import HeaderIcon from "../basic/HeaderIcon"
 import ManageClassrooms from "./ManageClassrooms"
 import ConnectToAClassroom from "./ConnectToAClassroom"
@@ -64,20 +64,9 @@ const EnhancedHeader = React.memo(({
           bookVersion, canViewEnhancedHomepage, canViewFrontMatter, viewingEnhancedHomepage,
           viewingFrontMatter, iCanEdit, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
-  const [ showOptions, setShowOptions ] = useState(false)
-  const [ showManageClassrooms, setShowManageClassrooms ] = useState(false)
-  const [ showConnectToAClassroom, setShowConnectToAClassroom ] = useState(false)
-
-  const EditButtonIcon = useCallback(
-    style => (
-      <Icon
-        name="edit"
-        pack="material"
-        style={inEditMode ? styles.editIconActive : styles.editIcon}
-      />
-    ),
-    [ inEditMode ],
-  )
+  const [ showOptions, toggleShowOptions ] = useToggle(false)
+  const [ showManageClassrooms, toggleShowManageClassrooms ] = useToggle(false)
+  const [ showConnectToAClassroom, toggleShowConnectToAClassroom ] = useToggle(false)
 
   const selectEnhancedHomepage = useCallback(
     () => {
@@ -101,27 +90,12 @@ const EnhancedHeader = React.memo(({
     [ bookId ],
   )
 
-  const toggleShowOptions = useCallback(
-    () => setShowOptions(!showOptions),
-    [ showOptions ],
-  )
-
-  const toggleShowManageClassrooms = useCallback(
-    () => setShowManageClassrooms(!showManageClassrooms),
-    [ showManageClassrooms ],
-  )
-
-  const toggleShowConnectToAClassroom = useCallback(
-    () => setShowConnectToAClassroom(!showConnectToAClassroom),
-    [ showConnectToAClassroom ],
-  )
-
   const selectOption = useCallback(
     selectedIndex => {
       const { onPress } = moreOptions[selectedIndex]
       if(onPress) {
         onPress()
-        setShowOptions(false)
+        toggleShowOptions(false)
       }
     },
     [ bookId, classrooms, toggleShowManageClassrooms, toggleShowConnectToAClassroom ],
@@ -143,7 +117,7 @@ const EnhancedHeader = React.memo(({
           bookId,
           uid,
         })
-        setShowOptions(false)
+        toggleShowOptions(false)
       },
     })),
     ...(!(bookVersion === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{

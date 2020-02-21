@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, Platform, Alert, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { OverflowMenu, Tooltip } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
+import useToggle from "react-use/lib/useToggle"
 
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
@@ -45,8 +46,9 @@ const BookHeader = React.memo(({
   toggleSidePanelOpen,
 }) => {
 
-  const [ showOptions, setShowOptions ] = useState(false)
-  const [ showSyncStatus, setShowSyncStatus ] = useState(false)
+  const [ showOptions, toggleShowOptions ] = useToggle(false)
+  const [ showSyncStatus, toggleShowSyncStatus ] = useToggle(false)
+
   const wideMode = useWideMode()
 
   const { book } = useClassroomInfo({ books, bookId })
@@ -116,22 +118,12 @@ const BookHeader = React.memo(({
     }]),
   ]
 
-  const toggleShowOptions = useCallback(
-    () => setShowOptions(!showOptions),
-    [ showOptions ],
-  )
-
-  const toggleShowSyncStatus = useCallback(
-    () => setShowSyncStatus(!showSyncStatus),
-    [ showSyncStatus ],
-  )
-
   const selectOption = useCallback(
     selectedIndex => {
       const { onPress } = moreOptions[selectedIndex]
       if(onPress) {
         onPress()
-        setShowOptions(false)
+        toggleShowOptions(false)
       }
     },
     [ bookLinkInfo, goToBookLink, removeFromDevice ],
