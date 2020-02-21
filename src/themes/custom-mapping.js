@@ -105,6 +105,32 @@ const mapping = {
   
   components: getComponentMapping([
     {
+      component: 'Input',
+      variantGroups: {
+        status: {
+          basic: {
+            labelMarginBottom: 8,
+            labelFontSize: 15,
+            labelFontWeight: 'normal',
+          },
+        },
+      },
+      isCustom: false,
+    },
+    {
+      component: 'Select',
+      variantGroups: {
+        status: {
+          basic: {
+            labelMarginBottom: 8,
+            labelFontSize: 15,
+            labelFontWeight: 'normal',
+          },
+        },
+      },
+      isCustom: false,
+    },
+    {
       component: 'Layout',
       parameters: {
         flex: 1,
@@ -300,4 +326,5 @@ const mapping = {
   
 }
 
+console.log(mapping)
 export default mapping
