@@ -34,6 +34,7 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import usePageSize from "../../hooks/usePageSize"
+import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 
 import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
@@ -215,8 +216,9 @@ const Book = React.memo(({
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+  const spineToolsByCfi = useSpineToolsByCfi({ visibleTools, spineIdRef })
 
-  const getVisibleTools = useInstanceValue(visibleTools)
+  const getSpineToolsByCfi = useInstanceValue(spineToolsByCfi)
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
   const getSelectedToolUid = useInstanceValue(selectedToolUid)
@@ -683,19 +685,7 @@ const Book = React.memo(({
 
       if(type === 'BookPage') {
 
-        const spineToolsByCfi = {}
-
-        getVisibleTools().forEach(tool => {
-          if(
-            tool.spineIdRef === spineIdRef
-            && tool.cfi
-          ) {
-            if(!spineToolsByCfi[tool.cfi]) {
-              spineToolsByCfi[tool.cfi] = []
-            }
-            spineToolsByCfi[tool.cfi].push(tool)
-          }
-        })
+        const spineToolsByCfi = getSpineToolsByCfi()
 
         Object.values(spineToolsByCfi).forEach(spineTools => spineTools.sort((a, b) => a.ordering - b.ordering))
 

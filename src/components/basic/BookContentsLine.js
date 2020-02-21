@@ -45,6 +45,7 @@ const BookContentsLine = ({
   onToolMove,
   onToolRelease,
   setModeToPage,
+  inEditMode,
   uiStatus,
 
   setSelectedToolUid,
@@ -112,6 +113,9 @@ const BookContentsLine = ({
             <GroupedToolsChip
               status={isDraft ? "draft" : "published"}
               numToolsWithin={numToolsWithin}
+              bookId={bookId}
+              inEditMode={inEditMode}
+              spineIdRef={spineIdRef}
             />
           }
         </>

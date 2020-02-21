@@ -22,8 +22,19 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
     }
   }
 
+  const addToParametersAndStates = state => {
+    for(let stateValue in state) {
+      parametersIncludingFromVariantGroups = {
+        ...parametersIncludingFromVariantGroups,
+        ...state[stateValue],
+      }
+
+      addToStates(stateValue)
+    }
+  }
+
   addToStates('none')  // It is unclear why this is needed, but it is.
-  Object.keys(state || {}).forEach(stateValue => addToStates(stateValue))
+  addToParametersAndStates(state)
 
   for(let group in variantGroups) {
     for(let groupValue in variantGroups[group]) {
@@ -35,15 +46,7 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
         ...params,
       }
 
-      for(let stateValue in state) {
-        parametersIncludingFromVariantGroups = {
-          ...parametersIncludingFromVariantGroups,
-          ...state[stateValue],
-        }
-
-        addToStates(stateValue)
-      }
-
+      addToParametersAndStates(state)
     }
   }
 
@@ -169,7 +172,7 @@ const mapping = {
           button: {
             state: {
               hover: {
-                opacity: .3,
+                backgroundColor: 'color-primary-500',
               },
             },
           },
@@ -195,6 +198,13 @@ const mapping = {
       parameters: {
         backgroundColor: 'background-alternative-color-4',
         color: 'text-alternate-color',
+        alt0BackgroundColor: 'color-primary-transparent-400',
+        alt0Color: 'color-basic-1100',
+        state: {
+          hover: {
+            backgroundColor: 'color-primary-500',
+          },
+        },
       },
       variantGroups: {
         status: {

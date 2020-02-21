@@ -219,10 +219,11 @@ const BookContents = React.memo(({
           onToolRelease={onToolRelease}
           uiStatus={selected ? "selected" : "unselected"}
           setModeToPage={setModeToPage}
+          inEditMode={inEditMode}
         />
       )
     },
-    [ selectedToolUid, currentSpineIdRef, bookId, goTo, reportLineHeight ],
+    [ selectedToolUid, currentSpineIdRef, bookId, goTo, reportLineHeight, inEditMode ],
   )
 
   const createNewTool = useCallback(
