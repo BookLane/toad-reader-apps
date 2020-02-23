@@ -130,11 +130,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sidePanel: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
     left: 'auto',
-    top: 0,
+    top: Platform.OS === 'web' ? 0 : statusBarHeight * -1,
+    paddingTop: Platform.OS === 'web' ? 0 : statusBarHeight,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -341,10 +342,10 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      setStatusBarHidden(true)
+      setStatusBarHidden(!wideMode)
       return () => setStatusBarHidden(false)
     },
-    [],
+    [ wideMode ],
   )
 
   useEffect(
@@ -864,6 +865,10 @@ const Book = React.memo(({
     )
   }
 
+  const pageTopInWideMode = {
+    top: pageTop + (isIPhoneX ? 0 : statusBarHeight) + getToolbarHeight(),
+  }
+
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
@@ -913,7 +918,14 @@ const Book = React.memo(({
               />
             </View>
           }
-          <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
+          <View style={
+            mode === 'page'
+              ? [
+                styles.showPage,
+                (wideMode ? pageTopInWideMode : null),
+              ]
+              : styles.hidePage
+          }>
             <BookPage
               bookId={bookId}
               latest_location={latest_location}
@@ -936,7 +948,14 @@ const Book = React.memo(({
             />
             {toolsToOverlayOnThisPage}
           </View>
-          <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+          <View style={
+            mode === 'zooming'
+              ? [
+                styles.showZoom,
+                (wideMode ? pageTopInWideMode : null),
+              ]
+              : styles.hideZoom
+          }>
             <ZoomPage
               bookId={bookId}
               spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}

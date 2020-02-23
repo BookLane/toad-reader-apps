@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { Animated, Easing, StyleSheet, Image } from "react-native"
 
-import { getSnapshotURI, isIPhoneX, iPhoneXFooter, statusBarHeight } from '../../utils/toolbox'
+import { getSnapshotURI, isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
 import useDimensions from "../../hooks/useDimensions"
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   snapshotImage: {
     position: 'absolute',
     top: 0,
-    bottom: isIPhoneX ? iPhoneXFooter : 0,
+    bottom: bottomSpace,
     left: 0,
     right: 0,
   },

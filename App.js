@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
 import './src/themes/style'
 // import * as Font from 'expo-font'
@@ -24,7 +24,7 @@ import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
 
 import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
-import { getDataOrigin } from './src/utils/toolbox'
+import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -181,6 +181,7 @@ const App = () => {
           fetchLocale: async locale => translations,
         })
 
+        setStatusBarHidden(false)
         if(Platform.OS === 'ios') {
           StatusBar.setBarStyle('dark-content')
         }

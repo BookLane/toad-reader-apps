@@ -12,7 +12,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX, iPhoneXFooter, openURL } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, bottomSpace, openURL } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
@@ -25,9 +25,9 @@ import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRe
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...(!isIPhoneX ? {} : {
-      marginBottom: iPhoneXFooter,
-    }),
+    marginBottom: bottomSpace,
+    borderColor: 'red',
+    borderWidth: 1,
   },
   spin: {
     backgroundColor: 'white',

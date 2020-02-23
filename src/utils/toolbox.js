@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
+import * as Device from 'expo-device'
 
 const {
   REQUEST_OPTIONS,
@@ -126,12 +127,22 @@ export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displa
   }
 }
 
+
 export const isIPhoneX = isIphoneX()
-export const getFooterHeight = () => 0 //56
-export const getToolbarHeight = () => 56
+const getBottomSpace = () => (
+  // In react-native-iphone-x-helper, the getBottomSpace function does not support iPad Pro.
+  // But maybe it will at some point.
+  // See: https://github.com/ptelad/react-native-iphone-x-helper/issues/20
+
+  (isIPhoneX || /^iPad8/.test(Device.modelId))
+    ? 34
+    : 0
+)
 export const statusBarHeight = getStatusBarHeight()
 export const statusBarHeightSafe = getStatusBarHeight(true)
-export const iPhoneXFooter = 16
+export const getFooterHeight = () => 0 //56
+export const getToolbarHeight = () => 56
+export const bottomSpace = getBottomSpace() / 2
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 
@@ -251,7 +262,10 @@ export const encodeBase64 = str => {
 let statusBarIsHidden = false
 export const setStatusBarHidden = setHidden => {
   if(Platform.OS === 'ios') {
-    StatusBar.setHidden(setHidden)
+    // Note: setHidden was not working because capturing the snapshots unhides StatusBar
+    // for some unknown reason. Thus, I'm using setBarStyle instead.
+    // StatusBar.setHidden(setHidden)
+    StatusBar.setBarStyle(setHidden ? 'light-content' : 'dark-content', false)
   } else if(Platform.OS === 'android') {
     StatusBar.setBackgroundColor(setHidden ? 'white' : ANDROID_STATUS_BAR_COLOR, true)
     StatusBar.setBarStyle(setHidden ? 'light-content' : 'dark-content', true)

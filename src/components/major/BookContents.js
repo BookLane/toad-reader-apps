@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   list: {
     paddingTop,
     paddingBottom: 20,
+    backgroundColor: 'transparent',
   },
   backToReadingFAB: {
     right: 'auto',

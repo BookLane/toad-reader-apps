@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import Constants from 'expo-constants'
 
-import { isIPhoneX, iPhoneXFooter, statusBarHeight } from "../utils/toolbox"
+import { isIPhoneX, statusBarHeight, bottomSpace } from "../utils/toolbox"
 
 import useDimensions from './useDimensions'
 
@@ -15,7 +15,7 @@ const usePageSize = () => {
   let { width, height } = useDimensions().window
 
   if(isIPhoneX) {
-    height -= (statusBarHeight + iPhoneXFooter)
+    height -= (statusBarHeight + bottomSpace)
   }
 
   const size = useMemo(

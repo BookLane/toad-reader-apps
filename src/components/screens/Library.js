@@ -3,14 +3,22 @@ import { ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
-import { Switch, Route } from "../routers/react-router"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
+import usePrevious from "react-use/lib/usePrevious"
+
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
+import useRouterState from "../../hooks/useRouterState"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
+import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
+import useInstanceValue from "../../hooks/useInstanceValue"
+import useHasNoAuth from "../../hooks/useHasNoAuth"
+import useWideMode from "../../hooks/useWideMode"
 
+import { Switch, Route } from "../routers/react-router"
+import SafeLayout from "../basic/SafeLayout"
 import BookImporter from "../major/BookImporter"
 import Book from "./Book"
 import Reports from "./Reports"
@@ -26,12 +34,6 @@ import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
 
-import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
-import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
-import useInstanceValue from "../../hooks/useInstanceValue"
-import useHasNoAuth from "../../hooks/useHasNoAuth"
-import usePrevious from "react-use/lib/usePrevious"
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
@@ -90,6 +92,7 @@ const Library = ({
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
 
+  const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
@@ -149,7 +152,7 @@ const Library = ({
       removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
       autoUpdateCoreIdps()
 
-      if(Platform.OS !== 'web') {
+      if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
         ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
       }
     },
