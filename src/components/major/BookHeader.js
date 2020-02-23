@@ -24,6 +24,9 @@ const styles = StyleSheet.create({
   spin: {
     backgroundColor: 'white',
   },
+  tooltip: {
+    maxWidth: 140,
+  },
 })
 
 const BookHeader = React.memo(({
@@ -155,6 +158,7 @@ const BookHeader = React.memo(({
       visible={showSyncStatus}
       text={syncStatusMessages[syncStatus]}
       onBackdropPress={toggleShowSyncStatus}
+      style={styles.tooltip}
     >
       <TouchableOpacity
         onPress={toggleShowSyncStatus}
