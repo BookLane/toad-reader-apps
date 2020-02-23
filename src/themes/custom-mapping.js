@@ -326,5 +326,4 @@ const mapping = {
   
 }
 
-console.log(mapping)
 export default mapping
