@@ -1,8 +1,7 @@
-import NetInfo from '@react-native-community/netinfo'
-
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
          safeFetch, createAccessCode } from "./toolbox"
-import { connectionInfo } from "../hooks/useNetwork"
+
+import connectionInfo, { addConnectionInfoEventListener } from "./connectionInfo"
 
 import { updateAccount, updateBookAccount, setSyncStatus, shareHighlight,
          updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
@@ -603,7 +602,8 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 }))
 
 console.log('Setting up event listeners for patch and reportReadings...')
-NetInfo.addEventListener('change', patch)
+
+addConnectionInfoEventListener(patch)
+addConnectionInfoEventListener(reportReadings)
 // AppState.addEventListener('change', () => patch())
-NetInfo.addEventListener('change', reportReadings)
 // AppState.addEventListener('change', () => reportReadings())

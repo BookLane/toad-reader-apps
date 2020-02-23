@@ -8,7 +8,7 @@ import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from
 import { Layout, Drawer } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
-// import useNetwork from "../../hooks/useNetwork"
+import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -68,7 +68,7 @@ const AppMenu = ({
   changeLibraryScope,
 }) => {
 
-  // const { online } = useNetwork()
+  const { online } = useNetwork()
   const { historyPush, historyReplace, historyGoBack, pathname } = useRouterState()
 
   const hasNoAuth = useHasNoAuth(accounts)
@@ -278,6 +278,7 @@ const AppMenu = ({
         title: i18n("Import books to server"),
         // icon: onDeviceIcon,
         onSelect: onImportBooks,
+        disabled: !online,
       },
     ]),
     ...(!isAdmin ? [] : [
@@ -285,6 +286,7 @@ const AppMenu = ({
         title: i18n("Reports"),
         // icon: onDeviceIcon,
         onSelect: goToReports,
+        disabled: !online,
       },
     ]),
   ]
