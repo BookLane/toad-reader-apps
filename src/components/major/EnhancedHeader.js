@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, Platform, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { OverflowMenu } from "@ui-kitten/components"
