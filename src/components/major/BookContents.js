@@ -13,7 +13,7 @@ import { getSpineAndPage } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-import { useLayout } from 'react-native-hooks'
+import { useLayout } from '@react-native-community/hooks'
 
 import { createTool } from "../../redux/actions"
 

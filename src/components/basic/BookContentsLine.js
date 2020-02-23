@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { useLayout } from 'react-native-hooks'
+import { useLayout } from '@react-native-community/hooks'
 import { styled } from '@ui-kitten/components'
 
 import useThemedStates from "../../hooks/useThemedStates"

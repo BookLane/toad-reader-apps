@@ -17,7 +17,7 @@ import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 import useInstanceValue from '../../hooks/useInstanceValue'
-import { useLayout } from 'react-native-hooks'
+import { useLayout } from '@react-native-community/hooks'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
