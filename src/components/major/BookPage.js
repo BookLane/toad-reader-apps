@@ -26,8 +26,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginBottom: bottomSpace,
-    borderColor: 'red',
-    borderWidth: 1,
   },
   spin: {
     backgroundColor: 'white',

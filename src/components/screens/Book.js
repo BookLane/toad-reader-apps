@@ -133,9 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
-    left: 'auto',
-    top: Platform.OS === 'web' ? 0 : statusBarHeight * -1,
-    paddingTop: Platform.OS === 'web' ? 0 : statusBarHeight,
+    marginTop: Platform.OS === 'ios' ? statusBarHeight * -1 : 0,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -342,7 +340,7 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      setStatusBarHidden(!wideMode)
+      setStatusBarHidden(!wideMode || Platform.OS === 'ios')
       return () => setStatusBarHidden(false)
     },
     [ wideMode ],

@@ -7,7 +7,9 @@ import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useWideMode from "../../hooks/useWideMode"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
+import { statusBarHeight } from "../../utils/toolbox"
 
 import HeaderIcon from "../basic/HeaderIcon"
 import ManageClassrooms from "./ManageClassrooms"
@@ -15,11 +17,19 @@ import ConnectToAClassroom from "./ConnectToAClassroom"
 import EnhancedHeaderLine from "../basic/EnhancedHeaderLine"
 import EnhancedEditButton from "../basic/EnhancedEditButton"
 
+const container = {
+  paddingTop: 10,
+  paddingBottom: 10,
+  backgroundColor: 'rgb(231, 236, 246)',
+}
+
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: 'rgb(231, 236, 246)',
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
+    paddingTop: container.paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
   },
   enhanced: {
     fontWeight: 'bold',
@@ -67,6 +77,8 @@ const EnhancedHeader = React.memo(({
   const [ showOptions, toggleShowOptions ] = useToggle(false)
   const [ showManageClassrooms, toggleShowManageClassrooms ] = useToggle(false)
   const [ showConnectToAClassroom, toggleShowConnectToAClassroom ] = useToggle(false)
+
+  const wideMode = useWideMode()
 
   const selectEnhancedHomepage = useCallback(
     () => {
@@ -155,7 +167,7 @@ const EnhancedHeader = React.memo(({
   )
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       <EnhancedHeaderLine
         label={
           <>

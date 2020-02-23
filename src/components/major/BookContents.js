@@ -1,29 +1,36 @@
 import React, { useMemo, useCallback } from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View, Platform } from "react-native"
 import { List } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
+import { useLayout } from '@react-native-community/hooks'
+
+import { getSpineAndPage, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import useSetTimeout from '../../hooks/useSetTimeout'
+import useInstanceValue from '../../hooks/useInstanceValue'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useWideMode from "../../hooks/useWideMode"
+import { createTool } from "../../redux/actions"
 
 import BookContentsLine from "../basic/BookContentsLine"
 import EnhancedHeader from "./EnhancedHeader"
 import FAB from "../basic/FAB"
 
-import { getSpineAndPage } from '../../utils/toolbox'
-import useSetTimeout from '../../hooks/useSetTimeout'
-import useInstanceValue from '../../hooks/useInstanceValue'
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import { useLayout } from '@react-native-community/hooks'
-
-import { createTool } from "../../redux/actions"
-
 const paddingTop = 12
 
 const styles = StyleSheet.create({
   list: {
+    backgroundColor: '#F2F6FF',
+  },
+  listHeader: {
     paddingTop,
-    paddingBottom: 20,
-    backgroundColor: 'transparent',
+  },
+  listHeaderWideMode: {
+    paddingTop: paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
+  },
+  listFooter: {
+    paddingTop: 70 + bottomSpace,
   },
   backToReadingFAB: {
     right: 'auto',
@@ -55,6 +62,8 @@ const BookContents = React.memo(({
 
   const { latest_location } = userDataByBookId[bookId] || {}
   const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+
+  const wideMode = useWideMode()
         
   const showAddToolButton = (
     (
@@ -265,6 +274,24 @@ const BookContents = React.memo(({
     [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],
   )
 
+  const ListHeader = useMemo(
+    () => (
+      <View
+        style={
+          (
+            wideMode
+            && bookVersion === 'BASE'
+          )
+            ? styles.listHeaderWideMode
+            : styles.listHeader
+        }
+      />
+    ),
+    [ wideMode ],
+  )
+
+  const ListFooter = useMemo(() => <View style={styles.listFooter} />, [])
+
   if(!toc) return null
 
   return (
@@ -276,7 +303,9 @@ const BookContents = React.memo(({
         setModeToPage={setModeToPage}
       />
       <List
-        style={styles.list}
+        style={wideMode ? styles.listWideMode : styles.list}
+        ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListFooter}
         data={data}
         renderItem={renderItem}
         onLayout={onLayout}
