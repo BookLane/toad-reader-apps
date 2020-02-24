@@ -3,24 +3,24 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { View, Platform, StyleSheet } from "react-native"
 import { i18n } from "inline-i18n"
-
-import PageWebView from "./PageWebView"
-import DisplaySettings from "./DisplaySettings"
-import Highlighter from "./Highlighter"
-import BookPageMessage from "../basic/BookPageMessage"
-import CoverAndSpin from "../basic/CoverAndSpin"
+import usePrevious from "react-use/lib/usePrevious"
+import { useLayout } from '@react-native-community/hooks'
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
 import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, bottomSpace, openURL } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
-import usePrevious from "react-use/lib/usePrevious"
 import useInstanceValue from '../../hooks/useInstanceValue'
-import { useLayout } from '@react-native-community/hooks'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-
+import useWideMode from "../../hooks/useWideMode"
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
+
+import PageWebView from "./PageWebView"
+import DisplaySettings from "./DisplaySettings"
+import Highlighter from "./Highlighter"
+import BookPageMessage from "../basic/BookPageMessage"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +29,14 @@ const styles = StyleSheet.create({
   },
   spin: {
     backgroundColor: 'white',
+  },
+  webViewContentsIconCover: {  // covers the contents icon shown in readium when there is mouse movement
+    backgroundColor: 'white',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 30,
+    height: 30,
   },
 })
 
@@ -69,6 +77,8 @@ const BookPage = React.memo(props => {
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
 
   const [ noteInEdit, setNoteInEdit ] = useState(null)
+
+  const wideMode = useWideMode()
 
   const loaded = useRef(false)
   const doAfterLoaded = useRef([])
@@ -387,6 +397,7 @@ const BookPage = React.memo(props => {
           instructorHighlights={instructorHighlights}
           viewRef={view}
         />
+        {wideMode && <View style={styles.webViewContentsIconCover} />}
         <DisplaySettings
           open={showSettings}
           requestHide={requestHideSettings}
