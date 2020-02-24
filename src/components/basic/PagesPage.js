@@ -150,9 +150,9 @@ const PagesPage = React.memo(({
           />
         </View>
       </TouchableComponent>
-      {!!indicateMultiplePages &&
+      {/* {!!indicateMultiplePages &&
         <CapturingThumbnailsInfoIcon />
-      }
+      } */}
     </View>
   )
 })

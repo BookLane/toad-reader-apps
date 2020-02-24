@@ -872,13 +872,13 @@ const Book = React.memo(({
       {mode !== 'page' && <BackFunction func={backToReading} />}
       {mode === 'page' && <CustomKeepAwake />}
 
-      {Platform.OS !== 'web' &&
+      {/* {Platform.OS !== 'web' &&
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={setCapturingSnapshots}
           processingPaused={processingPaused}
         />
-      }
+      } */}
 
       <View
         style={styles.panels}
