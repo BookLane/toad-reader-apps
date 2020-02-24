@@ -182,9 +182,6 @@ const App = () => {
         })
 
         setStatusBarHidden(false)
-        if(Platform.OS === 'ios') {
-          StatusBar.setBarStyle('dark-content')
-        }
 
         setIsLoaded(true)
 

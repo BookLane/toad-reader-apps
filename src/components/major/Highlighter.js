@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useState, useEffect } from "react"
 import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { getToolbarHeight } from '../../utils/toolbox'
+import { getToolbarHeight, setStatusBarHidden } from '../../utils/toolbox'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -85,14 +85,15 @@ const Highlighter = React.memo(({
 
   const wideMode = useWideMode()
 
-  const noteTextInputRef = useRef()
-
   const [ keyboardShowing, setKeyboardShowing ] = useState(false)
 
   useEffect(
     () => {
       const show = () => setKeyboardShowing(true)
-      const hide = () => setKeyboardShowing(false)
+      const hide = () => {
+        setKeyboardShowing(false)
+        setStatusBarHidden(!wideMode || Platform.OS === 'ios')
+      }
 
       const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', show)
       const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', show)
@@ -106,7 +107,7 @@ const Highlighter = React.memo(({
         keyboardWillHideListener.remove()
       }
     },
-    [],
+    [ wideMode ],
   )
 
   const setEditingNote = useCallback(
@@ -136,7 +137,7 @@ const Highlighter = React.memo(({
     [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current ],
   )
 
-  const endEditingNote = useCallback(() => noteTextInputRef.current.blur(), [])
+  const endEditingNote = Keyboard.dismiss
 
   useUnmount(() => setEditingNote(false, true))
   
@@ -170,7 +171,6 @@ const Highlighter = React.memo(({
           note={isEditingNote ? noteInEdit : highlight.current.note}
           updateNoteInEdit={updateNoteInEdit}
           setEditingNote={setEditingNote}
-          noteTextInputRef={noteTextInputRef}
         />
       }
     </View>

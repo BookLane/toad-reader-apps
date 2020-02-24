@@ -340,7 +340,7 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      setStatusBarHidden(!wideMode || Platform.OS === 'ios')
+      setStatusBarHidden(mode === 'page' && (!wideMode || Platform.OS === 'ios'))
       return () => setStatusBarHidden(false)
     },
     [ wideMode ],
@@ -408,7 +408,7 @@ const Book = React.memo(({
   const zoomToPage = useCallback(
     ({ zoomToInfo, snapshotCoords }) => {
 
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
@@ -462,7 +462,7 @@ const Book = React.memo(({
         spineIdRef: zoomToInfo.spineIdRef,
       })
     },
-    [ spineIdRef, cfi, bookId ],
+    [ spineIdRef, cfi, bookId, wideMode ],
   )
 
   const goTo = useCallback(
@@ -492,7 +492,7 @@ const Book = React.memo(({
         ...goToInfo,
       })
       
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       startRecordReading({
         bookId,
@@ -504,7 +504,7 @@ const Book = React.memo(({
         // be initiated.
       })
     },
-    [ bookId, spineIdRef, reportSpots ],
+    [ bookId, spineIdRef, reportSpots, wideMode ],
   )
 
   const toggleBookView = useCallback(
@@ -534,7 +534,7 @@ const Book = React.memo(({
         y: height,
       }
       
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
@@ -555,7 +555,7 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef, width, height, pageWidth ],
+    [ bookId, spineIdRef, width, height, pageWidth, wideMode ],
   )
 
   const setModeToPage = useCallback(() => setState({ mode: 'page' }), [])
@@ -633,14 +633,14 @@ const Book = React.memo(({
         snapshotZoomed: true,
       })
 
-      setStatusBarHidden(true)
+      setStatusBarHidden(!wideMode || Platform.OS === 'ios')
 
       startRecordReading({
         bookId,
         spineIdRef,
       })
     },
-    [ bookId, spineIdRef ],
+    [ bookId, spineIdRef, wideMode ],
   )
 
   // const recommendBook = useCallback(() => alert('Recommend this book'), [])
