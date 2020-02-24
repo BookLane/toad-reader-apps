@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
   },
   optionsIcon: {
     position: 'absolute',
-    top: -4,
-    bottom: -4,
+    top: -13,
+    bottom: -13,
     right: 0,
     left: 0,
     height: 'auto',

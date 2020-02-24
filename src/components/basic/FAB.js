@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: 0.3,
     shadowRadius: 15,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
 })
 
@@ -50,7 +52,7 @@ const FAB = ({
         ]}
       />
     ),
-    [],
+    [ iconName, iconPack, iconThemedStyle, iconStyle ],
   )
 
   return (
