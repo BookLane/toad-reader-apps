@@ -2,7 +2,8 @@ import React, { useRef, useCallback, useState, useEffect } from "react"
 import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { getToolbarHeight, setStatusBarHidden } from '../../utils/toolbox'
+import { getToolbarHeight, setStatusBarHidden, isIPhoneX,
+         statusBarHeight, statusBarHeightSafe } from '../../utils/toolbox'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -39,8 +40,16 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   containerTop: {
-    top: 0,
-    paddingTop: Platform.OS === 'android' ? 10 : 0,
+    top: isIPhoneX ? statusBarHeight * -1 : 0,
+    paddingTop: (
+      Platform.OS === 'android'
+        ? 10
+        : (
+          isIPhoneX
+            ? statusBarHeightSafe
+            : 0
+        )
+    ),
   },
   containerTopWideMode: {
     paddingTop: Platform.OS === 'web' ? getToolbarHeight() - 1 : 0,
