@@ -1,8 +1,7 @@
-import { AppState } from 'react-native'
-
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
          safeFetch, createAccessCode } from "./toolbox"
-import { connectionInfo } from "../hooks/useNetwork"
+
+import connectionInfo, { addConnectionInfoEventListener } from "./connectionInfo"
 
 import { updateAccount, updateBookAccount, setSyncStatus, shareHighlight,
          updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
@@ -58,7 +57,10 @@ export const patch = () => setTimeout(() => {
 
   const { idps, accounts, books, userDataByBookId } = store.getState()
 
-  if(!connectionInfo.online) return
+  if(!connectionInfo.online) {
+    store.dispatch(setSyncStatus("offline"))
+    return
+  }
 
   Object.keys(accounts).forEach(accountId => {
 
@@ -67,7 +69,10 @@ export const patch = () => setTimeout(() => {
     const newUserData = {}
     let somethingToPatch = false
 
-    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) return
+    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) {
+      store.dispatch(setSyncStatus("localonly"))
+      return
+    }
 
     // Filter down the userData object to only new items
     // Also, ignore things I did not and cannot modify
@@ -487,7 +492,10 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 
-  if(!connectionInfo.online) return resolve()
+  if(!connectionInfo.online) {
+    store.dispatch(setSyncStatus("offline"))
+    return resolve()
+  }
 
   store.dispatch(setSyncStatus("refreshing"))
 
@@ -594,7 +602,8 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 }))
 
 console.log('Setting up event listeners for patch and reportReadings...')
-// NetInfo.addEventListener(() => patch())
-AppState.addEventListener('change', () => patch())
-// NetInfo.addEventListener(() => reportReadings())
-AppState.addEventListener('change', () => reportReadings())
+
+addConnectionInfoEventListener(patch)
+addConnectionInfoEventListener(reportReadings)
+// AppState.addEventListener('change', () => patch())
+// AppState.addEventListener('change', () => reportReadings())

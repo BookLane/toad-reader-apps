@@ -2,30 +2,30 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
 import { ViewPager } from "@ui-kitten/components"
+import { i18n } from "inline-i18n"
+
+import { getToolbarHeight, nonEmpty } from '../../utils/toolbox'
+import useWideMode from "../../hooks/useWideMode"
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import { updateClassroom } from "../../redux/actions"
 
 import Syllabus from "./Syllabus"
 import InstructorsIntroduction from "./InstructorsIntroduction"
 import LTIConfigurations from "./LTIConfigurations"
 import StatusAndActions from "./StatusAndActions"
-
-import { i18n } from "inline-i18n"
-import { getToolbarHeight, nonEmpty } from '../../utils/toolbox'
-
-import useWideMode from "../../hooks/useWideMode"
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-
-import { updateClassroom } from "../../redux/actions"
+import HeaderIcon from "../basic/HeaderIcon"
 
 const container = {
   ...StyleSheet.absoluteFillObject,
   backgroundColor: 'white',
   zIndex: 5,
+  paddingTop: 20,
 }
 
 const topSection = {
   paddingHorizontal: 30,
+  zIndex: 1,
 }
 
 const tabTitle = {
@@ -39,11 +39,11 @@ const tabTitle = {
 const styles = StyleSheet.create({
   container: {
     ...container,
+    paddingTop: 25,
   },
   constainerWideMode: {
     ...container,
     top: getToolbarHeight(),
-    paddingTop: 20,
   },
   topSection: {
     ...topSection,
@@ -51,6 +51,10 @@ const styles = StyleSheet.create({
   topSectionWideMode: {
     ...topSection,
     flexDirection: 'row',
+  },
+  headingLine: {
+    flexDirection: 'row',
+    flex: 1,
   },
   heading: {
     paddingBottom: 20,
@@ -88,11 +92,28 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 'auto',
   },
+  exitPreviewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingBottom: 15,
+  },
+  exitPreviewContainerWideMode: {
+    position: 'absolute',
+    bottom: -29,
+    right: 25,
+    backgroundColor: 'white',
+    padding: 5,
+  },
+  close: {
+    top: -12,
+    right: -12,
+  },
 })
 
 const FrontMatter = React.memo(({
   bookId,
   inEditMode,
+  closeToolAndExitReading,
 
   books,
   userDataByBookId,
@@ -240,16 +261,26 @@ const FrontMatter = React.memo(({
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
-        <Text style={styles.heading}>
-          {isDefaultClassroom
-            ? i18n("Settings", "", "enhanced")
-            : (
-              inEditMode
-                ? i18n("Front matter and options", "", "enhanced")
-                : i18n("Front matter", "", "enhanced")
-            )
+        <View style={styles.headingLine}>
+          <Text style={styles.heading}>
+            {isDefaultClassroom
+              ? i18n("Settings", "", "enhanced")
+              : (
+                inEditMode
+                  ? i18n("Front matter and options", "", "enhanced")
+                  : i18n("Front matter", "", "enhanced")
+              )
+            }
+          </Text>
+          {!viewingPreview && !wideMode &&
+            <HeaderIcon
+              iconName="md-close"
+              onPress={closeToolAndExitReading}
+              uiStatus="faded"
+              style={styles.close}
+            />
           }
-        </Text>
+        </View>
         {(inEditMode && !viewingPreview) &&
           <StatusAndActions
             bookId={bookId}
@@ -257,11 +288,13 @@ const FrontMatter = React.memo(({
           />
         }
         {inEditMode && viewingPreview &&
-          <TouchableOpacity onPress={onExitPreview}>
-            <Text style={styles.exitPreview}>
-              {i18n("Exit preview", "", "enhanced")}
-            </Text>
-          </TouchableOpacity>
+          <View style={wideMode ? styles.exitPreviewContainerWideMode : styles.exitPreviewContainer}>
+            <TouchableOpacity onPress={onExitPreview}>
+              <Text style={styles.exitPreview}>
+                {i18n("Exit preview", "", "enhanced")}
+              </Text>
+            </TouchableOpacity>
+          </View>
         }
       </View>
       {tabs.length > 0 &&

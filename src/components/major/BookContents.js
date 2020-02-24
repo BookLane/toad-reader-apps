@@ -1,28 +1,40 @@
 import React, { useMemo, useCallback } from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, View, Platform } from "react-native"
 import { List } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
+import { useLayout } from '@react-native-community/hooks'
+
+import { getSpineAndPage, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import useSetTimeout from '../../hooks/useSetTimeout'
+import useInstanceValue from '../../hooks/useInstanceValue'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useWideMode from "../../hooks/useWideMode"
+import { createTool } from "../../redux/actions"
 
 import BookContentsLine from "../basic/BookContentsLine"
 import EnhancedHeader from "./EnhancedHeader"
 import FAB from "../basic/FAB"
 
-import { getSpineAndPage } from '../../utils/toolbox'
-import useSetTimeout from '../../hooks/useSetTimeout'
-import useInstanceValue from '../../hooks/useInstanceValue'
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import { useLayout } from 'react-native-hooks'
-
-import { createTool } from "../../redux/actions"
-
 const paddingTop = 12
 
 const styles = StyleSheet.create({
   list: {
+    backgroundColor: '#F2F6FF',
+  },
+  listHeader: {
     paddingTop,
-    paddingBottom: 20,
+  },
+  listHeaderWideMode: {
+    paddingTop: paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
+  },
+  listFooter: {
+    paddingTop: 70 + bottomSpace,
+  },
+  backToReadingFAB: {
+    right: 'auto',
+    left: 15,
   },
 })
 
@@ -35,6 +47,8 @@ const BookContents = React.memo(({
   onScroll,
   inEditMode,
   toggleInEditMode,
+  backToReading,
+  setModeToPage,
 
   books,
   userDataByBookId,
@@ -44,8 +58,13 @@ const BookContents = React.memo(({
 }) => {
 
   const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
-          myRole, viewingFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+          myRole, viewingFrontMatter, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
+  const { latest_location } = userDataByBookId[bookId] || {}
+  const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+
+  const wideMode = useWideMode()
+        
   const showAddToolButton = (
     (
       bookVersion === 'INSTRUCTOR'
@@ -193,19 +212,28 @@ const BookContents = React.memo(({
   )
 
   const renderItem = useCallback(
-    ({ item }, index) => (
-      <BookContentsLine
-        {...item}
-        bookId={bookId}
-        goTo={goTo}
-        reportLineHeight={reportLineHeight}
-        index={index}
-        onToolMove={onToolMove}
-        onToolRelease={onToolRelease}
-        inEditMode={inEditMode}
-      />
-    ),
-    [ bookId, goTo, reportLineHeight, inEditMode ],
+    ({ item }, index) => {
+
+      const selected = item.toolType
+        ? (item.uid === selectedToolUid)
+        : (!selectedToolUid && item.spineIdRef === currentSpineIdRef)
+
+      return (
+        <BookContentsLine
+          {...item}
+          bookId={bookId}
+          goTo={goTo}
+          reportLineHeight={reportLineHeight}
+          index={index}
+          onToolMove={onToolMove}
+          onToolRelease={onToolRelease}
+          uiStatus={selected ? "selected" : "unselected"}
+          setModeToPage={setModeToPage}
+          inEditMode={inEditMode}
+        />
+      )
+    },
+    [ selectedToolUid, currentSpineIdRef, bookId, goTo, reportLineHeight, inEditMode ],
   )
 
   const createNewTool = useCallback(
@@ -220,8 +248,6 @@ const BookContents = React.memo(({
         ordering =  selectedTool.ordering + 1
 
       } else {
-        const { latest_location } = userDataByBookId[bookId] || {}
-        const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
         const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
         visibleTools.forEach(tool => {
@@ -245,8 +271,26 @@ const BookContents = React.memo(({
         // toolType,
       })
     },
-    [ bookId, classroomUid, book, displaySettings, JSON.stringify(visibleTools), selectedTool ],
+    [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],
   )
+
+  const ListHeader = useMemo(
+    () => (
+      <View
+        style={
+          (
+            wideMode
+            && bookVersion === 'BASE'
+          )
+            ? styles.listHeaderWideMode
+            : styles.listHeader
+        }
+      />
+    ),
+    [ wideMode ],
+  )
+
+  const ListFooter = useMemo(() => <View style={styles.listFooter} />, [])
 
   if(!toc) return null
 
@@ -256,9 +300,12 @@ const BookContents = React.memo(({
         bookId={bookId}
         inEditMode={inEditMode}
         toggleInEditMode={toggleInEditMode}
+        setModeToPage={setModeToPage}
       />
       <List
-        style={styles.list}
+        style={wideMode ? styles.listWideMode : styles.list}
+        ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListFooter}
         data={data}
         renderItem={renderItem}
         onLayout={onLayout}
@@ -266,10 +313,18 @@ const BookContents = React.memo(({
       />
       {showAddToolButton && inEditMode && !viewingFrontMatter &&
         <FAB
-          data-id="FAB_addTool"
           iconName="md-add"
           status="primary"
           onPress={createNewTool}
+        />
+      }
+      {!!backToReading &&
+        <FAB
+          iconName="book-open-variant"
+          iconPack="materialCommunity"
+          status="primary"
+          onPress={backToReading}
+          style={styles.backToReadingFAB}
         />
       }
     </>

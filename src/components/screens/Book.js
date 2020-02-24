@@ -34,6 +34,7 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import usePageSize from "../../hooks/usePageSize"
+import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 
 import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
@@ -129,9 +130,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sidePanel: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
+    marginTop: Platform.OS === 'ios' ? statusBarHeight * -1 : 0,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -215,10 +217,12 @@ const Book = React.memo(({
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+  const spineToolsByCfi = useSpineToolsByCfi({ visibleTools, spineIdRef })
 
-  const getVisibleTools = useInstanceValue(visibleTools)
+  const getSpineToolsByCfi = useInstanceValue(spineToolsByCfi)
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
+  const getSelectedToolUid = useInstanceValue(selectedToolUid)
 
   const toolCfiCounts = useMemo(
     () => {
@@ -268,6 +272,19 @@ const Book = React.memo(({
       setRawInEditMode(!inEditMode)
     },
     [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid, viewingFrontMatter ],
+  )
+
+  useEffect(
+    () => {
+      if(wideMode && Platform.OS === 'web' && mode !== 'page') {
+        // On web in wide mode, 'page' is the only valid mode.
+        setState({
+          mode: 'page',
+          snapshotZoomed: true,
+        })
+      }
+    },
+    [ wideMode ],
   )
 
   useEffect(
@@ -323,10 +340,10 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      setStatusBarHidden(true)
+      setStatusBarHidden(mode === 'page' && (!wideMode || Platform.OS === 'ios'))
       return () => setStatusBarHidden(false)
     },
-    [],
+    [ wideMode ],
   )
 
   useEffect(
@@ -391,7 +408,7 @@ const Book = React.memo(({
   const zoomToPage = useCallback(
     ({ zoomToInfo, snapshotCoords }) => {
 
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
@@ -445,7 +462,7 @@ const Book = React.memo(({
         spineIdRef: zoomToInfo.spineIdRef,
       })
     },
-    [ spineIdRef, cfi, bookId ],
+    [ spineIdRef, cfi, bookId, wideMode ],
   )
 
   const goTo = useCallback(
@@ -475,7 +492,7 @@ const Book = React.memo(({
         ...goToInfo,
       })
       
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       startRecordReading({
         bookId,
@@ -487,7 +504,7 @@ const Book = React.memo(({
         // be initiated.
       })
     },
-    [ bookId, spineIdRef, reportSpots ],
+    [ bookId, spineIdRef, reportSpots, wideMode ],
   )
 
   const toggleBookView = useCallback(
@@ -517,7 +534,7 @@ const Book = React.memo(({
         y: height,
       }
       
-      setStatusBarTimeout(() => setStatusBarHidden(true), PAGE_ZOOM_MILLISECONDS - 100)
+      setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
@@ -538,7 +555,17 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef, width, height, pageWidth ],
+    [ bookId, spineIdRef, width, height, pageWidth, wideMode ],
+  )
+
+  const setModeToPage = useCallback(() => setState({ mode: 'page' }), [])
+
+  const closeToolAndExitReading = useCallback(
+    () => {
+      setSelectedToolUid({ bookId })
+      setState({ mode: Platform.OS === 'web' ? 'contents' : 'pages' })
+    },
+    [ bookId ],
   )
 
   const requestShowPages = useCallback(
@@ -598,20 +625,22 @@ const Book = React.memo(({
     () => {
       pauseProcessing()
 
+      setSelectedToolUid({ bookId })
+
       setState({
         showSettings: true,
         mode: 'page',
         snapshotZoomed: true,
       })
 
-      setStatusBarHidden(true)
+      setStatusBarHidden(!wideMode || Platform.OS === 'ios')
 
       startRecordReading({
         bookId,
         spineIdRef,
       })
     },
-    [ bookId, spineIdRef ],
+    [ bookId, spineIdRef, wideMode ],
   )
 
   // const recommendBook = useCallback(() => alert('Recommend this book'), [])
@@ -658,16 +687,8 @@ const Book = React.memo(({
       if(!target.closest('[data-id=highlighter]')) {
         setSelectionInfo()
       }
-      if(
-        !target.closest('[data-id=BookLeft]')
-        && !target.closest('[data-id=EnhancedHeader]')
-        && !target.closest('[data-id=FAB_addTool]')
-        && selectedToolUid
-      ) {
-        unselectTool()
-      }
     },
-    [ selectedToolUid, unselectTool ],
+    [ selectedToolUid ],
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
@@ -678,19 +699,7 @@ const Book = React.memo(({
 
       if(type === 'BookPage') {
 
-        const spineToolsByCfi = {}
-
-        getVisibleTools().forEach(tool => {
-          if(
-            tool.spineIdRef === spineIdRef
-            && tool.cfi
-          ) {
-            if(!spineToolsByCfi[tool.cfi]) {
-              spineToolsByCfi[tool.cfi] = []
-            }
-            spineToolsByCfi[tool.cfi].push(tool)
-          }
-        })
+        const spineToolsByCfi = getSpineToolsByCfi()
 
         Object.values(spineToolsByCfi).forEach(spineTools => spineTools.sort((a, b) => a.ordering - b.ordering))
 
@@ -706,10 +715,10 @@ const Book = React.memo(({
                 <ToolChip
                   style={{
                     left: info.offsetX,
-                    // The 3 matches the top/bottom padding when the chip is in the toc.
+                    // The 3/-24 matches the top/bottom padding when the chip is inline.
                     // Using idx instead of tool ordering, since all may not be displayed
                     // given whether we are in edit mode or not.
-                    top: y + 3 + (idx * 34),
+                    top: y + (wideMode ? 3 : -24) + (idx * 34),
                   }}
                   uid={uid}
                   label={name}
@@ -720,7 +729,9 @@ const Book = React.memo(({
                     uid,
                   })}
                   onToolMove={onToolMove}
-                  onToolRelease={onToolRelease}        
+                  onToolRelease={onToolRelease}
+                  status={!published_at ? "draft" : "published"}
+                  type="button"
                 />
               </View>
             )
@@ -735,7 +746,7 @@ const Book = React.memo(({
 
       }
     },
-    [ bookId, spineIdRef, inEditMode ],
+    [ bookId, spineIdRef, inEditMode, wideMode ],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -790,6 +801,10 @@ const Book = React.memo(({
 
       }
 
+      if(getSelectedToolUid()) {
+        setSelectedToolUid({ bookId })
+      }
+
       setToolMoveInfo({
         ...moveInfo,
         chipProps: {
@@ -806,7 +821,7 @@ const Book = React.memo(({
 
       return true
     },
-    [ width ],
+    [ bookId, width ],
   )
 
   const onToolRelease = useCallback(
@@ -830,11 +845,6 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
-  const onBackPress = useCallback(
-    () => (selectedToolUid ? unselectTool : historyGoBack)(),
-    [ unselectTool, selectedToolUid ],
-  )
-
   const pageCfisKey = getPageCfisKey({ displaySettings, width, height })
   const { title } = (books && books[bookId]) || {}
 
@@ -853,18 +863,22 @@ const Book = React.memo(({
     )
   }
 
+  const pageTopInWideMode = {
+    top: pageTop + (isIPhoneX ? 0 : statusBarHeight) + getToolbarHeight(),
+  }
+
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
       {mode === 'page' && <CustomKeepAwake />}
 
-      {Platform.OS !== 'web' &&
+      {/* {Platform.OS !== 'web' &&
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={setCapturingSnapshots}
           processingPaused={processingPaused}
         />
-      }
+      } */}
 
       <View
         style={styles.panels}
@@ -875,7 +889,6 @@ const Book = React.memo(({
             styles.mainPanel,
             mode !== 'contents' ? showStyles : null,
           ]}
-          data-id="BookLeft"
         >
           {!widget &&
             <BookHeader
@@ -886,8 +899,7 @@ const Book = React.memo(({
               backToReading={backToReading}
               showDisplaySettings={showDisplaySettings}
               width={width}  // By sending this as a prop, I force a rerender
-              hideOptions={!!selectedToolUid}
-              onBackPress={onBackPress}
+              onBackPress={historyGoBack}
             />
           }
           {Platform.OS !== 'web' &&
@@ -904,7 +916,14 @@ const Book = React.memo(({
               />
             </View>
           }
-          <View style={mode === 'page' ? styles.showPage : styles.hidePage}>
+          <View style={
+            mode === 'page'
+              ? [
+                styles.showPage,
+                (wideMode ? pageTopInWideMode : null),
+              ]
+              : styles.hidePage
+          }>
             <BookPage
               bookId={bookId}
               latest_location={latest_location}
@@ -927,7 +946,14 @@ const Book = React.memo(({
             />
             {toolsToOverlayOnThisPage}
           </View>
-          <View style={mode === 'zooming' ? styles.showZoom : styles.hideZoom}>
+          <View style={
+            mode === 'zooming'
+              ? [
+                styles.showZoom,
+                (wideMode ? pageTopInWideMode : null),
+              ]
+              : styles.hideZoom
+          }>
             <ZoomPage
               bookId={bookId}
               spineIdRef={zoomToInfo ? zoomToInfo.spineIdRef : spineIdRef}
@@ -944,13 +970,16 @@ const Book = React.memo(({
             bookId={bookId}
             inEditMode={inEditMode}
             goTo={goTo}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
           <EnhancedHomepage
             bookId={bookId}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
           <FrontMatter
             bookId={bookId}
             inEditMode={inEditMode}
+            closeToolAndExitReading={closeToolAndExitReading}
           />
         </View>
         {!widget &&
@@ -968,6 +997,8 @@ const Book = React.memo(({
               onScroll={onBookContentsScroll}
               inEditMode={inEditMode}
               toggleInEditMode={toggleInEditMode}
+              backToReading={!wideMode ? backToReading : null}
+              setModeToPage={!wideMode ? setModeToPage : null}
             />
           </View>
         }

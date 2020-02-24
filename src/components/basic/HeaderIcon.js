@@ -3,6 +3,8 @@ import { TouchableOpacity, StyleSheet } from "react-native"
 import { styled } from '@ui-kitten/components'
 
 import useRouterState from "../../hooks/useRouterState"
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
+import useThemedStates from "../../hooks/useThemedStates"
 
 import Icon from './Icon'
 
@@ -10,8 +12,7 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     padding: 8,
-    paddingLeft: 12,
-    paddingRight: 12,
+    paddingHorizontal: 12,
     justifyContent: 'center',
   },
   icon: {
@@ -20,16 +21,23 @@ const styles = StyleSheet.create({
 })
 
 const HeaderIcon = React.forwardRef(({
-  themedStyle,
-  style,
-  pack,
-  name,
+  iconName,
+  iconPack,
   path,
   onPress,
+  style,
+  iconStyle,
+
+  themedStyle,
+  dispatch,
+
   ...otherProps
 }, ref) => {
 
   const { historyPush } = useRouterState()
+
+  const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
+  const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
 
   const goPath = useCallback(
     () => historyPush(path),
@@ -39,18 +47,23 @@ const HeaderIcon = React.forwardRef(({
   return (
     <TouchableOpacity
       onPress={path ? goPath : onPress}
-      style={styles.container}
+      style={[
+        styles.container,
+        baseThemedStyle,
+        style,
+      ]}
+      {...themedStateEvents}
       {...otherProps}
       ref={ref}
     >
       <Icon
         style={[
           styles.icon,
-          themedStyle,
-          style,
+          iconThemedStyle,
+          iconStyle,
         ]}
-        name={name}
-        pack={pack}
+        name={iconName}
+        pack={iconPack}
       />
     </TouchableOpacity>
   )

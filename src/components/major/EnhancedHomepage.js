@@ -2,18 +2,16 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
 import { ViewPager } from "@ui-kitten/components"
-
-import EnhancedConnecting from "./EnhancedConnecting"
-
 import { i18n } from "inline-i18n"
-import { getToolbarHeight } from '../../utils/toolbox'
 
+import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-
 import { updateClassroom } from "../../redux/actions"
+
+import EnhancedConnecting from "./EnhancedConnecting"
+import HeaderIcon from "../basic/HeaderIcon"
 
 const container = {
   ...StyleSheet.absoluteFillObject,
@@ -61,10 +59,20 @@ const styles = StyleSheet.create({
   tabContentContainer: {
     flex: 1,
   },
+  closeContainer: {
+    height: 40,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  close: {
+    top: 15,
+    right: 18,
+  },
 })
 
 const EnhancedHomepage = React.memo(({
   bookId,
+  closeToolAndExitReading,
 
   books,
   userDataByBookId,
@@ -135,6 +143,16 @@ const EnhancedHomepage = React.memo(({
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
+      {!wideMode &&
+        <View style={styles.closeContainer}>
+          <HeaderIcon
+            iconName="md-close"
+            onPress={closeToolAndExitReading}
+            uiStatus="faded"
+            style={styles.close}
+          />
+        </View>
+      }
       <ScrollView
         style={styles.tabs}
         horizontal={true}

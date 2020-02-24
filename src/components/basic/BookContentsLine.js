@@ -2,30 +2,15 @@ import React, { useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { getSpineAndPage } from '../../utils/toolbox'
+import { useLayout } from '@react-native-community/hooks'
+import { styled } from '@ui-kitten/components'
 
-import ToolChip from './ToolChip'
-
-import { useLayout } from 'react-native-hooks'
-import useClassroomInfo from "../../hooks/useClassroomInfo"
-
+import useThemedStates from "../../hooks/useThemedStates"
+import useWideMode from "../../hooks/useWideMode"
 import { setSelectedToolUid } from "../../redux/actions"
 
-const numWithin = {
-  backgroundColor: 'rgb(0, 0, 0)',
-  borderRadius: 10,
-  color: 'white',
-  width: 19,
-  height: 19,
-  flexShrink: 0,
-  lineHeight: 18,
-  textAlign: 'center',
-  fontSize: 10,
-  fontWeight: '600',
-  marginVertical: -6,
-  marginLeft: 8,
-  paddingRight: 1, // not sure why I need this
-}
+import ToolChip from './ToolChip'
+import GroupedToolsChip from './GroupedToolsChip'
 
 const styles = StyleSheet.create({
   listItem: {
@@ -39,18 +24,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     flexDirection: 'row',
   },
-  selected: {
-    backgroundColor: 'rgb(199, 211, 234)',
-  },
   label: {
     flexShrink: 1,
-  },
-  numWithin: {
-    ...numWithin,
-  },
-  numWithinDraft: {
-    ...numWithin,
-    fontStyle: 'italic',
   },
 })
 
@@ -69,26 +44,29 @@ const BookContentsLine = ({
   index,
   onToolMove,
   onToolRelease,
+  setModeToPage,
   inEditMode,
-
-  books,
-  userDataByBookId,
+  uiStatus,
 
   setSelectedToolUid,
+
+  themedStyle,
+  dispatch,
 }) => {
 
-  const { selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
-  const { latest_location } = userDataByBookId[bookId] || {}
-  const currentSpineIdRef = getSpineAndPage({ latest_location }).spineIdRef
+  const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
+  const wideMode = useWideMode()
 
   const onPress = useCallback(
     () => {
       if(toolType) {
+        setModeToPage && setModeToPage()
         setSelectedToolUid({
           bookId,
           uid,
         })
       } else {
+        setSelectedToolUid({ bookId })  // unselects any tool
         goTo({ href, spineIdRef })
       }
     },
@@ -99,22 +77,19 @@ const BookContentsLine = ({
 
   reportLineHeight({ index, height })
 
-  const selected = toolType
-    ? (uid === selectedToolUid)
-    : (!selectedToolUid && spineIdRef === currentSpineIdRef)
-
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
 
-  if(toolType) {
-    return (
-      <View
-        onLayout={onLayout}
-        style={[
-          styles.listItemWithTool,
-          indentStyle,
-          selected ? styles.selected : null,
-        ]}
-      >
+  const line = (
+    <View
+      {...themedStateEvents}
+      onLayout={onLayout}
+      style={[
+        (toolType ? styles.listItemWithTool : styles.listItem),
+        themedStyle,
+        indentStyle,
+      ]}
+    >
+      {!!toolType &&
         <ToolChip
           uid={uid}
           label={label}
@@ -123,37 +98,52 @@ const BookContentsLine = ({
           onPress={onPress}
           onToolMove={onToolMove}
           onToolRelease={onToolRelease}
+          status={isDraft ? "draft" : "published"}
         />
-      </View>
+      }
+      {!toolType &&
+        <>
+          <Text
+            style={styles.label}
+            selectable={false}
+          >
+            {label}
+          </Text>
+          {!!numToolsWithin &&
+            <GroupedToolsChip
+              status={isDraft ? "draft" : "published"}
+              numToolsWithin={numToolsWithin}
+              bookId={bookId}
+              inEditMode={inEditMode}
+              spineIdRef={spineIdRef}
+            />
+          }
+        </>
+      }
+      
+    </View>
+  )
+
+  if(uiStatus === 'unselected' || !wideMode) {
+    return (
+      <TouchableOpacity onPress={onPress}>
+        {line}
+      </TouchableOpacity>
     )
+
+  } else {
+    return line
   }
 
-  return (
-    <TouchableOpacity
-      onLayout={onLayout}
-      onPress={!toolType ? onPress : null}
-    >
-      <View
-        style={[
-          styles.listItem,
-          indentStyle,
-          selected ? styles.selected : null,
-        ]}
-      >
-        <Text style={styles.label}>{label}</Text>
-        {!!numToolsWithin && <Text style={isDraft ? styles.numWithinDraft : styles.numWithin}>{numToolsWithin}</Text>}
-      </View>
-    </TouchableOpacity>
-  )
 }
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
-  books,
-  userDataByBookId,
+const mapStateToProps = () => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(BookContentsLine)
+BookContentsLine.styledComponentName = 'BookContentsLine'
+
+export default connect(mapStateToProps, matchDispatchToProps)(styled(BookContentsLine))

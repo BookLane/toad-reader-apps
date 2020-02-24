@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
 import './src/themes/style'
 // import * as Font from 'expo-font'
@@ -17,7 +17,6 @@ import { mapping } from "@eva-design/eva"
 import { ApplicationProvider } from "@ui-kitten/components"
 import lightTheme from "./src/themes/light"
 import darkTheme from "./src/themes/dark"
-import contrastTheme from "./src/themes/contrast"
 import customMapping from "./src/themes/custom-mapping"
 
 import updateDataStructure from "./src/utils/updateDataStructure"
@@ -25,7 +24,7 @@ import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
 
 import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
-import { getDataOrigin } from './src/utils/toolbox'
+import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -49,7 +48,7 @@ const patchMiddleware = store => next => action => {
   return result
 }
 
-const themes = { lightTheme, darkTheme, contrastTheme }
+const themes = { lightTheme, darkTheme }
 
 // const store = compose(autoRehydrate())(createStore)(reducers, applyMiddleware(patchMiddleware))
 
@@ -72,17 +71,11 @@ const App = () => {
   const [ isLoaded, setIsLoaded ] = useState(false)
   const [ updateExists, setUpdateExists ] = useState(false)
   const [ isReady, setIsReady ] = useState(false)
-  const [ theme, setTheme ] = useState('lightTheme')
+
+  // TODO: Install and test (expo install react-native-appearance)
+  const colorScheme = 'light' // useColorScheme()
 
   const [ setInitialOpenTimeout ] = useSetTimeout()
-
-  const changeTheme = useCallback(
-    theme => {
-      if(!themes[theme]) return
-      setTheme(theme)
-    },
-    [],
-  )
 
   useEffect(() => { setIsFirstRender(false) }, [])
 
@@ -188,9 +181,7 @@ const App = () => {
           fetchLocale: async locale => translations,
         })
 
-        if(Platform.OS === 'ios') {
-          StatusBar.setBarStyle('dark-content')
-        }
+        setStatusBarHidden(false)
 
         setIsLoaded(true)
 
@@ -225,12 +216,12 @@ const App = () => {
           <ApplicationProvider
             mapping={mapping}
             customMapping={customMapping}
-            theme={themes[theme]}
+            theme={colorScheme === 'dark' ? darkTheme : lightTheme}
           >
             <SafeAreaProvider>
               <Provider store={store}>
                 <PersistGate persistor={persistor}>
-                  <Library changeTheme={changeTheme} />
+                  <Library />
                 </PersistGate>
               </Provider>
             </SafeAreaProvider>

@@ -14,6 +14,7 @@ import FlipEditor from "../basic/FlipEditor"
 
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
+import useChangeIndex from '../../hooks/useChangeIndex'
 
 const trashButtonStyles = {
   borderRadius: 20,
@@ -104,6 +105,7 @@ const EditToolData = React.memo(({
   classroom,
   isDefaultClassroom,
   toolUid,
+  isDraft,
   accountId,
   dataStructure,
   transformData,
@@ -111,12 +113,16 @@ const EditToolData = React.memo(({
   goUpdateTool,
 }) => {
 
+  const changeIndex = useChangeIndex(isDraft, (prev, current) => (prev && !current))
+
   const [ dataInEdit, setDataInEdit ] = useState(data || {})
+  const [ keyAddOn, setKeyAddOn ] = useState(changeIndex)
   const [ fileImportInfo, setFileImportInfo ] = useState({})
 
   useEffect(
     () => {
       setDataInEdit(data)
+      setKeyAddOn(changeIndex)
     },
     [ toolUid ],
   )
@@ -340,7 +346,7 @@ const EditToolData = React.memo(({
           return (
             <FlipEditor
               id={id}
-              key={id}
+              key={`${id}:${keyAddOn}`}
               mode="edit"
               initialContent={dataSegment[name] || ""}
               onChangeInfo={onChangeInfo}

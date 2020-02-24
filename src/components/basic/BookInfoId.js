@@ -1,6 +1,7 @@
 import React from "react"
 import { StyleSheet, Text } from "react-native"
 import { i18n } from "inline-i18n"
+import { styled } from '@ui-kitten/components'
 
 const styles = StyleSheet.create({
   id: {
@@ -9,8 +10,23 @@ const styles = StyleSheet.create({
   },
 })
 
-const BookInfoId = ({ id }) => (
-  <Text style={styles.id}>{i18n("Book id: {{id}}", { id })}</Text>
+const BookInfoId = ({
+  id,
+  style,
+
+  themedStyle,
+}) => (
+  <Text
+    style={[
+      styles.id,
+      themedStyle,
+      style,
+    ]}
+  >
+    {i18n("Book id: {{id}}", { id })}
+  </Text>
 )
 
-export default BookInfoId
+BookInfoId.styledComponentName = 'BookInfoId'
+
+export default styled(BookInfoId)

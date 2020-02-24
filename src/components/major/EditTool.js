@@ -4,19 +4,22 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Select } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
-
-import Input from "../basic/Input"
-
 import { i18n } from "inline-i18n"
-import { getToolInfo } from '../../utils/toolInfo'
-import StatusAndActions from "./StatusAndActions"
 
+import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-
 import { updateTool, createTool } from "../../redux/actions"
+
+import StatusAndActions from "./StatusAndActions"
+import Input from "../basic/Input"
 import EditToolData from "./EditToolData"
+import HeaderIcon from "../basic/HeaderIcon"
+
+const basicDetailLine = {
+  marginBottom: 10,
+}
 
 const styles = StyleSheet.create({
   topSection: {
@@ -31,8 +34,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   basicDetailLine: {
+    ...basicDetailLine,
+  },
+  basicDetailLineWideMode: {
+    ...basicDetailLine,
     width: 350,
-    marginBottom: 10,
   },
   bottomSection: {
     borderTopWidth: 1,
@@ -44,12 +50,21 @@ const styles = StyleSheet.create({
   },
   bottomSectionWideMode: {
   },
+  closeContainer: {
+    height: 30,
+  },
+  close: {
+    position: 'absolute',
+    top: -5,
+    right: -12,
+  },
 })
 
 const EditTool = React.memo(({
   bookId,
   tool,
   setViewingPreview,
+  xOutOfTool,
 
   books,
   userDataByBookId,
@@ -129,7 +144,17 @@ const EditTool = React.memo(({
         ]}
       >
         <View style={styles.basicDetails}>
-          <View style={styles.basicDetailLine}>
+          {!wideMode &&
+            <View style={styles.closeContainer}>
+              <HeaderIcon
+                iconName="md-close"
+                onPress={xOutOfTool}
+                uiStatus="faded"
+                style={styles.close}
+              />
+            </View>
+          }
+          <View style={wideMode ? styles.basicDetailLineWideMode : styles.basicDetailLine}>
             <Input
               placeholder={i18n("Unnamed", "", "enhanced")}
               label={i18n("Tool name", "", "enhanced")}
@@ -137,7 +162,7 @@ const EditTool = React.memo(({
               onChangeText={onToolNameChange}
             />
           </View>
-          <View style={styles.basicDetailLine}>
+          <View style={wideMode ? styles.basicDetailLineWideMode : styles.basicDetailLine}>
             <Select
               key={tool.uid}
               label={i18n("Tool type", "", "enhanced")}
@@ -151,6 +176,7 @@ const EditTool = React.memo(({
         <StatusAndActions
           bookId={bookId}
           setViewingPreview={setViewingPreview}
+          xOutOfTool={wideMode ? xOutOfTool : null}
         />
       </View>
       <ScrollView
@@ -165,6 +191,7 @@ const EditTool = React.memo(({
           isDefaultClassroom={isDefaultClassroom}
           classroom={classroom}
           toolUid={tool.uid}
+          isDraft={!tool.published_at}
           accountId={accountId}
           dataStructure={toolInfoByType[tool.toolType].dataStructure}
           transformData={toolInfoByType[tool.toolType].transformData}

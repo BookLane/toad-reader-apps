@@ -5,13 +5,6 @@ import { Input as UIKittenInput } from "@ui-kitten/components"
 const styles = StyleSheet.create({
   inputText: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
-    color: 'rgb(34, 43, 69)',
-  },
-  inputLabel: {
-    fontSize: 15,
-    position: 'relative',
-    marginBottom: 8,
-    fontWeight: 'normal',
   },
 })
 

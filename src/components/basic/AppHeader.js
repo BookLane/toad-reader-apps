@@ -1,8 +1,10 @@
 import React from "react"
 import { StyleSheet, View, Text } from "react-native"
-import { getToolbarHeight } from '../../utils/toolbox'
+import { styled } from '@ui-kitten/components'
 
 import useWideMode from "../../hooks/useWideMode"
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
+import { getToolbarHeight } from '../../utils/toolbox'
 
 const titleCenteredControlsGroup = {
   flexBasis: 300,
@@ -17,7 +19,6 @@ const styles = StyleSheet.create({
     height: getToolbarHeight(),
     flexDirection: 'row',
     alignItems: 'stretch',
-    backgroundColor: 'white',
   },
   titleView: {
     flexShrink: 1,
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
   titleViewCentered: {
     justifyContent: 'center',
     flexShrink: 1,
-    maxWidth: '50%',
+    maxWidth: '45%',
   },
   title: {
     fontSize: 19,
@@ -58,9 +59,13 @@ const AppHeader = ({
   titleCentered,
   leftControl,
   rightControls=[],
-  titleStyle,
-  ...topNavigationProps
+  style,
+  labelStyle,
+
+  themedStyle,
 }) => {
+
+  const { baseThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
 
   const wideMode = useWideMode()
 
@@ -69,7 +74,13 @@ const AppHeader = ({
   titleCentered = titleCentered && wideMode
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        baseThemedStyle,
+        style,
+      ]}
+    >
       {!!leftControl &&
         <View style={titleCentered ? styles.titleCenteredControlsGroupLeft : null}>
           {leftControl}
@@ -81,7 +92,8 @@ const AppHeader = ({
           numberOfLines={1}
           style={[
             styles.title,
-            titleStyle,
+            labelThemedStyle,
+            labelStyle,
           ]}
         >
           {title}
@@ -107,4 +119,6 @@ const AppHeader = ({
   )
 }
 
-export default AppHeader
+AppHeader.styledComponentName = 'AppHeader'
+
+export default styled(AppHeader)

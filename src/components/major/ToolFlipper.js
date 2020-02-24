@@ -2,17 +2,15 @@ import React, { useMemo, useCallback } from "react"
 import { Platform, StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
 import { ViewPager, Button } from "@ui-kitten/components"
-import Tool from "./Tool"
-import Icon from "../basic/Icon"
 
 import { getToolbarHeight } from '../../utils/toolbox'
-
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-
 import { setSelectedToolUid } from "../../redux/actions"
+
+import Tool from "./Tool"
+import Icon from "../basic/Icon"
 
 const buttonContainer = {
   position: 'absolute',
@@ -70,6 +68,7 @@ const ToolFlipper = React.memo(({
   bookId,
   inEditMode,
   goTo,
+  closeToolAndExitReading,
 
   books,
   userDataByBookId,
@@ -107,9 +106,10 @@ const ToolFlipper = React.memo(({
 
         if(!goToSpine) return
 
-        const spineIdRef = goToSpine.idref
-
-        goTo({ spineIdRef })
+        goTo({
+          spineIdRef: goToSpine.idref,
+          lastPage: pageIdx === 0,
+        })
       }
 
       setSelectedToolUid({
@@ -142,6 +142,11 @@ const ToolFlipper = React.memo(({
     [],
   )
 
+  const closeTool = useCallback(
+    () => setSelectedToolUid({ bookId }),
+    [ bookId ],
+  )
+
   if(!selectedTool) return null
 
   if(selectedTool.cfi) {  // no pager needed
@@ -156,6 +161,7 @@ const ToolFlipper = React.memo(({
           bookId={bookId}
           inEditMode={inEditMode}
           tool={selectedTool}
+          xOutOfTool={closeTool}
         />
       </View>
     )  
@@ -185,6 +191,7 @@ const ToolFlipper = React.memo(({
               bookId={bookId}
               inEditMode={inEditMode}
               tool={tool}
+              xOutOfTool={closeToolAndExitReading}
             />
           </View>
         ))}

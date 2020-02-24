@@ -1,28 +1,31 @@
-import React, { useState, useCallback } from "react"
-import { StyleSheet, Platform, Alert } from "react-native"
+import React, { useCallback } from "react"
+import { StyleSheet, Platform, Alert, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu, Tooltip } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
+import useToggle from "react-use/lib/useToggle"
 
-import AppHeader from "../basic/AppHeader"
-import HeaderIcon from "../basic/HeaderIcon"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
-
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
 import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
+import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
-  faded: {
-    opacity: .35,
-    fontWeight: '200',
-  },
   selected: {
     opacity: 1,
+  },
+  spin: {
+    backgroundColor: 'white',
+  },
+  tooltip: {
+    maxWidth: 140,
   },
 })
 
@@ -33,12 +36,11 @@ const BookHeader = React.memo(({
   mode,
   showDisplaySettings,
   toggleBookView,
-  backToReading,
-  hideOptions,
   onBackPress,
 
   books,
   sidePanelSettings,
+  syncStatus,
 
   removeFromBookDownloadQueue,
   setDownloadStatus,
@@ -47,7 +49,9 @@ const BookHeader = React.memo(({
   toggleSidePanelOpen,
 }) => {
 
-  const [ showOptions, setShowOptions ] = useState(false)
+  const [ showOptions, toggleShowOptions ] = useToggle(false)
+  const [ showSyncStatus, toggleShowSyncStatus ] = useToggle(false)
+
   const wideMode = useWideMode()
 
   const { book } = useClassroomInfo({ books, bookId })
@@ -117,46 +121,92 @@ const BookHeader = React.memo(({
     }]),
   ]
 
-  const toggleShowOptions = useCallback(
-    () => setShowOptions(!showOptions),
-    [ showOptions ],
-  )
-
   const selectOption = useCallback(
     selectedIndex => {
       const { onPress } = moreOptions[selectedIndex]
       if(onPress) {
         onPress()
-        setShowOptions(false)
+        toggleShowOptions(false)
       }
     },
     [ bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
+  const syncStatusIconName = {
+    synced: "check",
+    error: "warning",
+    offline: "cloud-off",
+    localonly: "cloud-off",
+  }
+
+  const syncStatusMessages = {
+    synced: i18n("Saved."),
+    patching: i18n("Saving to server..."),
+    refreshing: i18n("Saving to server..."),
+    error: i18n("Unable to save to server."),
+    offline: i18n("You are not connected to the internet. Changes saved offline."),
+    localonly: i18n("Without a login, your changes are only saved locally."),
+  }
+
+  const syncStatusUIStatus = {
+    error: "error",
+    offline: "offline",
+  }
+
   const rightControls = [
+    <Tooltip
+      visible={showSyncStatus}
+      text={syncStatusMessages[syncStatus]}
+      onBackdropPress={toggleShowSyncStatus}
+      style={styles.tooltip}
+    >
+      <TouchableOpacity
+        onPress={toggleShowSyncStatus}
+      >
+        <HeaderIcon
+          iconName={syncStatusIconName[syncStatus] || "check"}
+          iconPack="material"
+          onPress={toggleShowSyncStatus}
+          uiStatus={
+            syncStatusUIStatus[syncStatus]
+            || (
+              wideMode
+                ? "faded"
+                : null
+            )
+          }
+        />
+        {[ 'patching', 'refreshing' ].includes(syncStatus) &&
+          <CoverAndSpin
+            size="small"
+            style={styles.spin}
+          />
+        }
+      </TouchableOpacity>
+    </Tooltip>,
     <HeaderIcon
-      name="format-size"
-      pack="materialCommunity"
+      iconName="format-size"
+      iconPack="materialCommunity"
       onPress={showDisplaySettings}
-      style={wideMode ? styles.faded : {}}
+      uiStatus={wideMode ? "faded" : null}
     />,
     // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
     //   <HeaderIcon
-    //     name="md-apps"
+    //     iconName="md-apps"
     //     onPress={togglePageBrowser}
-    //     style={styles.faded}
+    //     uiStatus="faded"
     //   />
     // ]),
     ...(!(wideMode) ? [] : [
       <HeaderIcon
-        name="md-list"
+        iconName="md-list"
         onPress={toggleSidePanelOpen}
-        style={sidePanelSettings.open ? null : styles.faded}
+        uiStatus={sidePanelSettings.open ? null : "faded"}
       />
     ]),
     ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
       <HeaderIcon
-        name={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
+        iconName={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
         onPress={toggleBookView}
       />
     ]),
@@ -169,9 +219,9 @@ const BookHeader = React.memo(({
         placement='bottom end'
       >
         <HeaderIcon
-          name="md-more"
+          iconName="md-more"
           onPress={toggleShowOptions}
-          style={wideMode ? styles.faded : {}}
+          uiStatus={wideMode ? "faded" : null}
         />
       </OverflowMenu>,
     ]),
@@ -186,21 +236,22 @@ const BookHeader = React.memo(({
         titleCentered={true}
         leftControl={
           <HeaderIcon
-            name="md-arrow-back"
+            iconName="md-arrow-back"
             onPress={onBackPress}
-            style={wideMode ? styles.faded : {}}
+            uiStatus={wideMode ? "faded" : null}
           />
         }
-        rightControls={!hideOptions ? rightControls : []}
-        titleStyle={wideMode ? styles.faded : {}}
+        rightControls={rightControls}
+        uiStatus={wideMode ? "faded" : null}
       />
     </>
   )
 })
 
-const mapStateToProps = ({ books, sidePanelSettings }) => ({
+const mapStateToProps = ({ books, sidePanelSettings, syncStatus }) => ({
   books,
   sidePanelSettings,
+  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

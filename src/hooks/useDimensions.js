@@ -1,1 +1,1 @@
-export { useDimensions as default } from 'react-native-hooks'
+export { useDimensions as default } from '@react-native-community/hooks'

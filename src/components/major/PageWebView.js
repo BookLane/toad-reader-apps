@@ -6,7 +6,7 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX, iPhoneXFooter, statusBarHeight } from "../../utils/toolbox"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX, statusBarHeight, bottomSpace } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -20,9 +20,6 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-  },
-  wideModeShift: {
-    marginTop: getToolbarHeight() - 30,
   },
 })
 
@@ -106,13 +103,13 @@ const PageWebView = ({
   const webView= webViewRef || webViewLocalRef
 
   let { width, height } = useDimensions().window
-  if(isIPhoneX) height -= (statusBarHeight + iPhoneXFooter)
   const wideMode = useWideMode()
-
   const { routerState } = useRouterState()
   const { widget } = routerState
 
-  if(wideMode) height -= (getToolbarHeight() - 30)
+  height -= bottomSpace
+  if(isIPhoneX || wideMode) height -= statusBarHeight
+  if(wideMode) height -= getToolbarHeight()
   if(wideMode && sidePanelSettings.open && !widget) width -= sidePanelSettings.width
 
   useEffect(() => () => webView.current.unmounted = true, [])
@@ -255,7 +252,6 @@ const PageWebView = ({
     <View
       style={[
         styles.containerNormal,
-        wideMode ? styles.wideModeShift : null,
         style,
       ]}
       collapsable={false}

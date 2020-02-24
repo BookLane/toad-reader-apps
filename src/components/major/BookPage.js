@@ -12,12 +12,12 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, isIPhoneX, iPhoneXFooter, openURL } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, bottomSpace, openURL } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import usePrevious from "react-use/lib/usePrevious"
 import useInstanceValue from '../../hooks/useInstanceValue'
-import { useLayout } from 'react-native-hooks'
+import { useLayout } from '@react-native-community/hooks'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
@@ -25,9 +25,7 @@ import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRe
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...(!isIPhoneX ? {} : {
-      marginBottom: iPhoneXFooter,
-    }),
+    marginBottom: bottomSpace,
   },
   spin: {
     backgroundColor: 'white',

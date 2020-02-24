@@ -72,13 +72,13 @@ const LibraryHeader = ({
       subtitle={subtitle}
       leftControl={
         <HeaderIcon
-          name="ios-menu"
+          iconName="ios-menu"
           path="/drawer"
         />
       }
       rightControls={[
         <HeaderIcon
-          name={library.view == "covers" ? "ios-list" : "md-apps"}
+          iconName={library.view == "covers" ? "ios-list" : "md-apps"}
           onPress={onPressToggleView}
         />,
         <OverflowMenu
@@ -90,8 +90,8 @@ const LibraryHeader = ({
           placement='bottom end'
         >
           <HeaderIcon
-            name="sort"
-            pack="materialCommunity"
+            iconName="sort"
+            iconPack="materialCommunity"
             onPress={toggleShowOptions}
           />
         </OverflowMenu>,

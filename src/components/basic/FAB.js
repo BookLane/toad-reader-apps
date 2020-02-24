@@ -1,6 +1,8 @@
 import React, { useCallback } from "react"
 import { StyleSheet } from "react-native"
-import { styled, Button } from '@ui-kitten/components'
+import { Button, styled } from '@ui-kitten/components'
+
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 
 import Icon from "./Icon"
 
@@ -20,26 +22,23 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: 0.3,
     shadowRadius: 15,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
 })
 
 const FAB = ({
-  themedStyle,
   style,
   iconName,
   iconPack,
   iconStyle,
-  ...buttonProps
+  status,
+  onPress,
+
+  themedStyle,
 }) => {
 
-  const iconThemedStyle = {}
-
-  for(let key in themedStyle) {
-    if(/^icon/.test(key)) {
-      iconThemedStyle[key] = themedStyle[key]
-      delete themedStyle[key]
-    }
-  }
+  const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
 
   const ButtonIcon = useCallback(
     style => (
@@ -53,18 +52,19 @@ const FAB = ({
         ]}
       />
     ),
-    [],
+    [ iconName, iconPack, iconThemedStyle, iconStyle ],
   )
 
   return (
     <Button
       style={[
         styles.button,
-        themedStyle,
+        baseThemedStyle,
         style,
       ]}
       icon={ButtonIcon}
-      {...buttonProps}
+      status={status}
+      onPress={onPress}
     />
   )
 }

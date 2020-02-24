@@ -9,7 +9,10 @@ const styles = StyleSheet.create({
   },
 })
 
-const Spin = ({ percentage }) => {
+const Spin = ({
+  percentage,
+  size="large",
+}) => {
 
   if(percentage) {
     const percent = Math.floor(percentage)
@@ -32,7 +35,10 @@ const Spin = ({ percentage }) => {
   }
   
   return (
-    <ActivityIndicator size="large" color="#0000ff" />
+    <ActivityIndicator
+      size={size}
+      color="#0000ff"
+    />
   )
 }
 

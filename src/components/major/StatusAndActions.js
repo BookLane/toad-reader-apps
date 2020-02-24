@@ -3,17 +3,21 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Button } from "@ui-kitten/components"
-
 import { i18n } from "inline-i18n"
+
 import { validDomain } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
-
 import useWideMode from "../../hooks/useWideMode"
 import useNetwork from "../../hooks/useNetwork"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from "../../hooks/useInstanceValue"
-
 import { publishTool, updateClassroom, deleteTool, setSelectedToolUid } from "../../redux/actions"
+
+import HeaderIcon from "../basic/HeaderIcon"
+
+const buttons = {
+  flexDirection: 'row',
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -23,7 +27,10 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   buttons: {
-    flexDirection: 'row',
+    ...buttons,
+  },
+  buttonsWideMode: {
+    ...buttons,
     justifyContent: 'flex-end',
   },
   button: {
@@ -42,17 +49,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
+  previewContainerNonTool: {
+    paddingBottom: 15,
+  },
+  previewContainerNonToolWideMode: {
+    position: 'absolute',
+    bottom: -29,
+    right: -5,
+    backgroundColor: 'white',
+    padding: 5,
+  },
   preview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
     fontWeight: '700',
     fontSize: 13,
   },
+  close: {
+    marginLeft: 10,
+  },
 })
 
 const StatusAndActions = React.memo(({
   bookId,
   setViewingPreview,
+  xOutOfTool,
 
   books,
   userDataByBookId,
@@ -65,7 +86,7 @@ const StatusAndActions = React.memo(({
 }) => {
 
   const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
-          hasDraftData, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+          hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
@@ -131,13 +152,6 @@ const StatusAndActions = React.memo(({
 
   const onPreview = useCallback(() => setViewingPreview(true), [])
 
-  const syncStatusMessages = {
-    synced: i18n("Saved."),
-    patching: i18n("Saving to server..."),
-    refreshing: i18n("Saving to server..."),
-    error: i18n("Unable to save to server."),
-  }
-
   const publishedStatusMessages = {
     published: i18n("No changes since last publish.", "", "enhanced"),
     edited: i18n("Contains unpublished changes.", "", "enhanced"),
@@ -180,6 +194,9 @@ const StatusAndActions = React.memo(({
     )
     : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
 
+  const isTool = !!selectedTool.spineIdRef
+  const isInlineTool = !!selectedTool.cfi
+
   return (
     <View
       style={[
@@ -187,11 +204,12 @@ const StatusAndActions = React.memo(({
         wideMode ? styles.containerWideMode : null,
       ]}
     >
-      <View style={styles.buttons}>
+      <View style={wideMode ? styles.buttonsWideMode : styles.buttons}>
         <Button
           onPress={onPublish}
           status="primary"
           style={styles.button}
+          size="small"
           disabled={syncStatus !== 'synced' || !online || publishedStatus === 'published' || !isReadyToPublish}
         >
           {i18n("Publish", "", "enhanced")}
@@ -199,10 +217,19 @@ const StatusAndActions = React.memo(({
         <Button
           onPress={onDelete}
           status="basic"
+          size="small"
           disabled={viewingFrontMatter && publishedStatus === 'published'}
         >
           {(viewingFrontMatter || selectedTool.currently_published_tool_uid) ? i18n("Discard changes", "", "enhanced") : i18n("Remove", "", "enhanced")}
         </Button>
+        {xOutOfTool && (isInlineTool || !wideMode) &&
+          <HeaderIcon
+            iconName="md-close"
+            onPress={xOutOfTool}
+            uiStatus="faded"
+            style={styles.close}
+          />
+        }
       </View>
       <Text
         style={[
@@ -210,11 +237,14 @@ const StatusAndActions = React.memo(({
           wideMode ? styles.statusWideMode : null,
         ]}
       >
-        {syncStatusMessages[syncStatus]}
-        {" "}
         {publishedStatusMessages[publishedStatus]}
       </Text>
-      <View style={styles.previewContainer}>
+      <View
+        style={[
+          ((wideMode && !isTool) ? styles.previewContainerNonToolWideMode : styles.previewContainer),
+          ((!wideMode && !isTool) ? styles.previewContainerNonTool : null),
+        ]}
+      >
         <TouchableOpacity onPress={onPreview}>
           <Text style={styles.preview}>
             {i18n("Preview", "", "enhanced")}

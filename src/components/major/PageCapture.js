@@ -6,7 +6,7 @@ import * as FileSystem from 'expo-file-system'
 
 import PageWebView from "./PageWebView"
 
-import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX, iPhoneXFooter, statusBarHeight } from '../../utils/toolbox'
+import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
@@ -253,7 +253,7 @@ const PageCapture = ({
 
   if(processingPaused) return null
 
-  const adjustedHeight = height - (isIPhoneX ? (statusBarHeight + iPhoneXFooter) : 0)
+  const adjustedHeight = height - (isIPhoneX ? (statusBarHeight + bottomSpace) : 0)
 
   return (
     <PageWebView
