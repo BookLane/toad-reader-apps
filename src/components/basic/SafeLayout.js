@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View , Platform } from "react-native"
 import { Layout } from "@ui-kitten/components"
 
 import { statusBarHeight } from "../../utils/toolbox"
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 const SafeLayout = ({
   children,
 }) => (
-  <Layout style={styles.layout}>
+  <Layout style={Platform.OS === 'android' ? styles.layout : null}>
     <View style={styles.view}>
       {children}
     </View>
