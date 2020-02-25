@@ -20,15 +20,15 @@ if(!domain) {
 }
 
 const actionStrings = {
-  'push-apps-to-production': `** About to push apps to production for ${domain}. **`,
-  'push-to-staging': `** About to push web and apps to staging for ${domain}. **`,
+  'push-apps-to-production': `About to push apps to production for ${domain}.`,
+  'push-to-staging': `About to push web and apps to staging for ${domain}.`,
   'push-web-staging-to-production': `** About to push web staging to production for ${domain}. **`,
-  'build-android-staging': `** About to build Android STAGING app (connects to staging backend) for ${domain}. **`,
-  'build-android-beta': `** About to build Android BETA app (connects to production backend) for ${domain}. **`,
-  'build-android-production': `** About to build Android PRODUCTION app for ${domain}. **`,
-  'build-ios-staging': `** About to build iOS STAGING app (connects to staging backend) for ${domain}. **`,
-  'build-ios-beta': `** About to build iOS BETA app (connects to production backend) for ${domain}. **`,
-  'build-ios-production': `** About to build iOS PRODUCTION app for ${domain}. **`,
+  'build-android-staging': `About to build Android STAGING app (connects to staging backend) for ${domain}.`,
+  'build-android-beta': `About to build Android BETA app (connects to production backend) for ${domain}.`,
+  'build-android-production': `About to build Android PRODUCTION app for ${domain}.`,
+  'build-ios-staging': `About to build iOS STAGING app (connects to staging backend) for ${domain}.`,
+  'build-ios-beta': `About to build iOS BETA app (connects to production backend) for ${domain}.`,
+  'build-ios-production': `About to build iOS PRODUCTION app for ${domain}.`,
 }
 
 const action = actionStrings[arguments[actionIndex]]
@@ -41,9 +41,11 @@ if(!action) {
 }
 
 console.log('')
-console.log('–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––')
-console.log(action)
-console.log('–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––')
+console.log(`*${Array(action.length + 8).fill('–').join('')}*`)
+console.log(`|${Array(action.length + 8).fill(' ').join('')}|`)
+console.log(`|    ${action}    |`)
+console.log(`|${Array(action.length + 8).fill(' ').join('')}|`)
+console.log(`*${Array(action.length + 8).fill('–').join('')}*`)
 console.log('')
 
 process.exit()
