@@ -23,12 +23,12 @@ import ToolChip from "../basic/ToolChip"
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getSpineAndPage, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
+import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
          isStaging, dashifyDomain, getDataOrigin } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
-import useDimensions from "../../hooks/useDimensions"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useWideMode from "../../hooks/useWideMode"
 import useSetState from "react-use/lib/useSetState"
 import useInstanceValue from "../../hooks/useInstanceValue"
@@ -36,6 +36,9 @@ import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import usePageSize from "../../hooks/usePageSize"
 import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
+import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
+import usePageInfo from "../../hooks/usePageInfo"
+import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
 
 import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
@@ -211,14 +214,25 @@ const Book = React.memo(({
 
   const { bookId } = useParams()
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
-  const { spineIdRef, cfi, pageIndexInSpine, pageCfisKnown } = getSpineAndPage({ latest_location, book: books[bookId], displaySettings })
+  const { spineIdRef, cfi } = useSpineIdRefAndCfi(latest_location)
 
-  const { width, height } = useDimensions().window
+  const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
-  const { pageWidth } = usePageSize()
+  const { pageWidth } = usePageSize({ sidePanelSettings })
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+
+  const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
+  const { pageIndexInSpine, pageCfisKnown } = usePageInfo({
+    spineIdRef,
+    cfi,
+    book: books[bookId],
+    displaySettings,
+    sidePanelSettings,
+    spineInlineToolsHash,
+  })
+
   const spineToolsByCfi = useSpineToolsByCfi({ visibleTools, spineIdRef })
 
   const getSpineToolsByCfi = useInstanceValue(spineToolsByCfi)
@@ -871,7 +885,7 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
-  const pageCfisKey = getPageCfisKey({ displaySettings, width, height })
+  const pageCfisKey = getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })
   const { title } = (books && books[bookId]) || {}
 
   if(!books[bookId]) {
@@ -898,13 +912,13 @@ const Book = React.memo(({
       {mode !== 'page' && <BackFunction func={backToReading} />}
       {mode === 'page' && <CustomKeepAwake />}
 
-      {/* {Platform.OS !== 'web' &&
+      {Platform.OS !== 'web' && !inEditMode &&
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={setCapturingSnapshots}
           processingPaused={processingPaused}
         />
-      } */}
+      }
 
       <View
         style={styles.panels}
@@ -939,6 +953,7 @@ const Book = React.memo(({
                 zoomToPage={zoomToPage}
                 updateSnapshotCoords={setSnapshotCoords}
                 capturingSnapshots={capturingSnapshots}
+                inEditMode={inEditMode}
               />
             </View>
           }

@@ -1,22 +1,16 @@
 import { useMemo } from "react"
 import Constants from 'expo-constants'
 
-import { isIPhoneX, statusBarHeight, bottomSpace } from "../utils/toolbox"
-
-import useDimensions from './useDimensions'
+import useAdjustedDimensions from './useAdjustedDimensions'
 
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
 } = Constants.manifest.extra
 
-const usePageSize = () => {
+const usePageSize = ({ sidePanelSettings }) => {
 
-  let { width, height } = useDimensions().window
-
-  if(isIPhoneX) {
-    height -= (statusBarHeight + bottomSpace)
-  }
+  const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
 
   const size = useMemo(
     () => {

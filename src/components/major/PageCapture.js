@@ -6,7 +6,7 @@ import * as FileSystem from 'expo-file-system'
 
 import PageWebView from "./PageWebView"
 
-import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox'
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
@@ -15,6 +15,8 @@ import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import usePageSize from "../../hooks/usePageSize"
 import useRouterState from "../../hooks/useRouterState"
+import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 
 import { addSpinePageCfis } from "../../redux/actions"
 
@@ -30,11 +32,12 @@ const PageCapture = ({
   
   books,
   userDataByBookId,
+  sidePanelSettings,
 
   addSpinePageCfis,
 }) => {
 
-  const { instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { instructorHighlights, visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
 
   const { historyPush } = useRouterState()
 
@@ -46,7 +49,9 @@ const PageCapture = ({
   const webView = useRef()
   const view = useRef()
 
-  const { pageWidth, pageHeight } = usePageSize()
+  let { truePageHeight, truePageMarginTop } = useAdjustedDimensions({ fullPageWidth: width, fullPageHeight: height, sidePanelSettings })
+  const { pageWidth, pageHeight } = usePageSize({ sidePanelSettings })
+  const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
 
   const getProcessingPaused = useInstanceValue(processingPaused)
 
@@ -160,6 +165,8 @@ const PageCapture = ({
                   width,
                   height,
                   displaySettings,
+                  sidePanelSettings,
+                  spineInlineToolsHash,
                   pageIndexInSpine: pageIndexInSpine.current,
                 })
               )).exists
@@ -201,7 +208,7 @@ const PageCapture = ({
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
-          key: [getPageCfisKey({ displaySettings, width, height })],
+          key: [getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })],
           pageCfis: pageCfis.current.map(cfi => cfi || ''),
         })
         
@@ -227,6 +234,8 @@ const PageCapture = ({
           width,
           height,
           displaySettings,
+          sidePanelSettings,
+          spineInlineToolsHash,
           pageIndexInSpine: pageIndexInSpine.current,
         })
 
@@ -253,16 +262,27 @@ const PageCapture = ({
 
   if(processingPaused) return null
 
-  const adjustedHeight = height - (isIPhoneX ? (statusBarHeight + bottomSpace) : 0)
-
   return (
     <PageWebView
       key={uriAsKey}
-      style={{
+      containerStyle={{
         position: 'absolute',
         width,
-        height: adjustedHeight,
-        minHeight: adjustedHeight,
+        minWidth: width,
+        maxWidth: width,
+        height,
+        minHeight: height,
+        maxHeight: height,
+      }}
+      style={{
+        position: 'absolute',
+        top: truePageMarginTop,
+        width,
+        minWidth: width,
+        maxWidth: width,
+        height: truePageHeight,
+        minHeight: truePageHeight,
+        maxHeight: truePageHeight,
       }}
       bookId={bookId}
       webViewRef={webView}
@@ -276,9 +296,10 @@ const PageCapture = ({
   )
 }
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
   books,
   userDataByBookId,
+  sidePanelSettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

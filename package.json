@@ -49,6 +49,7 @@
     "find-in-files": "^0.5.0",
     "inline-i18n": "github:educational-resources-and-services/inline-i18n#d44421bfd684ceddf38e13c7f437ada9fa98432b",
     "jszip": "3.2.2",
+    "md5": "2.2.1",
     "node-libs-browser": "2.2.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",

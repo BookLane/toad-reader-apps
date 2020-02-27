@@ -11,7 +11,9 @@ import useForceUpdate from "../../hooks/useForceUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useSetTimeouts from "../../hooks/useSetTimeouts"
 import useInstanceValue from "../../hooks/useInstanceValue"
-import useDimensions from "../../hooks/useDimensions"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+import { getSpineInlineToolsHash } from "../../hooks/useSpineInlineToolsHash"
 
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
@@ -27,18 +29,22 @@ const PageCaptureManager = ({
   bookId,
   setCapturingSnapshots,
   processingPaused,
-  
+
   books,
+  userDataByBookId,
   displaySettings,
+  sidePanelSettings,
   readerStatus,
 }) => {
+
+  const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
 
   const pageCaptureProps = useRef()
   const skipList = useRef({})
   const forceUpdate = useForceUpdate()
   const getProcessingPaused = useInstanceValue(processingPaused)
 
-  let { width, height } = useDimensions().window
+  let { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
 
   const [ setCaptureTimeout, clearCaptureTimeout ] = useSetTimeout()
   const [ setTryAgainTimeout ] = useSetTimeouts()
@@ -56,22 +62,29 @@ const PageCaptureManager = ({
   )
 
   pageCaptureProps.current = null
-  if(bookId && books && books[bookId] && displaySettings) {
+  if(bookId && books && books[bookId] && displaySettings && sidePanelSettings) {
 
     const { spines, downloadStatus} = books[bookId]
-    let pageCfisKey, spineIdRef
+    let spineIdRef, spineInlineToolsHash
 
     const findSpineToDo = flip => {
       if(flip) {
         [ width, height ] = [ height, width ]
       }
-      pageCfisKey = getPageCfisKey({ displaySettings, width, height })
+
       return spines.some(thisSpine => {
+        spineInlineToolsHash = getSpineInlineToolsHash({
+          visibleTools,
+          spineIdRef: thisSpine.idref,
+        })
+        const pageCfisKey = getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })
+
         const thisUriAsKey = getSnapshotURI({
           bookId,
           spineIdRef: thisSpine.idref,
           pageCfisKey,
         })
+
         if(
           (!thisSpine.pageCfis || thisSpine.pageCfis[pageCfisKey] == null)
           && !(skipList.current[thisUriAsKey] || {}).skip
@@ -96,6 +109,8 @@ const PageCaptureManager = ({
           width,
           height,
           displaySettings,
+          sidePanelSettings,
+          spineInlineToolsHash,
         }
       }
 
@@ -187,9 +202,11 @@ const PageCaptureManager = ({
   )
 }
 
-const mapStateToProps = ({ books, displaySettings, readerStatus }) => ({
+const mapStateToProps = ({ books, userDataByBookId, displaySettings, sidePanelSettings, readerStatus }) => ({
   books,
+  userDataByBookId,
   displaySettings,
+  sidePanelSettings,
   readerStatus,
 })
 

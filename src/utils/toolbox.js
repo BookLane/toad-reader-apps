@@ -6,13 +6,13 @@ import { i18n } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
 
+import { getWideMode } from "../hooks/useWideMode"
+
 const {
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
 } = Constants.manifest.extra
-
-const cachedSizes = {}
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
 
@@ -73,14 +73,21 @@ export const getDisplaySettingsObj = displaySettings => ({
   columns: 'single',
 })
 
-export const getPageCfisKey = ({ displaySettings, width, height }) => {
+export const getPageCfisKey = ({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash }) => {
   const { textSize, textSpacing } = displaySettings
+
   if(!width) {
     width = Dimensions.get('window').width
     height = Dimensions.get('window').height
   }
 
-  return `${width}x${height}_${textSize}_${textSpacing}`
+  const wideMode = getWideMode({ width, height })
+
+  if(wideMode && sidePanelSettings.open) {
+    width -= sidePanelSettings.width
+  }
+
+  return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}`
 }
 
 export const getSnapshotURI = params => {
@@ -91,42 +98,6 @@ export const getSnapshotURI = params => {
 
 export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
-
-export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings={} }) => {
-  try {
-    
-    if(latest_location) {
-      const latestLocation = JSON.parse(latest_location)
-      spineIdRef = latestLocation.idref
-      cfi = latestLocation.elementCfi
-    }
-
-    const pageCfisKey = getPageCfisKey({ displaySettings })
-    let pageCfis = []
-    let pageCfisKnown = false
-    book && book.spines.some(spine => {
-      if(spine.idref === spineIdRef) {
-        if(spine.pageCfis) {
-          pageCfis = spine.pageCfis[pageCfisKey]
-          pageCfisKnown = true
-        }
-        return true
-      }
-    })
-    const pageIndexInSpine = getPageIndexInSpine({ pageCfis, cfi })
-
-    return {
-      spineIdRef,
-      cfi,
-      pageIndexInSpine,
-      pageCfisKnown,
-    }
-
-  } catch(e) {
-    return {}
-  }
-}
-
 
 export const isIPhoneX = isIphoneX()
 const getBottomSpace = () => (

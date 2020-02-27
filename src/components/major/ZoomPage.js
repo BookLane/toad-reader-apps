@@ -1,11 +1,13 @@
 import React, { useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { Animated, Easing, StyleSheet, Image } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
-import { getSnapshotURI, isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { getSnapshotURI, statusBarHeightSafe, statusBarHeight, bottomSpace } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
-import useDimensions from "../../hooks/useDimensions"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import usePageSize from "../../hooks/usePageSize"
 
 const {
@@ -30,7 +32,7 @@ const styles = StyleSheet.create({
   },
   snapshotImage: {
     position: 'absolute',
-    top: 0,
+    top: (statusBarHeightSafe - statusBarHeight) * -1,
     bottom: bottomSpace,
     left: 0,
     right: 0,
@@ -47,10 +49,12 @@ const ZoomPage = ({
   zoomingEnabled,
   onZoomCompletion,
   pageCfiKnown,
+
+  sidePanelSettings,
 }) => {
 
-  const { pageWidth, pageHeight, zoomScale } = usePageSize()
-  let { width, height } = useDimensions().window
+  const { pageWidth, pageHeight, zoomScale } = usePageSize({ sidePanelSettings })
+  const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
 
   const scale = useRef(new Animated.Value(zoomed ? 1 : zoomScale))
   const opacity = useRef(new Animated.Value(1))
@@ -113,10 +117,10 @@ const ZoomPage = ({
 
     if(snapshotCoords) {
       const left = snapshotCoords.x
-      const top = snapshotCoords.y - (isIPhoneX ? statusBarHeight : 0)
+      const top = snapshotCoords.y
 
       outputRangeX = left - (width/2 - pageWidth/2)
-      outputRangeY = top - ((height - (isIPhoneX ? statusBarHeight : 0))/2 - pageHeight/2)
+      outputRangeY = top - (height/2 - pageHeight/2)
     }
 
     translateX.current = scale.current.interpolate({
@@ -169,10 +173,18 @@ const ZoomPage = ({
         <Image
           source={{ uri: pageCfiKnown ? uri : undefined }}
           style={styles.snapshotImage}
+          resizeMode="cover"
         />
       </Animated.View>
     </Animated.View>
   )
 }
 
-export default ZoomPage
+const mapStateToProps = ({ sidePanelSettings }) => ({
+  sidePanelSettings,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(ZoomPage)

@@ -1,13 +1,15 @@
 import React, { useCallback, useMemo, useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, FlatList, Animated } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
-import BookProgress from "./BookProgress"
+// import BookProgress from "./BookProgress"
 
-import { getFooterHeight, getToolbarHeight, statusBarHeightSafe } from '../../utils/toolbox'
+import { getFooterHeight, getToolbarHeight, statusBarHeight } from '../../utils/toolbox'
 import useDimensions from "../../hooks/useDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
@@ -42,14 +44,17 @@ const BookPages = React.memo(({
   pageCfisKey,
   bookId,
   updateSnapshotCoords,
-  capturingSnapshots,
+  // capturingSnapshots,
   zoomToPage,
+  inEditMode,
+
+  sidePanelSettings,
 }) => {
 
   const prevSpineIdRef = usePrevious(spineIdRef)
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
 
-  const { pageWidth, pageHeight, pagesPerRow } = usePageSize()
+  const { pageWidth, pageHeight, pagesPerRow } = usePageSize({ sidePanelSettings })
   const { height } = useDimensions().window
 
   const animatedScrollPosition = useRef(new Animated.Value(0)).current
@@ -151,7 +156,7 @@ const BookPages = React.memo(({
         return
       }
 
-      const heightWithoutStatusBar = height - statusBarHeightSafe
+      const heightWithoutStatusBar = height - statusBarHeight
       let index = 0
       let indexInRow = 0
 
@@ -182,7 +187,7 @@ const BookPages = React.memo(({
       // since this might not be immediately rendered (given the FlatList), let's calculate its position
       const thisItemOffset = getItemLayout(list, index).offset
       const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeightSafe
+      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeight
       const lastItemLayout = getItemLayout(list, list.length - 1)
       const scrolledToBottomYPos = heightWithoutStatusBar - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
       updateSnapshotCoords({
@@ -191,7 +196,7 @@ const BookPages = React.memo(({
       })
 
     },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeightSafe, pageWidth, pageHeight, pageCfisKey ],
+    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey ],
   )
 
   if(
@@ -230,13 +235,14 @@ const BookPages = React.memo(({
             indicateMultiplePages={itemPageIndexInSpine === -1}
             zoomToPage={zoomToPage}
             isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
+            inEditMode={inEditMode}
           />
         ))
 
         return <PagesRow>{pages}</PagesRow>
       }
     },
-    [ bookId, spineIdRef, pageIndexInSpine, pageCfisKey, pageWidth, pageHeight, zoomToPage ],
+    [ bookId, spineIdRef, pageIndexInSpine, pageCfisKey, pageWidth, pageHeight, zoomToPage, inEditMode ],
   )
 
   useEffect(
@@ -297,4 +303,11 @@ const BookPages = React.memo(({
 
 })
 
-export default BookPages
+const mapStateToProps = ({ sidePanelSettings }) => ({
+  sidePanelSettings,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookPages)

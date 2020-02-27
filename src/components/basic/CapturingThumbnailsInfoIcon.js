@@ -18,14 +18,20 @@ const styles = StyleSheet.create({
   },
 })
 
-const CapturingThumbnailsInfoIcon = React.memo(() => {
+const CapturingThumbnailsInfoIcon = React.memo(({
+  inEditMode,
+}) => {
 
   const showInfo = useCallback(
     () => Alert.alert(
       i18n("Note"),
-      i18n("We will create thumbnail images in the background when you are reading.")
+      (
+        inEditMode
+          ? i18n("Thumbnails are not created when a classroom is in edit mode.")
+          : i18n("We will create thumbnail images in the background when you are reading.")
+      ),
     ),
-    [],
+    [ inEditMode ],
   )
 
   return (

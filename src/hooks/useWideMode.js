@@ -1,8 +1,6 @@
 import useDimensions from "./useDimensions"
 
-const useWideMode = withEitherOrientation => {
-  const { width, height } = useDimensions().window
-
+export const getWideMode = ({ width, height, withEitherOrientation }) => {
   const MIN_WIDTH = 900
   const MIN_HEIGHT = 550
 
@@ -14,6 +12,11 @@ const useWideMode = withEitherOrientation => {
   }
 
   return width > MIN_WIDTH && height > MIN_HEIGHT
+}
+
+const useWideMode = withEitherOrientation => {
+  const { width, height } = useDimensions().window
+  return getWideMode({ width, height, withEitherOrientation })
 }
 
 export default useWideMode

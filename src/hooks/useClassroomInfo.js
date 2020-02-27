@@ -15,7 +15,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   
   const defaultClassroomUid = `${idpId}-${bookId}`
   const classrooms = useMemo(
-    () => Platform.OS !== 'web' ? [] : (
+    () => (
       ((userDataByBookId[bookId] || {}).classrooms || [])
         .filter(({ uid, _delete, members=[] }) => (
           !_delete
@@ -68,7 +68,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const enhancedIsOff = !classroomUid
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const bookVersion = (Platform.OS !== 'web' || !accounts) ? 'BASE' : Object.values(accounts)[0].version
+  const bookVersion = !accounts ? 'BASE' : Object.values(accounts)[0].version
   const hasFrontMatter = !!(
     (classroom || {}).syllabus
     || (classroom || {}).introduction

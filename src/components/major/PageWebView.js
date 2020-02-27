@@ -6,9 +6,8 @@ import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, getToolbarHeight, isIPhoneX, statusBarHeight, bottomSpace } from "../../utils/toolbox"
-import useDimensions from "../../hooks/useDimensions"
-import useWideMode from "../../hooks/useWideMode"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useRouterState from "../../hooks/useRouterState"
 import getReaderCode from '../../../getReaderCode'
 import usePrevious from "react-use/lib/usePrevious"
@@ -85,6 +84,7 @@ const PageWebView = ({
     // instructorHighlights,  // used in getHighlightsArray functions
     viewRef,
     webViewRef,
+    containerStyle,
     style,
 
     idps,
@@ -102,15 +102,10 @@ const PageWebView = ({
   const webViewLocalRef = useRef()
   const webView= webViewRef || webViewLocalRef
 
-  let { width, height } = useDimensions().window
-  const wideMode = useWideMode()
   const { routerState } = useRouterState()
   const { widget } = routerState
 
-  height -= bottomSpace
-  if(isIPhoneX || wideMode) height -= statusBarHeight
-  if(wideMode) height -= getToolbarHeight()
-  if(wideMode && sidePanelSettings.open && !widget) width -= sidePanelSettings.width
+  const { truePageWidth: width, truePageHeight: height } = useAdjustedDimensions({ sidePanelSettings, widget })
 
   useEffect(() => () => webView.current.unmounted = true, [])
 
@@ -194,8 +189,6 @@ const PageWebView = ({
     highlights: getHighlightsArray(initialProps),
   })
 
-  const initialToolSpotsInThisSpine = []
-
   const initialQueryStringParams = {
     epub: (
       Platform.OS === 'web'
@@ -252,7 +245,7 @@ const PageWebView = ({
     <View
       style={[
         styles.containerNormal,
-        style,
+        containerStyle,
       ]}
       collapsable={false}
       ref={viewRef}
@@ -261,8 +254,11 @@ const PageWebView = ({
         style={[
           {
             width,
+            minWidth: width,
+            maxWidth: width,
             height,
             minHeight: height,
+            maxHeight: height,
           },
           style,
         ]}

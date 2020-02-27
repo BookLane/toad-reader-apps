@@ -6,11 +6,12 @@ import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
 import { useLayout } from '@react-native-community/hooks'
 
-import { getSpineAndPage, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { statusBarHeight, bottomSpace } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
+import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import { createTool } from "../../redux/actions"
 
 import BookContentsLine from "../basic/BookContentsLine"
@@ -52,16 +53,15 @@ const BookContents = React.memo(({
 
   books,
   userDataByBookId,
-  displaySettings,
 
   createTool,
 }) => {
 
-  const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
+  const { toc, classroomUid, visibleTools, selectedTool, bookVersion,
           myRole, viewingFrontMatter, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { latest_location } = userDataByBookId[bookId] || {}
-  const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+  const currentSpineIdRef = useSpineIdRefAndCfi(latest_location).spineIdRef
 
   const wideMode = useWideMode()
         
@@ -331,10 +331,9 @@ const BookContents = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
   books,
   userDataByBookId,
-  displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
