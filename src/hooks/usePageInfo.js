@@ -16,7 +16,7 @@ const usePageInfo = ({ spineIdRef, cfi, book, displaySettings, sidePanelSettings
       book && book.spines.some(spine => {
         if(spine.idref === spineIdRef) {
           if(spine.pageCfis) {
-            pageCfis = spine.pageCfis[pageCfisKey]
+            pageCfis = spine.pageCfis[pageCfisKey] || []
             pageCfisKnown = true
           }
           return true

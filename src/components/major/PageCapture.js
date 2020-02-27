@@ -63,6 +63,8 @@ const PageCapture = ({
     width,
     height,
     displaySettings,
+    sidePanelSettings,
+    spineInlineToolsHash,
   })
 
   useEffect(
