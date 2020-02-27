@@ -44,7 +44,12 @@ const PageCaptureManager = ({
   const forceUpdate = useForceUpdate()
   const getProcessingPaused = useInstanceValue(processingPaused)
 
-  let { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
+  let {
+    fullPageWidth: width,
+    fullPageHeight: height,
+    realFullPageWidth: realWidth,
+    realFullPageMarginHorizontal: realMarginHorizontal,
+  } = useAdjustedDimensions({ sidePanelSettings })
 
   const [ setCaptureTimeout, clearCaptureTimeout ] = useSetTimeout()
   const [ setTryAgainTimeout ] = useSetTimeouts()
@@ -108,6 +113,8 @@ const PageCaptureManager = ({
           spineIdRef,
           width,
           height,
+          realWidth,
+          realMarginHorizontal,
           displaySettings,
           sidePanelSettings,
           spineInlineToolsHash,

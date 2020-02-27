@@ -25,6 +25,8 @@ const PageCapture = ({
   spineIdRef,
   width,
   height,
+  realWidth,
+  realMarginHorizontal,
   displaySettings,
   reportInfoOrCapture,
   reportFinished,
@@ -144,7 +146,7 @@ const PageCapture = ({
         }
 
         const numPages = pageCfis.current.length
-        const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
+        const platformOffset = Platform.OS === 'ios' && realWidth%2 === 1 ? 1 : 0
 
         if(Platform.OS === 'android') {
           // Delay to ensure render of the initial page in spine
@@ -178,7 +180,7 @@ const PageCapture = ({
 
             if(pageIndexInSpine.current >= numPages) return resolve()
 
-            const shift = pageIndexInSpine.current * (width - platformOffset) * -1 + platformOffset
+            const shift = pageIndexInSpine.current * (realWidth - platformOffset) * -1 + platformOffset
 
             // getBoundingClientRect combined with the timeout [hopefully] ensures
             // paint is done before the postMessage call.
@@ -279,9 +281,11 @@ const PageCapture = ({
       style={{
         position: 'absolute',
         top: truePageMarginTop,
-        width,
-        minWidth: width,
-        maxWidth: width,
+        left: realMarginHorizontal,
+        right: realMarginHorizontal,
+        width: realWidth,
+        minWidth: realWidth,
+        maxWidth: realWidth,
         height: truePageHeight,
         minHeight: truePageHeight,
         maxHeight: truePageHeight,

@@ -3,9 +3,14 @@ import { isIPhoneX, statusBarHeight, statusBarHeightSafe, bottomSpace, getToolba
 import useDimensions from './useDimensions'
 import useWideMode from "./useWideMode"
 
+const COLUMN_MAX_WIDTH = 1000  // Needs to accord with columnMaxWidth in readium-js-viewer
+const COLUMN_GAP = 60  // Needs to accord with columnGap in readium-js-viewer
+
 const useAdjustedDimensions = ({
   fullPageWidth,
   fullPageHeight,
+  realFullPageWidth,
+  realFullPageMarginHorizontal=0,
   sidePanelSettings,
   widget=false,
 }) => {
@@ -24,6 +29,9 @@ const useAdjustedDimensions = ({
         fullPageWidth -= sidePanelSettings.width
       }
     }
+
+    realFullPageWidth = Math.min(fullPageWidth, COLUMN_MAX_WIDTH + COLUMN_GAP/2)
+    realFullPageMarginHorizontal = (fullPageWidth - realFullPageWidth) / 2
   }
 
   let truePageWidth = fullPageWidth
@@ -40,6 +48,8 @@ const useAdjustedDimensions = ({
     height,
     fullPageWidth,
     fullPageHeight,
+    realFullPageWidth,
+    realFullPageMarginHorizontal,
     truePageWidth,
     truePageHeight,
     truePageMarginTop,
