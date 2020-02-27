@@ -134,9 +134,9 @@ const BookHeader = React.memo(({
 
   const syncStatusIconName = {
     synced: "check",
-    error: "warning",
-    offline: "cloud-off",
-    localonly: "cloud-off",
+    error: "alert",
+    offline: "cloud-off-outline",
+    localonly: "cloud-off-outline",
   }
 
   const syncStatusMessages = {
@@ -165,7 +165,7 @@ const BookHeader = React.memo(({
       >
         <HeaderIcon
           iconName={syncStatusIconName[syncStatus] || "check"}
-          iconPack="material"
+          iconPack="materialCommunity"
           onPress={toggleShowSyncStatus}
           uiStatus={
             syncStatusUIStatus[syncStatus]

@@ -45,8 +45,8 @@ const EnhancedEditButton = React.memo(({
         {...themedStateEvents}
       >
         <Icon
-          name="edit"
-          pack="material"
+          name="pencil"
+          pack="materialCommunity"
           style={[
             styles.icon,
             iconThemedStyle,
