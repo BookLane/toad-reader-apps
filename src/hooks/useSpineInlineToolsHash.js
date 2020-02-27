@@ -3,27 +3,30 @@ import md5 from 'md5'
 
 export const getSpineInlineToolsHash = ({ visibleTools, spineIdRef }) => {
 
-  const numToolsByCfi = {}
-  const sortedSpineToolCfiCountCombos = []
+  const toolLabelInfoByCfi = {}
+  const sortedInlineSpineToolInfoStrings = []
 
   ;(visibleTools || []).forEach(tool => {
     if(
       tool.spineIdRef === spineIdRef
       && tool.cfi
     ) {
-      if(!numToolsByCfi[tool.cfi]) {
-        numToolsByCfi[tool.cfi] = 0
+      if(!toolLabelInfoByCfi[tool.cfi]) {
+        toolLabelInfoByCfi[tool.cfi] = []
       }
-      numToolsByCfi[tool.cfi]++
+      toolLabelInfoByCfi[tool.cfi][tool.ordering] = [
+        tool.toolType,
+        tool.name || '',
+      ]
     }
   })
 
-  for(let cfi in numToolsByCfi) {
-    sortedSpineToolCfiCountCombos.push(`${cfi}:${numToolsByCfi[cfi]}`)
+  for(let cfi in toolLabelInfoByCfi) {
+    sortedInlineSpineToolInfoStrings.push(`${cfi}:${JSON.stringify(toolLabelInfoByCfi[cfi].filter(Boolean))}`)
   }
-  sortedSpineToolCfiCountCombos.sort()
+  sortedInlineSpineToolInfoStrings.sort()
 
-  return md5(JSON.stringify(sortedSpineToolCfiCountCombos))
+  return md5(JSON.stringify(sortedInlineSpineToolInfoStrings))
 
 }
 
