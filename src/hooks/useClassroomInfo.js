@@ -10,7 +10,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   )
   const { toc, spines, accounts } = book
   let { currentClassroomUid: classroomUid, selectedToolUid } = book
-  const accountId = Object.keys(accounts)[0] || ""
+  const accountId = Object.keys(accounts || {})[0] || ""
   const { idpId, userId } = getIdsFromAccountId(accountId)
   
   const defaultClassroomUid = `${idpId}-${bookId}`
@@ -68,7 +68,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const enhancedIsOff = !classroomUid
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const bookVersion = Platform.OS !== 'web' ? 'BASE' : Object.values(book.accounts)[0].version
+  const bookVersion = (Platform.OS !== 'web' || !accounts) ? 'BASE' : Object.values(accounts)[0].version
   const hasFrontMatter = !!(
     (classroom || {}).syllabus
     || (classroom || {}).introduction

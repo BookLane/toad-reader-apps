@@ -11,7 +11,7 @@ import usePrevious from "react-use/lib/usePrevious"
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -96,7 +96,7 @@ const Library = ({
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
-  const { widget, parent_domain, logOutAccountId } = routerState
+  const { logOutAccountId } = routerState
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
@@ -125,25 +125,6 @@ const Library = ({
       }
     },
     [ accounts, showLogin ],
-  )
-
-  useEffect(
-    () => {
-      if(widget && parent_domain) {
-        // check to see if we should redirect to a different domain
-        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
-          .then(result => result.json())
-          .then(({ redirectToDomain }) => {
-            if(redirectToDomain && redirectToDomain !== window.location.host) {
-              if(isStaging()) {
-                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
-              }
-              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
-            }
-          })
-      }
-    },
-    [],
   )
 
   useEffect(

@@ -24,7 +24,8 @@ import ToolChip from "../basic/ToolChip"
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getSpineAndPage, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
-         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId } from "../../utils/toolbox"
+         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
+         isStaging, dashifyDomain, getDataOrigin } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useDimensions from "../../hooks/useDimensions"
@@ -178,6 +179,7 @@ const Book = React.memo(({
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
   const [ rawInEditMode, setRawInEditMode ] = useState(false)
+  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
 
   const [{
     bookLoaded,
@@ -200,7 +202,7 @@ const Book = React.memo(({
   const movingToolOffsets = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
-  const { widget } = routerState
+  const { widget, parent_domain } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
@@ -381,16 +383,40 @@ const Book = React.memo(({
 
   useEffect(
     () => {
+      if(widget && parent_domain) {
+        // check to see if we should redirect to a different domain
+        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
+          .then(result => result.json())
+          .then(({ redirectToDomain }) => {
+            if(redirectToDomain && redirectToDomain !== window.location.host) {
+              if(isStaging()) {
+                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+              }
+              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
+            } else {
+              setRedirectCheckComplete(true)
+            }
+          })
+          .catch(() => setRedirectCheckComplete(true))
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
       if(!books[bookId]) {
         // direct load to invalid book
         const message = i18n("Either this book does not exist, or you do not have access to it.")
 
         if(widget) {
-          parent.postMessage({
-            action: 'forbidden',
-            iframeid: window.name,
-            payload: message,
-          }, '*');
+          if(redirectCheckComplete) {
+            parent.postMessage({
+              action: 'forbidden',
+              iframeid: window.name,
+              payload: message,
+            }, '*')
+          }
 
         } else {
           setTimeout(() => {
@@ -402,7 +428,7 @@ const Book = React.memo(({
         }
       }
     },
-    [ books, bookId ],
+    [ books, bookId, redirectCheckComplete ],
   )
 
   const zoomToPage = useCallback(
