@@ -44,7 +44,6 @@ import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsent
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 const {
-  APP_BACKGROUND_COLOR,
   PAGE_ZOOM_MILLISECONDS,
 } = Constants.manifest.extra
 
@@ -65,7 +64,7 @@ const pagesStyles = {
   bottom: 0,
   left: 0,
   right: 0,
-  backgroundColor: APP_BACKGROUND_COLOR,
+  backgroundColor: '#EDF1F7',
   zIndex: 2,
 }
 

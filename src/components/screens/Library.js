@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
 import { ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
-import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -38,10 +37,6 @@ import WebView from "../major/WebView"
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
 
-const {
-  APP_BACKGROUND_COLOR,
-} = Constants.manifest.extra
-
 const styles = StyleSheet.create({
   flex1: {
     flex: 1,
@@ -55,7 +50,7 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 1,
-    backgroundColor: APP_BACKGROUND_COLOR,
+    backgroundColor: '#EDF1F7',
     flex: 1,
   },
   hiddenWebview: {

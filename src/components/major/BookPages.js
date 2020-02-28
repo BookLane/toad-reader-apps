@@ -31,9 +31,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  list: {
-    backgroundColor: '#EDF1F7',
-  },
   // headerBottomBorder: {
   //   position: 'absolute',
   //   top: PAGE_LIST_HEADER_ROW_HEIGHT - 1,
@@ -308,7 +305,6 @@ const BookPages = React.memo(({
         />
       }
       <AnimatedFlatList
-        style={styles.list}
         data={list}
         renderItem={renderItem}
         // The random number in extraData forces renderItem calls on every item
