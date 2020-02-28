@@ -15,21 +15,20 @@ import { setSelectedToolUid } from "../../redux/actions"
 import ToolChip from "./ToolChip"
 
 const styles = StyleSheet.create({
-  numWithin: {
+  numWithinContainer: {
     borderRadius: 10,
     borderWidth: 1,
     width: 17,
     height: 17,
     flexShrink: 0,
+    marginVertical: -6,
+    marginLeft: 8,
+  },
+  numWithin: {
     lineHeight: 14,
     textAlign: 'center',
     fontSize: 10,
     fontWeight: '600',
-    marginVertical: -6,
-    marginLeft: 8,
-  },
-  numWithinSelected: {
-    opacity: .5,
   },
   popover: {
     backgroundColor: 'transparent',
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   toolChipsScrollView: {
-    right: -15,
+    right: -7,
   },
   toolChipsContainer: {
     alignItems: 'flex-end',
@@ -49,7 +48,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "black",
     shadowOpacity: 0.3,
-    shadowRadius: 15,
+    shadowRadius: 10,
     marginVertical: 3,
   },
 })
@@ -73,8 +72,8 @@ const GroupedToolsChip = ({
   const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
-  const { baseThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
-  const [ selectedThemedStyle={} ] = altThemedStyleSets
+  const { baseThemedStyle, labelThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
+  const [ selectedThemedStyle={}, selectedLabelThemedStyle={} ] = altThemedStyleSets
 
   const [ showTools, toggleShowTools ] = useToggle(false)
 
@@ -128,12 +127,18 @@ const GroupedToolsChip = ({
       <TouchableWithoutFeedback onPress={toggleShowTools}>
         <View
           {...themedStateEvents}
+          style={[
+            styles.numWithinContainer,
+            baseThemedStyle,
+            (showTools ? selectedThemedStyle : null),
+            style,
+          ]}
         >
           <Text
             style={[
               styles.numWithin,
-              baseThemedStyle,
-              (showTools ? selectedThemedStyle : null),
+              labelThemedStyle,
+              (showTools ? selectedLabelThemedStyle : null),
               style,
             ]}
           >

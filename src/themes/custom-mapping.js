@@ -223,9 +223,9 @@ const mapping = {
       component: 'GroupedToolsChip',
       parameters: {
         backgroundColor: 'background-alternative-color-4',
-        color: 'text-alternate-color',
+        labelColor: 'text-alternate-color',
         alt0BackgroundColor: 'color-primary-transparent-400',
-        alt0Color: 'color-basic-1100',
+        alt1Color: 'color-basic-1100',
         state: {
           hover: {
             backgroundColor: 'color-primary-500',
