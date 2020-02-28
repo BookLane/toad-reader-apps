@@ -4,11 +4,12 @@ import { Animated, Easing, StyleSheet, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
-import { getSnapshotURI, statusBarHeightSafe, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { getSnapshotURI, statusBarHeightSafe, statusBarHeight, bottomSpace, getToolbarHeight } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import usePageSize from "../../hooks/usePageSize"
+import useWideMode from "../../hooks/useWideMode"
 
 const {
   PAGE_ZOOM_MILLISECONDS,
@@ -55,6 +56,7 @@ const ZoomPage = ({
 
   const { pageWidth, pageHeight, zoomScale } = usePageSize({ sidePanelSettings })
   const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
+  const wideMode = useWideMode()
 
   const scale = useRef(new Animated.Value(zoomed ? 1 : zoomScale))
   const opacity = useRef(new Animated.Value(1))
@@ -117,7 +119,7 @@ const ZoomPage = ({
 
     if(snapshotCoords) {
       const left = snapshotCoords.x
-      const top = snapshotCoords.y
+      const top = snapshotCoords.y - (wideMode ? (statusBarHeight + getToolbarHeight()) : 0)
 
       outputRangeX = left - (width/2 - pageWidth/2)
       outputRangeY = top - (height/2 - pageHeight/2)

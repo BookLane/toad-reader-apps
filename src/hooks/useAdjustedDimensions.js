@@ -5,6 +5,7 @@ import useWideMode from "./useWideMode"
 
 const COLUMN_MAX_WIDTH = 1000  // Needs to accord with columnMaxWidth in readium-js-viewer
 const COLUMN_GAP = 60  // Needs to accord with columnGap in readium-js-viewer
+const VERTICAL_MARGIN = 30  // Matches #epub-reader-container in readium-js-viewer
 
 const useAdjustedDimensions = ({
   fullPageWidth,
@@ -41,6 +42,8 @@ const useAdjustedDimensions = ({
   if(isIPhoneX && !wideMode) {
     truePageHeight -= statusBarHeight
     truePageMarginTop = statusBarHeight
+  } else if(wideMode) {
+    truePageMarginTop = VERTICAL_MARGIN - statusBarHeight
   }
 
   return {
