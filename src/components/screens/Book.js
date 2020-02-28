@@ -755,10 +755,10 @@ const Book = React.memo(({
                 <ToolChip
                   style={{
                     left: info.offsetX,
-                    // The 3/-24 matches the top/bottom padding when the chip is inline.
+                    // The 24 works out to match the top/bottom padding when the chip is inline.
                     // Using idx instead of tool ordering, since all may not be displayed
                     // given whether we are in edit mode or not.
-                    top: y + (wideMode ? 3 : -24) + (idx * 34),
+                    top: y - 24 + (idx * 34),
                   }}
                   uid={uid}
                   label={name}
