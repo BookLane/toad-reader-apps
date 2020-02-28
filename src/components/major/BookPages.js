@@ -14,6 +14,7 @@ import useDimensions from "../../hooks/useDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
 import usePageSize from "../../hooks/usePageSize"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -145,8 +146,7 @@ const BookPages = React.memo(({
     [ pageHeight ],
   )
 
-  const scrollToLatestLocation = useCallback(
-    () => {
+  const getScrollToLatestLocation = useInstanceValue(() => {
 
       if(spineIdRef == null || pageIndexInSpine == null) return
       if(list.length === 0) return
@@ -196,9 +196,8 @@ const BookPages = React.memo(({
         y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
       })
 
-    },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey, height ],
-  )
+      return true
+  })
 
   if(
     spineIdRef !== prevSpineIdRef
@@ -207,7 +206,7 @@ const BookPages = React.memo(({
     || scrollToLatestLocationNextTimeReceivingProps.current
   ) {
     scrollToLatestLocationNextTimeReceivingProps.current = false
-    scrollToLatestLocation()
+    getScrollToLatestLocation()()
   }
 
   const [ setScrollToLatestTimeout ] = useSetTimeout()
@@ -249,9 +248,17 @@ const BookPages = React.memo(({
 
   useEffect(
     () => {
-      // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout
-      // without this timeout, flatList.current is not set and sticky headers are not accounted for
-      setScrollToLatestTimeout(scrollToLatestLocation, 300)
+      // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout.
+      // Without this timeout, flatList.current is not set and sticky headers are not accounted for.
+      let maxAttempts = 10
+      const tryInitialScroll = () => {
+        setScrollToLatestTimeout(() => {
+          if(!getScrollToLatestLocation()() && maxAttempts-- > 0) {
+            tryInitialScroll()
+          }
+        }, 200)
+      }
+      tryInitialScroll()
     },
     [],
   )
