@@ -20,7 +20,7 @@ import EnhancedEditButton from "../basic/EnhancedEditButton"
 const container = {
   paddingTop: 10,
   paddingBottom: 10,
-  backgroundColor: 'rgb(231, 236, 246)',
+  backgroundColor: '#E4E9F2',
 }
 
 const styles = StyleSheet.create({

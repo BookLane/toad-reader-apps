@@ -954,6 +954,8 @@ const Book = React.memo(({
                 updateSnapshotCoords={setSnapshotCoords}
                 capturingSnapshots={capturingSnapshots}
                 inEditMode={inEditMode}
+                toggleInEditMode={toggleInEditMode}
+                setModeToPage={setModeToPage}
               />
             </View>
           }

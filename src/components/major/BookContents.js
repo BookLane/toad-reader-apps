@@ -21,9 +21,6 @@ import FAB from "../basic/FAB"
 const paddingTop = 12
 
 const styles = StyleSheet.create({
-  list: {
-    backgroundColor: '#F2F6FF',
-  },
   listHeader: {
     paddingTop,
   },
@@ -303,7 +300,6 @@ const BookContents = React.memo(({
         setModeToPage={setModeToPage}
       />
       <List
-        style={wideMode ? styles.listWideMode : styles.list}
         ListHeaderComponent={ListHeader}
         ListFooterComponent={ListFooter}
         data={data}

@@ -8,6 +8,7 @@ import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
 // import BookProgress from "./BookProgress"
+import EnhancedHeader from "./EnhancedHeader"
 
 import { getFooterHeight, getToolbarHeight, statusBarHeight } from '../../utils/toolbox'
 import useDimensions from "../../hooks/useDimensions"
@@ -15,6 +16,8 @@ import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
 import usePageSize from "../../hooks/usePageSize"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useWideMode from "../../hooks/useWideMode"
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -27,6 +30,9 @@ const {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  list: {
+    backgroundColor: '#EDF1F7',
   },
   // headerBottomBorder: {
   //   position: 'absolute',
@@ -48,12 +54,19 @@ const BookPages = React.memo(({
   // capturingSnapshots,
   zoomToPage,
   inEditMode,
+  toggleInEditMode,
+  setModeToPage,
 
+  books,
+  userDataByBookId,
   sidePanelSettings,
 }) => {
 
+  const { bookVersion, canViewFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
   const { pageWidth, pageHeight, pagesPerRow } = usePageSize({ sidePanelSettings })
   const { height } = useDimensions().window
+  const wideMode = useWideMode()
 
   const prevSpineIdRef = usePrevious(spineIdRef)
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
@@ -180,7 +193,15 @@ const BookPages = React.memo(({
 
       flatList.current.getNode().scrollToIndex({
         index,
-        viewOffset: 0,
+        viewOffset: (
+          (
+            !wideMode
+            && bookVersion !== 'BASE'
+          )
+            // calc half of the enhanced header height and negate it
+            ? (10*2 + 37*(canViewFrontMatter ? 2 : 1)) / -2
+            : 0
+        ),
         viewPosition: 0.5,
         // animated: false,
       })
@@ -278,7 +299,16 @@ const BookPages = React.memo(({
     <View
       style={styles.container}
     >
+      {!wideMode &&
+        <EnhancedHeader
+          bookId={bookId}
+          inEditMode={inEditMode}
+          toggleInEditMode={toggleInEditMode}
+          setModeToPage={setModeToPage}
+        />
+      }
       <AnimatedFlatList
+        style={styles.list}
         data={list}
         renderItem={renderItem}
         // The random number in extraData forces renderItem calls on every item
@@ -312,7 +342,9 @@ const BookPages = React.memo(({
 
 })
 
-const mapStateToProps = ({ sidePanelSettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
+  books,
+  userDataByBookId,
   sidePanelSettings,
 })
 

@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
     paddingLeft: PAGES_HORIZONTAL_MARGIN,
     paddingRight: PAGES_HORIZONTAL_MARGIN,
     justifyContent: 'center',
-    backgroundColor: '#e9e9ef',
   },
   headingText: {
     fontSize: 16,
