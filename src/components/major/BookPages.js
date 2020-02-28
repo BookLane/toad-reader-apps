@@ -51,11 +51,12 @@ const BookPages = React.memo(({
   sidePanelSettings,
 }) => {
 
-  const prevSpineIdRef = usePrevious(spineIdRef)
-  const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
-
   const { pageWidth, pageHeight, pagesPerRow } = usePageSize({ sidePanelSettings })
   const { height } = useDimensions().window
+
+  const prevSpineIdRef = usePrevious(spineIdRef)
+  const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
+  const prevHeight = usePrevious(height)
 
   const animatedScrollPosition = useRef(new Animated.Value(0)).current
   const flatList = useRef()
@@ -196,12 +197,13 @@ const BookPages = React.memo(({
       })
 
     },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey ],
+    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeight, pageWidth, pageHeight, pageCfisKey, height ],
   )
 
   if(
     spineIdRef !== prevSpineIdRef
     || pageIndexInSpine !== prevPageIndexInSpine
+    || height !== prevHeight
     || scrollToLatestLocationNextTimeReceivingProps.current
   ) {
     scrollToLatestLocationNextTimeReceivingProps.current = false
