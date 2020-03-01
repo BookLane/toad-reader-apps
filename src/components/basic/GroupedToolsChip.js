@@ -92,14 +92,14 @@ const GroupedToolsChip = ({
         ]}
         contentContainerStyle={styles.toolChipsContainer}
       >
-        {Object.values(spineToolsByCfi).flat().map(({ uid, label, toolType, published_at, name }) => (
+        {Object.values(spineToolsByCfi).flat().map(({ uid, toolType, published_at, name }) => (
           <View
             key={uid}
             style={styles.toolChipContainer}
           >
             <ToolChip
               uid={uid}
-              label={label}
+              label={name}
               toolType={toolType}
               isDraft={!published_at}
               onPress={() => {
