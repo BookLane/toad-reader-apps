@@ -11,11 +11,9 @@ import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../uti
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
 import takeSnapshot from "../../utils/takeSnapshot"
-import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import usePageSize from "../../hooks/usePageSize"
 import useRouterState from "../../hooks/useRouterState"
-import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 
 import { addSpinePageCfis } from "../../redux/actions"
@@ -28,18 +26,15 @@ const PageCapture = ({
   realWidth,
   realMarginHorizontal,
   displaySettings,
+  sidePanelSettings,
+  spineInlineToolsHash,
+  instructorHighlights,
   reportInfoOrCapture,
   reportFinished,
   processingPaused,
-  
-  books,
-  userDataByBookId,
-  sidePanelSettings,
 
   addSpinePageCfis,
 }) => {
-
-  const { instructorHighlights, visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
 
   const { historyPush } = useRouterState()
 
@@ -53,7 +48,6 @@ const PageCapture = ({
 
   let { truePageHeight, truePageMarginTop } = useAdjustedDimensions({ fullPageWidth: width, fullPageHeight: height, sidePanelSettings })
   const { pageWidth, pageHeight } = usePageSize({ sidePanelSettings })
-  const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
 
   const getProcessingPaused = useInstanceValue(processingPaused)
 
@@ -302,10 +296,7 @@ const PageCapture = ({
   )
 }
 
-const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
-  books,
-  userDataByBookId,
-  sidePanelSettings,
+const mapStateToProps = () => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

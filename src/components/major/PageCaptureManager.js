@@ -37,7 +37,7 @@ const PageCaptureManager = ({
   readerStatus,
 }) => {
 
-  const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
+  const { visibleTools, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
 
   const pageCaptureProps = useRef()
   const skipList = useRef({})
@@ -72,12 +72,9 @@ const PageCaptureManager = ({
     const { spines, downloadStatus} = books[bookId]
     let spineIdRef, spineInlineToolsHash
 
-    const findSpineToDo = flip => {
-      if(flip) {
-        [ width, height ] = [ height, width ]
-      }
+    if(downloadStatus === 2 && spines) {
 
-      return spines.some(thisSpine => {
+      spines.some(thisSpine => {
         spineInlineToolsHash = getSpineInlineToolsHash({
           visibleTools,
           spineIdRef: thisSpine.idref,
@@ -98,13 +95,7 @@ const PageCaptureManager = ({
           return true
         }
       })
-    }
 
-    if(downloadStatus === 2 && spines) {
-
-      // findSpineToDo() || findSpineToDo(true)
-      findSpineToDo()
-  
       setCapturingSnapshots(!!spineIdRef)
 
       if(spineIdRef) {
@@ -118,6 +109,7 @@ const PageCaptureManager = ({
           displaySettings,
           sidePanelSettings,
           spineInlineToolsHash,
+          instructorHighlights,
         }
       }
 
