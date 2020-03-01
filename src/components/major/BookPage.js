@@ -83,7 +83,7 @@ const BookPage = React.memo(props => {
   const loaded = useRef(false)
   const doAfterLoaded = useRef([])
   const webView = useRef()
-  const view = useRef()
+  // const view = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
@@ -395,7 +395,6 @@ const BookPage = React.memo(props => {
           initialToolCfiCountsInThisSpine={toolCfiCounts}
           initialAddlParams={widget ? { widget } : null}
           instructorHighlights={instructorHighlights}
-          viewRef={view}
         />
         {wideMode && <View style={styles.webViewContentsIconCover} />}
         <DisplaySettings
