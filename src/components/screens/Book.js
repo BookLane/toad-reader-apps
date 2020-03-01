@@ -25,7 +25,7 @@ import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
-         isStaging, dashifyDomain, getDataOrigin } from "../../utils/toolbox"
+         isStaging, dashifyDomain, getDataOrigin, getToolCfiCounts } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -240,20 +240,8 @@ const Book = React.memo(({
   const getSelectedToolUid = useInstanceValue(selectedToolUid)
 
   const toolCfiCounts = useMemo(
-    () => {
-      const countsByCfi = {}
-
-      visibleTools.forEach(({ uid, cfi, published_at, ...tool }) => {
-        if(tool.spineIdRef !== spineIdRef) return
-        if(!countsByCfi[cfi]) {
-          countsByCfi[cfi] = 0
-        }
-        countsByCfi[cfi]++
-      })
-
-      return countsByCfi
-    },
-    [ JSON.stringify(visibleTools), spineIdRef, inEditMode ],
+    () => getToolCfiCounts({ visibleTools, spineIdRef }),
+    [ JSON.stringify(visibleTools), spineIdRef ],
   )
 
   const toggleInEditMode = useCallback(

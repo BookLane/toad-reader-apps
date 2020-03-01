@@ -271,6 +271,7 @@ const PageWebView = ({
 
         // The rest of the props are ignored when on web platform
         injectedJavaScript={`
+          window.initialToolCfiCountsObjFromWebView = ${JSON.stringify(initialToolCfiCountsInThisSpine)};
           window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
           window.isReactNativeWebView = true;
         `}

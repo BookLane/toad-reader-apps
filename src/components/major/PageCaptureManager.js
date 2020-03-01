@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 
 import PageCapture from "./PageCapture"
 
-import { getPageCfisKey, getSnapshotURI } from "../../utils/toolbox"
+import { getPageCfisKey, getSnapshotURI, getToolCfiCounts } from "../../utils/toolbox"
 
 import useForceUpdate from "../../hooks/useForceUpdate"
 import useSetTimeout from "../../hooks/useSetTimeout"
@@ -70,12 +70,12 @@ const PageCaptureManager = ({
   if(bookId && books && books[bookId] && displaySettings && sidePanelSettings) {
 
     const { spines, downloadStatus} = books[bookId]
-    let spineIdRef, spineInlineToolsHash
+    let spineToCaptureInfo
 
     if(downloadStatus === 2 && spines) {
 
       spines.some(thisSpine => {
-        spineInlineToolsHash = getSpineInlineToolsHash({
+        const spineInlineToolsHash = getSpineInlineToolsHash({
           visibleTools,
           spineIdRef: thisSpine.idref,
         })
@@ -91,24 +91,31 @@ const PageCaptureManager = ({
           (!thisSpine.pageCfis || thisSpine.pageCfis[pageCfisKey] == null)
           && !(skipList.current[thisUriAsKey] || {}).skip
         ) {
-          spineIdRef = thisSpine.idref
+          const spineIdRef = thisSpine.idref
+          const toolCfiCountsInThisSpine = getToolCfiCounts({ visibleTools, spineIdRef })
+
+          spineToCaptureInfo = {
+            spineIdRef,
+            toolCfiCountsInThisSpine,
+            spineInlineToolsHash,
+          }
+
           return true
         }
       })
 
-      setCapturingSnapshots(!!spineIdRef)
+      setCapturingSnapshots(!!spineToCaptureInfo)
 
-      if(spineIdRef) {
+      if(spineToCaptureInfo) {
         pageCaptureProps.current = {
           bookId,
-          spineIdRef,
+          ...spineToCaptureInfo,
           width,
           height,
           realWidth,
           realMarginHorizontal,
           displaySettings,
           sidePanelSettings,
-          spineInlineToolsHash,
           instructorHighlights,
         }
       }

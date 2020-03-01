@@ -28,6 +28,7 @@ const PageCapture = ({
   displaySettings,
   sidePanelSettings,
   spineInlineToolsHash,
+  toolCfiCountsInThisSpine,
   instructorHighlights,
   reportInfoOrCapture,
   reportFinished,
@@ -288,6 +289,7 @@ const PageCapture = ({
       onError={onError}
       initialLocation={JSON.stringify({ idref: spineIdRef })}
       initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+      initialToolCfiCountsInThisSpine={toolCfiCountsInThisSpine}
       instructorHighlights={instructorHighlights}
     />
   )

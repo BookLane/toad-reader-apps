@@ -83,6 +83,20 @@ export const getSnapshotURI = params => {
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
 
+export const getToolCfiCounts = ({ visibleTools, spineIdRef }) => {
+  const countsByCfi = {}
+
+  visibleTools.forEach(({ uid, cfi, published_at, ...tool }) => {
+    if(tool.spineIdRef !== spineIdRef) return
+    if(!countsByCfi[cfi]) {
+      countsByCfi[cfi] = 0
+    }
+    countsByCfi[cfi]++
+  })
+
+  return countsByCfi
+}
+
 export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
