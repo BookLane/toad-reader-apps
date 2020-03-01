@@ -59,7 +59,6 @@ const PageCapture = ({
     width,
     height,
     displaySettings,
-    sidePanelSettings,
     spineInlineToolsHash,
   })
 
@@ -163,7 +162,6 @@ const PageCapture = ({
                   width,
                   height,
                   displaySettings,
-                  sidePanelSettings,
                   spineInlineToolsHash,
                   pageIndexInSpine: pageIndexInSpine.current,
                 })
@@ -206,7 +204,7 @@ const PageCapture = ({
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
-          key: [getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })],
+          key: [getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })],
           pageCfis: pageCfis.current.map(cfi => cfi || ''),
         })
         
@@ -232,7 +230,6 @@ const PageCapture = ({
           width,
           height,
           displaySettings,
-          sidePanelSettings,
           spineInlineToolsHash,
           pageIndexInSpine: pageIndexInSpine.current,
         })

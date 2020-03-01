@@ -79,7 +79,7 @@ const PageCaptureManager = ({
           visibleTools,
           spineIdRef: thisSpine.idref,
         })
-        const pageCfisKey = getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })
+        const pageCfisKey = getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })
 
         const thisUriAsKey = getSnapshotURI({
           bookId,

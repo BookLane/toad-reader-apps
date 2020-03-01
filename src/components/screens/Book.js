@@ -884,7 +884,7 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
-  const pageCfisKey = getPageCfisKey({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash })
+  const pageCfisKey = getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })
   const { title } = (books && books[bookId]) || {}
 
   if(!books[bookId]) {
@@ -946,7 +946,6 @@ const Book = React.memo(({
               <BookPages
                 bookId={bookId}
                 spineIdRef={spineIdRef}
-                pageCfisKey={pageCfisKey}
                 pageIndexInSpine={pageIndexInSpine}
                 spines={bookLoaded && books[bookId].spines}
                 zoomToPage={zoomToPage}

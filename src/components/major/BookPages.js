@@ -10,14 +10,15 @@ import PagesPage from "../basic/PagesPage"
 // import BookProgress from "./BookProgress"
 import EnhancedHeader from "./EnhancedHeader"
 
-import { getFooterHeight, getToolbarHeight, statusBarHeight } from '../../utils/toolbox'
-import useDimensions from "../../hooks/useDimensions"
+import { getFooterHeight, getToolbarHeight, statusBarHeight, getPageCfisKey } from '../../utils/toolbox'
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
 import usePageSize from "../../hooks/usePageSize"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import { getSpineInlineToolsHash } from "../../hooks/useSpineInlineToolsHash"
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -45,7 +46,6 @@ const BookPages = React.memo(({
   spineIdRef,
   pageIndexInSpine,
   spines,
-  pageCfisKey,
   bookId,
   updateSnapshotCoords,
   // capturingSnapshots,
@@ -56,13 +56,14 @@ const BookPages = React.memo(({
 
   books,
   userDataByBookId,
+  displaySettings,
   sidePanelSettings,
 }) => {
 
-  const { bookVersion, canViewFrontMatter } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { bookVersion, canViewFrontMatter, visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { pageWidth, pageHeight, pagesPerRow } = usePageSize({ sidePanelSettings })
-  const { height } = useDimensions().window
+  const { fullPageWidth, fullPageHeight, height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
 
   const prevSpineIdRef = usePrevious(spineIdRef)
@@ -112,7 +113,14 @@ const BookPages = React.memo(({
           offset,
         })
         offset += PAGE_LIST_HEADER_ROW_HEIGHT
-    
+
+        const pageCfisKey = getPageCfisKey({
+          displaySettings,
+          width: fullPageWidth,
+          height: fullPageHeight,
+          spineInlineToolsHash: getSpineInlineToolsHash({ visibleTools, spineIdRef: idref }),
+        })
+
         const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
         const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
         for(let i=(numPagesInSpine ? 0 : -1); i<numPagesInSpine; i+=pagesPerRow) {
@@ -126,6 +134,7 @@ const BookPages = React.memo(({
           list.push({
             key: `P:${pageWidth}:${i}:${idref}`,  // P = pages
             pageIndicesInSpine,
+            pageCfisKey,
             cfis: pageCfisInThisRow,
             offset,
           })
@@ -140,7 +149,7 @@ const BookPages = React.memo(({
       }
 
     },
-    [ spines, height, pageCfisKey ],
+    [ spines, height, displaySettings, fullPageWidth, fullPageHeight, visibleTools ],
   )
 
   const getItemLayout = useCallback(
@@ -231,7 +240,7 @@ const BookPages = React.memo(({
 
   const renderItem = useCallback(
     ({ item }) => {
-      const { key, label, pageIndicesInSpine, cfis } = item
+      const { key, label, pageIndicesInSpine, pageCfisKey, cfis } = item
 
       if(key.substr(0,2) === 'H:') {
         
@@ -261,7 +270,7 @@ const BookPages = React.memo(({
         return <PagesRow>{pages}</PagesRow>
       }
     },
-    [ bookId, spineIdRef, pageIndexInSpine, pageCfisKey, pageWidth, pageHeight, zoomToPage, inEditMode ],
+    [ bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight, zoomToPage, inEditMode ],
   )
 
   useEffect(
@@ -338,9 +347,10 @@ const BookPages = React.memo(({
 
 })
 
-const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId, displaySettings, sidePanelSettings }) => ({
   books,
   userDataByBookId,
+  displaySettings,
   sidePanelSettings,
 })
 

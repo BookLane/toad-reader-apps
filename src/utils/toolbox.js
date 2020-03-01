@@ -1,12 +1,10 @@
 import React from "react"
-import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
+import { Platform, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
-
-import { getWideMode } from "../hooks/useWideMode"
 
 const {
   REQUEST_OPTIONS,
@@ -73,19 +71,8 @@ export const getDisplaySettingsObj = displaySettings => ({
   columns: 'single',
 })
 
-export const getPageCfisKey = ({ displaySettings, sidePanelSettings, width, height, spineInlineToolsHash }) => {
+export const getPageCfisKey = ({ displaySettings, width, height, spineInlineToolsHash }) => {
   const { textSize, textSpacing } = displaySettings
-
-  if(!width) {
-    width = Dimensions.get('window').width
-    height = Dimensions.get('window').height
-  }
-
-  const wideMode = getWideMode({ width, height })
-
-  if(wideMode && sidePanelSettings.open) {
-    width -= sidePanelSettings.width
-  }
 
   return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}`
 }

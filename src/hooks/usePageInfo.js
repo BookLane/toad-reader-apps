@@ -10,7 +10,7 @@ const usePageInfo = ({ spineIdRef, cfi, book, displaySettings, sidePanelSettings
   const pageInfo = useMemo(
     () => {
 
-      const pageCfisKey = getPageCfisKey({ displaySettings, width, height, sidePanelSettings, spineInlineToolsHash })
+      const pageCfisKey = getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })
       let pageCfis = []
       let pageCfisKnown = false
       book && book.spines.some(spine => {
@@ -30,7 +30,7 @@ const usePageInfo = ({ spineIdRef, cfi, book, displaySettings, sidePanelSettings
       }
     
     },
-    [ spineIdRef, cfi, book, displaySettings, sidePanelSettings, spineInlineToolsHash, width, height ],
+    [ spineIdRef, cfi, book, displaySettings, spineInlineToolsHash, width, height ],
   )
 
   return pageInfo
