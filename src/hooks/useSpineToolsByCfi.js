@@ -18,6 +18,8 @@ const useSpineToolsByCfi = ({ visibleTools, spineIdRef }) => {
         }
       })
 
+      Object.values(toolsByCfi).forEach(spineTools => spineTools.sort((a, b) => a.ordering - b.ordering))
+
       return toolsByCfi
     },
     [ visibleTools, spineIdRef ],

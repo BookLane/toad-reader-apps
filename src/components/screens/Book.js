@@ -4,9 +4,30 @@ import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { useParams } from "react-router-dom"
-import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
+import useSetState from "react-use/lib/useSetState"
 
+import { refreshUserData } from "../../utils/syncUserData"
+import parseEpub from "../../utils/parseEpub"
+import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
+         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
+         isStaging, dashifyDomain, getDataOrigin, getToolCfiCounts } from "../../utils/toolbox"
+import useSetTimeout from "../../hooks/useSetTimeout"
+import useRouterState from "../../hooks/useRouterState"
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
+import useWideMode from "../../hooks/useWideMode"
+import useInstanceValue from "../../hooks/useInstanceValue"
+import useScroll from '../../hooks/useScroll'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import usePageSize from "../../hooks/usePageSize"
+import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
+import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
+import usePageInfo from "../../hooks/usePageInfo"
+import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
+import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
+         setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
+
+import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
@@ -19,29 +40,9 @@ import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
+import BookTools from "../major/BookTools"
 import ToolChip from "../basic/ToolChip"
 
-import { refreshUserData } from "../../utils/syncUserData"
-import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
-         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
-         isStaging, dashifyDomain, getDataOrigin, getToolCfiCounts } from "../../utils/toolbox"
-import useSetTimeout from "../../hooks/useSetTimeout"
-import useRouterState from "../../hooks/useRouterState"
-import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
-import useWideMode from "../../hooks/useWideMode"
-import useSetState from "react-use/lib/useSetState"
-import useInstanceValue from "../../hooks/useInstanceValue"
-import useScroll from '../../hooks/useScroll'
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import usePageSize from "../../hooks/usePageSize"
-import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
-import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
-import usePageInfo from "../../hooks/usePageInfo"
-import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
-
-import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
-         setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 const {
   PAGE_ZOOM_MILLISECONDS,
@@ -179,7 +180,6 @@ const Book = React.memo(({
   const [ currentAppState, setCurrentAppState ] = useState('active')
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
-  const [ toolsToOverlayOnThisPage, setToolsToOverlayOnThisPage ] = useState([])
   const [ rawInEditMode, setRawInEditMode ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
 
@@ -726,54 +726,13 @@ const Book = React.memo(({
 
       if(type === 'BookPage') {
 
-        const spineToolsByCfi = getSpineToolsByCfi()
-
-        Object.values(spineToolsByCfi).forEach(spineTools => spineTools.sort((a, b) => a.ordering - b.ordering))
-
-        const toolsToOverlayOnThisPage = []
-
-        ;(info.spots || []).forEach(({ cfi, y, ordering: spotOrdering }) => {
-          if(spotOrdering !== 0) return
-
-          ;(spineToolsByCfi[cfi] || []).forEach(({ uid, toolType, published_at, name }, idx) => {
-
-            toolsToOverlayOnThisPage.push(
-              <View key={uid} style={styles.toolChipContainer}>
-                <ToolChip
-                  style={{
-                    left: info.offsetX,
-                    // The 24 works out to match the top/bottom padding when the chip is inline.
-                    // Using idx instead of tool ordering, since all may not be displayed
-                    // given whether we are in edit mode or not.
-                    top: y - 24 + (idx * 34),
-                  }}
-                  uid={uid}
-                  label={name}
-                  toolType={toolType}
-                  isDraft={!published_at}
-                  onPress={() => setSelectedToolUid({
-                    bookId,
-                    uid,
-                  })}
-                  onToolMove={onToolMove}
-                  onToolRelease={onToolRelease}
-                  status={!published_at ? "draft" : "published"}
-                  type="button"
-                />
-              </View>
-            )
-          })
-        })
-
-        setToolsToOverlayOnThisPage(toolsToOverlayOnThisPage)
-
         if(info.spots) {
           setState({ hrefToGoTo: undefined, cfiToGoTo: undefined })
         }
 
       }
     },
-    [ bookId, spineIdRef, inEditMode, wideMode ],
+    [],
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
@@ -973,7 +932,14 @@ const Book = React.memo(({
               toolCfiCounts={toolCfiCounts}
               inEditMode={inEditMode}
             />
-            {toolsToOverlayOnThisPage}
+            <BookTools
+              bookId={bookId}
+              inEditMode={inEditMode}
+              spineIdRef={spineIdRef}
+              toolSpots={toolSpots.current.BookPage}
+              onToolMove={onToolMove}
+              onToolRelease={onToolRelease}
+            />
           </View>
           <View style={
             mode === 'zooming'
