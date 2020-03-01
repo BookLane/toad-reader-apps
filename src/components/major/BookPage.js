@@ -8,7 +8,7 @@ import { useLayout } from '@react-native-community/hooks'
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, bottomSpace, openURL } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, bottomSpace, openURL } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import useInstanceValue from '../../hooks/useInstanceValue'
@@ -270,7 +270,6 @@ const BookPage = React.memo(props => {
 
         case 'reportToolSpots': {
           const { toolSpots, offsetX, offsetY } = data.payload
-          const wideModeShift = getToolbarHeight() - 30
 
           reportSpots({
             type: 'BookPage',
@@ -280,7 +279,7 @@ const BookPage = React.memo(props => {
             },
             offsetX,
             spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
-              y: y + offsetY + wideModeShift,
+              y: y + offsetY,
               spineIdRef,
               cfi,
               ordering,

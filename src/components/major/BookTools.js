@@ -49,10 +49,9 @@ const BookTools = React.memo(({
             <ToolChip
               style={{
                 left: offsetX,
-                // The 24 works out to match the top/bottom padding when the chip is inline.
                 // Using idx instead of tool ordering, since all may not be displayed
                 // given whether we are in edit mode or not.
-                top: y - 24 + (idx * 34),
+                top: y + (idx * 34),
               }}
               uid={uid}
               label={name}

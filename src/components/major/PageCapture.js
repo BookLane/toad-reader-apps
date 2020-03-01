@@ -1,13 +1,10 @@
-import React, { useRef, useEffect, useCallback } from "react"
-import { Platform } from "react-native"
+import React, { useState, useRef, useEffect, useCallback } from "react"
+import { Platform, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import * as FileSystem from 'expo-file-system'
 
-import PageWebView from "./PageWebView"
-
 import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox'
-
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
 import takeSnapshot from "../../utils/takeSnapshot"
@@ -15,8 +12,22 @@ import useSetTimeout from "../../hooks/useSetTimeout"
 import usePageSize from "../../hooks/usePageSize"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
-
 import { addSpinePageCfis } from "../../redux/actions"
+
+import PageWebView from "./PageWebView"
+import BookTools from "./BookTools"
+
+const getDefiniteDimensionsStyle = (width, height) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width,
+  minWidth: width,
+  maxWidth: width,
+  height,
+  minHeight: height,
+  maxHeight: height,
+})
 
 const PageCapture = ({
   bookId,
@@ -38,11 +49,14 @@ const PageCapture = ({
 }) => {
 
   const { historyPush } = useRouterState()
+  
+  const [ toolSpots, setToolSpots ] = useState([])
 
   const loadSpineAndGetPagesInfoAlreadyCalled = useRef(false)
   const getCfisOrShiftAndSnap = useRef()
   const pageIndexInSpine = useRef(0)
   const pageCfis = useRef([])
+  const toolSpotSets = useRef({})
   const unmounted = useRef(false)
   const webView = useRef()
   const view = useRef()
@@ -97,6 +111,44 @@ const PageCapture = ({
 
   useEffect(() => () => unmounted.current = true, [])
 
+  useEffect(
+    () => {
+      (async () => {
+
+        //// STEP 3 ////
+
+        const uri = getSnapshotURI({
+          bookId,
+          spineIdRef,
+          width,
+          height,
+          displaySettings,
+          spineInlineToolsHash,
+          pageIndexInSpine: pageIndexInSpine.current,
+        })
+
+        await takeSnapshot({
+          view: view.current,
+          uri,
+          width: pageWidth,
+          height: pageHeight,
+          viewWidth: width,
+          viewHeight: height,
+        })
+
+        if(unmounted.current) return
+
+        pageIndexInSpine.current++
+
+        if(getCfisOrShiftAndSnap.current) {
+          getCfisOrShiftAndSnap.current()
+        }
+
+      })()
+    },
+    [ toolSpots ],
+  )
+
   const onError = useCallback(
     e => {
       console.log('ERROR: PageCapture webview had an error on load', uriAsKey, e)
@@ -139,6 +191,8 @@ const PageCapture = ({
           return
         }
 
+        toolSpotSets.current = data.payload.toolSpotSets
+
         const numPages = pageCfis.current.length
         const platformOffset = Platform.OS === 'ios' && realWidth%2 === 1 ? 1 : 0
 
@@ -150,6 +204,9 @@ const PageCapture = ({
 
         await new Promise(resolve => {
           getCfisOrShiftAndSnap.current = async () => {
+
+            //// STEP 1 ////
+
             reportInfoOrCapture(uriAsKey)
 
             if(getProcessingPaused()) return
@@ -219,35 +276,25 @@ const PageCapture = ({
 
       case 'docElShifted': {
 
+        //// STEP 2 ////
+
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
         if(getProcessingPaused()) return
 
         reportInfoOrCapture(uriAsKey)
 
-        const uri = getSnapshotURI({
-          bookId,
-          spineIdRef,
-          width,
-          height,
-          displaySettings,
-          spineInlineToolsHash,
-          pageIndexInSpine: pageIndexInSpine.current,
+        const { offsetX, offsetY, toolSpots } = toolSpotSets.current
+
+        setToolSpots({
+          offsetX: offsetX + realMarginHorizontal,
+          spots: (toolSpots[pageIndexInSpine.current] || []).map(({ y, cfi, ordering=0 }) => ({
+            y: y + offsetY + truePageMarginTop,
+            spineIdRef,
+            cfi,
+            ordering,
+          })),
         })
-
-        await takeSnapshot({
-          view: view.current,
-          uri,
-          width: pageWidth,
-          height: pageHeight,
-          viewWidth: width,
-          viewHeight: height,
-        })
-
-        if(unmounted.current) return
-
-        pageIndexInSpine.current++
-        getCfisOrShiftAndSnap.current()
 
         return true
 
@@ -259,39 +306,33 @@ const PageCapture = ({
   if(processingPaused) return null
 
   return (
-    <PageWebView
-      key={uriAsKey}
-      containerStyle={{
-        position: 'absolute',
-        width,
-        minWidth: width,
-        maxWidth: width,
-        height,
-        minHeight: height,
-        maxHeight: height,
-      }}
-      style={{
-        position: 'absolute',
-        top: truePageMarginTop,
-        left: realMarginHorizontal,
-        right: realMarginHorizontal,
-        width: realWidth,
-        minWidth: realWidth,
-        maxWidth: realWidth,
-        height: truePageHeight,
-        minHeight: truePageHeight,
-        maxHeight: truePageHeight,
-      }}
-      bookId={bookId}
-      webViewRef={webView}
-      viewRef={view}
-      onMessage={onMessageEvent}
-      onError={onError}
-      initialLocation={JSON.stringify({ idref: spineIdRef })}
-      initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
-      initialToolCfiCountsInThisSpine={toolCfiCountsInThisSpine}
-      instructorHighlights={instructorHighlights}
-    />
+    <View style={getDefiniteDimensionsStyle(width, height)} ref={view}>
+      <PageWebView
+        key={uriAsKey}
+        containerStyle={getDefiniteDimensionsStyle(width, height)}
+        style={{
+          ...getDefiniteDimensionsStyle(realWidth, truePageHeight),
+          top: truePageMarginTop,
+          left: realMarginHorizontal,
+          right: realMarginHorizontal,
+        }}
+        bookId={bookId}
+        webViewRef={webView}
+        // viewRef={view}
+        onMessage={onMessageEvent}
+        onError={onError}
+        initialLocation={JSON.stringify({ idref: spineIdRef })}
+        initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+        initialToolCfiCountsInThisSpine={toolCfiCountsInThisSpine}
+        instructorHighlights={instructorHighlights}
+      />
+      <BookTools
+        bookId={bookId}
+        inEditMode={false}
+        spineIdRef={spineIdRef}
+        toolSpots={toolSpots}
+      />
+    </View>
   )
 }
 
