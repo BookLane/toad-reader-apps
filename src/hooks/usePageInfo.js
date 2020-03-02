@@ -13,7 +13,7 @@ const usePageInfo = ({ spineIdRef, cfi, book, displaySettings, sidePanelSettings
       const pageCfisKey = getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })
       let pageCfis = []
       let pageCfisKnown = false
-      book && book.spines.some(spine => {
+      ;((book || {}).spines || []).some(spine => {
         if(spine.idref === spineIdRef) {
           if(spine.pageCfis) {
             pageCfis = spine.pageCfis[pageCfisKey] || []
