@@ -9,7 +9,7 @@ import { Platform } from "react-native"
 const START_OF_LENGTH = 1000
 let startOfLastSnapShotBase64
 
-export default async ({ view, uri, width, height, viewWidth, viewHeight, force }) => {
+export default async ({ view, uri, width, height, viewWidth, viewHeight, force, unmounted }) => {
 
   if(Platform.OS === 'web') return false
 
@@ -40,6 +40,8 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
   
   let snapshotBase64 = await getSnapshot()
 
+  if(unmounted.current) return false
+
   if(Platform.OS === 'android') {
 
     startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
@@ -49,6 +51,8 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
 
       snapshotBase64 = await getSnapshot()
       startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+
+      if(unmounted.current) return false
 
       if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
         console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
@@ -60,11 +64,11 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force }
   }
 
   const dir = uri.replace(/[^/]+$/, '')
-  
+
   try {
     await FileSystem.makeDirectoryAsync(dir, { intermediates: true })
   } catch(e) {}
-  
+
   await FileSystem.writeAsStringAsync(uri, snapshotBase64, {
     encoding: FileSystem.EncodingType.Base64,
   })

@@ -134,6 +134,7 @@ const PageCapture = ({
           height: pageHeight,
           viewWidth: width,
           viewHeight: height,
+          unmounted,
         })
 
         if(unmounted.current) return
