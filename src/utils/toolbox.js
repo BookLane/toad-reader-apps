@@ -24,7 +24,7 @@ const parseContentCfi = cont => (
 )
 
 // copied from readium-js/readium-shared-js/plugins/highlights
-const contentCfiComparator = (cont1, cont2) => {
+export const contentCfiComparator = (cont1, cont2) => {
   cont1 = parseContentCfi(cont1);
   cont2 = parseContentCfi(cont2);
 

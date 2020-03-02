@@ -10,6 +10,7 @@ import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useDimensions from "../../hooks/useDimensions"
+import { contentCfiComparator } from "../../utils/toolbox"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import ToolChip from "./ToolChip"
@@ -82,37 +83,43 @@ const GroupedToolsChip = ({
   const { height } = useDimensions().window
 
   const content = useMemo(
-    () => (
-      <ScrollView
-        style={[
-          styles.toolChipsScrollView,
-          {
-            maxHeight: parseInt(height / 2),
-          },
-        ]}
-        contentContainerStyle={styles.toolChipsContainer}
-      >
-        {Object.values(spineToolsByCfi).flat().map(({ uid, toolType, published_at, name }) => (
-          <View
-            key={uid}
-            style={styles.toolChipContainer}
-          >
-            <ToolChip
-              uid={uid}
-              label={name}
-              toolType={toolType}
-              isDraft={!published_at}
-              onPress={() => {
-                setSelectedToolUid({ bookId, uid })
-                toggleShowTools()
-              }}
-              status={!published_at ? "draft" : "published"}
-              type="button"
-            />
-          </View>
-        ))}
-      </ScrollView>
-    ),
+    () => {
+
+      const spineToolSets = Object.values(spineToolsByCfi)
+      spineToolSets.sort((a, b) => contentCfiComparator(a[0].cfi, b[0].cfi))
+
+      return (
+        <ScrollView
+          style={[
+            styles.toolChipsScrollView,
+            {
+              maxHeight: parseInt(height / 2),
+            },
+          ]}
+          contentContainerStyle={styles.toolChipsContainer}
+        >
+          {spineToolSets.flat().map(({ uid, toolType, published_at, name }) => (
+            <View
+              key={uid}
+              style={styles.toolChipContainer}
+            >
+              <ToolChip
+                uid={uid}
+                label={name}
+                toolType={toolType}
+                isDraft={!published_at}
+                onPress={() => {
+                  setSelectedToolUid({ bookId, uid })
+                  toggleShowTools()
+                }}
+                status={!published_at ? "draft" : "published"}
+                type="button"
+              />
+            </View>
+          ))}
+        </ScrollView>
+      )
+    },
     [ spineToolsByCfi, bookId ],
   )
 
