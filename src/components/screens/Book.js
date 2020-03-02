@@ -20,7 +20,6 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import usePageSize from "../../hooks/usePageSize"
-import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
@@ -232,9 +231,6 @@ const Book = React.memo(({
     spineInlineToolsHash,
   })
 
-  const spineToolsByCfi = useSpineToolsByCfi({ visibleTools, spineIdRef })
-
-  const getSpineToolsByCfi = useInstanceValue(spineToolsByCfi)
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
   const getSelectedToolUid = useInstanceValue(selectedToolUid)
