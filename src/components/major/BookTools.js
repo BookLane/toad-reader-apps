@@ -51,7 +51,7 @@ const BookTools = React.memo(({
                 left: offsetX,
                 // Using idx instead of tool ordering, since all may not be displayed
                 // given whether we are in edit mode or not.
-                top: y + (idx * 34),
+                top: y + 2 + (idx * 34),
               }}
               uid={uid}
               label={name}

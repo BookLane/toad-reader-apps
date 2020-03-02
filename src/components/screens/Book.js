@@ -49,6 +49,10 @@ const {
 
 const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
 
+const pageTopInWideMode = {
+  top: pageTop + (isIPhoneX ? 0 : statusBarHeight) + getToolbarHeight(),
+}
+
 const pageStyles = {
   position: 'absolute',
   top: pageTop,
@@ -768,7 +772,8 @@ const Book = React.memo(({
         if(styles.right === 0 && width - nativeEvent.pageX > styles.width) continue
 
         spots.some(({ y, ...info }) => {
-          const adjustedY = y - (type === 'BookPage' ? 2 : getBookContentsScrollY())
+          const bookPageAdjustment = (wideMode ? pageTopInWideMode.top : pageTop) * -1 + 2
+          const adjustedY = y - (type === 'BookPage' ? bookPageAdjustment : getBookContentsScrollY())
           if(adjustedY + 4 > top) {  // the 4 relates to the paddingVertical of listItemWithTool in BookContentsLine
             moveInfo = {
               ...info,
@@ -803,7 +808,7 @@ const Book = React.memo(({
 
       return true
     },
-    [ bookId, width ],
+    [ bookId, width, wideMode ],
   )
 
   const onToolRelease = useCallback(
@@ -843,10 +848,6 @@ const Book = React.memo(({
         />
       </SafeLayout>
     )
-  }
-
-  const pageTopInWideMode = {
-    top: pageTop + (isIPhoneX ? 0 : statusBarHeight) + getToolbarHeight(),
   }
 
   return (
