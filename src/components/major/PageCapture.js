@@ -307,9 +307,13 @@ const PageCapture = ({
   if(processingPaused) return null
 
   return (
-    <View style={getDefiniteDimensionsStyle(width, height)} ref={view}>
+    <View
+      key={uriAsKey}
+      style={getDefiniteDimensionsStyle(width, height)}
+      ref={view}
+      collapsable={false}
+    >
       <PageWebView
-        key={uriAsKey}
         containerStyle={getDefiniteDimensionsStyle(width, height)}
         style={{
           ...getDefiniteDimensionsStyle(realWidth, truePageHeight),
