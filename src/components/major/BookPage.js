@@ -147,7 +147,7 @@ const BookPage = React.memo(props => {
   useDidUpdate(
     () => {
       if(Platform.OS === 'web') return
-      if(spineIdRef == null || pageIndexInSpine == null) return
+      if(spineIdRef == null || pageIndexInSpine == null || pageIndexInSpine === -1) return
       if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
       // The prevPageIndexInSpine === -1 checks if it previously did not have snapshots.
       // In that case, there is no need to update and cause a flash
