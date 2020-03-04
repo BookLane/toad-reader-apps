@@ -10,8 +10,8 @@ import useSetState from "react-use/lib/useSetState"
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
-         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId, safeFetch,
-         isStaging, dashifyDomain, getDataOrigin, getToolCfiCounts } from "../../utils/toolbox"
+         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId,
+         getToolCfiCounts } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
 })
 
 const Book = React.memo(({
+  redirectCheckComplete,
 
   idps,
   accounts,
@@ -184,7 +185,6 @@ const Book = React.memo(({
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ rawInEditMode, setRawInEditMode ] = useState(false)
-  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
 
   const [{
     bookLoaded,
@@ -207,7 +207,7 @@ const Book = React.memo(({
   const movingToolOffsets = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
-  const { widget, parent_domain } = routerState
+  const { widget } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
@@ -380,28 +380,6 @@ const Book = React.memo(({
       getTocForWeb(5000)
     },
     [ books, bookId, accounts, idps ],
-  )
-
-  useEffect(
-    () => {
-      if(widget && parent_domain) {
-        // check to see if we should redirect to a different domain
-        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
-          .then(result => result.json())
-          .then(({ redirectToDomain }) => {
-            if(redirectToDomain && redirectToDomain !== window.location.host) {
-              if(isStaging()) {
-                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
-              }
-              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
-            } else {
-              setRedirectCheckComplete(true)
-            }
-          })
-          .catch(() => setRedirectCheckComplete(true))
-      }
-    },
-    [],
   )
 
   useEffect(

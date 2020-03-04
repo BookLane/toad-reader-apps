@@ -10,7 +10,8 @@ import usePrevious from "react-use/lib/usePrevious"
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
+         isStaging, dashifyDomain } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -86,12 +87,13 @@ const Library = ({
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
+  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
-  const { logOutAccountId } = routerState
+  const { logOutAccountId, widget, parent_domain } = routerState
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
@@ -120,6 +122,28 @@ const Library = ({
       }
     },
     [ accounts, showLogin ],
+  )
+
+  useEffect(
+    () => {
+      if(widget && parent_domain) {
+        // check to see if we should redirect to a different domain
+        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
+          .then(result => result.json())
+          .then(({ redirectToDomain }) => {
+            if(redirectToDomain && redirectToDomain !== window.location.host) {
+              if(isStaging()) {
+                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+              }
+              window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
+            } else {
+              setRedirectCheckComplete(true)
+            }
+          })
+          .catch(() => setRedirectCheckComplete(true))
+      }
+    },
+    [],
   )
 
   useEffect(
@@ -392,7 +416,7 @@ const Library = ({
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
-        {!doingInitialFetch && <Route path="/book/:bookId" component={Book} />}
+        {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
         {!doingInitialFetch && <Route path="/reports" component={Reports} />}
         <Route>
 
