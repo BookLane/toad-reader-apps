@@ -45,7 +45,10 @@ const BookTools = React.memo(({
         if(ordering !== 0) return null
     
         return (spineToolsByCfi[cfi] || []).map(({ uid, toolType, published_at, name }, idx) => (
-          <View key={uid} style={styles.toolChipContainer}>
+          <View
+            key={uid}
+            style={styles.toolChipContainer}
+          >
             <ToolChip
               style={{
                 left: offsetX,
