@@ -15,6 +15,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
+import useIsUpdatingRef from "../../hooks/useIsUpdatingRef"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
@@ -85,6 +86,8 @@ const BookPage = React.memo(props => {
   const webView = useRef()
   // const view = useRef()
 
+  const [ latestLocationIsUpdating, startLatestLocationUpdate ] = useIsUpdatingRef()
+
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
@@ -148,9 +151,13 @@ const BookPage = React.memo(props => {
     () => {
       if(Platform.OS === 'web') return
       if(spineIdRef == null || pageIndexInSpine == null || pageIndexInSpine === -1) return
-      if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
-      // The prevPageIndexInSpine === -1 checks if it previously did not have snapshots.
+
+      // prevPageIndexInSpine === -1 checks if it previously did not have snapshots.
       // In that case, there is no need to update and cause a flash
+      if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
+
+      // If the page change just came from the WebView, then do not fire the request here.
+      if(latestLocationIsUpdating.current) return
   
       doAfterLoaded.current.push(() => {
         postMessage(webView.current, 'goToPage', {
@@ -219,7 +226,9 @@ const BookPage = React.memo(props => {
           loaded.current = true
           doAfterLoaded.current.forEach(func => func())
           doAfterLoaded.current = []
-  
+
+          startLatestLocationUpdate()
+
           // await this.doTakeSnapshot()
 
           return false  // i.e. still process pageChanged in the general PageWebView component
