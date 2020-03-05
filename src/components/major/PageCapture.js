@@ -258,11 +258,6 @@ const PageCapture = ({
 
         if(unmounted.current) return
 
-// if(pageCfis.current.some(cfi => !cfi)) {
-//   alert('bad!')
-//   console.log('bad cfi set', spineIdRef, pageCfis.current)
-// }
-        
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
