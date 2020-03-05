@@ -485,6 +485,8 @@ const Book = React.memo(({
             spineIdRef: info.spineIdRef,
           },
         })
+
+        info.toolCfiCounts = getToolCfiCounts({ visibleTools, spineIdRef: info.spineIdRef })
       }
 
       const goToInfo = info.href
@@ -496,7 +498,7 @@ const Book = React.memo(({
         snapshotZoomed: true,
         ...goToInfo,
       })
-      
+
       setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       startRecordReading({

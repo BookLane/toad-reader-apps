@@ -107,6 +107,7 @@ const PageCapture = ({
           spineIdRef,
           allottedMS: 100,
           minimumPagesToFetch: 1,
+          toolCfiCounts: toolCfiCountsInThisSpine,
         })
     
         pageCfis.current = []

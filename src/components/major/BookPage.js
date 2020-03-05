@@ -136,12 +136,16 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
-      
-      if(loaded.current) {
-        insertTools()
-      } else {
-        doAfterLoaded.current.push(insertTools)
+      if(!prevSpineIdRef || spineIdRef === prevSpineIdRef) {
+
+        const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
+        
+        if(loaded.current) {
+          insertTools()
+        } else {
+          doAfterLoaded.current.push(insertTools)
+        }
+
       }
     },
     [ toolCfiCounts ],
@@ -158,11 +162,12 @@ const BookPage = React.memo(props => {
 
       // If the page change just came from the WebView, then do not fire the request here.
       if(latestLocationIsUpdating.current) return
-  
+
       doAfterLoaded.current.push(() => {
         postMessage(webView.current, 'goToPage', {
           spineIdRef,
           pageIndexInSpine: Math.max(pageIndexInSpine, 0),
+          toolCfiCounts,
         })
       })
   
