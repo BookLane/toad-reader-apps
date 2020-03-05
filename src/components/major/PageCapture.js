@@ -67,6 +67,12 @@ const PageCapture = ({
 
   const getProcessingPaused = useInstanceValue(processingPaused)
 
+  const stopProcessing = () => (
+    getProcessingPaused()
+    || unmounted.current
+    || !webView.current
+  )
+
   const [ setDelayTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
   const uriAsKey = getSnapshotURI({
@@ -89,13 +95,13 @@ const PageCapture = ({
 
   useEffect(
     () => {
-      if(processingPaused) return
+      if(stopProcessing()) return
 
       if(getCfisOrShiftAndSnap.current) {
         getCfisOrShiftAndSnap.current()
     
       } else {
-        if(loadSpineAndGetPagesInfoAlreadyCalled.current || !webView.current) return
+        if(loadSpineAndGetPagesInfoAlreadyCalled.current) return
 
         postMessage(webView.current, 'loadSpineAndGetPagesInfo', {
           spineIdRef,
@@ -135,10 +141,10 @@ const PageCapture = ({
           height: pageHeight,
           viewWidth: width,
           viewHeight: height,
-          unmounted,
+          stopProcessing,
         })
 
-        if(unmounted.current) return
+        if(stopProcessing()) return
 
         pageIndexInSpine.current++
 
@@ -160,7 +166,7 @@ const PageCapture = ({
   )
 
   const onMessageEvent = async (webView2, data) => {
-    if(webView2 !== webView.current || unmounted.current) return // just in case
+    if(webView2 !== webView.current || stopProcessing()) return // just in case
 
     switch(data.identifier) {
 
@@ -189,7 +195,7 @@ const PageCapture = ({
             allottedMS: 100,
             minimumPagesToFetch: 1,
           })
-          if(!getProcessingPaused()) getCfisOrShiftAndSnap.current()
+          if(!stopProcessing()) getCfisOrShiftAndSnap.current()
           return
         }
 
@@ -211,7 +217,7 @@ const PageCapture = ({
 
             reportInfoOrCapture(uriAsKey)
 
-            if(getProcessingPaused()) return
+            if(stopProcessing()) return
 
             // pre-skip pages which already exist
             while(
@@ -232,7 +238,7 @@ const PageCapture = ({
 
             if(pageIndexInSpine.current >= numPages) return resolve()
 
-            if(getProcessingPaused()) return
+            if(stopProcessing()) return
 
             const shift = pageIndexInSpine.current * (realWidth - platformOffset) * -1 + platformOffset
 
@@ -256,7 +262,7 @@ const PageCapture = ({
           getCfisOrShiftAndSnap.current()
         })
 
-        if(unmounted.current) return
+        if(stopProcessing()) return
 
         addSpinePageCfis({
           bookId,
@@ -279,7 +285,7 @@ const PageCapture = ({
 
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
-        if(getProcessingPaused()) return
+        if(stopProcessing()) return
 
         reportInfoOrCapture(uriAsKey)
 
@@ -302,7 +308,7 @@ const PageCapture = ({
     }
   }
 
-  if(processingPaused) return null
+  // if(processingPaused) return null
 
   return (
     <View

@@ -9,7 +9,7 @@ import { Platform } from "react-native"
 const START_OF_LENGTH = 1000
 let startOfLastSnapShotBase64
 
-export default async ({ view, uri, width, height, viewWidth, viewHeight, force, unmounted }) => {
+export default async ({ view, uri, width, height, viewWidth, viewHeight, force, stopProcessing }) => {
 
   if(Platform.OS === 'web') return false
 
@@ -19,7 +19,9 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force, 
     console.log('Snapshot already exists--skipping', uri)
     return true
   }
-  
+
+  if(stopProcessing()) return false
+
   let quality = 0.8
 
   if(Platform.OS === 'android') {
@@ -40,7 +42,7 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force, 
   
   let snapshotBase64 = await getSnapshot()
 
-  if(unmounted.current) return false
+  if(stopProcessing() || !snapshotBase64) return false
 
   if(Platform.OS === 'android') {
 
@@ -49,10 +51,12 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force, 
     if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
       await new Promise(resolve => setTimeout(resolve, 20))  // delay to allow for render of the shift
 
+      if(stopProcessing()) return false
+
       snapshotBase64 = await getSnapshot()
       startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
 
-      if(unmounted.current) return false
+      if(stopProcessing() || !snapshotBase64) return false
 
       if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
         console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
