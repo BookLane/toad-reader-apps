@@ -13,6 +13,7 @@ import usePageSize from "../../hooks/usePageSize"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import { addSpinePageCfis } from "../../redux/actions"
+import useDidUpdate from "../../hooks/useDidUpdate"
 
 import PageWebView from "./PageWebView"
 import BookTools from "./BookTools"
@@ -111,7 +112,7 @@ const PageCapture = ({
 
   useEffect(() => () => unmounted.current = true, [])
 
-  useEffect(
+  useDidUpdate(
     () => {
       (async () => {
 
@@ -230,6 +231,8 @@ const PageCapture = ({
             }
 
             if(pageIndexInSpine.current >= numPages) return resolve()
+
+            if(getProcessingPaused()) return
 
             const shift = pageIndexInSpine.current * (realWidth - platformOffset) * -1 + platformOffset
 
