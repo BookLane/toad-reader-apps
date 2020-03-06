@@ -8,7 +8,8 @@ import { useLayout } from '@react-native-community/hooks'
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, bottomSpace, openURL } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, bottomSpace,
+         openURL, getToolCfiCounts } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import useInstanceValue from '../../hooks/useInstanceValue'
@@ -249,9 +250,9 @@ const BookPage = React.memo(props => {
           const prevTocSpineIndex = tocSpineIdRefs.indexOf(spineIdRef)
           const pagedToBeginning = newSpineIdRef === undefined && prevTocSpineIndex === 0
           const pagedToEnd = newSpineIdRef === undefined && prevSpineIndex === spineIdRefs.length - 1
+          const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
 
           if(prevSpineIndex !== -1 && (newSpineIndex !== -1 || pagedToBeginning || pagedToEnd)) {
-            const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
             const laterSpineIdRef = pagedToEnd
               ? "AFTER LAST SPINE"
               : (
@@ -276,8 +277,22 @@ const BookPage = React.memo(props => {
                 bookId,
                 uid: (pagedForward ? toolsBeforeLaterSpine[0] : toolsBeforeLaterSpine.pop()).uid,
               })
+
+              return true
             }
           }
+
+          postMessage(webView.current, 'goToPage', {
+            spineIdRef: newSpineIdRef,
+            ...(pagedForward
+              ? { pageIndexInSpine: 0 }
+              : { lastPage: true }
+            ),
+            toolCfiCounts: getToolCfiCounts({
+              visibleTools: getVisibleTools(),
+              spineIdRef: newSpineIdRef,
+            }),
+          })
 
           return true
         }
