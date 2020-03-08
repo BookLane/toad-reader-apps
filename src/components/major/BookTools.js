@@ -55,14 +55,11 @@ const BookTools = React.memo(({
                 // Using idx instead of tool ordering, since all may not be displayed
                 // given whether we are in edit mode or not.
                 top: y + 2 + (idx * 34),
+                left: offsetX,
               },
             ]}
           >
             <ToolChip
-              style={{
-                left: offsetX,
-                top: 0,
-              }}
               uid={uid}
               label={name}
               toolType={toolType}
