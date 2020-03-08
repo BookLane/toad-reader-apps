@@ -21,6 +21,7 @@ const BookTools = React.memo(({
 
   bookId,
   inEditMode,
+  inPageTurn,
   spineIdRef,
   toolSpots,
   onToolMove,
@@ -39,7 +40,7 @@ const BookTools = React.memo(({
 
   const { spots=[], offsetX=0 } = toolSpots || {}
 
-  if((spots[0] || {}).spineIdRef !== spineIdRef) return null
+  if((spots[0] || {}).spineIdRef !== spineIdRef || inPageTurn) return null
 
   return (
     spots

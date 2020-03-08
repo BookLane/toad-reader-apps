@@ -185,6 +185,7 @@ const Book = React.memo(({
   const [ selectionInfo, setSelectionInfo ] = useState(null)
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ rawInEditMode, setRawInEditMode ] = useState(false)
+  const [ inPageTurn, setInPageTurn ] = useState(false)
 
   const [{
     bookLoaded,
@@ -926,10 +927,12 @@ const Book = React.memo(({
               reportSpots={reportSpots}
               toolCfiCounts={toolCfiCounts}
               inEditMode={inEditMode}
+              setInPageTurn={setInPageTurn}
             />
             <BookTools
               bookId={bookId}
               inEditMode={inEditMode}
+              inPageTurn={inPageTurn}
               spineIdRef={spineIdRef}
               toolSpots={toolSpots.current.BookPage}
               onToolMove={onToolMove}

@@ -63,6 +63,7 @@ const BookPage = React.memo(props => {
     requestHideSettings,
     latest_location,
     inEditMode,
+    setInPageTurn,
 
     books,
     userDataByBookId,
@@ -198,6 +199,17 @@ const BookPage = React.memo(props => {
       if(webView2 !== webView.current) return // just in case
 
       switch(data.identifier) {
+
+        case 'startPageTurn': {
+          setInPageTurn(true)
+          return true
+        }
+
+        case 'cancelPageTurn': {
+          setInPageTurn(false)
+          return true
+        }
+
         case 'pageChanged': {
 
           const { newSpineIdRef, newCfi } = data.payload
@@ -223,6 +235,8 @@ const BookPage = React.memo(props => {
               spineIdRef: newSpineIdRef,
             })
           }
+
+          setInPageTurn(false)
 
           indicateLoaded()
           loaded.current = true
