@@ -137,16 +137,12 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      if(!prevSpineIdRef || spineIdRef === prevSpineIdRef) {
-
-        const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
-        
-        if(loaded.current) {
-          insertTools()
-        } else {
-          doAfterLoaded.current.push(insertTools)
-        }
-
+      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
+      
+      if(loaded.current) {
+        insertTools()
+      } else {
+        doAfterLoaded.current.push(insertTools)
       }
     },
     [ toolCfiCounts ],
