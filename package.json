@@ -55,7 +55,7 @@
     "react-dom": "16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
     "react-native-circular-progress": "1.3.6",
-    "react-native-flip-editor": "github:educational-resources-and-services/react-native-flip-editor#cb5dc3d571ec7175e615ccf240e252bc292fd232",
+    "react-native-flip-editor": "github:educational-resources-and-services/react-native-flip-editor#46244ee095a2856690f2f54505e412cd48c04c7d",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-iphone-x-helper": "^1.2.1",
     "react-native-reanimated": "~1.4.0",
