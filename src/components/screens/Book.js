@@ -579,7 +579,10 @@ const Book = React.memo(({
   const closeToolAndExitReading = useCallback(
     () => {
       setSelectedToolUid({ bookId })
-      setState({ mode: Platform.OS === 'web' ? 'contents' : 'pages' })
+      setState({
+        mode: Platform.OS === 'web' ? 'contents' : 'pages',
+        snapshotZoomed: false,
+      })
     },
     [ bookId ],
   )
