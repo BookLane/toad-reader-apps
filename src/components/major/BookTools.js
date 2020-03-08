@@ -39,6 +39,8 @@ const BookTools = React.memo(({
 
   const { spots=[], offsetX=0 } = toolSpots || {}
 
+  if((spots[0] || {}).spineIdRef !== spineIdRef) return null
+
   return (
     spots
       .map(({ cfi, y, ordering }) => {
