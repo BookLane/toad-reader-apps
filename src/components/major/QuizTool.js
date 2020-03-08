@@ -16,20 +16,13 @@ const radio = {
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: '100%',
+    flex: 1,
   },
   viewPager: {
     flex: 1,
   },
   page: {
     padding: 30,
-    flex: 1,
-  },
-  spacerBeforePage: {
-    flex: 1,
-  },
-  spacerAfterPage: {
-    flex: 10,
   },
   questionContainer: {
     flexDirection: 'row',
@@ -66,6 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     minWidth: 200,
+    paddingBottom: 20,
   },
   feedback: {
     textAlign: 'center',
@@ -131,121 +125,111 @@ const QuizTool = React.memo(({
   )).length
 
   return (
-    <>
-      <View style={styles.spacerBeforePage} />
-      <View
-        style={styles.container}
-        onMoveShouldSetResponderCapture={returnTrue}
-      >
-        <ViewPager
-          style={styles.viewPager}
-          selectedIndex={pageIndex}
-          // onSelect={setSelectedIndex}
+    <ViewPager
+      style={styles.viewPager}
+      selectedIndex={pageIndex}
+      // onSelect={setSelectedIndex}
+    >
+      {preppedQuestions.map(({ question: { question, answers, answersSelection }, origQuestionIdx }, pageIdx) => (
+        <ScrollView
+          key={origQuestionIdx}
+          contentContainerStyle={styles.page}
         >
-          {preppedQuestions.map(({ question: { question, answers, answersSelection }, origQuestionIdx }, pageIdx) => (
-            <ScrollView
-              key={origQuestionIdx}
-              style={styles.page}
-            >
-              <View style={styles.questionContainer}>
-                <View style={styles.question}>
-                  <Text style={styles.questionText}>{question}</Text>
-                  <RadioGroup
-                    style={styles.choices}
-                    selectedIndex={answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)}
-                    onChange={chosenIndex => {
-                      if(currentQuestionSubmitted) return
-                      setSelectedAnswers({
-                        ...selectedAnswers,
-                        [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
-                      })
-                    }}
-                  >
-                    {answers.map(({ answer, origAnswerIdx }) => {
-                      const submittedAndCorrect = currentQuestionSubmitted && answersSelection === origAnswerIdx
-                      return (
-                        <Radio
-                          key={`${origQuestionIdx}-${origAnswerIdx}`}
-                          style={submittedAndCorrect ? styles.correctRadio : styles.radio}
-                          textStyle={styles.choice}
-                          text={answer}
-                          disabled={currentQuestionSubmitted && answersSelection !== origAnswerIdx}
-                        />
-                      )
-                  })}
-                  </RadioGroup>
-                  {currentQuestionSubmitted && (
-                    <Text style={styles.feedback}>
-                      {answersSelection === selectedAnswers[origQuestionIdx]
-                        ? i18n("Correct!", "", "enhanced")
-                        : (
-                          <Text style={styles.feedbackCorrect}>
-                            {i18n("Whoops. That’s incorrect.", "", "enhanced")}
-                          </Text>
-                        )
-                      }
-                    </Text>
-                  )}
-                  {!currentQuestionSubmitted &&
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        style={styles.button}
-                        disabled={selectedAnswers[origQuestionIdx] == null}
-                        onPress={() => setCurrentQuestionSubmitted(true)}
-                      >
-                        {i18n("Check my answer", "", "enhanced")}
-                      </Button>
-                    </View>
-                  }
-                  {currentQuestionSubmitted &&
-                    <View style={styles.buttonContainer}>
-                      <Button
-                        style={styles.button}
-                        onPress={() => {
-                          setCurrentQuestionSubmitted(false)
-                          setPageIndex(pageIdx + 1)
-                        }}
-                      >
-                        {pageIdx === preppedQuestions.length - 1
-                          ? i18n("View my score", "", "enhanced")
-                          : i18n("Go to next question", "", "enhanced")
-                        }
-                      </Button>
-                    </View>
-                  }
-                  {!currentQuestionSubmitted && <Text style={styles.feedback} />}
-                </View>
-              </View>
-            </ScrollView>
-          ))}
-          <View style={styles.container}>
-            <Text style={styles.score}>
-              {i18n(
-                "Score: {{percent}}%",
-                "",
-                "enhanced",
-                {
-                  percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
-                },
-              )}
-            </Text>
-            <View style={styles.buttonContainer}>
-              <Button
-                style={styles.button}
-                onPress={() => {
-                  setSelectedAnswers({})
-                  setPageIndex(0)
-                  executeShuffles()
+          <View style={styles.questionContainer}>
+            <View style={styles.question}>
+              <Text style={styles.questionText}>{question}</Text>
+              <RadioGroup
+                style={styles.choices}
+                selectedIndex={answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)}
+                onChange={chosenIndex => {
+                  if(currentQuestionSubmitted) return
+                  setSelectedAnswers({
+                    ...selectedAnswers,
+                    [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
+                  })
                 }}
               >
-                {i18n("Retake this quiz", "", "enhanced")}
-              </Button>
+                {answers.map(({ answer, origAnswerIdx }) => {
+                  const submittedAndCorrect = currentQuestionSubmitted && answersSelection === origAnswerIdx
+                  return (
+                    <Radio
+                      key={`${origQuestionIdx}-${origAnswerIdx}`}
+                      style={submittedAndCorrect ? styles.correctRadio : styles.radio}
+                      textStyle={styles.choice}
+                      text={answer}
+                      disabled={currentQuestionSubmitted && answersSelection !== origAnswerIdx}
+                    />
+                  )
+              })}
+              </RadioGroup>
+              {currentQuestionSubmitted && (
+                <Text style={styles.feedback}>
+                  {answersSelection === selectedAnswers[origQuestionIdx]
+                    ? i18n("Correct!", "", "enhanced")
+                    : (
+                      <Text style={styles.feedbackCorrect}>
+                        {i18n("Whoops. That’s incorrect.", "", "enhanced")}
+                      </Text>
+                    )
+                  }
+                </Text>
+              )}
+              {!currentQuestionSubmitted &&
+                <View style={styles.buttonContainer}>
+                  <Button
+                    style={styles.button}
+                    disabled={selectedAnswers[origQuestionIdx] == null}
+                    onPress={() => setCurrentQuestionSubmitted(true)}
+                  >
+                    {i18n("Check my answer", "", "enhanced")}
+                  </Button>
+                </View>
+              }
+              {currentQuestionSubmitted &&
+                <View style={styles.buttonContainer}>
+                  <Button
+                    style={styles.button}
+                    onPress={() => {
+                      setCurrentQuestionSubmitted(false)
+                      setPageIndex(pageIdx + 1)
+                    }}
+                  >
+                    {pageIdx === preppedQuestions.length - 1
+                      ? i18n("View my score", "", "enhanced")
+                      : i18n("Go to next question", "", "enhanced")
+                    }
+                  </Button>
+                </View>
+              }
             </View>
           </View>
-        </ViewPager>
+        </ScrollView>
+      ))}
+      <View style={styles.container}>
+        <Text style={styles.score}>
+          {i18n(
+            "Score: {{percent}}%",
+            "",
+            "enhanced",
+            {
+              percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
+            },
+          )}
+        </Text>
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.button}
+            onPress={() => {
+              setSelectedAnswers({})
+              setPageIndex(0)
+              executeShuffles()
+            }}
+          >
+            {i18n("Retake this quiz", "", "enhanced")}
+          </Button>
+        </View>
       </View>
-      <View style={styles.spacerAfterPage} />
-    </>
+    </ViewPager>
   )
 })
 
