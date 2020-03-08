@@ -294,7 +294,7 @@ const BookPage = React.memo(props => {
         }
 
         case 'reportToolSpots': {
-          const { toolSpots, offsetX, offsetY } = data.payload
+          const { spineIdRef, toolSpots, offsetX, offsetY } = data.payload
 
           reportSpots({
             type: 'BookPage',
