@@ -82,22 +82,22 @@ const EnhancedHeader = React.memo(({
 
   const selectEnhancedHomepage = useCallback(
     () => {
-      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
         uid: 'ENHANCED HOMEPAGE',
       })
+      setModeToPage && setTimeout(setModeToPage)
     },
     [ bookId ],
   )
 
   const selectFrontMatter = useCallback(
     () => {
-      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
         uid: 'FRONT MATTER',
       })
+      setModeToPage && setTimeout(setModeToPage)
     },
     [ bookId ],
   )
