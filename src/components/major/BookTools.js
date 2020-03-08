@@ -12,8 +12,8 @@ import ToolChip from "../basic/ToolChip"
 const styles = StyleSheet.create({
   toolChipContainer: {
     position: 'absolute',
-    top: 0,
     left: 0,
+    height: 28,
   },
 })
 
@@ -49,14 +49,19 @@ const BookTools = React.memo(({
         return (spineToolsByCfi[cfi] || []).map(({ uid, toolType, published_at, name }, idx) => (
           <View
             key={uid}
-            style={styles.toolChipContainer}
+            style={[
+              styles.toolChipContainer,
+              {
+                // Using idx instead of tool ordering, since all may not be displayed
+                // given whether we are in edit mode or not.
+                top: y + 2 + (idx * 34),
+              },
+            ]}
           >
             <ToolChip
               style={{
                 left: offsetX,
-                // Using idx instead of tool ordering, since all may not be displayed
-                // given whether we are in edit mode or not.
-                top: y + 2 + (idx * 34),
+                top: 0,
               }}
               uid={uid}
               label={name}

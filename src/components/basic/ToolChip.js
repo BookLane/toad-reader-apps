@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, TouchableWithoutFeedback, View, Text } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native"
 import { styled } from '@ui-kitten/components'
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
@@ -8,7 +8,21 @@ import { getToolInfo } from "../../utils/toolInfo"
 
 import Icon from "./Icon"
 
-const onMoveShouldSetResponderCapture = () => true
+// const onMoveShouldSetResponderCapture = all => console.log(all)
+const onMoveShouldSetResponderCapture = ({ touchHistory: { touchBank } }) => {
+  const touch = touchBank.filter(Boolean)[0] || {}
+  const { startPageX, startPageY, currentPageX, currentPageY } = touch
+
+  if(!startPageX) return
+
+  return (
+    Math.sqrt(
+      Math.pow(currentPageX - startPageX, 2)
+        +
+      Math.pow(currentPageY - startPageY, 2)
+    ) > 5
+  )
+}
 
 const styles = StyleSheet.create({
   chip: {
@@ -88,7 +102,7 @@ const ToolChip = React.memo(({
         style: hideTool ? styles.hide : null,
       })}
     >
-      <TouchableWithoutFeedback onPress={onPress}>
+      <TouchableOpacity onPress={onPress}>
         <View
           style={[
             styles.chip,
@@ -116,7 +130,7 @@ const ToolChip = React.memo(({
             {label || toolInfoByType[toolType].text}
           </Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </View>
   )
 })
