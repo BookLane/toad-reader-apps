@@ -116,6 +116,7 @@ const BookContentsLine = ({
               bookId={bookId}
               inEditMode={inEditMode}
               spineIdRef={spineIdRef}
+              setModeToPage={setModeToPage}
             />
           }
         </>

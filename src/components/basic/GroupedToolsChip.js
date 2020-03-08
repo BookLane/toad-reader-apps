@@ -60,6 +60,7 @@ const GroupedToolsChip = ({
   bookId,
   inEditMode,
   spineIdRef,
+  setModeToPage,
 
   books,
   userDataByBookId,
@@ -111,6 +112,7 @@ const GroupedToolsChip = ({
                 onPress={() => {
                   setSelectedToolUid({ bookId, uid })
                   toggleShowTools()
+                  setModeToPage && setModeToPage({ snapshotZoomed: true })
                 }}
                 status={!published_at ? "draft" : "published"}
                 type="button"
@@ -120,7 +122,7 @@ const GroupedToolsChip = ({
         </ScrollView>
       )
     },
-    [ spineToolsByCfi, bookId ],
+    [ spineToolsByCfi, bookId, setModeToPage ],
   )
 
   return (

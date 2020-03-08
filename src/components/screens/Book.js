@@ -566,7 +566,15 @@ const Book = React.memo(({
     [ bookId, spineIdRef, width, height, pageWidth, wideMode ],
   )
 
-  const setModeToPage = useCallback(() => setState({ mode: 'page' }), [])
+  const setModeToPage = useCallback(
+    ({ snapshotZoomed=false }={}) => {
+      setState({
+        mode: 'page',
+        snapshotZoomed,
+      })
+    },
+    [],
+  )
 
   const closeToolAndExitReading = useCallback(
     () => {
