@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
   },
   headingLine: {
     flexDirection: 'row',
-    flex: 1,
   },
   heading: {
     paddingBottom: 20,
@@ -107,6 +106,7 @@ const styles = StyleSheet.create({
   close: {
     top: -12,
     right: -12,
+    height: 38,
   },
 })
 
