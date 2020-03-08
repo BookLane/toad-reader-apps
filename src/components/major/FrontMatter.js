@@ -36,6 +36,10 @@ const tabTitle = {
   borderBottomColor: 'transparent',
 }
 
+const headingLine = {
+  flexDirection: 'row',
+}
+
 const styles = StyleSheet.create({
   container: {
     ...container,
@@ -53,7 +57,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headingLine: {
-    flexDirection: 'row',
+    ...headingLine,
+  },
+  headingLineWideMode: {
+    ...headingLine,
+    flex: 1,
   },
   heading: {
     paddingBottom: 20,
@@ -261,7 +269,7 @@ const FrontMatter = React.memo(({
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
-        <View style={styles.headingLine}>
+        <View style={wideMode ? styles.headingLineWideMode : styles.headingLine}>
           <Text style={styles.heading}>
             {isDefaultClassroom
               ? i18n("Settings", "", "enhanced")
