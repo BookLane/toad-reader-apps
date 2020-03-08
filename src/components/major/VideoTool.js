@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   videoSizer: {
-    paddingBottom: '56.25%;',
+    paddingBottom: '56.25%',
   },
   webViewContainer: {
     ...StyleSheet.absoluteFillObject,
