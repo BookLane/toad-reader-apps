@@ -226,6 +226,7 @@ const Book = React.memo(({
           draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
+  const zoomToInfoSpineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef: (zoomToInfo || {}).spineIdRef })
   const { pageIndexInSpine, pageCfisKnown } = usePageInfo({
     spineIdRef,
     cfi,
@@ -812,7 +813,13 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
-  const pageCfisKey = getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })
+  const pageCfisKey = getPageCfisKey({
+    displaySettings,
+    width,
+    height,
+    spineInlineToolsHash: zoomToInfo ? zoomToInfoSpineInlineToolsHash : spineInlineToolsHash,
+  })
+
   const { title } = (books && books[bookId]) || {}
 
   if(!books[bookId]) {
