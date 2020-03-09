@@ -138,19 +138,6 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
-      
-      if(loaded.current) {
-        insertTools()
-      } else {
-        doAfterLoaded.current.push(insertTools)
-      }
-    },
-    [ toolCfiCounts ],
-  )
-
-  useDidUpdate(
-    () => {
       if(Platform.OS === 'web') return
       if(spineIdRef == null || pageIndexInSpine == null || pageIndexInSpine === -1) return
 
@@ -189,9 +176,22 @@ const BookPage = React.memo(props => {
   useDidUpdate(
     () => {
       if(!hrefToGoTo) return
-      postMessage(webView.current, 'goToHref', { href: hrefToGoTo })
+      postMessage(webView.current, 'goToHref', hrefToGoTo)
     },
     [ hrefToGoTo ],
+  )
+
+  useDidUpdate(
+    () => {
+      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
+      
+      if(loaded.current) {
+        insertTools()
+      } else {
+        doAfterLoaded.current.push(insertTools)
+      }
+    },
+    [ toolCfiCounts ],
   )
 
   const onMessageEvent = useCallback(

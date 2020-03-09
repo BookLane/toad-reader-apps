@@ -492,7 +492,7 @@ const Book = React.memo(({
       }
 
       const goToInfo = info.href
-        ? { hrefToGoTo: info.href }
+        ? { hrefToGoTo: info }
         : { cfiToGoTo: info }
 
       setState({
