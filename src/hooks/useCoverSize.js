@@ -14,10 +14,10 @@ const useCoverSize = () => {
 
   const size = useMemo(
     () => {
-      const maxWidth = height < width ? LIBRARY_COVERS_MAXIMUM_COVER_SIZE : LIBRARY_COVERS_MAXIMUM_COVER_SIZE * ( width / height )
-      const coversPerRow = parseInt(width / maxWidth)
-      const coverWidth = (width - ((coversPerRow + 1) * LIBRARY_COVERS_HORIZONTAL_MARGIN)) / coversPerRow
-      const coverHeight = coverWidth / ( width / height )
+      const maxWidth = parseInt(height < width ? LIBRARY_COVERS_MAXIMUM_COVER_SIZE : LIBRARY_COVERS_MAXIMUM_COVER_SIZE * ( width / height ), 10)
+      const coversPerRow = parseInt(width / maxWidth, 10)
+      const coverWidth = parseInt((width - ((coversPerRow + 1) * LIBRARY_COVERS_HORIZONTAL_MARGIN)) / coversPerRow, 10)
+      const coverHeight = parseInt(coverWidth / ( width / height ), 10)
     
       return {
         coverWidth,

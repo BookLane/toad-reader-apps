@@ -14,10 +14,10 @@ const usePageSize = ({ sidePanelSettings }) => {
 
   const size = useMemo(
     () => {
-      const maxWidth = height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height )
-      const pagesPerRow = parseInt(width / maxWidth)
-      const pageWidth = (width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow
-      const pageHeight = pageWidth / ( width / height )
+      const maxWidth = parseInt(height < width ? PAGE_LIST_MAXIMUM_PAGE_SIZE : PAGE_LIST_MAXIMUM_PAGE_SIZE * ( width / height ), 10)
+      const pagesPerRow = parseInt(width / maxWidth, 10)
+      const pageWidth = parseInt((width - ((pagesPerRow + 1) * PAGES_HORIZONTAL_MARGIN)) / pagesPerRow, 10)
+      const pageHeight = parseInt(pageWidth / ( width / height ), 10)
       const zoomScale = pageWidth / width
     
       return {
