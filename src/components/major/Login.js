@@ -214,6 +214,7 @@ const Login = ({
         `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
         forwardRef={webView}
         onMessage={onMessageEvent}
+        incognito={true}
       />
       {!!(loading || !online || error || leaving) &&
         <CoverAndSpin
