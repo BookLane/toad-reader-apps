@@ -108,6 +108,7 @@ const PageCapture = ({
           allottedMS: 100,
           minimumPagesToFetch: 1,
           toolCfiCounts: toolCfiCountsInThisSpine,
+          width: realWidth,
         })
     
         pageCfis.current = []
@@ -195,6 +196,7 @@ const PageCapture = ({
             startIndex: pageCfis.current.length,
             allottedMS: 100,
             minimumPagesToFetch: 1,
+            width: realWidth,
           })
           if(!stopProcessing()) getCfisOrShiftAndSnap.current()
           return
