@@ -174,6 +174,11 @@ const App = () => {
           return
         }
 
+        // remove query string (coming from google analytics and the like)
+        if(Platform.OS === 'web' && window.location.search) {
+          window.history.replaceState(null, '', window.location.href.replace(/\?[^#]*/, ''))
+        }
+
         await Promise.all([
           loadIconFonts(),
           updateDataStructure(),  // needs to be after the persistStore call above
