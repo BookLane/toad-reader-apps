@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
   },
 })
 
+export const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
+export const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
+export const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
+
 const VideoTool = React.memo(({
   videoLink,
   startTime,
@@ -30,10 +34,6 @@ const VideoTool = React.memo(({
 }) => {
 
   videoLink = videoLink || ""
-
-  const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
-  const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
-  const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
 
   // let iframeAttributes = false
   let uri = ''
