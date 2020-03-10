@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 
 import useDimensions from "../../hooks/useDimensions"
@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   container2: {
     flexDirection: 'row',
     position: 'absolute',
-    bottom: 0,
+    bottom: 10 + (Platform.OS === 'android' ? 25 : 0),
     left: 0,
     right: 0,
   },
@@ -20,7 +20,9 @@ const styles = StyleSheet.create({
   },
   toast: {
     backgroundColor: 'rgb(30, 30, 30)',
-    padding: 13,
+    paddingVertical: 13,
+    paddingHorizontal: 25,
+    borderRadius: 10,
   },
   text: {
     color: 'white',
