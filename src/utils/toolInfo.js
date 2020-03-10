@@ -103,7 +103,9 @@ export const getToolInfo = () => {
             nonEmpty(url)
             && (
               !validUrl(url)
-                ? i18n("Invalid URL.", "", "enhanced")
+                ? (
+                  i18n("Invalid URL. (Note: https required.)", "", "enhanced")
+                )
                 : (
                   !validLTIUrl({ url, fromDefaultClassroom, classroom })
                     ? i18n("There is not a published LTI configuration for this domain.", "", "enhanced")
@@ -138,7 +140,7 @@ export const getToolInfo = () => {
             nonEmpty(videoLink)
             && (
               !validUrl(videoLink)
-                ? i18n("Invalid URL.", "", "enhanced")
+                ? i18n("Invalid URL. (Note: https required.)", "", "enhanced")
                 : false
             )
           ),

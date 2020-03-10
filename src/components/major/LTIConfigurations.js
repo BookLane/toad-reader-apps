@@ -43,7 +43,7 @@ const LTIConfigurations = React.memo(({
         if(ltiConfiguration.domain) {
           ltiConfiguration.domain = ltiConfiguration.domain.trim()
           if(validUrl(ltiConfiguration.domain)) {
-            ltiConfiguration.domain = ltiConfiguration.domain.replace(/^https?:\/\//, "")
+            ltiConfiguration.domain = ltiConfiguration.domain.replace(/^https:\/\//, "")
           }
         }
         if(ltiConfiguration.key) {
