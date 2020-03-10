@@ -58,7 +58,10 @@ const BookContentsLine = ({
   const wideMode = useWideMode()
 
   const onPress = useCallback(
-    () => {
+    event => {
+      event.preventDefault()
+      event.stopPropagation()
+
       if(toolType) {
         setModeToPage && setModeToPage()
         setSelectedToolUid({
