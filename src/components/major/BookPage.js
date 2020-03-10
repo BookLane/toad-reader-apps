@@ -64,6 +64,7 @@ const BookPage = React.memo(props => {
     latest_location,
     inEditMode,
     setInPageTurn,
+    unselectText,
 
     books,
     userDataByBookId,
@@ -201,6 +202,7 @@ const BookPage = React.memo(props => {
       switch(data.identifier) {
 
         case 'startPageTurn': {
+          unselectText()
           setInPageTurn(true)
           return true
         }

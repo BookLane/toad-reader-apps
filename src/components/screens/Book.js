@@ -699,16 +699,13 @@ const Book = React.memo(({
     [ bookId ],
   )
 
-  const blurEvents = useCallback(
-    ({ nativeEvent: { target } }) => {
-      // TODO: This does not yet work on native apps
-      if(Platform.OS !== 'web') return
-
-      if(!target.closest('[data-id=highlighter]')) {
+  const unselectText = useCallback(
+    () => {
+      if(selectionInfo) {
         setSelectionInfo()
       }
     },
-    [ selectedToolUid ],
+    [ selectionInfo ],
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
@@ -862,10 +859,7 @@ const Book = React.memo(({
         />
       }
 
-      <View
-        style={styles.panels}
-        onStartShouldSetResponderCapture={blurEvents}
-      >
+      <View style={styles.panels}>
         <View
           style={[
             styles.mainPanel,
@@ -873,16 +867,18 @@ const Book = React.memo(({
           ]}
         >
           {!widget &&
-            <BookHeader
-              bookId={bookId}
-              title={title}
-              mode={mode}
-              toggleBookView={toggleBookView}
-              backToReading={backToReading}
-              showDisplaySettings={showDisplaySettings}
-              width={width}  // By sending this as a prop, I force a rerender
-              onBackPress={historyGoBack}
-            />
+            <View onStartShouldSetResponderCapture={unselectText}>
+              <BookHeader
+                bookId={bookId}
+                title={title}
+                mode={mode}
+                toggleBookView={toggleBookView}
+                backToReading={backToReading}
+                showDisplaySettings={showDisplaySettings}
+                width={width}  // By sending this as a prop, I force a rerender
+                onBackPress={historyGoBack}
+              />
+            </View>
           }
           {Platform.OS !== 'web' &&
             <View style={styles.pages}>
@@ -928,6 +924,7 @@ const Book = React.memo(({
               toolCfiCounts={toolCfiCounts}
               inEditMode={inEditMode}
               setInPageTurn={setInPageTurn}
+              unselectText={unselectText}
             />
             <BookTools
               bookId={bookId}
@@ -976,11 +973,14 @@ const Book = React.memo(({
           />
         </View>
         {!widget &&
-          <View style={[
-            mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
-            wideMode ? styles.sidePanel : null,
-            (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
-          ]}>
+          <View
+            style={[
+              mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
+              wideMode ? styles.sidePanel : null,
+              (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
+            ]}
+            onStartShouldSetResponderCapture={unselectText}
+          >
             <BookContents
               goTo={goTo}
               bookId={bookId}

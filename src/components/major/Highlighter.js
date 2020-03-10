@@ -159,7 +159,6 @@ const Highlighter = React.memo(({
         ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing) ? styles.containerTop : styles.containerBottom),
         ((selectionInfo.copyTooltipInLowerHalf && wideMode && !widget) ? styles.containerTopWideMode : null),
       ]}
-      data-id="highlighter"
     >
       <HighlighterInstructorHighlightSection
         bookId={bookId}
