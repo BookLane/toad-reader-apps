@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   },
   webViewContainer: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
   },
   webView: {
     width: '100%',
@@ -162,6 +163,7 @@ const VideoTool = React.memo(({
             source={{ uri: videoLink }}
             resizeMode="cover"
             useNativeControls
+            style={styles.webViewContainer}
           />
         )
       }
