@@ -1,8 +1,8 @@
 import React from "react"
 import { StyleSheet, View } from "react-native"
+import { getLocale } from "inline-i18n"
 
 import WebView from "./WebView"
-import { getLocale } from "inline-i18n"
 import { Video } from 'expo-av'
 
 const styles = StyleSheet.create({
@@ -154,6 +154,8 @@ const VideoTool = React.memo(({
             containerStyle={styles.webViewContainer}
             style={styles.webView}
             source={{ uri }}
+            allowsFullscreenVideo={true}
+            allowsInlineMediaPlayback={true}
           />
         )
 

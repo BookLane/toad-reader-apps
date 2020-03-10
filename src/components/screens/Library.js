@@ -153,7 +153,7 @@ const Library = ({
       autoUpdateCoreIdps()
 
       if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
-        ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
       }
     },
     [],
