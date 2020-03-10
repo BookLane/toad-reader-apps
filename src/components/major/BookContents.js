@@ -241,20 +241,26 @@ const BookContents = React.memo(({
       let ordering = 0
 
       if(selectedTool) {
+
         spineIdRef = selectedTool.spineIdRef
-        ordering =  selectedTool.ordering + 1
+        ordering = selectedTool.ordering + 1
 
       } else {
-        const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
+
+        const flatToc = []
+        const addToFlatTocRecursive = tocLevel => {
+          tocLevel.forEach(tocItem => {
+            flatToc.push(tocItem)
+            if(tocItem.subNav) {
+              addToFlatTocRecursive(tocItem.subNav)
+            }
+          })
+        }
+        addToFlatTocRecursive(toc)
+
+        const spineIdRefsInToc = [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
-        visibleTools.forEach(tool => {
-          if(
-            tool.spineIdRef === spineIdRef
-            && !tool.cfi
-          ) {
-            ordering = Math.max(tool.ordering + 1, ordering)
-          }
-        })
+
       }
 
       createTool({
