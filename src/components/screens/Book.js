@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   },
   mainPanel: {
     flex: 1,
+    overflow: 'hidden',
   },
   sidePanel: {
     backgroundColor: '#F2F6FF',
