@@ -51,6 +51,7 @@ const Syllabus = React.memo(({
 }) => {
 
   const { accountId, classroom, idpId, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { uid, syllabus, draftData } = classroom || {}
 
   const wideMode = useWideMode()
 
@@ -61,10 +62,6 @@ const Syllabus = React.memo(({
 
   const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
 
-  if(!classroom) return null
-
-  const { uid, syllabus, draftData } = classroom
-
   const data = {}
   const hasDraft = (draftData || {}).syllabus !== undefined
 
@@ -74,32 +71,8 @@ const Syllabus = React.memo(({
     data.syllabus = syllabus
   }
 
-  if(inEditMode && !viewingPreview) {
-    return (
-      <EditToolData
-        key={changeIndex}
-        classroomUid={uid}
-        isDefaultClassroom={false}
-        accountId={accountId}
-        dataStructure={[
-          {
-            name: 'syllabus',
-            type: 'file',
-            fileTypes: [
-              'application/pdf',
-              'application/msword',
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            ],
-          },
-        ]}
-        data={data}
-        goUpdateTool={goUpdateClassroom}
-      />
-    )
-  }
-
   const uri = data.syllabus && `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}`
-  const tempLocalUri = `${FileSystem.cacheDirectory}syllabus_${uid}_${data.syllabus.filename}`
+  const tempLocalUri = data.syllabus && `${FileSystem.cacheDirectory}syllabus_${uid}_${data.syllabus.filename}`
 
   useEffect(
     () => {
@@ -137,6 +110,32 @@ const Syllabus = React.memo(({
     },
     [ uri, online ],
   )
+
+  if(!classroom) return null
+
+  if(inEditMode && !viewingPreview) {
+    return (
+      <EditToolData
+        key={changeIndex}
+        classroomUid={uid}
+        isDefaultClassroom={false}
+        accountId={accountId}
+        dataStructure={[
+          {
+            name: 'syllabus',
+            type: 'file',
+            fileTypes: [
+              'application/pdf',
+              'application/msword',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
+          },
+        ]}
+        data={data}
+        goUpdateTool={goUpdateClassroom}
+      />
+    )
+  }
 
   if(!uri) return null
 
