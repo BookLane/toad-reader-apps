@@ -435,7 +435,7 @@ export const getDraftToolByCurrentlyPublishedToolUid = tools => {
 
 export const nonEmpty = str => !!(str || "").trim()
 
-export const validUrl = url => /^https:\/\/[^.]+\.[^.]/.test(url || "")
+export const validUrl = url => /^https:\/\/[^. ]+\.[^. ][^ ]*$/.test(url || "")
 
 export const validDomain = domain => /^[-a-z0-9]+\.[-.a-z0-9]+$/i.test(domain || "")
 
