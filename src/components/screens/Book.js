@@ -636,7 +636,7 @@ const Book = React.memo(({
         mode: zooming ? 'page' : mode,
         zoomToInfo: zooming ? null : zoomToInfo,
       })
-      
+
       temporarilyPauseProcessing()
     },
     [ mode, zoomToInfo ],
@@ -856,7 +856,11 @@ const Book = React.memo(({
         <PageCaptureManager
           bookId={bookId}
           setCapturingSnapshots={setCapturingSnapshots}
-          processingPaused={processingPaused}
+          processingPaused={
+            processingPaused
+            || mode !== 'page'
+            || !!selectedTool
+          }
         />
       }
 
