@@ -2219,37 +2219,37 @@ px"),M.css("column-width","auto"),M.css("column-count",X.visibleColumnCount)):(M
 Math.round(X.columnCount),X.spreadCount=Math.ceil(X.columnCount/X.visibleColumnCount),X.currentSpreadIndex>=X.spreadCount&&(X.currentSpreadIndex=X.spreadCount-1);var p=(X.columnCount-1)*X.columnGap,g=\
 ((U?M[0].scrollHeight:M[0].scrollWidth)-p)/X.columnCount;g>X.columnWidth&&(console.debug("ADJUST COLUMN"),console.log(X.columnWidth),console.log(g),X.columnWidth=g),k?b():Z(H)}}function S(){-1==K&&(K=\
 M[0].style.opacity,M.css("opacity","0"))}function T(){-1!=K&&M.css("opacity",K),K=-1}function I(){for(var e=[],t=X.currentSpreadIndex*X.visibleColumnCount,n=0;n<X.visibleColumnCount&&t+n<X.columnCount\
-;n++)e.push(t+n);return e}function R(){if(M){var e;t("img, svg",M).each(function(){e=t(this),e.css("max-width","100%"),e.css("max-height","100vh");var n=e[0].style.height||e.attr("height");e.is("img")\
-&&"block"==e.parent().css("display")&&0==e.siblings().length&&"100%"==n&&e.css("vertical-align","middle")})}}function N(e){return new r(P.idref,e)}t.extend(this,new i);var P,k,O,A,D,F,M,L,U,B,j,H=this\
-,z=u.\$viewport,V=u.spine,W=u.userStyles,\$=u.bookStyles,q=u.iframeLoader,G=!1,J=100,K=-1,Q={width:void 0,height:void 0},X={visibleColumnCount:2,columnGap:20,columnMaxWidth:550,columnMinWidth:400,spread\
-Count:0,currentSpreadIndex:0,columnWidth:void 0,pageOffset:-10,columnCount:0};this.render=function(){var e=s.loadTemplate("reflowable_book_frame",{});D=t(e),z.append(D);var n=d.viewerSettings();return\
- n&&void 0!==n.enableGPUHardwareAccelerationCSS3D||(n=new c({})),n.enableGPUHardwareAccelerationCSS3D&&D.css("transform","translateZ(0)"),p(),H},this.remove=function(){D.remove()},this.isReflowable=fu\
-nction(){return!0},this.onViewportResize=function(){E()&&C()};var Y=void 0;this.setViewSettings=function(e){Y=e,X.columnGap=e.columnGap,X.columnMaxWidth=e.columnMaxWidth,X.columnMinWidth=e.columnMinWi\
-dth,J=e.fontSize,m(),v(),E(),C()},this.applyStyles=function(){s.setStyles(W.getStyles(),D.parent()),f(s.Margins.fromElement(D).padding),E(),setTimeout(C)},this.applyBookStyles=function(){M&&s.setStyle\
-s(\$.getStyles(),M)},this.openPage=function(e){if(G)return void(k=e);if(e.spineItem&&e.spineItem!=P)return k=e,void g(e.spineItem);var t=void 0;if(e.prePageTurnFunc&&e.prePageTurnFunc(),void 0!==e.spin\
-eItemPageIndex)t=e.spineItemPageIndex;else if(e.elementId)(t=A.getPageForElementId(e.elementId))<0&&(t=0);else if(e.elementCfi)try{t=A.getPageForElementCfi(e.elementCfi,["cfi-marker","mo-cfi-highlight\
-"],[],["MathJax_Message"]),t<0&&(t=0)}catch(e){t=0,console.error(e)}else e.firstPage?t=0:e.lastPage?t=X.columnCount-1:(console.debug("No criteria in pageRequest"),t=0);t>=0&&t<X.columnCount?(X.current\
-SpreadIndex=Math.floor(t/X.visibleColumnCount),Z(e.initiator,e.spineItem,e.elementId)):console.log("Illegal pageIndex value: ",t,"column count is ",X.columnCount)};var Z=x;this.openPagePrev=function(e\
-){if(P)if(X.currentSpreadIndex>0)X.currentSpreadIndex--,Z(e);else{var t=V.prevItem(P,!0);if(t){var n=new l(t,e);n.setLastPage(),H.openPage(n)}}},this.openPageNext=function(e){if(P)if(X.currentSpreadIn\
-dex<X.spreadCount-1)X.currentSpreadIndex++,Z(e);else{var t=V.nextItem(P,!0);if(t){var n=new l(t,e);n.setFirstPage(),H.openPage(n)}}},this.getPaginationInfo=function(){var e=new a(V,!1);if(!P)return e;\
-for(var t=I(),n=0,i=t.length;n<i;n++)e.addOpenPage(t[n],X.columnCount,P.idref,P.index);return e},this.bookmarkCurrentPage=function(){if(P)return H.getFirstVisibleCfi()},this.getLoadedSpineItems=functi\
-on(){return[P]},this.getElementByCfi=function(e,t,n,i,r){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElementByCfi(t,n,i,r)},this.getElementById=function(e,t){return e!=P.idref\
-?void console.error("spine item is not loaded"):A.getElementById(t)},this.getElement=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElement(t)},this.getFirstVisible\
-MediaOverlayElement=function(){return A.getFirstVisibleMediaOverlayElement()},this.insureElementVisibility=function(e,n,i){var r=t(n);if(!A.isElementVisible(r)){var o=A.getPageForElement(r);if(-1!=o){\
-var a=new l(P,i);a.setPageIndex(o);var s=n.id;s||(s=n.getAttribute("id")),s&&a.setElementId(s),H.openPage(a)}}},this.getVisibleElementsWithFilter=function(e,t){var n=A.getVisibleElementsWithFilter(nul\
-l,e);return t?[{elements:n,spineItem:P}]:n},this.getVisibleElements=function(e,t){var n=A.getAllVisibleElementsWithSelector(e);return t?[{elements:n,spineItem:P}]:n},this.isElementVisible=function(e){\
-return A.isElementVisible(e)},this.getElements=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElements(t)},this.isNodeFromRangeCfiVisible=function(e,t){if(P.idref==\
-=e)return A.isNodeFromRangeCfiVisible(t)},this.isVisibleSpineItemElementCfi=function(e,t){if(A.isRangeCfi(t))return this.isNodeFromRangeCfiVisible(e,t);var n=this.getElementByCfi(e,t);return n&&this.i\
-sElementVisible(n)},this.getNodeRangeInfoFromCfi=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getNodeRangeInfoFromCfi(t)},this.getFirstVisibleCfi=function(){return N\
-(A.getFirstVisibleCfi())},this.biblemesh_getFirstVisibleCfiOnSpineItemPageIndex=function(e){var t=e*(X.columnWidth+X.columnGap)*-1;return A.getFirstVisibleCfi({left:t})},this.getLastVisibleCfi=functio\
-n(){return N(A.getLastVisibleCfi())},this.getDomRangeFromRangeCfi=function(e,t,n){return t&&e.idref!==t.idref?void console.error("getDomRangeFromRangeCfi: both CFIs must be scoped under the same spine\
-item idref"):A.getDomRangeFromRangeCfi(e.contentCFI,t?t.contentCFI:null,n)},this.getRangeCfiFromDomRange=function(e){return N(A.getRangeCfiFromDomRange(e))},this.getVisibleCfiFromPoint=function(e,t,n)\
-{return N(A.getVisibleCfiFromPoint(e,t,n))},this.getRangeCfiFromPoints=function(e,t,n,i){return N(A.getRangeCfiFromPoints(e,t,n,i))},this.getCfiForElement=function(e){return N(A.getCfiForElement(e))},\
-this.getElementFromPoint=function(e,t){return A.getElementFromPoint(e,t)},this.biblemesh_getColumnCount=function(){return X.columnCount},this.biblemesh_updatePagination=function(){C()}}}),define("read\
-ium_shared_js/models/style",[],function(){return function(e,t){this.selector=e,this.declarations=t,this.setDeclarations=function(e){for(var t in e)e.hasOwnProperty(t)&&(this.declarations[t]=e[t])}}}),\
-define("readium_shared_js/models/style_collection",["./style"],function(e){return function(){var t=[];this.clear=function(){t.length=0},this.findStyle=function(e){for(var n=t.length,i=0;i<n;i++)if(t[i\
-].selector===e)return t[i]},this.addStyle=function(n,i){var r=this.findStyle(n);return r?r.setDeclarations(i):(r=new e(n,i),t.push(r)),r},this.removeStyle=function(e){for(var n=t.length,i=0;i<n;i++)if\
-(t[i].selector===e)return void t.splice(i,1)},this.getStyles=function(){return t},this.resetStyleValues=function(){for(var e=t.length,n=0;n<e;n++){var i=t[n],r=i.declarations
+;n++)e.push(t+n);return e}function R(){if(M){var e;t("img, svg",M).each(function(){e=t(this),e.css("max-width","100%"),e.css("max-height","100vh");var n=e[0].style.height||e.attr("height");"block"==e.\
+parent().css("display")&&0==e.siblings().length&&"100%"==n&&e.css("vertical-align","middle")})}}function N(e){return new r(P.idref,e)}t.extend(this,new i);var P,k,O,A,D,F,M,L,U,B,j,H=this,z=u.\$viewpor\
+t,V=u.spine,W=u.userStyles,\$=u.bookStyles,q=u.iframeLoader,G=!1,J=100,K=-1,Q={width:void 0,height:void 0},X={visibleColumnCount:2,columnGap:20,columnMaxWidth:550,columnMinWidth:400,spreadCount:0,curre\
+ntSpreadIndex:0,columnWidth:void 0,pageOffset:-10,columnCount:0};this.render=function(){var e=s.loadTemplate("reflowable_book_frame",{});D=t(e),z.append(D);var n=d.viewerSettings();return n&&void 0!==\
+n.enableGPUHardwareAccelerationCSS3D||(n=new c({})),n.enableGPUHardwareAccelerationCSS3D&&D.css("transform","translateZ(0)"),p(),H},this.remove=function(){D.remove()},this.isReflowable=function(){retu\
+rn!0},this.onViewportResize=function(){E()&&C()};var Y=void 0;this.setViewSettings=function(e){Y=e,X.columnGap=e.columnGap,X.columnMaxWidth=e.columnMaxWidth,X.columnMinWidth=e.columnMinWidth,J=e.fontS\
+ize,m(),v(),E(),C()},this.applyStyles=function(){s.setStyles(W.getStyles(),D.parent()),f(s.Margins.fromElement(D).padding),E(),setTimeout(C)},this.applyBookStyles=function(){M&&s.setStyles(\$.getStyles\
+(),M)},this.openPage=function(e){if(G)return void(k=e);if(e.spineItem&&e.spineItem!=P)return k=e,void g(e.spineItem);var t=void 0;if(e.prePageTurnFunc&&e.prePageTurnFunc(),void 0!==e.spineItemPageInde\
+x)t=e.spineItemPageIndex;else if(e.elementId)(t=A.getPageForElementId(e.elementId))<0&&(t=0);else if(e.elementCfi)try{t=A.getPageForElementCfi(e.elementCfi,["cfi-marker","mo-cfi-highlight"],[],["MathJ\
+ax_Message"]),t<0&&(t=0)}catch(e){t=0,console.error(e)}else e.firstPage?t=0:e.lastPage?t=X.columnCount-1:(console.debug("No criteria in pageRequest"),t=0);t>=0&&t<X.columnCount?(X.currentSpreadIndex=M\
+ath.floor(t/X.visibleColumnCount),Z(e.initiator,e.spineItem,e.elementId)):console.log("Illegal pageIndex value: ",t,"column count is ",X.columnCount)};var Z=x;this.openPagePrev=function(e){if(P)if(X.c\
+urrentSpreadIndex>0)X.currentSpreadIndex--,Z(e);else{var t=V.prevItem(P,!0);if(t){var n=new l(t,e);n.setLastPage(),H.openPage(n)}}},this.openPageNext=function(e){if(P)if(X.currentSpreadIndex<X.spreadC\
+ount-1)X.currentSpreadIndex++,Z(e);else{var t=V.nextItem(P,!0);if(t){var n=new l(t,e);n.setFirstPage(),H.openPage(n)}}},this.getPaginationInfo=function(){var e=new a(V,!1);if(!P)return e;for(var t=I()\
+,n=0,i=t.length;n<i;n++)e.addOpenPage(t[n],X.columnCount,P.idref,P.index);return e},this.bookmarkCurrentPage=function(){if(P)return H.getFirstVisibleCfi()},this.getLoadedSpineItems=function(){return[P\
+]},this.getElementByCfi=function(e,t,n,i,r){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElementByCfi(t,n,i,r)},this.getElementById=function(e,t){return e!=P.idref?void console\
+.error("spine item is not loaded"):A.getElementById(t)},this.getElement=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElement(t)},this.getFirstVisibleMediaOverlayE\
+lement=function(){return A.getFirstVisibleMediaOverlayElement()},this.insureElementVisibility=function(e,n,i){var r=t(n);if(!A.isElementVisible(r)){var o=A.getPageForElement(r);if(-1!=o){var a=new l(P\
+,i);a.setPageIndex(o);var s=n.id;s||(s=n.getAttribute("id")),s&&a.setElementId(s),H.openPage(a)}}},this.getVisibleElementsWithFilter=function(e,t){var n=A.getVisibleElementsWithFilter(null,e);return t\
+?[{elements:n,spineItem:P}]:n},this.getVisibleElements=function(e,t){var n=A.getAllVisibleElementsWithSelector(e);return t?[{elements:n,spineItem:P}]:n},this.isElementVisible=function(e){return A.isEl\
+ementVisible(e)},this.getElements=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElements(t)},this.isNodeFromRangeCfiVisible=function(e,t){if(P.idref===e)return A.i\
+sNodeFromRangeCfiVisible(t)},this.isVisibleSpineItemElementCfi=function(e,t){if(A.isRangeCfi(t))return this.isNodeFromRangeCfiVisible(e,t);var n=this.getElementByCfi(e,t);return n&&this.isElementVisib\
+le(n)},this.getNodeRangeInfoFromCfi=function(e,t){return e!=P.idref?void console.warn("spine item is not loaded"):A.getNodeRangeInfoFromCfi(t)},this.getFirstVisibleCfi=function(){return N(A.getFirstVi\
+sibleCfi())},this.biblemesh_getFirstVisibleCfiOnSpineItemPageIndex=function(e){var t=e*(X.columnWidth+X.columnGap)*-1;return A.getFirstVisibleCfi({left:t})},this.getLastVisibleCfi=function(){return N(\
+A.getLastVisibleCfi())},this.getDomRangeFromRangeCfi=function(e,t,n){return t&&e.idref!==t.idref?void console.error("getDomRangeFromRangeCfi: both CFIs must be scoped under the same spineitem idref"):\
+A.getDomRangeFromRangeCfi(e.contentCFI,t?t.contentCFI:null,n)},this.getRangeCfiFromDomRange=function(e){return N(A.getRangeCfiFromDomRange(e))},this.getVisibleCfiFromPoint=function(e,t,n){return N(A.g\
+etVisibleCfiFromPoint(e,t,n))},this.getRangeCfiFromPoints=function(e,t,n,i){return N(A.getRangeCfiFromPoints(e,t,n,i))},this.getCfiForElement=function(e){return N(A.getCfiForElement(e))},this.getEleme\
+ntFromPoint=function(e,t){return A.getElementFromPoint(e,t)},this.biblemesh_getColumnCount=function(){return X.columnCount},this.biblemesh_updatePagination=function(){C()}}}),define("readium_shared_js\
+/models/style",[],function(){return function(e,t){this.selector=e,this.declarations=t,this.setDeclarations=function(e){for(var t in e)e.hasOwnProperty(t)&&(this.declarations[t]=e[t])}}}),define("readi\
+um_shared_js/models/style_collection",["./style"],function(e){return function(){var t=[];this.clear=function(){t.length=0},this.findStyle=function(e){for(var n=t.length,i=0;i<n;i++)if(t[i].selector===\
+e)return t[i]},this.addStyle=function(n,i){var r=this.findStyle(n);return r?r.setDeclarations(i):(r=new e(n,i),t.push(r)),r},this.removeStyle=function(e){for(var n=t.length,i=0;i<n;i++)if(t[i].selecto\
+r===e)return void t.splice(i,1)},this.getStyles=function(){return t},this.resetStyleValues=function(){for(var e=t.length,n=0;n<e;n++){var i=t[n],r=i.declarations
 ;for(var o in r)r.hasOwnProperty(o)&&(r[o]="")}}}}),define("readium_shared_js/models/switches",["jquery","underscore"],function(e,t){var n=function(){};return n.apply=function(n){function i(e){var n=e\
 .attributes["required-namespace"];if(!n)return console.log("Encountered a case statement with no required-namespace"),!1;var i=["http://www.w3.org/1998/Math/MathML"];return t.include(i,n.value)}var r=\
 window.navigator.userAgent.indexOf("Trident")>0||window.navigator.userAgent.indexOf("Edge")>0?function(e){return"epub\\\\:"+e}:function(e){return e};t.each(n.querySelectorAll(r("switch")),function(n){va\
@@ -2335,9 +2335,9 @@ angeCfi(e,t,n)},this.getRangeCfiFromDomRange=function(e){if(M)return M.getRangeC
 RangeCfiFromPoints=function(e,t,n,i,r){if(M)return M.getRangeCfiFromPoints(e,t,n,i,r)},this.getCfiForElement=function(e){if(M)return M.getCfiForElement(e)},this.biblemesh_getColumnCount=function(){if(\
 M&&M.biblemesh_getColumnCount)return M.biblemesh_getColumnCount()},this.biblemesh_updatePagination=function(){if(M&&M.biblemesh_updatePagination)return M.biblemesh_updatePagination()}};return b.VIEW_T\
 YPE_COLUMNIZED=1,b.VIEW_TYPE_FIXED=2,b.VIEW_TYPE_SCROLLED_DOC=3,b.VIEW_TYPE_SCROLLED_CONTINUOUS=4,b}),define("text",{load:function(e){throw new Error("Dynamic load not allowed: "+e)}}),define("text!ve\
-rsion.json",[],function(){return'{"readiumJsViewer":{"sha":"3cfa5a4eeed7d18a3c4d3dd0f5b5dd367d569c17","clean":true,"version":"0.24.0","chromeVersion":"2.24.0","tag":"1.0.8-170-g3cfa5a4","branch":"for-\
-version-2","release":false},"readiumJs":{"sha":"6e333d68fd2d963e5802686775eafdd8be5a84a6","clean":true,"version":"0.24.0","tag":"1.0.8-64-g6e333d6","branch":"for-version-2","release":false},"readiumSh\
-aredJs":{"sha":"5ff8fc5ea5ee9566a6a4b5daddbed5788fd4ffc6","clean":true,"version":"0.24.0","tag":"1.0.8-57-g5ff8fc5","branch":"for-version-2","release":false},"readiumCfiJs":{"sha":"0a2a6d2d0e4f8cdf53e\
+rsion.json",[],function(){return'{"readiumJsViewer":{"sha":"7f84acce9e7025ef8e8745c299a24235a5d6f1d8","clean":true,"version":"0.24.0","chromeVersion":"2.24.0","tag":"1.0.8-171-g7f84acc","branch":"for-\
+version-2","release":false},"readiumJs":{"sha":"8c24e1ac14dccb03f1c8159443a8abe2f2dfcff2","clean":true,"version":"0.24.0","tag":"1.0.8-65-g8c24e1a","branch":"for-version-2","release":false},"readiumSh\
+aredJs":{"sha":"2186ecb5e924bc2874fd4512e169a76af5c0ce5b","clean":true,"version":"0.24.0","tag":"1.0.8-58-g2186ecb","branch":"for-version-2","release":false},"readiumCfiJs":{"sha":"0a2a6d2d0e4f8cdf53e\
 6c1c6f72171ae33c97ab4","clean":true,"version":"0.24.0","tag":"1.0.8-21-g0a2a6d2","branch":"for-version-2","release":false}}'}),define("readium_js/epub-fetch/markup_parser",[],function(){return functio\
 n(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(),"text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}}),define("readium_js/epub-fetch/d\
 iscover_content_type",["jquery","URIjs"],function(e,t){var n=void 0,i=function(){var n=this;i.suffixContentTypeMap={css:"text/css",epub:"application/epub+zip",gif:"image/gif",html:"text/html",jpg:"ima\
