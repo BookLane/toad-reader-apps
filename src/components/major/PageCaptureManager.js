@@ -37,7 +37,7 @@ const PageCaptureManager = ({
   readerStatus,
 }) => {
 
-  const { visibleTools, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
+  const { visibleTools, instructorHighlights, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: false })
 
   const pageCaptureProps = useRef()
   const skipList = useRef({})
@@ -204,6 +204,7 @@ const PageCaptureManager = ({
       reportInfoOrCapture={reportInfoOrCapture}
       reportFinished={reportFinished}
       processingPaused={processingPaused}
+      doReportToolSpots={bookVersion !== 'BASE'}
     />
   )
 }

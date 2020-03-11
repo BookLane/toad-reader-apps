@@ -82,6 +82,7 @@ const PageWebView = ({
     initialToolCfiCountsInThisSpine,
     initialAddlParams,
     // instructorHighlights,  // used in getHighlightsArray functions
+    doReportToolSpots,
     viewRef,
     webViewRef,
     containerStyle,
@@ -230,6 +231,7 @@ const PageWebView = ({
         .replace(/(<head>)/i, `
           $1
           <script>
+            window.doReportToolSpots = ${doReportToolSpots};
             window.initialToolCfiCountsObjFromWebView = ${JSON.stringify(initialToolCfiCountsInThisSpine)};
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
@@ -272,6 +274,7 @@ const PageWebView = ({
 
         // The rest of the props are ignored when on web platform
         injectedJavaScript={`
+          window.doReportToolSpots = ${doReportToolSpots};
           window.initialToolCfiCountsObjFromWebView = ${JSON.stringify(initialToolCfiCountsInThisSpine)};
           window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
           window.isReactNativeWebView = true;

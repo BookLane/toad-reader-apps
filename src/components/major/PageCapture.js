@@ -45,6 +45,7 @@ const PageCapture = ({
   reportInfoOrCapture,
   reportFinished,
   processingPaused,
+  doReportToolSpots,
 
   addSpinePageCfis,
 }) => {
@@ -292,17 +293,21 @@ const PageCapture = ({
 
         reportInfoOrCapture(uriAsKey)
 
-        const { offsetX, offsetY, toolSpots } = toolSpotSets.current
+        const { offsetX, offsetY, toolSpots } = toolSpotSets.current || {}
 
-        setToolSpots({
-          offsetX: offsetX + realMarginHorizontal,
-          spots: (toolSpots[pageIndexInSpine.current] || []).map(({ y, cfi, ordering=0 }) => ({
-            y: y + offsetY + truePageMarginTop,
-            spineIdRef,
-            cfi,
-            ordering,
-          })),
-        })
+        setToolSpots(
+          !toolSpots
+            ? {}  // A new object is needed here so as to make sure we get to step 3.
+            : {
+              offsetX: offsetX + realMarginHorizontal,
+              spots: (toolSpots[pageIndexInSpine.current] || []).map(({ y, cfi, ordering=0 }) => ({
+                y: y + offsetY + truePageMarginTop,
+                spineIdRef,
+                cfi,
+                ordering,
+              })),
+            }
+        )
 
         return true
 
@@ -337,6 +342,7 @@ const PageCapture = ({
         initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
         initialToolCfiCountsInThisSpine={toolCfiCountsInThisSpine}
         instructorHighlights={instructorHighlights}
+        doReportToolSpots={doReportToolSpots}
       />
       <BookTools
         bookId={bookId}
