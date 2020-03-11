@@ -47,6 +47,7 @@ const BookContents = React.memo(({
   toggleInEditMode,
   backToReading,
   setModeToPage,
+  hideFABs,
 
   books,
   userDataByBookId,
@@ -313,14 +314,14 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && inEditMode && !viewingFrontMatter &&
+      {showAddToolButton && inEditMode && !viewingFrontMatter && !hideFABs &&
         <FAB
           iconName="md-add"
           status="primary"
           onPress={createNewTool}
         />
       }
-      {!!backToReading &&
+      {!!backToReading && !hideFABs &&
         <FAB
           iconName="book-open-variant"
           iconPack="materialCommunity"

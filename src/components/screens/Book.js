@@ -997,6 +997,7 @@ const Book = React.memo(({
               toggleInEditMode={toggleInEditMode}
               backToReading={!wideMode ? backToReading : null}
               setModeToPage={!wideMode ? setModeToPage : null}
+              hideFABs={mode !== 'contents' && !(wideMode && sidePanelSettings.open)}
             />
           </View>
         }
