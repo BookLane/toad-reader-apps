@@ -1,8 +1,13 @@
 import { useMemo } from "react"
 import { Platform } from "react-native"
+
 import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid } from "../utils/toolbox"
+import useRouterState from "./useRouterState"
 
 const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawInEditMode }) => {
+
+  const { routerState } = useRouterState()
+  const { widget } = routerState
 
   const book = useMemo(
     () => (books[bookId] || {}),
@@ -68,7 +73,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const enhancedIsOff = !classroomUid
   const hasDraftData = Object.keys((classroom || {}).draftData || {}).length > 0
   const isDefaultClassroom = classroomUid === defaultClassroomUid
-  const bookVersion = !accounts ? 'BASE' : Object.values(accounts)[0].version
+  const bookVersion = (!accounts || widget) ? 'BASE' : Object.values(accounts)[0].version
   const hasFrontMatter = !!(
     (classroom || {}).syllabus
     || (classroom || {}).introduction
