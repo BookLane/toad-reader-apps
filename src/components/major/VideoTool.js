@@ -1,9 +1,12 @@
-import React from "react"
-import { StyleSheet, View } from "react-native"
+import React, { useEffect } from "react"
+import { StyleSheet, View, Dimensions } from "react-native"
+import { ScreenOrientation } from "expo"
 import { getLocale } from "inline-i18n"
+import { Video } from 'expo-av'
+
+import useWideMode from "../../hooks/useWideMode"
 
 import WebView from "./WebView"
-import { Video } from 'expo-av'
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +36,25 @@ const VideoTool = React.memo(({
   endTime,
   subtitlesOn,
 }) => {
+
+  const wideModeWithEitherOrientation = useWideMode(true)
+
+  useEffect(
+    () => async () => {
+      if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
+
+        const { width, height } = Dimensions.get('window')
+
+        if(width > height) {
+          // iOS has a bug where Dimensions presents backwards values after a fullscreen video
+          // which had its orientation changed. The following is the only fix I have found.
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+        }
+      }
+    },
+    [],
+  )
 
   videoLink = videoLink || ""
 
@@ -155,7 +177,7 @@ const VideoTool = React.memo(({
             style={styles.webView}
             source={{ uri }}
             allowsFullscreenVideo={true}
-            allowsInlineMediaPlayback={true}
+            // allowsInlineMediaPlayback={true}
           />
         )
 
