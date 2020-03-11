@@ -8,8 +8,7 @@ import useDimensions from "../../hooks/useDimensions"
 
 const styles = StyleSheet.create({
   modalBackdrop: {
-    backgroundColor: "black",
-    opacity: 0.5,
+    backgroundColor: "rgba(0, 0, 0, .5)",
   },
   modalBackdropInvisible: {
     backgroundColor: "transparent",
