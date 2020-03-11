@@ -52,6 +52,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999999',
   },
+  subversion: {
+    fontSize: 9,
+    textAlign: 'center',
+    color: '#ddd',
+    paddingBottom: 20,
+  },
 })
 
 const AppMenu = ({
@@ -303,18 +309,23 @@ const AppMenu = ({
     }
   }
 
-  const renderFooter = !LINK_TO_TOAD_READER_MARKETING_SITE ? null : useCallback(
+  const renderFooter = useCallback(
     () => (
-      <TouchableOpacity
-        onPress={goToToadReaderMarketingSite}
-      >
-        <View style={styles.createdByContainer}>
-          <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
-          {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
-            <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
-          }
-        </View>
-      </TouchableOpacity>
+      <>
+        {!!LINK_TO_TOAD_READER_MARKETING_SITE &&
+          <TouchableOpacity
+            onPress={goToToadReaderMarketingSite}
+          >
+            <View style={styles.createdByContainer}>
+              <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
+              {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
+                <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
+              }
+            </View>
+          </TouchableOpacity>
+        }
+        <Text style={styles.subversion}>Updated PUSH_DATE_STRING</Text>
+      </>
     ),
     [],
   )
