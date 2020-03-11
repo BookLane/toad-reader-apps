@@ -17,18 +17,18 @@ import ToolChip from "./ToolChip"
 
 const styles = StyleSheet.create({
   numWithinContainer: {
-    borderRadius: 10,
+    borderRadius: 14,
     borderWidth: 1,
-    width: 17,
-    height: 17,
+    width: 28,
+    height: 28,
     flexShrink: 0,
-    marginVertical: -6,
+    marginVertical: -12,
     marginLeft: 8,
   },
   numWithin: {
-    lineHeight: 14,
+    lineHeight: 26,
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '600',
   },
   popover: {

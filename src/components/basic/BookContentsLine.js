@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   label: {
+    lineHeight: 18,
     flexShrink: 1,
   },
 })
