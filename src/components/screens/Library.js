@@ -411,7 +411,7 @@ const Library = ({
     <SideMenu
       open={pathname === '/drawer'}
       onClose={historyGoBack}
-      menu={<AppMenu onImportBooks={openImportBooks} />}
+      menu={widget ? null : <AppMenu onImportBooks={openImportBooks} />}
     >
 
       <Switch>
