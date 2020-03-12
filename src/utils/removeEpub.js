@@ -12,7 +12,7 @@ const {
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2020-02-24"
+const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2020-03-12"
 // The exact value of this constant does not so much matter. It just needs to uniquely
 // change each time there is a modification to the apps that may change the layout
 // flow of the epubs.
