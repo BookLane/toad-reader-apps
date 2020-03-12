@@ -83,7 +83,6 @@ const Library = ({
 
 }) => {
 
-  const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
@@ -155,13 +154,6 @@ const Library = ({
       if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
       }
-    },
-    [],
-  )
-
-  useEffect(
-    () => {
-      setDownloadPaused(/^\/book\//.test(pathname))
     },
     [],
   )
@@ -444,15 +436,14 @@ const Library = ({
                   )
               )
             }
-
-            <BookDownloader
-              downloadPaused={downloadPaused}
-            />
-
           </SafeLayout>
           
         </Route>
       </Switch>
+
+      <BookDownloader
+        downloadPaused={/^\/book\//.test(pathname)}
+      />
 
       <BookImporter
         open={!!importingBooks}
