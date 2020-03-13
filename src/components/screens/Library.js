@@ -106,7 +106,7 @@ const Library = ({
       // If it is a direct load to something other than the Library, then add
       // the Library to the browser history so that calling back on the router
       // works properly.
-      if(pathname !== '/') {
+      if(pathname !== '/' && !widget) {
         historyReplace('/')
         historyPush(pathname, routerState)
       }
