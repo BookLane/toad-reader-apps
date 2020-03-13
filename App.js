@@ -147,7 +147,7 @@ const App = () => {
               })
         
             if(query.highlight) {  // it is a share quote
-              window.location.href = `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`
+              window.history.replaceState("", "", `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`)
 
             } else if(query.goto) {
               try {
@@ -161,15 +161,17 @@ const App = () => {
 
               delete query.goto
 
-              window.location.href = `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`
+              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`)
 
             } else {
-              window.location.href = `${window.location.origin}/#${window.location.pathname}`
+              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}`)
             }
 
           } else {
-            window.location.href = `${window.location.origin}/#/`
+            window.history.replaceState("", "", `${window.location.origin}/#/`)
           }
+
+          window.location.reload()
 
           return
         }
