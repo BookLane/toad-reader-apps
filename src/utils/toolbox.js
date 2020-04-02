@@ -510,5 +510,12 @@ export const getTimeLine = ({ date, timestamp, short }) => {
     delete options.minute
   }
 
-  return date.toLocaleTimeString(getLocale(), options)
+  let timeLine = date.toLocaleTimeString(getLocale(), options)
+  const timeLinePieces = timeLine.split(':')
+  
+  if(timeLinePieces.length === 3) {  // i.e. toLocaleTimeString did not accept options (an Android issue)
+    timeLine = `${timeLinePieces[0]}:${timeLinePieces[1]}`
+  }
+
+  return timeLine
 }
