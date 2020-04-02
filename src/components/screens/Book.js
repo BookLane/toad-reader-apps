@@ -975,6 +975,7 @@ const Book = React.memo(({
             bookId={bookId}
             inEditMode={inEditMode}
             closeToolAndExitReading={closeToolAndExitReading}
+            goTo={goTo}
           />
         </View>
         {!widget &&

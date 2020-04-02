@@ -25,6 +25,7 @@ const ReadingSchedule = React.memo(({
   inEditMode,
   viewingPreview,
   goUpdateClassroom,
+  goTo,
 
   books,
   userDataByBookId,
@@ -154,6 +155,7 @@ const ReadingSchedule = React.memo(({
           editable={!!inEditMode && !viewingPreview}
           goUpdate={goUpdate}
           scheduleDatesToDisplay={scheduleDatesToDisplay}
+          goTo={goTo}
         />
       ))}
     </View>

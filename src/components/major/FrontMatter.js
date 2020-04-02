@@ -123,6 +123,7 @@ const FrontMatter = React.memo(({
   bookId,
   inEditMode,
   closeToolAndExitReading,
+  goTo,
 
   books,
   userDataByBookId,
@@ -250,6 +251,7 @@ const FrontMatter = React.memo(({
           inEditMode={inEditMode}
           viewingPreview={viewingPreview}
           goUpdateClassroom={goUpdateClassroom}
+          goTo={goTo}
         />
       ),
     }]),

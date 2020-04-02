@@ -259,6 +259,17 @@ const mapping = {
       },
     },
     {
+      component: 'ActionText',
+      parameters: {
+        state: {
+          hover: {
+            color: 'color-primary-active',
+            textDecorationLine: 'underline',
+          },
+        },
+      },
+    },
+    {
       component: 'BookContentsLine',
       variantGroups: {
         uiStatus: {

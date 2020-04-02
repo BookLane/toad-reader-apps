@@ -9,6 +9,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import { getDateLine, getTimeLine } from "../../utils/toolbox"
 import useWideMode from "../../hooks/useWideMode"
+import { setSelectedToolUid } from "../../redux/actions"
 
 import Dialog from "./Dialog"
 import Button from "../basic/Button"
@@ -16,6 +17,7 @@ import Datepicker from "../basic/Datepicker"
 import Icon from "../basic/Icon"
 import CheckBox from "../basic/CheckBox"
 import Input from "../basic/Input"
+import ActionText from "../basic/ActionText"
 
 const styles = StyleSheet.create({
   line: {
@@ -87,8 +89,11 @@ const ReadingScheduleDate = React.memo(({
   editable,
   goUpdate,
   scheduleDatesToDisplay,
+  goTo,
 
   books,
+
+  setSelectedToolUid,
 }) => {
 
   const { spines } = useClassroomInfo({ books, bookId })
@@ -257,6 +262,14 @@ const ReadingScheduleDate = React.memo(({
     [ checkedSpines ],
   )
 
+  const onItemPress = useCallback(
+    ({ id: spineIdRef }) => {
+      setSelectedToolUid({ bookId })  // unselects any tool
+      goTo({ spineIdRef })
+    },
+    [ bookId, goTo ],
+  )
+
   const EditButtonIcon = useCallback(
     style => (
       <Icon
@@ -303,12 +316,14 @@ const ReadingScheduleDate = React.memo(({
           </View>
           <View style={styles.spines}>
             {itemsInOrder.map(({ spineIdRef, label }) => (
-              <Text
+              <ActionText
+                id={spineIdRef}
                 key={spineIdRef}
                 style={styles.spine}
+                onPress={onItemPress}
               >
                 {label}
-              </Text>
+              </ActionText>
             ))}
           </View>
           {!!editable &&
@@ -417,6 +432,7 @@ const mapStateToProps = ({ books }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(ReadingScheduleDate)
