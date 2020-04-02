@@ -131,6 +131,22 @@ const mapping = {
       isCustom: false,
     },
     {
+      component: 'Datepicker',
+      variantGroups: {
+        status: {
+          basic: {
+            labelMarginBottom: 8,
+            labelFontSize: 15,
+            labelFontWeight: 'normal',
+            iconWidth: 22,
+            iconHeight: 22,
+            textColor: 'black',
+          },
+        },
+      },
+      isCustom: false,
+    },
+    {
       component: 'Layout',
       parameters: {
         flex: 1,

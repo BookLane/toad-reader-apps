@@ -184,6 +184,7 @@
           "closes_at": null,
           "created_at": 1573659531000,
           "syllabus": null,
+          "scheduleDates": [],
           "introduction": null,
           "lti_configurations": null,
           "draftData": {},

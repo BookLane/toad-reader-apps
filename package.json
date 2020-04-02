@@ -38,7 +38,7 @@
     "@expo/vector-icons": "^10.0.0",
     "@react-native-community/hooks": "^2.4.3",
     "@react-native-community/netinfo": "4.6.0",
-    "@ui-kitten/components": "4.4.0",
+    "@ui-kitten/components": "4.4.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "babel-preset-expo": "^8.0.0",
     "deepmerge": "4.2.2",

@@ -2,7 +2,7 @@ import React from "react"
 import { Platform, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import { i18n } from "inline-i18n"
+import { i18n, getLocale } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
 
@@ -475,3 +475,40 @@ export const objectMap = (obj, fn) => (
     )
   )
 )
+
+export const getDateLine = ({ timestamp, short }) => {
+  const date = new Date(timestamp)
+  const now = new Date()
+
+  const options = {
+    year: 'numeric',
+    month: short ? 'short' : 'long',
+    day: 'numeric',
+  }
+
+  if(
+    short
+    && date.getTime() > now.getTime() - (1000*60*60*24*31)  // greater than a month ago
+    && date.getTime() < now.getTime() + (1000*60*60*24*31*5)  // less than 5 months in the future
+  ) {
+    delete options.year
+  }
+
+  return date.toLocaleDateString(getLocale(), options)
+}
+
+export const getTimeLine = ({ date, timestamp, short }) => {
+  date = date || new Date(timestamp)
+
+  const options = {
+    hour: 'numeric',
+    minute: '2-digit',
+    // timeZoneName: 'short',
+  }
+
+  if(short && date.getMinutes() === 0) {
+    delete options.minute
+  }
+
+  return date.toLocaleTimeString(getLocale(), options)
+}

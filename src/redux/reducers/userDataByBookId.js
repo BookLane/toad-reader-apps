@@ -164,7 +164,7 @@ export default function(state = initialState, action) {
 
             return {
               ...newClassroom,
-              members: newMember,
+              members: newMembers,
               tools: newTools,
             }
           }
@@ -347,7 +347,7 @@ export default function(state = initialState, action) {
             role: 'INSTRUCTOR',
             updated_at: now,
           },
-        ]
+        ],
       }
 
       classrooms.push(newClassroom)
@@ -358,6 +358,7 @@ export default function(state = initialState, action) {
   
             ;[
               'syllabus',
+              'scheduleDates',
               'introduction',
               'lti_configurations',
               'classroom_highlights_mode',
@@ -430,6 +431,7 @@ export default function(state = initialState, action) {
             'access_code',
             'instructor_access_code',
             'syllabus',
+            'scheduleDates',
             'introduction',
             'lti_configurations',
             'classroom_highlights_mode',

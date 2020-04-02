@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { StyleSheet, View, Dimensions } from "react-native"
+import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import { ScreenOrientation } from "expo"
 import { getLocale } from "inline-i18n"
 import { Video } from 'expo-av'

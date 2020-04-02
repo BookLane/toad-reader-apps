@@ -76,6 +76,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const bookVersion = (!accounts || widget) ? 'BASE' : Object.values(accounts)[0].version
   const hasFrontMatter = !!(
     (classroom || {}).syllabus
+    || ((classroom || {}).scheduleDates || []).length > 0
     || (classroom || {}).introduction
     || (
       ((classroom || {}).lti_configurations || []).length > 0
@@ -180,6 +181,26 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const viewingEnhancedHomepage = selectedToolUid === 'ENHANCED HOMEPAGE'
   const viewingFrontMatter = selectedToolUid === 'FRONT MATTER'
 
+  const scheduleDatesToDisplay = useMemo(
+    () => {
+      if(!classroom) return null
+
+      const { scheduleDates, draftData } = classroom
+
+      let datesToDisplay = []
+      const hasDraft = (draftData || {}).scheduleDates !== undefined
+    
+      if(inEditMode && hasDraft) {
+        datesToDisplay = draftData.scheduleDates
+      } else if(scheduleDates) {
+        datesToDisplay = scheduleDates
+      }
+
+      return datesToDisplay
+    },
+    [ classroom, inEditMode ],
+  )
+
   return {
     book,
     toc,
@@ -211,6 +232,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     instructorHighlights,  // requires userDataByBookId to be sent in
     draftToolByCurrentlyPublishedToolUid,  // requires userDataByBookId to be sent in
     visibleTools,  // requires userDataByBookId and inEditMode to be sent in
+    scheduleDatesToDisplay,  // requires userDataByBookId and inEditMode to be sent in
   }
   
 }

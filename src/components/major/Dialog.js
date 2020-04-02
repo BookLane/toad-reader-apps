@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     padding: 20,
     paddingTop: 0,
+    flex: 1,
   },
   messageParagraph: {
     marginVertical: 10,
@@ -51,6 +52,9 @@ const styles = StyleSheet.create({
   button: {
     margin: 4,
   },
+  scrollView: {
+    flexShrink: 1,
+  }
 })
 
 const Dialog = React.memo(({
@@ -61,6 +65,7 @@ const Dialog = React.memo(({
   style,
   invisibleBackdrop,
   submitting,
+  noScroll,
 
   // specific to type="info"
   onClose,
@@ -70,6 +75,7 @@ const Dialog = React.memo(({
   // specific to type="confirm"
   onConfirm,
   onCancel,
+  confirmButtonDisabled,
   confirmButtonText,
   cancelButtonText,
   confirmButtonStatus="primary",
@@ -111,6 +117,7 @@ const Dialog = React.memo(({
             size="small"
             onPress={onConfirm}
             status={confirmButtonStatus}
+            disabled={!!confirmButtonDisabled}
             style={[
               styles.button,
             ]}
@@ -140,6 +147,8 @@ const Dialog = React.memo(({
     }
   }
 
+  const MaybeScrollView = noScroll ? View : ScrollView
+
   return (
     <Modal
       visible={!!open}
@@ -147,42 +156,44 @@ const Dialog = React.memo(({
       backdropStyle={invisibleBackdrop ? styles.modalBackdropInvisible : styles.modalBackdrop}
     >
       <View style={{ width }}>
-        <ScrollView style={[
+        <View style={[
           styles.container,
           { maxHeight },
           style,
         ]}>
           <Text style={styles.title}>{title || titles[type]}</Text>
-          {!!message &&
-            <View style={styles.messageContainer}>
-              {!(message instanceof Array) ? message : message.map((paragraph, idx) => (
-                <View
-                  key={idx}
-                  style={[
-                    styles.messageParagraph,
-                    idx === 0 ? styles.messageFirstParagraph : null,
-                  ]}
-                >
-                  <Text
+          <MaybeScrollView style={styles.scrollView}>
+            {!!message &&
+              <View style={styles.messageContainer}>
+                {!(message instanceof Array) ? message : message.map((paragraph, idx) => (
+                  <View
+                    key={idx}
                     style={[
-                      styles.messageText,
-                      paragraph.textStyle,
+                      styles.messageParagraph,
+                      idx === 0 ? styles.messageFirstParagraph : null,
                     ]}
                   >
-                    {paragraph.text || paragraph}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          }
-          {!message && content}
+                    <Text
+                      style={[
+                        styles.messageText,
+                        paragraph.textStyle,
+                      ]}
+                    >
+                      {paragraph.text || paragraph}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            }
+            {!message && content}
+          </MaybeScrollView>
           {buttons.length > 0 &&
             <View style={styles.buttonContainer}>
               {buttons}
             </View>
           }
           {!!submitting && <CoverAndSpin />}
-        </ScrollView>
+        </View>
       </View>
     </Modal>
   )

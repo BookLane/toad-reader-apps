@@ -1,13 +1,15 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { useLayout } from '@react-native-community/hooks'
 import { styled } from '@ui-kitten/components'
 
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useThemedStates from "../../hooks/useThemedStates"
 import useWideMode from "../../hooks/useWideMode"
 import { setSelectedToolUid } from "../../redux/actions"
+import { getDateLine, getTimeLine } from "../../utils/toolbox"
 
 import ToolChip from './ToolChip'
 import GroupedToolsChip from './GroupedToolsChip'
@@ -27,6 +29,24 @@ const styles = StyleSheet.create({
   label: {
     lineHeight: 18,
     flexShrink: 1,
+  },
+  spacer: {
+    flex: 1,
+  },
+  dateAndTime: {
+    marginLeft: 7,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(0, 0, 0, .15)',
+    paddingLeft: 4,
+    width: 45,
+  },
+  date: {
+    fontWeight: '300',
+    fontSize: 11,
+  },
+  time: {
+    fontWeight: '100',
+    fontSize: 9,
   },
 })
 
@@ -49,11 +69,36 @@ const BookContentsLine = ({
   inEditMode,
   uiStatus,
 
+  books,
+  userDataByBookId,
+
   setSelectedToolUid,
 
   themedStyle,
   dispatch,
 }) => {
+
+  const { scheduleDatesToDisplay } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
+  const dueDate = useMemo(
+    () => {
+      if(!scheduleDatesToDisplay) return null
+
+      let date
+
+      scheduleDatesToDisplay.some(({ due_at, items }) => {
+        return items.some(item => {
+          if(item.spineIdRef === spineIdRef) {
+            date = due_at
+            return true
+          }
+        })
+      })
+
+      return date
+    },
+    [ scheduleDatesToDisplay, spineIdRef ],
+  )
 
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
   const wideMode = useWideMode()
@@ -123,6 +168,17 @@ const BookContentsLine = ({
               setModeToPage={setModeToPage}
             />
           }
+          <View style={styles.spacer} />
+          {dueDate &&
+            <View style={styles.dateAndTime}>
+              <Text style={styles.date}>
+                {getDateLine({ timestamp: dueDate, short: true })}
+              </Text>
+              <Text style={styles.time}>
+                {getTimeLine({ timestamp: dueDate, short: true })}
+              </Text>
+            </View>
+          }
         </>
       }
       
@@ -142,7 +198,9 @@ const BookContentsLine = ({
 
 }
 
-const mapStateToProps = () => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
+  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

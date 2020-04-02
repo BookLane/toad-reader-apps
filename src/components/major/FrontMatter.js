@@ -11,6 +11,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { updateClassroom } from "../../redux/actions"
 
 import Syllabus from "./Syllabus"
+import ReadingSchedule from "./ReadingSchedule"
 import InstructorsIntroduction from "./InstructorsIntroduction"
 import LTIConfigurations from "./LTIConfigurations"
 import StatusAndActions from "./StatusAndActions"
@@ -155,8 +156,9 @@ const FrontMatter = React.memo(({
 
   if(!viewingFrontMatter) return null
 
-  const { syllabus, introduction, lti_configurations } = classroom
+  const { syllabus, scheduleDates, introduction, lti_configurations } = classroom
   const draftSyllabus = (classroom.draftData || {}).syllabus
+  const draftScheduleDates = (classroom.draftData || {}).scheduleDates
   const draftIntroduction = (classroom.draftData || {}).introduction
   const draftLTIConfigurations = (classroom.draftData || {}).lti_configurations
 
@@ -173,6 +175,23 @@ const FrontMatter = React.memo(({
           inEditMode
             ? true
             : syllabus
+        )
+    )
+  )
+
+  const showScheduleDates = !!(
+    !isDefaultClassroom
+    && (
+      viewingPreview
+        ? (
+          draftSyllabus !== undefined
+            ? (draftScheduleDates || []).length > 0
+            : (scheduleDates || []).length > 0
+        )
+        : (
+          inEditMode
+            ? true
+            : (scheduleDates || []).length > 0
         )
     )
   )
@@ -223,13 +242,17 @@ const FrontMatter = React.memo(({
         />
       ),
     }]),
-    // {
-    //   title: i18n("Reading schedule", "", "enhanced"),
-    //   content: (
-    //     <ReaderSchedule
-    //     />
-    //   ),
-    // },
+    ...(!showScheduleDates ? [] : [{
+      title: i18n("Reading schedule", "", "enhanced"),
+      content: (
+        <ReadingSchedule
+          bookId={bookId}
+          inEditMode={inEditMode}
+          viewingPreview={viewingPreview}
+          goUpdateClassroom={goUpdateClassroom}
+        />
+      ),
+    }]),
     ...(!showIntroduction ? [] : [{
       title: i18n("Instructor’s introduction", "", "enhanced"),
       content: (
