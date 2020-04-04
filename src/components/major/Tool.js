@@ -12,6 +12,7 @@ import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
 import LTITool from "./LTITool"
 import HeaderIcon from "../basic/HeaderIcon"
+import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 
 const topSection = {
   paddingHorizontal: 30,
@@ -67,6 +68,13 @@ const styles = StyleSheet.create({
     top: -20,
     right: -10,
   },
+  saveState: {
+    position: 'absolute',
+    top: -33,
+    bottom: -20,
+    right: 24,
+    height: 40,
+  },
 })
 
 const Tool = React.memo(({
@@ -99,6 +107,7 @@ const Tool = React.memo(({
   const isInlineTool = !!cfi
 
   let ToolComponent = View
+  let editableByStudent = false
 
   switch(toolType) {
     case 'NOTES_INSERT': {
@@ -111,10 +120,12 @@ const Tool = React.memo(({
     }
     case 'REFLECTION_QUESTION': {
       ToolComponent = ReflectionQuestionTool
+      editableByStudent = true
       break
     }
     case 'QUIZ': {
       ToolComponent = QuizTool
+      editableByStudent = true
       break
     }
     case 'LTI': {
@@ -144,6 +155,11 @@ const Tool = React.memo(({
               uiStatus="faded"
               style={wideMode ? styles.closeWideMode : styles.close}
             />
+            {!wideMode && editableByStudent &&
+              <SaveStateHeaderIcon
+                style={styles.saveState}
+              />
+            }
           </View>
         }
       </View>
