@@ -21,8 +21,7 @@ import EnhancedHeaderLine from "../basic/EnhancedHeaderLine"
 import EnhancedEditButton from "../basic/EnhancedEditButton"
 
 const container = {
-  paddingTop: 10,
-  paddingBottom: 5,
+  paddingVertical: 10,
 }
 
 const styles = StyleSheet.create({
@@ -32,6 +31,9 @@ const styles = StyleSheet.create({
   containerWideMode: {
     ...container,
     paddingTop: container.paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
+  },
+  containerWithFrontMatter: {
+    paddingBottom: 5,
   },
   frontMatterContainer: {
     paddingVertical: 5,
@@ -219,6 +221,7 @@ const EnhancedHeader = React.memo(({
       <View
         style={[
           wideMode ? styles.containerWideMode : styles.container,
+          canViewFrontMatter ? styles.containerWithFrontMatter : null,
           baseThemedStyle,
         ]}
       >
