@@ -38,7 +38,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -51,7 +51,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -64,7 +64,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -77,7 +77,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -90,7 +90,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -103,7 +103,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
@@ -116,7 +116,7 @@ const EnhancedDashboard = React.memo(({
           padding: 100,
           textAlign: 'center',
           fontSize: 18,
-          fontWeight: 100,
+          fontWeight: '100',
         }}>
           Coming soon...
         </Text>
