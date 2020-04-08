@@ -38,10 +38,10 @@ const CreateClassroom = React.memo(({
   setCurrentClassroom,
 }) => {
 
-  const [ name, setName ] = useState("")
-  const [ basedOffUid, setBasedOffUid ] = useState()
-
   const { defaultClassroomUid, sortedClassrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const [ name, setName ] = useState("")
+  const [ basedOffUid, setBasedOffUid ] = useState(defaultClassroomUid)
 
   const book = books[bookId] || {}
   const accountId = Object.keys(book.accounts)[0] || ""
@@ -75,7 +75,7 @@ const CreateClassroom = React.memo(({
     () => sortedClassrooms.map(({ uid, name }) => ({
       text: (
         uid === defaultClassroomUid
-          ? i18n("Book default", "", "enhanced")
+          ? i18n("Enhanced book", "", "enhanced")
           : (
             !uid
               ? i18n("None", "", "enhanced")  

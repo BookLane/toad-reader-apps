@@ -33,8 +33,9 @@ import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
 import BookContents from "../major/BookContents"
 import ToolFlipper from "../major/ToolFlipper"
-import EnhancedHomepage from "../major/EnhancedHomepage"
-import FrontMatter from "../major/FrontMatter"
+import EnhancedDashboard from "../major/EnhancedDashboard"
+import EnhancedOptions from "../major/EnhancedOptions"
+import EnhancedFrontMatter from "../major/EnhancedFrontMatter"
 import BackFunction from '../basic/BackFunction'
 import CoverAndSpin from '../basic/CoverAndSpin'
 import PageCaptureManager from "../major/PageCaptureManager"
@@ -224,8 +225,8 @@ const Book = React.memo(({
   const wideMode = useWideMode()
   const { pageWidth } = usePageSize({ sidePanelSettings })
 
-  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter,
-          draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter, viewingOptions, viewingDashboard,
+          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
   const zoomToInfoSpineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef: (zoomToInfo || {}).spineIdRef })
@@ -252,7 +253,13 @@ const Book = React.memo(({
       if(selectedTool && !viewingFrontMatter) {
         if(inEditMode) {
           // leaving edit mode
-          if(selectedTool.currently_published_tool_uid) {
+          if(viewingOptions) {
+            setSelectedToolUid({
+              bookId,
+              uid: bookVersion !== 'PUBLISHER' ? 'DASHBOARD' : undefined,
+            })
+
+          } else if(selectedTool.currently_published_tool_uid) {
             // this is a draft of a published tool
             setSelectedToolUid({
               bookId,
@@ -265,11 +272,17 @@ const Book = React.memo(({
           }
         } else {
           // entering edit mode
-          if(draftToolByCurrentlyPublishedToolUid[selectedTool.uid]) {
+          if(viewingDashboard) {
+            setSelectedToolUid({
+              bookId,
+              uid: 'OPTIONS OR SETTINGS',
+            })
+
+          } else if(draftToolByCurrentlyPublishedToolUid[selectedToolUid]) {
             // has a draft version
             setSelectedToolUid({
               bookId,
-              uid: draftToolByCurrentlyPublishedToolUid[selectedTool.uid].uid,
+              uid: draftToolByCurrentlyPublishedToolUid[selectedToolUid].uid,
             })
           }
         }
@@ -277,7 +290,8 @@ const Book = React.memo(({
 
       setRawInEditMode(!inEditMode)
     },
-    [ bookId, inEditMode, (selectedTool || {}).uid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid, viewingFrontMatter ],
+    [ bookId, inEditMode, selectedToolUid, (selectedTool || {}).published_at, (selectedTool || {}).currently_published_tool_uid,
+      viewingFrontMatter, viewingOptions, viewingDashboard, bookVersion ],
   )
 
   useEffect(
@@ -967,11 +981,16 @@ const Book = React.memo(({
             goTo={goTo}
             closeToolAndExitReading={closeToolAndExitReading}
           />
-          <EnhancedHomepage
+          <EnhancedDashboard
             bookId={bookId}
             closeToolAndExitReading={closeToolAndExitReading}
           />
-          <FrontMatter
+          <EnhancedOptions
+            bookId={bookId}
+            inEditMode={inEditMode}
+            closeToolAndExitReading={closeToolAndExitReading}
+          />
+          <EnhancedFrontMatter
             bookId={bookId}
             inEditMode={inEditMode}
             closeToolAndExitReading={closeToolAndExitReading}

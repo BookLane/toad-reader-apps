@@ -29,9 +29,9 @@ const InstructorsIntroduction = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
+  const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
 
   if(!classroom) return null
 

@@ -287,6 +287,13 @@ const mapping = {
       },
     },
     {
+      component: 'EnhancedHeader',
+      parameters: {
+        backgroundColor: 'background-basic-color-4',
+        alt0BackgroundColor: 'background-basic-color-3',
+      },
+    },
+    {
       component: 'EnhancedHeaderLine',
       variantGroups: {
         status: {
@@ -296,6 +303,13 @@ const mapping = {
           },
         },
         uiStatus: {
+          frontMatterUnselected: {
+            state: {
+              hover: {
+                backgroundColor: 'color-primary-transparent-hover',
+              },
+            },
+          },
           unselected: {
             state: {
               hover: {

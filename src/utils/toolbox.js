@@ -519,3 +519,17 @@ export const getTimeLine = ({ date, timestamp, short }) => {
 
   return timeLine
 }
+
+export const splitDraftDataToOptionsAndFrontMatter = (draftData={}) => {
+  const frontMatterDraftData = { ...draftData }
+  const optionsDraftData = {}
+
+  ;[ 'lti_configurations' ].forEach(field => {
+    if(frontMatterDraftData[field] !== undefined) {
+      optionsDraftData[field] = frontMatterDraftData[field]
+    }
+    delete frontMatterDraftData[field]
+  })
+
+  return [ optionsDraftData, frontMatterDraftData ]
+}

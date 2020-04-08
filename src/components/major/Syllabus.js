@@ -50,7 +50,7 @@ const Syllabus = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, idpId, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, idpId, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
   const { uid, syllabus, draftData } = classroom || {}
 
   const wideMode = useWideMode()
@@ -60,7 +60,7 @@ const Syllabus = React.memo(({
   const [ error, setError ] = useState()
   const [ downloading, setDownloading ] = useState()
 
-  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
+  const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
 
   const data = {}
   const hasDraft = (draftData || {}).syllabus !== undefined

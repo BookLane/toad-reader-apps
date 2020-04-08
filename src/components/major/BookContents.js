@@ -56,7 +56,7 @@ const BookContents = React.memo(({
 }) => {
 
   const { toc, classroomUid, visibleTools, selectedTool, bookVersion,
-          myRole, viewingFrontMatter, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+          myRole, viewingFrontMatter, viewingOptions, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { latest_location } = userDataByBookId[bookId] || {}
   const currentSpineIdRef = useSpineIdRefAndCfi(latest_location).spineIdRef
@@ -314,7 +314,7 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && inEditMode && !viewingFrontMatter && !hideFABs &&
+      {showAddToolButton && inEditMode && !viewingFrontMatter && !viewingOptions && !hideFABs &&
         <FAB
           iconName="md-add"
           status="primary"

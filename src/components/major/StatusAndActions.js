@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
-import { validDomain } from '../../utils/toolbox'
+import { validDomain, splitDraftDataToOptionsAndFrontMatter } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useNetwork from "../../hooks/useNetwork"
@@ -86,7 +86,7 @@ const StatusAndActions = React.memo(({
 }) => {
 
   const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
-          hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+          viewingOptions, hasFrontMatterDraftData, hasOptionsDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
@@ -97,14 +97,28 @@ const StatusAndActions = React.memo(({
       if(viewingFrontMatter) {
         if(!confirm("Are you sure you want to publish Front Matter?")) return
 
+        const [ draftData, dataToPublish ] = splitDraftDataToOptionsAndFrontMatter(getClassroomDraftData())
+
         updateClassroom({
           uid: classroomUid,
           bookId,
-          ...getClassroomDraftData(),
-          draftData: {},
+          ...dataToPublish,
+          draftData,
           published_at: Date.now(),
         })
   
+      } else if(viewingOptions) {
+        if(!confirm("Are you sure you want to publish these options?")) return
+
+        const [ dataToPublish, draftData ] = splitDraftDataToOptionsAndFrontMatter(getClassroomDraftData())
+
+        updateClassroom({
+          uid: classroomUid,
+          bookId,
+          ...dataToPublish,
+          draftData,
+        })
+
       } else {
         if(!confirm("Are you sure you want to publish this tool?")) return
 
@@ -115,7 +129,7 @@ const StatusAndActions = React.memo(({
         })
       }
     },
-    [ bookId, classroomUid, selectedToolUid, viewingFrontMatter ],
+    [ bookId, classroomUid, selectedToolUid, viewingOptions, viewingFrontMatter ],
   )
 
   const onDelete = useCallback(
@@ -123,10 +137,23 @@ const StatusAndActions = React.memo(({
       if(viewingFrontMatter) {
         if(!confirm("Are you sure you want to discard the Front Matter draft?")) return
 
+        const [ draftData ] = splitDraftDataToOptionsAndFrontMatter(getClassroomDraftData())
+
         updateClassroom({
           uid: classroomUid,
           bookId,
-          draftData: {},
+          draftData,
+        })
+
+      } else if(viewingOptions) {
+        if(!confirm("Are you sure you want to discard the draft options?")) return
+
+        const [ x, draftData ] = splitDraftDataToOptionsAndFrontMatter(getClassroomDraftData())
+
+        updateClassroom({
+          uid: classroomUid,
+          bookId,
+          draftData,
         })
   
       } else {
@@ -147,7 +174,7 @@ const StatusAndActions = React.memo(({
 
       }
     },
-    [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid ],
+    [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid, viewingOptions, viewingFrontMatter ],
   )
 
   const onPreview = useCallback(() => setViewingPreview(true), [])
@@ -158,41 +185,57 @@ const StatusAndActions = React.memo(({
     new: i18n("Not yet published.", "", "enhanced"),
   }
 
-  const publishedStatus = viewingFrontMatter
-    ? (
-      hasDraftData
-        ? 'edited'
-        : (
-          classroom.published_at
-            ? 'published'
-            : 'new'
-        )
-    )
-    : (
-      (selectedTool || {}).published_at
-        ? 'published'
-        : (
-          (selectedTool || {}).currently_published_tool_uid
-            ? 'edited'
-            : 'new'
-        )
-    )
+  const publishedStatus = (
+    viewingFrontMatter
+      ? (
+        hasFrontMatterDraftData
+          ? 'edited'
+          : (
+            classroom.published_at
+              ? 'published'
+              : 'new'
+          )
+      )
+      : (
+        viewingOptions
+          ? (
+            hasOptionsDraftData
+              ? 'edited'
+              : 'published'
+          )
+          : (
+            (selectedTool || {}).published_at
+              ? 'published'
+              : (
+                (selectedTool || {}).currently_published_tool_uid
+                  ? 'edited'
+                  : 'new'
+              )
+          )
+      )
+  )
 
   // make sure there is not more than a single LTI configuration per domain
   const hasDuplicateLTIConfigs = ltiConfigurations => (
     ltiConfigurations.length !== [...new Set(ltiConfigurations.map(({ domain }) => domain))].length
   )
 
-  const isReadyToPublish = viewingFrontMatter
-    ? (
-      ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret }) => (
-        validDomain(domain)
-        && key
-        && secret
-      ))
-      && !hasDuplicateLTIConfigs((classroom.draftData || {}).lti_configurations || [])
-    )
-    : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
+  const isReadyToPublish = (
+    viewingOptions
+      ? (
+        ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret }) => (
+          validDomain(domain)
+          && key
+          && secret
+        ))
+        && !hasDuplicateLTIConfigs((classroom.draftData || {}).lti_configurations || [])
+      )
+      : (
+        viewingFrontMatter
+          ? true
+          : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
+      )
+  )
 
   const isTool = !!selectedTool.spineIdRef
   const isInlineTool = !!selectedTool.cfi
@@ -210,7 +253,7 @@ const StatusAndActions = React.memo(({
           status="primary"
           style={styles.button}
           size="small"
-          disabled={syncStatus !== 'synced' || !online || publishedStatus === 'published' || !isReadyToPublish}
+          disabled={syncStatus !== 'synced' || !online || [ 'published', 'new' ].includes(publishedStatus) || !isReadyToPublish}
         >
           {i18n("Publish", "", "enhanced")}
         </Button>
@@ -218,9 +261,9 @@ const StatusAndActions = React.memo(({
           onPress={onDelete}
           status="basic"
           size="small"
-          disabled={viewingFrontMatter && publishedStatus === 'published'}
+          disabled={(viewingFrontMatter || viewingOptions) && [ 'published', 'new' ].includes(publishedStatus)}
         >
-          {(viewingFrontMatter || selectedTool.currently_published_tool_uid) ? i18n("Discard changes", "", "enhanced") : i18n("Remove", "", "enhanced")}
+          {(viewingFrontMatter || viewingOptions || selectedTool.currently_published_tool_uid) ? i18n("Discard changes", "", "enhanced") : i18n("Remove", "", "enhanced")}
         </Button>
         {xOutOfTool && (isInlineTool || !wideMode) &&
           <HeaderIcon
@@ -245,11 +288,13 @@ const StatusAndActions = React.memo(({
           ((!wideMode && !isTool) ? styles.previewContainerNonTool : null),
         ]}
       >
-        <TouchableOpacity onPress={onPreview}>
-          <Text style={styles.preview}>
-            {i18n("Preview", "", "enhanced")}
-          </Text>
-        </TouchableOpacity>
+        {!viewingOptions &&
+          <TouchableOpacity onPress={onPreview}>
+            <Text style={styles.preview}>
+              {i18n("Preview", "", "enhanced")}
+            </Text>
+          </TouchableOpacity>
+        }
       </View>
     </View>
   )

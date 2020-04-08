@@ -1,11 +1,16 @@
 import React from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native"
+import Constants from 'expo-constants'
 import { styled } from "@ui-kitten/components"
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useThemedStates from "../../hooks/useThemedStates"
 
 import Icon from '../basic/Icon'
+
+const {
+  ENHANCED_LOGO_WIDTH=75,
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   line: {
@@ -22,6 +27,11 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
   },
+  image: {
+    height: 37,
+    width: ENHANCED_LOGO_WIDTH,
+    marginRight: 10,
+  }
 })
 
 const EnhancedHeaderLine = React.memo(({
@@ -30,7 +40,7 @@ const EnhancedHeaderLine = React.memo(({
   iconPack,
   buttons,
   onPress,
-  uiStatus,
+  showLogo,
   style,
   iconStyle,
   labelStyle,
@@ -72,10 +82,16 @@ const EnhancedHeaderLine = React.memo(({
         {label}
       </Text>
       {buttons}
+      {showLogo &&
+        <Image
+          source={require("../../../assets/icons/enhanced-logo.png")}
+          style={styles.image}
+        />
+      }
     </View>
   )
 
-  if(uiStatus === 'unselected') {
+  if(onPress) {
     return (
       <TouchableOpacity
         onPress={onPress}

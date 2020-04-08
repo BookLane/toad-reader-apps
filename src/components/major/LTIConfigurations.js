@@ -26,16 +26,15 @@ const styles = StyleSheet.create({
 const LTIConfigurations = React.memo(({
   bookId,
   inEditMode,
-  viewingPreview,
   goUpdateClassroom,
 
   books,
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, isDefaultClassroom, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, isDefaultClassroom, hasOptionsDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
+  const changeIndex = useChangeIndex(hasOptionsDraftData, (prev, current) => (prev && !current))
 
   const transformData = useCallback(
     ({ data }) => {
@@ -70,7 +69,7 @@ const LTIConfigurations = React.memo(({
     data.lti_configurations = lti_configurations
   }
 
-  if(inEditMode && !viewingPreview) {
+  if(inEditMode) {
 
     return (
       <EditToolData
