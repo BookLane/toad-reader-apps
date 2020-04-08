@@ -52,6 +52,8 @@ const EnhancedHeaderLine = React.memo(({
   const { baseThemedStyle, iconThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
 
+  const LabelContainer = typeof label === 'string' ? Text : View
+
   const line = (
     <View
       style={[
@@ -71,7 +73,7 @@ const EnhancedHeaderLine = React.memo(({
           ]}
         />
       }
-      <Text
+      <LabelContainer
         style={[
           styles.label,
           labelThemedStyle,
@@ -80,7 +82,7 @@ const EnhancedHeaderLine = React.memo(({
         selectable={false}
       >
         {label}
-      </Text>
+      </LabelContainer>
       {buttons}
       {showLogo &&
         <Image
