@@ -69,7 +69,7 @@ const pagesStyles = {
   bottom: 0,
   left: 0,
   right: 0,
-  backgroundColor: '#EDF1F7',
+  backgroundColor: '#F7F9FC',
   zIndex: 2,
 }
 
@@ -113,6 +113,10 @@ const styles = StyleSheet.create({
   },
   pages: {
     ...pagesStyles,
+  },
+  pagesWideMode: {
+    ...pagesStyles,
+    backgroundColor: '#EDF1F7',
   },
   showZoom: {
     ...zoomStyles,
@@ -900,7 +904,7 @@ const Book = React.memo(({
             </View>
           }
           {Platform.OS !== 'web' &&
-            <View style={styles.pages}>
+            <View style={wideMode ? styles.pagesWideMode : styles.pages}>
               <BookPages
                 bookId={bookId}
                 spineIdRef={spineIdRef}
