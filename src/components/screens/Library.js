@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
 import { ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
-import Constants from 'expo-constants'
 import { Platform, StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -11,7 +10,8 @@ import usePrevious from "react-use/lib/usePrevious"
 import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
-import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch, isStaging, dashifyDomain } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
+         isStaging, dashifyDomain } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -38,10 +38,6 @@ import WebView from "../major/WebView"
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
 
-const {
-  APP_BACKGROUND_COLOR,
-} = Constants.manifest.extra
-
 const styles = StyleSheet.create({
   flex1: {
     flex: 1,
@@ -55,7 +51,7 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 1,
-    backgroundColor: APP_BACKGROUND_COLOR,
+    backgroundColor: '#EDF1F7',
     flex: 1,
   },
   hiddenWebview: {
@@ -87,16 +83,16 @@ const Library = ({
 
 }) => {
 
-  const [ downloadPaused, setDownloadPaused ] = useState(false)
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
+  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
-  const { widget, parent_domain, logOutAccountId } = routerState
+  const { logOutAccountId, widget, parent_domain } = routerState
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
@@ -110,7 +106,7 @@ const Library = ({
       // If it is a direct load to something other than the Library, then add
       // the Library to the browser history so that calling back on the router
       // works properly.
-      if(pathname !== '/') {
+      if(pathname !== '/' && !widget) {
         historyReplace('/')
         historyPush(pathname, routerState)
       }
@@ -139,8 +135,11 @@ const Library = ({
                 redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
               }
               window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
+            } else {
+              setRedirectCheckComplete(true)
             }
           })
+          .catch(() => setRedirectCheckComplete(true))
       }
     },
     [],
@@ -153,15 +152,8 @@ const Library = ({
       autoUpdateCoreIdps()
 
       if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
-        ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT_UP)
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
       }
-    },
-    [],
-  )
-
-  useEffect(
-    () => {
-      setDownloadPaused(/^\/book\//.test(pathname))
     },
     [],
   )
@@ -411,12 +403,12 @@ const Library = ({
     <SideMenu
       open={pathname === '/drawer'}
       onClose={historyGoBack}
-      menu={<AppMenu onImportBooks={openImportBooks} />}
+      menu={widget ? null : <AppMenu onImportBooks={openImportBooks} />}
     >
 
       <Switch>
         <Route path="/error" component={ErrorMessage} />
-        {!doingInitialFetch && <Route path="/book/:bookId" component={Book} />}
+        {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
         {!doingInitialFetch && <Route path="/reports" component={Reports} />}
         <Route>
 
@@ -444,15 +436,14 @@ const Library = ({
                   )
               )
             }
-
-            <BookDownloader
-              downloadPaused={downloadPaused}
-            />
-
           </SafeLayout>
           
         </Route>
       </Switch>
+
+      <BookDownloader
+        downloadPaused={/^\/book\//.test(pathname)}
+      />
 
       <BookImporter
         open={!!importingBooks}

@@ -1,9 +1,12 @@
-import React from "react"
-import { StyleSheet, View } from "react-native"
-
-import WebView from "./WebView"
+import React, { useEffect } from "react"
+import { StyleSheet, View, Dimensions, Platform } from "react-native"
+import { ScreenOrientation } from "expo"
 import { getLocale } from "inline-i18n"
 import { Video } from 'expo-av'
+
+import useWideMode from "../../hooks/useWideMode"
+
+import WebView from "./WebView"
 
 const styles = StyleSheet.create({
   container: {
@@ -11,16 +14,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   videoSizer: {
-    paddingBottom: '56.25%;',
+    paddingBottom: '56.25%',
   },
   webViewContainer: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
   },
   webView: {
     width: '100%',
     height: '100%',
   },
 })
+
+export const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
+export const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
+export const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
 
 const VideoTool = React.memo(({
   videoLink,
@@ -29,11 +37,26 @@ const VideoTool = React.memo(({
   subtitlesOn,
 }) => {
 
-  videoLink = videoLink || ""
+  const wideModeWithEitherOrientation = useWideMode(true)
 
-  const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
-  const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
-  const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
+  useEffect(
+    () => async () => {
+      if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
+
+        const { width, height } = Dimensions.get('window')
+
+        if(width > height) {
+          // iOS has a bug where Dimensions presents backwards values after a fullscreen video
+          // which had its orientation changed. The following is the only fix I have found.
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+        }
+      }
+    },
+    [],
+  )
+
+  videoLink = videoLink || ""
 
   // let iframeAttributes = false
   let uri = ''
@@ -153,6 +176,8 @@ const VideoTool = React.memo(({
             containerStyle={styles.webViewContainer}
             style={styles.webView}
             source={{ uri }}
+            allowsFullscreenVideo={true}
+            // allowsInlineMediaPlayback={true}
           />
         )
 
@@ -162,6 +187,7 @@ const VideoTool = React.memo(({
             source={{ uri: videoLink }}
             resizeMode="cover"
             useNativeControls
+            style={styles.webViewContainer}
           />
         )
       }

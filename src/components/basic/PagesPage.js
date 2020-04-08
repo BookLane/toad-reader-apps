@@ -55,6 +55,7 @@ const PagesPage = React.memo(({
   pageHeight,
   isCurrentPage,
   indicateMultiplePages,
+  inEditMode,
 }) => {
 
   const [ setDoubleTapTimeout ] = useSetTimeout()
@@ -150,9 +151,11 @@ const PagesPage = React.memo(({
           />
         </View>
       </TouchableComponent>
-      {/* {!!indicateMultiplePages &&
-        <CapturingThumbnailsInfoIcon />
-      } */}
+      {!!indicateMultiplePages &&
+        <CapturingThumbnailsInfoIcon
+          inEditMode={inEditMode}
+        />
+      }
     </View>
   )
 })

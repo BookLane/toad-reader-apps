@@ -131,6 +131,22 @@ const mapping = {
       isCustom: false,
     },
     {
+      component: 'Datepicker',
+      variantGroups: {
+        status: {
+          basic: {
+            labelMarginBottom: 8,
+            labelFontSize: 15,
+            labelFontWeight: 'normal',
+            iconWidth: 22,
+            iconHeight: 22,
+            textColor: 'black',
+          },
+        },
+      },
+      isCustom: false,
+    },
+    {
       component: 'Layout',
       parameters: {
         flex: 1,
@@ -223,9 +239,9 @@ const mapping = {
       component: 'GroupedToolsChip',
       parameters: {
         backgroundColor: 'background-alternative-color-4',
-        color: 'text-alternate-color',
+        labelColor: 'text-alternate-color',
         alt0BackgroundColor: 'color-primary-transparent-400',
-        alt0Color: 'color-basic-1100',
+        alt1Color: 'color-basic-1100',
         state: {
           hover: {
             backgroundColor: 'color-primary-500',
@@ -238,6 +254,17 @@ const mapping = {
           published: {},
           draft: {
             fontStyle: 'italic',
+          },
+        },
+      },
+    },
+    {
+      component: 'ActionText',
+      parameters: {
+        state: {
+          hover: {
+            color: 'color-primary-active',
+            textDecorationLine: 'underline',
           },
         },
       },
@@ -260,6 +287,13 @@ const mapping = {
       },
     },
     {
+      component: 'EnhancedHeader',
+      parameters: {
+        backgroundColor: 'background-basic-color-4',
+        alt0BackgroundColor: 'background-basic-color-3',
+      },
+    },
+    {
       component: 'EnhancedHeaderLine',
       variantGroups: {
         status: {
@@ -269,6 +303,13 @@ const mapping = {
           },
         },
         uiStatus: {
+          frontMatterUnselected: {
+            state: {
+              hover: {
+                backgroundColor: 'color-primary-transparent-hover',
+              },
+            },
+          },
           unselected: {
             state: {
               hover: {

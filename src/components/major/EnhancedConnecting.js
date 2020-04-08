@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
 
 const EnhancedConnecting = React.memo(({
   bookId,
-  goUpdateClassroom,
 
   books,
   userDataByBookId,

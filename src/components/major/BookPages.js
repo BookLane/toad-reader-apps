@@ -1,17 +1,24 @@
 import React, { useCallback, useMemo, useRef, useEffect } from "react"
 import Constants from 'expo-constants'
 import { StyleSheet, View, FlatList, Animated } from "react-native"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
 import PagesPage from "../basic/PagesPage"
-import BookProgress from "./BookProgress"
+// import BookProgress from "./BookProgress"
+import EnhancedHeader from "./EnhancedHeader"
 
-import { getFooterHeight, getToolbarHeight, statusBarHeightSafe } from '../../utils/toolbox'
-import useDimensions from "../../hooks/useDimensions"
+import { getFooterHeight, getToolbarHeight, statusBarHeight, getPageCfisKey } from '../../utils/toolbox'
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
 import usePageSize from "../../hooks/usePageSize"
+import useInstanceValue from "../../hooks/useInstanceValue"
+import useWideMode from "../../hooks/useWideMode"
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+import { getSpineInlineToolsHash } from "../../hooks/useSpineInlineToolsHash"
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -39,18 +46,29 @@ const BookPages = React.memo(({
   spineIdRef,
   pageIndexInSpine,
   spines,
-  pageCfisKey,
   bookId,
   updateSnapshotCoords,
-  capturingSnapshots,
+  // capturingSnapshots,
   zoomToPage,
+  inEditMode,
+  toggleInEditMode,
+  setModeToPage,
+
+  books,
+  userDataByBookId,
+  displaySettings,
+  sidePanelSettings,
 }) => {
+
+  const { bookVersion, canViewFrontMatter, visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
+  const { pageWidth, pageHeight, pagesPerRow } = usePageSize({ sidePanelSettings })
+  const { fullPageWidth, fullPageHeight, height } = useAdjustedDimensions({ sidePanelSettings })
+  const wideMode = useWideMode()
 
   const prevSpineIdRef = usePrevious(spineIdRef)
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
-
-  const { pageWidth, pageHeight, pagesPerRow } = usePageSize()
-  const { height } = useDimensions().window
+  const prevHeight = usePrevious(height)
 
   const animatedScrollPosition = useRef(new Animated.Value(0)).current
   const flatList = useRef()
@@ -95,7 +113,14 @@ const BookPages = React.memo(({
           offset,
         })
         offset += PAGE_LIST_HEADER_ROW_HEIGHT
-    
+
+        const pageCfisKey = getPageCfisKey({
+          displaySettings,
+          width: fullPageWidth,
+          height: fullPageHeight,
+          spineInlineToolsHash: getSpineInlineToolsHash({ visibleTools, spineIdRef: idref }),
+        })
+
         const pageCfisInThisSpine = pageCfis && pageCfis[pageCfisKey]
         const numPagesInSpine = pageCfis ? (pageCfisInThisSpine || []).length : 0
         for(let i=(numPagesInSpine ? 0 : -1); i<numPagesInSpine; i+=pagesPerRow) {
@@ -109,6 +134,7 @@ const BookPages = React.memo(({
           list.push({
             key: `P:${pageWidth}:${i}:${idref}`,  // P = pages
             pageIndicesInSpine,
+            pageCfisKey,
             cfis: pageCfisInThisRow,
             offset,
           })
@@ -123,7 +149,7 @@ const BookPages = React.memo(({
       }
 
     },
-    [ spines, height, pageCfisKey ],
+    [ spines, height, displaySettings, fullPageWidth, fullPageHeight, visibleTools ],
   )
 
   const getItemLayout = useCallback(
@@ -139,8 +165,7 @@ const BookPages = React.memo(({
     [ pageHeight ],
   )
 
-  const scrollToLatestLocation = useCallback(
-    () => {
+  const getScrollToLatestLocation = useInstanceValue(() => {
 
       if(spineIdRef == null || pageIndexInSpine == null) return
       if(list.length === 0) return
@@ -151,7 +176,7 @@ const BookPages = React.memo(({
         return
       }
 
-      const heightWithoutStatusBar = height - statusBarHeightSafe
+      const heightWithoutStatusBar = height - statusBarHeight
       let index = 0
       let indexInRow = 0
 
@@ -174,7 +199,15 @@ const BookPages = React.memo(({
 
       flatList.current.getNode().scrollToIndex({
         index,
-        viewOffset: 0,
+        viewOffset: (
+          (
+            !wideMode
+            && bookVersion !== 'BASE'
+          )
+            // calc half of the enhanced header height and negate it
+            ? (10*2 + 37*(canViewFrontMatter ? 2 : 1)) / -2
+            : 0
+        ),
         viewPosition: 0.5,
         // animated: false,
       })
@@ -182,7 +215,7 @@ const BookPages = React.memo(({
       // since this might not be immediately rendered (given the FlatList), let's calculate its position
       const thisItemOffset = getItemLayout(list, index).offset
       const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeightSafe
+      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeight
       const lastItemLayout = getItemLayout(list, list.length - 1)
       const scrolledToBottomYPos = heightWithoutStatusBar - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
       updateSnapshotCoords({
@@ -190,24 +223,24 @@ const BookPages = React.memo(({
         y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
       })
 
-    },
-    [ spineIdRef, pageIndexInSpine, spines, updateSnapshotCoords, statusBarHeightSafe, pageWidth, pageHeight, pageCfisKey ],
-  )
+      return true
+  })
 
   if(
     spineIdRef !== prevSpineIdRef
     || pageIndexInSpine !== prevPageIndexInSpine
+    || height !== prevHeight
     || scrollToLatestLocationNextTimeReceivingProps.current
   ) {
     scrollToLatestLocationNextTimeReceivingProps.current = false
-    scrollToLatestLocation()
+    getScrollToLatestLocation()()
   }
 
   const [ setScrollToLatestTimeout ] = useSetTimeout()
 
   const renderItem = useCallback(
     ({ item }) => {
-      const { key, label, pageIndicesInSpine, cfis } = item
+      const { key, label, pageIndicesInSpine, pageCfisKey, cfis } = item
 
       if(key.substr(0,2) === 'H:') {
         
@@ -230,20 +263,29 @@ const BookPages = React.memo(({
             indicateMultiplePages={itemPageIndexInSpine === -1}
             zoomToPage={zoomToPage}
             isCurrentPage={itemSpineIdRef === spineIdRef && itemPageIndexInSpine === pageIndexInSpine}
+            inEditMode={inEditMode}
           />
         ))
 
         return <PagesRow>{pages}</PagesRow>
       }
     },
-    [ bookId, spineIdRef, pageIndexInSpine, pageCfisKey, pageWidth, pageHeight, zoomToPage ],
+    [ bookId, spineIdRef, pageIndexInSpine, pageWidth, pageHeight, zoomToPage, inEditMode ],
   )
 
   useEffect(
     () => {
-      // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout
-      // without this timeout, flatList.current is not set and sticky headers are not accounted for
-      setScrollToLatestTimeout(scrollToLatestLocation, 300)
+      // initialScrollIndex does not work, causing invalid indexes to get sent to getItemLayout.
+      // Without this timeout, flatList.current is not set and sticky headers are not accounted for.
+      let maxAttempts = 10
+      const tryInitialScroll = () => {
+        setScrollToLatestTimeout(() => {
+          if(!getScrollToLatestLocation()() && maxAttempts-- > 0) {
+            tryInitialScroll()
+          }
+        }, 200)
+      }
+      tryInitialScroll()
     },
     [],
   )
@@ -263,6 +305,14 @@ const BookPages = React.memo(({
     <View
       style={styles.container}
     >
+      {!wideMode &&
+        <EnhancedHeader
+          bookId={bookId}
+          inEditMode={inEditMode}
+          toggleInEditMode={toggleInEditMode}
+          setModeToPage={setModeToPage}
+        />
+      }
       <AnimatedFlatList
         data={list}
         renderItem={renderItem}
@@ -297,4 +347,14 @@ const BookPages = React.memo(({
 
 })
 
-export default BookPages
+const mapStateToProps = ({ books, userDataByBookId, displaySettings, sidePanelSettings }) => ({
+  books,
+  userDataByBookId,
+  displaySettings,
+  sidePanelSettings,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookPages)

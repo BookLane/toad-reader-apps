@@ -1,26 +1,28 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Platform, View, Text } from "react-native"
+import { StyleSheet, Platform, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
+import { styled } from "@ui-kitten/components"
 
+import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
+import useDimensions from "../../hooks/useDimensions"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
 import { statusBarHeight } from "../../utils/toolbox"
 
-import HeaderIcon from "../basic/HeaderIcon"
 import ManageClassrooms from "./ManageClassrooms"
+import CreateClassroom from "./CreateClassroom"
 import ConnectToAClassroom from "./ConnectToAClassroom"
 import EnhancedHeaderLine from "../basic/EnhancedHeaderLine"
 import EnhancedEditButton from "../basic/EnhancedEditButton"
 
 const container = {
   paddingTop: 10,
-  paddingBottom: 10,
-  backgroundColor: 'rgb(231, 236, 246)',
+  paddingBottom: 5,
 }
 
 const styles = StyleSheet.create({
@@ -31,8 +33,12 @@ const styles = StyleSheet.create({
     ...container,
     paddingTop: container.paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
   },
-  enhanced: {
+  frontMatterContainer: {
+    paddingVertical: 5,
+  },
+  classroom: {
     fontWeight: 'bold',
+    marginVertical: 5,
   },
   optionsIconContainer: {
     position: 'relative',
@@ -51,6 +57,9 @@ const styles = StyleSheet.create({
   off: {
     fontStyle: 'italic',
   },
+  optionsEmphasis: {
+    // fontWeight: '300',
+  },
   optionsAction: {
     fontStyle: 'italic',
     fontWeight: '300',
@@ -68,36 +77,55 @@ const EnhancedHeader = React.memo(({
 
   setSelectedToolUid,
   setCurrentClassroom,
+
+  themedStyle,
 }) => {
 
-  const { classrooms, classroom, isDefaultClassroom, defaultClassroomUid, sortedClassrooms,
-          bookVersion, canViewEnhancedHomepage, canViewFrontMatter, viewingEnhancedHomepage,
-          viewingFrontMatter, iCanEdit, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { classrooms, classroom, enhancedIsOff, isDefaultClassroom, defaultClassroomUid, sortedClassrooms,
+          bookVersion, canViewOptions, canViewFrontMatter, viewingDashboard,
+          viewingOptions, viewingFrontMatter,
+          iCanEdit, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
+  const { baseThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
+  const [ frontMatterThemedStyle={} ] = altThemedStyleSets
+        
   const [ showOptions, toggleShowOptions ] = useToggle(false)
   const [ showManageClassrooms, toggleShowManageClassrooms ] = useToggle(false)
+  const [ showCreateClassroom, toggleShowCreateClassroom ] = useToggle(false)
   const [ showConnectToAClassroom, toggleShowConnectToAClassroom ] = useToggle(false)
 
   const wideMode = useWideMode()
+  const { height } = useDimensions().window
 
-  const selectEnhancedHomepage = useCallback(
+  const selectDashboard = useCallback(
     () => {
-      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
-        uid: 'ENHANCED HOMEPAGE',
+        uid: 'DASHBOARD',
       })
+      setModeToPage && setTimeout(setModeToPage)
+    },
+    [ bookId ],
+  )
+
+  const selectOptions = useCallback(
+    () => {
+      setSelectedToolUid({
+        bookId,
+        uid: 'OPTIONS OR SETTINGS',
+      })
+      setModeToPage && setTimeout(setModeToPage)
     },
     [ bookId ],
   )
 
   const selectFrontMatter = useCallback(
     () => {
-      setModeToPage && setModeToPage()
       setSelectedToolUid({
         bookId,
         uid: 'FRONT MATTER',
       })
+      setModeToPage && setTimeout(setModeToPage)
     },
     [ bookId ],
   )
@@ -117,10 +145,18 @@ const EnhancedHeader = React.memo(({
     ...sortedClassrooms.map(({ uid, name }) => ({
       title: (
         uid === defaultClassroomUid
-          ? i18n("Book default", "", "enhanced")
+          ? (
+            <Text style={styles.optionsEmphasis}>
+              {i18n("Enhanced book", "", "enhanced")}
+            </Text>
+          )
           : (
             !uid
-              ? i18n("Off", "", "enhanced")  
+              ? (
+                <Text style={styles.optionsEmphasis}>
+                  {i18n("Basic book", "", "enhanced")}
+                </Text>
+              )
               : name
           )
       ),
@@ -132,7 +168,7 @@ const EnhancedHeader = React.memo(({
         toggleShowOptions(false)
       },
     })),
-    ...(!(bookVersion === 'INSTRUCTOR' || classrooms.length > 1) ? [] : [{
+    ...(![ 'ENHANCED', 'INSTRUCTOR' ].includes(bookVersion) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
           {i18n("Manage classrooms", "", "enhanced")}
@@ -140,7 +176,15 @@ const EnhancedHeader = React.memo(({
       ),
       onPress: toggleShowManageClassrooms,
     }]),
-    ...(!(bookVersion === 'ENHANCED' && classrooms.length === 1) ? [] : [{
+    ...(!(bookVersion === 'INSTRUCTOR') ? [] : [{
+      title: (
+        <Text style={styles.optionsAction}>
+          {i18n("Create a classroom", "", "enhanced")}
+        </Text>
+      ),
+      onPress: toggleShowCreateClassroom,
+    }]),
+    ...(!(bookVersion === 'ENHANCED') ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
           {i18n("Connect to a classroom", "", "enhanced")}
@@ -154,97 +198,121 @@ const EnhancedHeader = React.memo(({
 
   const classroomName = (
     isDefaultClassroom
-      ? i18n("Book default", "", "enhanced")
+      ? i18n("Enhanced book", "", "enhanced")
       : (
         classroom
           ? classroom.name
-          : (
-            <Text style={styles.off}>
-              {i18n("Off", "", "enhanced")}
-            </Text>
-          )
+          : i18n("Basic book", "", "enhanced")
       )
   )
 
+  const editButton = iCanEdit && (
+    <EnhancedEditButton
+      onPress={toggleInEditMode}
+      status={inEditMode ? "on" : "off"}
+    />
+  )
+
+
   return (
-    <View style={wideMode ? styles.containerWideMode : styles.container}>
-      <EnhancedHeaderLine
-        label={
-          <>
-            <Text style={styles.enhanced}>
-              {i18n("Enhanced", "", "enhanced")}
-            </Text>
-            {"  "}
-            {classroomName}
-          </>
-        }
-        {...(!canViewEnhancedHomepage ? {} : {
-          iconName: "home",
-          iconPack: "fontAwesome",
-        })}
-        onPress={selectEnhancedHomepage}
-        buttons={
-          <>
-            {iCanEdit && !viewingEnhancedHomepage &&
-              <EnhancedEditButton
-                onPress={toggleInEditMode}
-                status={inEditMode ? "on" : "off"}
-              />
-            }
+    <>
+      <View
+        style={[
+          wideMode ? styles.containerWideMode : styles.container,
+          baseThemedStyle,
+        ]}
+      >
+        <EnhancedHeaderLine
+          label={
             <OverflowMenu
               data={moreOptions}
               visible={showOptions}
               selectedIndex={sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid)}
               onSelect={selectOption}
               onBackdropPress={toggleShowOptions}
-              placement='bottom end'
+              placement='bottom start'
+              style={{
+                width: 230,
+                maxHeight: height - 80,
+              }}
             >
-              <View style={styles.optionsIconContainer}>
-                <HeaderIcon
-                  iconName="md-more"
-                  onPress={toggleShowOptions}
-                  style={styles.optionsIcon}
-                  uiStatus="faded"
-                />
-              </View>
+              <TouchableOpacity
+                onPress={toggleShowOptions}
+              >
+                <View>
+                  <Text
+                    style={styles.classroom}
+                    numberOfLines={2}
+                  >
+                    {`${classroomName} ▾`}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </OverflowMenu>
-          </>
-        }
-        uiStatus={(
-          canViewEnhancedHomepage
-            ? (
-              viewingEnhancedHomepage ? "selected" : "unselected"
-            )
-            : "disabled"
-        )}
-        status={(inEditMode && hasDraftData) ? "draft" : "published"}
-      />
-      {canViewFrontMatter &&
-        <EnhancedHeaderLine
-          label={isDefaultClassroom
-            ? i18n("Settings", "", "enhanced")
-            : (
-              inEditMode
-                ? i18n("Front matter and options", "", "enhanced")
-                : i18n("Front matter", "", "enhanced")
-            )
           }
-          onPress={selectFrontMatter}
-          uiStatus={viewingFrontMatter ? "selected" : "unselected"}
-          status={(inEditMode && hasDraftData) ? "draft" : "published"}
+          uiStatus={"disabled"}
+          status={"published"}
+          showLogo={true}
         />
+        {bookVersion !== 'PUBLISHER' && !enhancedIsOff &&
+          <EnhancedHeaderLine
+            label={i18n("Dashboard", "", "enhanced")}
+            uiStatus={viewingDashboard ? "selected" : "unselected"}
+            iconName="view-dashboard"
+            iconPack="materialCommunity"
+            onPress={selectDashboard}
+            buttons={editButton}  
+          />
+        }
+        {bookVersion !== 'PUBLISHER' && canViewOptions &&
+          <EnhancedHeaderLine
+            label={i18n("Options", "", "enhanced")}
+            uiStatus={viewingOptions ? "selected" : "unselected"}
+            iconName="md-options"
+            onPress={selectOptions}
+          />
+        }
+        {bookVersion === 'PUBLISHER' && !enhancedIsOff &&
+          <EnhancedHeaderLine
+            {...(!canViewOptions ? {} : {
+              label: i18n("Settings", "", "enhanced"),
+              uiStatus: viewingOptions ? "selected" : "unselected",
+              iconName: "md-settings",
+              onPress: selectOptions,
+            })}
+            buttons={editButton}
+          />
+        }
+        <ManageClassrooms
+          open={showManageClassrooms}
+          requestHide={toggleShowManageClassrooms}
+          bookId={bookId}
+        />
+        <CreateClassroom
+          open={showCreateClassroom}
+          requestHide={toggleShowCreateClassroom}
+          bookId={bookId}
+        />
+        <ConnectToAClassroom
+          open={showConnectToAClassroom}
+          requestHide={toggleShowConnectToAClassroom}
+          bookId={bookId}
+        />
+      </View>
+      {canViewFrontMatter &&
+        <View style={[
+          styles.frontMatterContainer,
+          frontMatterThemedStyle,
+        ]}>
+          <EnhancedHeaderLine
+            label={i18n("Front matter", "", "enhanced")}
+            onPress={selectFrontMatter}
+            uiStatus={viewingFrontMatter ? "selected" : "frontMatterUnselected"}
+            status={(inEditMode && hasFrontMatterDraftData) ? "draft" : "published"}
+          />
+        </View>
       }
-      <ManageClassrooms
-        open={showManageClassrooms}
-        requestHide={toggleShowManageClassrooms}
-        bookId={bookId}
-      />
-      <ConnectToAClassroom
-        open={showConnectToAClassroom}
-        requestHide={toggleShowConnectToAClassroom}
-        bookId={bookId}
-      />
-    </View>
+    </>
   )
 })
 
@@ -258,4 +326,6 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCurrentClassroom,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(EnhancedHeader)
+EnhancedHeader.styledComponentName = 'EnhancedHeader'
+
+export default connect(mapStateToProps, matchDispatchToProps)(styled(EnhancedHeader))

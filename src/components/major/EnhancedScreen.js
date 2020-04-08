@@ -1,18 +1,11 @@
 import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 import { ViewPager } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
-import { getToolbarHeight, nonEmpty } from '../../utils/toolbox'
+import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import { updateClassroom } from "../../redux/actions"
 
-import Syllabus from "./Syllabus"
-import InstructorsIntroduction from "./InstructorsIntroduction"
-import LTIConfigurations from "./LTIConfigurations"
 import StatusAndActions from "./StatusAndActions"
 import HeaderIcon from "../basic/HeaderIcon"
 
@@ -36,6 +29,10 @@ const tabTitle = {
   borderBottomColor: 'transparent',
 }
 
+const headingLine = {
+  flexDirection: 'row',
+}
+
 const styles = StyleSheet.create({
   container: {
     ...container,
@@ -53,7 +50,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headingLine: {
-    flexDirection: 'row',
+    ...headingLine,
+  },
+  headingLineWideMode: {
+    ...headingLine,
     flex: 1,
   },
   heading: {
@@ -107,151 +107,26 @@ const styles = StyleSheet.create({
   close: {
     top: -12,
     right: -12,
+    height: 38,
   },
 })
 
-const FrontMatter = React.memo(({
+const EnhancedScreen = React.memo(({
   bookId,
   inEditMode,
   closeToolAndExitReading,
-
-  books,
-  userDataByBookId,
-
-  updateClassroom,
+  heading,
+  tabs,
+  viewingPreview,
+  setViewingPreview,
 }) => {
 
   const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
   const [ previewSelectedTabIndex, setPreviewSelectedTabIndex ] = useState(0)
-  const [ viewingPreview, setViewingPreview ] = useState(false)
-
-  const { classroom, viewingFrontMatter, isDefaultClassroom, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
-  const goUpdateClassroom = useCallback(
-    updates => {
-      updateClassroom({
-        uid: classroom.uid,
-        bookId,
-        draftData: {
-          ...(classroom.draftData || {}),
-          ...updates.data,
-        },
-      })
-    },
-    [ updateClassroom, bookId, classroom ],
-  )
-
   const wideMode = useWideMode()
-
-  if(!viewingFrontMatter) return null
-
-  const { syllabus, introduction, lti_configurations } = classroom
-  const draftSyllabus = (classroom.draftData || {}).syllabus
-  const draftIntroduction = (classroom.draftData || {}).introduction
-  const draftLTIConfigurations = (classroom.draftData || {}).lti_configurations
-
-  const showSyllabus = !!(
-    !isDefaultClassroom
-    && (
-      viewingPreview
-        ? (
-          draftSyllabus !== undefined
-            ? draftSyllabus
-            : syllabus
-        )
-        : (
-          inEditMode
-            ? true
-            : syllabus
-        )
-    )
-  )
-
-  const showIntroduction = !!(
-    !isDefaultClassroom
-    && (
-      viewingPreview
-        ? nonEmpty(
-          draftIntroduction !== undefined
-            ? draftIntroduction
-            : introduction
-        )
-        : (
-          inEditMode
-            ? true
-            : nonEmpty(introduction)
-        )
-    )
-  )
-
-  const showLTIConfigurations = !!(
-    viewingPreview
-      ? (
-        draftLTIConfigurations !== undefined
-          ? (draftLTIConfigurations || []).length > 0
-          : (lti_configurations || []).length > 0
-      )
-      : (
-        inEditMode
-          ? true
-          : (
-            (lti_configurations || []).length > 0
-            && bookVersion === 'PUBLISHER'
-          )
-      )
-  )
-
-  const tabs = [
-    ...(!showSyllabus ? [] : [{
-      title: i18n("Syllabus", "", "enhanced"),
-      content: (
-        <Syllabus
-          bookId={bookId}
-          inEditMode={inEditMode}
-          viewingPreview={viewingPreview}
-          goUpdateClassroom={goUpdateClassroom}
-        />
-      ),
-    }]),
-    // {
-    //   title: i18n("Reading schedule", "", "enhanced"),
-    //   content: (
-    //     <ReaderSchedule
-    //     />
-    //   ),
-    // },
-    ...(!showIntroduction ? [] : [{
-      title: i18n("Instructor’s introduction", "", "enhanced"),
-      content: (
-        <InstructorsIntroduction
-          bookId={bookId}
-          inEditMode={inEditMode}
-          viewingPreview={viewingPreview}
-          goUpdateClassroom={goUpdateClassroom}
-        />
-      ),
-    }]),
-    ...(!showLTIConfigurations ? [] : [{
-      title: i18n("LTI Configurations", "", "enhanced"),
-      content: (
-        <LTIConfigurations
-          bookId={bookId}
-          inEditMode={inEditMode}
-          viewingPreview={viewingPreview}
-          goUpdateClassroom={goUpdateClassroom}
-        />
-      ),
-    }]),
-    // {
-    //   title: i18n("Options", "", "enhanced"),
-    //   content: (
-    //     <ClassroomOptions
-    //     />
-    //   ),
-    // },
-  ]
 
   if(tabs.length === 0 && !viewingPreview) return null
 
@@ -261,17 +136,8 @@ const FrontMatter = React.memo(({
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
-        <View style={styles.headingLine}>
-          <Text style={styles.heading}>
-            {isDefaultClassroom
-              ? i18n("Settings", "", "enhanced")
-              : (
-                inEditMode
-                  ? i18n("Front matter and options", "", "enhanced")
-                  : i18n("Front matter", "", "enhanced")
-              )
-            }
-          </Text>
+        <View style={wideMode ? styles.headingLineWideMode : styles.headingLine}>
+          <Text style={styles.heading}>{heading}</Text>
           {!viewingPreview && !wideMode &&
             <HeaderIcon
               iconName="md-close"
@@ -339,13 +205,4 @@ const FrontMatter = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
-  books,
-  userDataByBookId,
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  updateClassroom,
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(FrontMatter)
+export default EnhancedScreen

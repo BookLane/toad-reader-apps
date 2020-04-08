@@ -94,7 +94,11 @@ const Login = ({
         message: i18n("There was an error connecting to the login portal. Please contact us if you continue to receive this message."),
       })
 
-      setReloadTimeout(webView.current.reload, 15000)
+      setReloadTimeout(() => {
+        webView.current.reload()
+        setError(null)
+      }, 15000)
+
       setError(i18n("Error. Trying again..."))
     },
     [],
@@ -103,14 +107,11 @@ const Login = ({
   const onNavigationStateChange = useCallback(
     async ({ url, loading }) => {
 
-      if(loading || !initialStateChangeAlreadyHappened.current) {
-        initialStateChangeAlreadyHappened.current = true
-      } else if(url === confirmLoginUrl) {
+      if(url === confirmLoginUrl && initialStateChangeAlreadyHappened.current) {
         setLeaving(true)
       } else {
         askedForLoginInfoAtLeastOnce.current = true
-        setLoading(true)
-        setError(null)
+        setLoading(loading)
       }
       
     },
@@ -213,6 +214,7 @@ const Login = ({
         `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
         forwardRef={webView}
         onMessage={onMessageEvent}
+        incognito={true}
       />
       {!!(loading || !online || error || leaving) &&
         <CoverAndSpin

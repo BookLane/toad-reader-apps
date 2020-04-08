@@ -1,18 +1,25 @@
-import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import React, { useState, useEffect } from "react"
+import { StyleSheet, View, Text, Platform } from "react-native"
+import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { i18n } from "inline-i18n"
 
-import { getDataOrigin } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useChangeIndex from '../../hooks/useChangeIndex'
+import useNetwork from '../../hooks/useNetwork'
+import useWideMode from "../../hooks/useWideMode"
 
 import EditToolData from './EditToolData'
 import WebView from "./WebView"
-
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import useChangeIndex from '../../hooks/useChangeIndex'
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  containerWideMode: {
     marginVertical: 20,
     marginHorizontal: 30,
     flex: 1,
@@ -24,6 +31,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  error: {
+    textAlign: 'center',
+    paddingTop: 80,
+    fontWeight: '100',
+  },
 })
 
 const Syllabus = React.memo(({
@@ -33,17 +45,22 @@ const Syllabus = React.memo(({
   goUpdateClassroom,
 
   idps,
+  accounts,
   books,
   userDataByBookId,
 }) => {
 
-  const { accountId, classroom, idpId, hasDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { accountId, classroom, idpId, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { uid, syllabus, draftData } = classroom || {}
 
-  const changeIndex = useChangeIndex(hasDraftData, (prev, current) => (prev && !current))
+  const wideMode = useWideMode()
 
-  if(!classroom) return null
+  const { online } = useNetwork()
 
-  const { uid, syllabus, draftData } = classroom
+  const [ error, setError ] = useState()
+  const [ downloading, setDownloading ] = useState()
+
+  const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
 
   const data = {}
   const hasDraft = (draftData || {}).syllabus !== undefined
@@ -53,6 +70,48 @@ const Syllabus = React.memo(({
   } else if(syllabus) {
     data.syllabus = syllabus
   }
+
+  const uri = data.syllabus && `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}`
+  const tempLocalUri = data.syllabus && `${FileSystem.cacheDirectory}syllabus_${uid}_${data.syllabus.filename}`
+
+  useEffect(
+    () => {
+      if(uri && Platform.OS !== 'web') {
+        (async () => {
+
+          if(Platform.OS === 'android') {
+            setError("Android does not yet support viewing a syllabus.")
+            return
+          }
+
+          setDownloading(true)
+          setError()
+
+          try {
+
+            const { status } = await FileSystem.downloadAsync(uri, tempLocalUri, getReqOptionsWithAdditions({
+              headers: {
+                "x-cookie-override": accounts[accountId].cookie,
+              },
+            }))
+
+            if(status >= 400) {
+              setError(i18n("Network error: {{status}}"), { status })
+            }
+
+          } catch(err) {
+            setError(i18n("Error in retrieving syllabus."))
+          }
+
+          setDownloading(false)
+
+        })()
+      }
+    },
+    [ uri, online ],
+  )
+
+  if(!classroom) return null
 
   if(inEditMode && !viewingPreview) {
     return (
@@ -78,21 +137,43 @@ const Syllabus = React.memo(({
     )
   }
 
-  if(!data.syllabus) return null
+  if(!uri) return null
 
   return (
-    <View style={styles.container}>
-      <WebView
-        containerStyle={styles.webViewContainer}
-        style={styles.webView}
-        source={{ uri: `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}` }}
-      />
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
+      {downloading &&
+        <CoverAndSpin />
+      }
+      {!!error &&
+        <Text style={styles.error}>
+          {!online
+            ? i18n("Check your internet connection.")
+            : error
+          }
+        </Text>
+      }
+      {!downloading && !error &&
+        <WebView
+          containerStyle={styles.webViewContainer}
+          style={styles.webView}
+          source={{
+            uri: Platform.OS === 'web' ? uri : tempLocalUri,
+          }}
+          allowingReadAccessToURL={FileSystem.cacheDirectory}
+          allowUniversalAccessFromFileURLs={true}
+          allowFileAccess={true}
+          originWhitelist={['*']}
+          mixedContentMode="always"
+          bounces={false}  
+        />
+      }
     </View>
   )
 })
 
-const mapStateToProps = ({ idps, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
   idps,
+  accounts,
   books,
   userDataByBookId,
 })

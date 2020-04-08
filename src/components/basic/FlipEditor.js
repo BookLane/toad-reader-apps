@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback } from "react"
 
 import ReactNativeFlipEditor from "react-native-flip-editor"
 
@@ -9,8 +9,6 @@ const FlipEditor = React.memo(({
   onChangeInfo,
   ...otherProps
  }) => {
-
-  useEffect(() => { console.log('make') }, [])
 
   const customUpdateContent = useCallback(
     value => {

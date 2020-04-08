@@ -1,10 +1,16 @@
 import { i18n } from "inline-i18n"
 import { nonEmpty, validUrl, validLTIUrl } from './toolbox'
+import { youtubeRegex, shortYoutubeRegex } from '../components/major/VideoTool'
 
 const hasErrorWithMessageForTime = time => (
   nonEmpty(time)
   && !/^(?:[0-9]+)(?::[0-9]+)$/.test(time)
   && i18n("Invalid time.", "", "enhanced")
+)
+
+const videoStartEndTimesAreHidden = ({ dataSegment: { videoLink='' } }) => !(
+  youtubeRegex.test(videoLink)
+  || shortYoutubeRegex.test(videoLink)
 )
 
 export const getToolInfo = () => {
@@ -97,7 +103,9 @@ export const getToolInfo = () => {
             nonEmpty(url)
             && (
               !validUrl(url)
-                ? i18n("Invalid URL.", "", "enhanced")
+                ? (
+                  i18n("Invalid URL. (Note: https required.)", "", "enhanced")
+                )
                 : (
                   !validLTIUrl({ url, fromDefaultClassroom, classroom })
                     ? i18n("There is not a published LTI configuration for this domain.", "", "enhanced")
@@ -132,7 +140,7 @@ export const getToolInfo = () => {
             nonEmpty(videoLink)
             && (
               !validUrl(videoLink)
-                ? i18n("Invalid URL.", "", "enhanced")
+                ? i18n("Invalid URL. (Note: https required.)", "", "enhanced")
                 : false
             )
           ),
@@ -144,6 +152,7 @@ export const getToolInfo = () => {
           label: i18n("Start time (optional)", "", "enhanced"),
           placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "3:12" }),
           hasErrorWithMessage: ({ data: { startTime } }) => hasErrorWithMessageForTime(startTime),
+          isHidden: videoStartEndTimesAreHidden,
         },
         {
           name: 'endTime',
@@ -152,6 +161,7 @@ export const getToolInfo = () => {
           label: i18n("End time (optional)", "", "enhanced"),
           placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "12:14" }),
           hasErrorWithMessage: ({ data: { endTime } }) => hasErrorWithMessageForTime(endTime),
+          isHidden: videoStartEndTimesAreHidden,
         },
       ],
       readyToPublish: ({ data: { videoLink, startTime, endTime } }) => (

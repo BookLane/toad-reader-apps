@@ -133,12 +133,12 @@
           "idref": "intro",
           "label": "Introduction",
           "pageCfis": {
-            "640x320_100_1": [
+            "640x320_100_1_DF82flasdfhjasdgDkjSVH": [
               "/1/4/2/2",
               "/2/2/2,/1:0,/1:1",
               "/4/2/"
             ],
-            "320x640_100_1": [
+            "320x640_100_1_jfa9aweVQegasdgjDFLSDJ": [
               "/1/14/2/2",
               "/21/2/22,/1:0,/1:1",
               "/43/2/"
@@ -184,6 +184,7 @@
           "closes_at": null,
           "created_at": 1573659531000,
           "syllabus": null,
+          "scheduleDates": [],
           "introduction": null,
           "lti_configurations": null,
           "draftData": {},

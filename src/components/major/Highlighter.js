@@ -2,8 +2,7 @@ import React, { useRef, useCallback, useState, useEffect } from "react"
 import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { getToolbarHeight, setStatusBarHidden, isIPhoneX,
-         statusBarHeight, statusBarHeightSafe } from '../../utils/toolbox'
+import { setStatusBarHidden, isIPhoneX, statusBarHeight, statusBarHeightSafe } from '../../utils/toolbox'
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
@@ -160,7 +159,6 @@ const Highlighter = React.memo(({
         ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing) ? styles.containerTop : styles.containerBottom),
         ((selectionInfo.copyTooltipInLowerHalf && wideMode && !widget) ? styles.containerTopWideMode : null),
       ]}
-      data-id="highlighter"
     >
       <HighlighterInstructorHighlightSection
         bookId={bookId}

@@ -1,54 +1,78 @@
-import React, { useRef, useEffect, useCallback } from "react"
-import { Platform } from "react-native"
+import React, { useState, useRef, useEffect, useCallback } from "react"
+import { Platform, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import * as FileSystem from 'expo-file-system'
 
-import PageWebView from "./PageWebView"
-
-import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI, isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
-
+import { getDisplaySettingsObj, getPageCfisKey, getSnapshotURI } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
 import { postMessage } from "../../utils/postMessage"
 import takeSnapshot from "../../utils/takeSnapshot"
-import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import usePageSize from "../../hooks/usePageSize"
 import useRouterState from "../../hooks/useRouterState"
-
+import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import { addSpinePageCfis } from "../../redux/actions"
+import useDidUpdate from "../../hooks/useDidUpdate"
+
+import PageWebView from "./PageWebView"
+import BookTools from "./BookTools"
+
+const getDefiniteDimensionsStyle = (width, height) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width,
+  minWidth: width,
+  maxWidth: width,
+  height,
+  minHeight: height,
+  maxHeight: height,
+})
 
 const PageCapture = ({
   bookId,
   spineIdRef,
   width,
   height,
+  realWidth,
+  realMarginHorizontal,
   displaySettings,
+  sidePanelSettings,
+  spineInlineToolsHash,
+  toolCfiCountsInThisSpine,
+  instructorHighlights,
   reportInfoOrCapture,
   reportFinished,
   processingPaused,
-  
-  books,
-  userDataByBookId,
+  doReportToolSpots,
 
   addSpinePageCfis,
 }) => {
 
-  const { instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
-
   const { historyPush } = useRouterState()
+  
+  const [ toolSpots, setToolSpots ] = useState([])
 
   const loadSpineAndGetPagesInfoAlreadyCalled = useRef(false)
   const getCfisOrShiftAndSnap = useRef()
   const pageIndexInSpine = useRef(0)
   const pageCfis = useRef([])
+  const toolSpotSets = useRef({})
   const unmounted = useRef(false)
   const webView = useRef()
   const view = useRef()
 
-  const { pageWidth, pageHeight } = usePageSize()
+  let { truePageHeight, truePageMarginTop } = useAdjustedDimensions({ fullPageWidth: width, fullPageHeight: height, sidePanelSettings })
+  const { pageWidth, pageHeight } = usePageSize({ sidePanelSettings })
 
   const getProcessingPaused = useInstanceValue(processingPaused)
+
+  const stopProcessing = () => (
+    getProcessingPaused()
+    || unmounted.current
+    || !webView.current
+  )
 
   const [ setDelayTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
@@ -58,6 +82,7 @@ const PageCapture = ({
     width,
     height,
     displaySettings,
+    spineInlineToolsHash,
   })
 
   useEffect(
@@ -71,18 +96,20 @@ const PageCapture = ({
 
   useEffect(
     () => {
-      if(processingPaused) return
+      if(stopProcessing()) return
 
       if(getCfisOrShiftAndSnap.current) {
         getCfisOrShiftAndSnap.current()
     
       } else {
-        if(loadSpineAndGetPagesInfoAlreadyCalled.current || !webView.current) return
+        if(loadSpineAndGetPagesInfoAlreadyCalled.current) return
 
         postMessage(webView.current, 'loadSpineAndGetPagesInfo', {
           spineIdRef,
           allottedMS: 100,
           minimumPagesToFetch: 1,
+          toolCfiCounts: toolCfiCountsInThisSpine,
+          width: realWidth,
         })
     
         pageCfis.current = []
@@ -94,6 +121,45 @@ const PageCapture = ({
 
   useEffect(() => () => unmounted.current = true, [])
 
+  useDidUpdate(
+    () => {
+      (async () => {
+
+        //// STEP 3 ////
+
+        const uri = getSnapshotURI({
+          bookId,
+          spineIdRef,
+          width,
+          height,
+          displaySettings,
+          spineInlineToolsHash,
+          pageIndexInSpine: pageIndexInSpine.current,
+        })
+
+        await takeSnapshot({
+          view: view.current,
+          uri,
+          width: pageWidth,
+          height: pageHeight,
+          viewWidth: width,
+          viewHeight: height,
+          stopProcessing,
+        })
+
+        if(stopProcessing()) return
+
+        pageIndexInSpine.current++
+
+        if(getCfisOrShiftAndSnap.current) {
+          getCfisOrShiftAndSnap.current()
+        }
+
+      })()
+    },
+    [ toolSpots ],
+  )
+
   const onError = useCallback(
     e => {
       console.log('ERROR: PageCapture webview had an error on load', uriAsKey, e)
@@ -103,7 +169,7 @@ const PageCapture = ({
   )
 
   const onMessageEvent = async (webView2, data) => {
-    if(webView2 !== webView.current || unmounted.current) return // just in case
+    if(webView2 !== webView.current || stopProcessing()) return // just in case
 
     switch(data.identifier) {
 
@@ -131,13 +197,16 @@ const PageCapture = ({
             startIndex: pageCfis.current.length,
             allottedMS: 100,
             minimumPagesToFetch: 1,
+            width: realWidth,
           })
-          if(!getProcessingPaused()) getCfisOrShiftAndSnap.current()
+          if(!stopProcessing()) getCfisOrShiftAndSnap.current()
           return
         }
 
+        toolSpotSets.current = data.payload.toolSpotSets
+
         const numPages = pageCfis.current.length
-        const platformOffset = Platform.OS === 'ios' && width%2 === 1 ? 1 : 0
+        const platformOffset = Platform.OS === 'ios' && realWidth%2 === 1 ? 1 : 0
 
         if(Platform.OS === 'android') {
           // Delay to ensure render of the initial page in spine
@@ -147,9 +216,12 @@ const PageCapture = ({
 
         await new Promise(resolve => {
           getCfisOrShiftAndSnap.current = async () => {
+
+            //// STEP 1 ////
+
             reportInfoOrCapture(uriAsKey)
 
-            if(getProcessingPaused()) return
+            if(stopProcessing()) return
 
             // pre-skip pages which already exist
             while(
@@ -160,6 +232,7 @@ const PageCapture = ({
                   width,
                   height,
                   displaySettings,
+                  spineInlineToolsHash,
                   pageIndexInSpine: pageIndexInSpine.current,
                 })
               )).exists
@@ -169,7 +242,9 @@ const PageCapture = ({
 
             if(pageIndexInSpine.current >= numPages) return resolve()
 
-            const shift = pageIndexInSpine.current * (width - platformOffset) * -1 + platformOffset
+            if(stopProcessing()) return
+
+            const shift = pageIndexInSpine.current * (realWidth - platformOffset) * -1 + platformOffset
 
             // getBoundingClientRect combined with the timeout [hopefully] ensures
             // paint is done before the postMessage call.
@@ -191,17 +266,12 @@ const PageCapture = ({
           getCfisOrShiftAndSnap.current()
         })
 
-        if(unmounted.current) return
+        if(stopProcessing()) return
 
-// if(pageCfis.current.some(cfi => !cfi)) {
-//   alert('bad!')
-//   console.log('bad cfi set', spineIdRef, pageCfis.current)
-// }
-        
         addSpinePageCfis({
           bookId,
           idref: spineIdRef,
-          key: [getPageCfisKey({ displaySettings, width, height })],
+          key: [getPageCfisKey({ displaySettings, width, height, spineInlineToolsHash })],
           pageCfis: pageCfis.current.map(cfi => cfi || ''),
         })
         
@@ -215,34 +285,29 @@ const PageCapture = ({
 
       case 'docElShifted': {
 
+        //// STEP 2 ////
+
         if(spineIdRef !== data.payload.spineIdRef) return // just in case
 
-        if(getProcessingPaused()) return
+        if(stopProcessing()) return
 
         reportInfoOrCapture(uriAsKey)
 
-        const uri = getSnapshotURI({
-          bookId,
-          spineIdRef,
-          width,
-          height,
-          displaySettings,
-          pageIndexInSpine: pageIndexInSpine.current,
-        })
+        const { offsetX, offsetY, toolSpots } = toolSpotSets.current || {}
 
-        await takeSnapshot({
-          view: view.current,
-          uri,
-          width: pageWidth,
-          height: pageHeight,
-          viewWidth: width,
-          viewHeight: height,
-        })
-
-        if(unmounted.current) return
-
-        pageIndexInSpine.current++
-        getCfisOrShiftAndSnap.current()
+        setToolSpots(
+          !toolSpots
+            ? {}  // A new object is needed here so as to make sure we get to step 3.
+            : {
+              offsetX: offsetX + realMarginHorizontal,
+              spots: (toolSpots[pageIndexInSpine.current] || []).map(({ y, cfi, ordering=0 }) => ({
+                y: y + offsetY + truePageMarginTop,
+                spineIdRef,
+                cfi,
+                ordering,
+              })),
+            }
+        )
 
         return true
 
@@ -251,34 +316,45 @@ const PageCapture = ({
     }
   }
 
-  if(processingPaused) return null
-
-  const adjustedHeight = height - (isIPhoneX ? (statusBarHeight + bottomSpace) : 0)
+  // if(processingPaused) return null
 
   return (
-    <PageWebView
+    <View
       key={uriAsKey}
-      style={{
-        position: 'absolute',
-        width,
-        height: adjustedHeight,
-        minHeight: adjustedHeight,
-      }}
-      bookId={bookId}
-      webViewRef={webView}
-      viewRef={view}
-      onMessage={onMessageEvent}
-      onError={onError}
-      initialLocation={JSON.stringify({ idref: spineIdRef })}
-      initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
-      instructorHighlights={instructorHighlights}
-    />
+      style={getDefiniteDimensionsStyle(width, height)}
+      ref={view}
+      collapsable={false}
+    >
+      <PageWebView
+        containerStyle={getDefiniteDimensionsStyle(width, height)}
+        style={{
+          ...getDefiniteDimensionsStyle(realWidth, truePageHeight),
+          top: truePageMarginTop,
+          left: realMarginHorizontal,
+          right: realMarginHorizontal,
+        }}
+        bookId={bookId}
+        webViewRef={webView}
+        // viewRef={view}
+        onMessage={onMessageEvent}
+        onError={onError}
+        initialLocation={JSON.stringify({ idref: spineIdRef })}
+        initialDisplaySettings={getDisplaySettingsObj(displaySettings)}
+        initialToolCfiCountsInThisSpine={toolCfiCountsInThisSpine}
+        instructorHighlights={instructorHighlights}
+        doReportToolSpots={doReportToolSpots}
+      />
+      <BookTools
+        bookId={bookId}
+        inEditMode={false}
+        spineIdRef={spineIdRef}
+        toolSpots={toolSpots}
+      />
+    </View>
   )
 }
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
-  books,
-  userDataByBookId,
+const mapStateToProps = () => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

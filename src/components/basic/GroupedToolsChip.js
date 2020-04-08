@@ -10,26 +10,26 @@ import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useDimensions from "../../hooks/useDimensions"
+import { contentCfiComparator } from "../../utils/toolbox"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import ToolChip from "./ToolChip"
 
 const styles = StyleSheet.create({
-  numWithin: {
-    borderRadius: 10,
+  numWithinContainer: {
+    borderRadius: 14,
     borderWidth: 1,
-    width: 17,
-    height: 17,
+    width: 28,
+    height: 28,
     flexShrink: 0,
-    lineHeight: 14,
-    textAlign: 'center',
-    fontSize: 10,
-    fontWeight: '600',
-    marginVertical: -6,
+    marginVertical: -12,
     marginLeft: 8,
   },
-  numWithinSelected: {
-    opacity: .5,
+  numWithin: {
+    lineHeight: 26,
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '600',
   },
   popover: {
     backgroundColor: 'transparent',
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   toolChipsScrollView: {
-    right: -15,
+    right: -7,
   },
   toolChipsContainer: {
     alignItems: 'flex-end',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "black",
     shadowOpacity: 0.3,
-    shadowRadius: 15,
+    shadowRadius: 10,
     marginVertical: 3,
   },
 })
@@ -60,6 +60,7 @@ const GroupedToolsChip = ({
   bookId,
   inEditMode,
   spineIdRef,
+  setModeToPage,
 
   books,
   userDataByBookId,
@@ -73,8 +74,8 @@ const GroupedToolsChip = ({
   const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
-  const { baseThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
-  const [ selectedThemedStyle={} ] = altThemedStyleSets
+  const { baseThemedStyle, labelThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
+  const [ selectedThemedStyle={}, selectedLabelThemedStyle={} ] = altThemedStyleSets
 
   const [ showTools, toggleShowTools ] = useToggle(false)
 
@@ -83,38 +84,45 @@ const GroupedToolsChip = ({
   const { height } = useDimensions().window
 
   const content = useMemo(
-    () => (
-      <ScrollView
-        style={[
-          styles.toolChipsScrollView,
-          {
-            maxHeight: parseInt(height / 2),
-          },
-        ]}
-        contentContainerStyle={styles.toolChipsContainer}
-      >
-        {Object.values(spineToolsByCfi).flat().map(({ uid, label, toolType, published_at, name }) => (
-          <View
-            key={uid}
-            style={styles.toolChipContainer}
-          >
-            <ToolChip
-              uid={uid}
-              label={label}
-              toolType={toolType}
-              isDraft={!published_at}
-              onPress={() => {
-                setSelectedToolUid({ bookId, uid })
-                toggleShowTools()
-              }}
-              status={!published_at ? "draft" : "published"}
-              type="button"
-            />
-          </View>
-        ))}
-      </ScrollView>
-    ),
-    [ spineToolsByCfi, bookId ],
+    () => {
+
+      const spineToolSets = Object.values(spineToolsByCfi)
+      spineToolSets.sort((a, b) => contentCfiComparator(a[0].cfi, b[0].cfi))
+
+      return (
+        <ScrollView
+          style={[
+            styles.toolChipsScrollView,
+            {
+              maxHeight: parseInt(height / 2),
+            },
+          ]}
+          contentContainerStyle={styles.toolChipsContainer}
+        >
+          {spineToolSets.flat().map(({ uid, toolType, published_at, name }) => (
+            <View
+              key={uid}
+              style={styles.toolChipContainer}
+            >
+              <ToolChip
+                uid={uid}
+                label={name}
+                toolType={toolType}
+                isDraft={!published_at}
+                onPress={() => {
+                  setSelectedToolUid({ bookId, uid })
+                  toggleShowTools()
+                  setModeToPage && setModeToPage({ snapshotZoomed: true })
+                }}
+                status={!published_at ? "draft" : "published"}
+                type="button"
+              />
+            </View>
+          ))}
+        </ScrollView>
+      )
+    },
+    [ spineToolsByCfi, bookId, setModeToPage ],
   )
 
   return (
@@ -128,12 +136,18 @@ const GroupedToolsChip = ({
       <TouchableWithoutFeedback onPress={toggleShowTools}>
         <View
           {...themedStateEvents}
+          style={[
+            styles.numWithinContainer,
+            baseThemedStyle,
+            (showTools ? selectedThemedStyle : null),
+            style,
+          ]}
         >
           <Text
             style={[
               styles.numWithin,
-              baseThemedStyle,
-              (showTools ? selectedThemedStyle : null),
+              labelThemedStyle,
+              (showTools ? selectedLabelThemedStyle : null),
               style,
             ]}
           >

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
 import './src/themes/style'
-// import * as Font from 'expo-font'
 
 import { SplashScreen, Updates, AppLoading } from "expo"
 import { AsyncStorage, Platform, StatusBar } from "react-native"
@@ -25,6 +24,7 @@ import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
 import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
 import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
+import { loadIconFonts } from "./src/components/basic/Icon"
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -147,7 +147,7 @@ const App = () => {
               })
         
             if(query.highlight) {  // it is a share quote
-              window.location.href = `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`
+              window.history.replaceState("", "", `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`)
 
             } else if(query.goto) {
               try {
@@ -161,20 +161,30 @@ const App = () => {
 
               delete query.goto
 
-              window.location.href = `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`
+              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`)
 
             } else {
-              window.location.href = `${window.location.origin}/#${window.location.pathname}`
+              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}`)
             }
 
           } else {
-            window.location.href = `${window.location.origin}/#/`
+            window.history.replaceState("", "", `${window.location.origin}/#/`)
           }
+
+          window.location.reload()
 
           return
         }
 
-        await updateDataStructure()  // needs to be after the persistStore call above
+        // remove query string (coming from google analytics and the like)
+        if(Platform.OS === 'web' && window.location.search) {
+          window.history.replaceState(null, '', window.location.href.replace(/\?[^#]*/, ''))
+        }
+
+        await Promise.all([
+          loadIconFonts(),
+          updateDataStructure(),  // needs to be after the persistStore call above
+        ])
 
         await i18nSetup({
           locales: [ LANGUAGE_CODE ],
@@ -234,6 +244,9 @@ const App = () => {
           isReady={isReady}
           updateExists={updateExists}
         />
+      }
+      {Platform.OS === 'web' && !isLoaded &&
+        <Loading />
       }
     </>
   )

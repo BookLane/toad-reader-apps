@@ -6,11 +6,12 @@ import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
 import { useLayout } from '@react-native-community/hooks'
 
-import { getSpineAndPage, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { statusBarHeight, bottomSpace } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
+import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import { createTool } from "../../redux/actions"
 
 import BookContentsLine from "../basic/BookContentsLine"
@@ -20,9 +21,6 @@ import FAB from "../basic/FAB"
 const paddingTop = 12
 
 const styles = StyleSheet.create({
-  list: {
-    backgroundColor: '#F2F6FF',
-  },
   listHeader: {
     paddingTop,
   },
@@ -49,19 +47,19 @@ const BookContents = React.memo(({
   toggleInEditMode,
   backToReading,
   setModeToPage,
+  hideFABs,
 
   books,
   userDataByBookId,
-  displaySettings,
 
   createTool,
 }) => {
 
-  const { book, toc, classroomUid, visibleTools, selectedTool, bookVersion,
-          myRole, viewingFrontMatter, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { toc, classroomUid, visibleTools, selectedTool, bookVersion,
+          myRole, viewingFrontMatter, viewingOptions, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { latest_location } = userDataByBookId[bookId] || {}
-  const currentSpineIdRef = getSpineAndPage({ latest_location, book, displaySettings }).spineIdRef
+  const currentSpineIdRef = useSpineIdRefAndCfi(latest_location).spineIdRef
 
   const wideMode = useWideMode()
         
@@ -244,20 +242,26 @@ const BookContents = React.memo(({
       let ordering = 0
 
       if(selectedTool) {
+
         spineIdRef = selectedTool.spineIdRef
-        ordering =  selectedTool.ordering + 1
+        ordering = selectedTool.ordering + 1
 
       } else {
-        const spineIdRefsInToc = [ ...new Set(toc.map(({ spineIdRef }) => spineIdRef)) ]
+
+        const flatToc = []
+        const addToFlatTocRecursive = tocLevel => {
+          tocLevel.forEach(tocItem => {
+            flatToc.push(tocItem)
+            if(tocItem.subNav) {
+              addToFlatTocRecursive(tocItem.subNav)
+            }
+          })
+        }
+        addToFlatTocRecursive(toc)
+
+        const spineIdRefsInToc = [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
-        visibleTools.forEach(tool => {
-          if(
-            tool.spineIdRef === spineIdRef
-            && !tool.cfi
-          ) {
-            ordering = Math.max(tool.ordering + 1, ordering)
-          }
-        })
+
       }
 
       createTool({
@@ -303,7 +307,6 @@ const BookContents = React.memo(({
         setModeToPage={setModeToPage}
       />
       <List
-        style={wideMode ? styles.listWideMode : styles.list}
         ListHeaderComponent={ListHeader}
         ListFooterComponent={ListFooter}
         data={data}
@@ -311,14 +314,14 @@ const BookContents = React.memo(({
         onLayout={onLayout}
         onScroll={onScroll}
       />
-      {showAddToolButton && inEditMode && !viewingFrontMatter &&
+      {showAddToolButton && inEditMode && !viewingFrontMatter && !viewingOptions && !hideFABs &&
         <FAB
           iconName="md-add"
           status="primary"
           onPress={createNewTool}
         />
       }
-      {!!backToReading &&
+      {!!backToReading && !hideFABs &&
         <FAB
           iconName="book-open-variant"
           iconPack="materialCommunity"
@@ -331,10 +334,9 @@ const BookContents = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId, displaySettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
   books,
   userDataByBookId,
-  displaySettings,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

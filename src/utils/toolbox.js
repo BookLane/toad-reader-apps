@@ -1,8 +1,8 @@
 import React from "react"
-import { Platform, Dimensions, StatusBar, Linking, Text } from "react-native"
+import { Platform, StatusBar, Linking, Text } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
-import { i18n } from "inline-i18n"
+import { i18n, getLocale } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
 
@@ -11,8 +11,6 @@ const {
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
 } = Constants.manifest.extra
-
-const cachedSizes = {}
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
 
@@ -26,7 +24,7 @@ const parseContentCfi = cont => (
 )
 
 // copied from readium-js/readium-shared-js/plugins/highlights
-const contentCfiComparator = (cont1, cont2) => {
+export const contentCfiComparator = (cont1, cont2) => {
   cont1 = parseContentCfi(cont1);
   cont2 = parseContentCfi(cont2);
 
@@ -73,14 +71,10 @@ export const getDisplaySettingsObj = displaySettings => ({
   columns: 'single',
 })
 
-export const getPageCfisKey = ({ displaySettings, width, height }) => {
+export const getPageCfisKey = ({ displaySettings, width, height, spineInlineToolsHash }) => {
   const { textSize, textSpacing } = displaySettings
-  if(!width) {
-    width = Dimensions.get('window').width
-    height = Dimensions.get('window').height
-  }
 
-  return `${width}x${height}_${textSize}_${textSpacing}`
+  return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}`
 }
 
 export const getSnapshotURI = params => {
@@ -89,44 +83,22 @@ export const getSnapshotURI = params => {
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
 
-export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
-export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
+export const getToolCfiCounts = ({ visibleTools, spineIdRef }) => {
+  const countsByCfi = {}
 
-export const getSpineAndPage = ({ latest_location, spineIdRef, cfi, book, displaySettings={} }) => {
-  try {
-    
-    if(latest_location) {
-      const latestLocation = JSON.parse(latest_location)
-      spineIdRef = latestLocation.idref
-      cfi = latestLocation.elementCfi
+  visibleTools.forEach(({ uid, cfi, published_at, ...tool }) => {
+    if(tool.spineIdRef !== spineIdRef) return
+    if(!countsByCfi[cfi]) {
+      countsByCfi[cfi] = 0
     }
+    countsByCfi[cfi]++
+  })
 
-    const pageCfisKey = getPageCfisKey({ displaySettings })
-    let pageCfis = []
-    let pageCfisKnown = false
-    book && book.spines.some(spine => {
-      if(spine.idref === spineIdRef) {
-        if(spine.pageCfis) {
-          pageCfis = spine.pageCfis[pageCfisKey]
-          pageCfisKnown = true
-        }
-        return true
-      }
-    })
-    const pageIndexInSpine = getPageIndexInSpine({ pageCfis, cfi })
-
-    return {
-      spineIdRef,
-      cfi,
-      pageIndexInSpine,
-      pageCfisKnown,
-    }
-
-  } catch(e) {
-    return {}
-  }
+  return countsByCfi
 }
 
+export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
+export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
 export const isIPhoneX = isIphoneX()
 const getBottomSpace = () => (
@@ -463,7 +435,7 @@ export const getDraftToolByCurrentlyPublishedToolUid = tools => {
 
 export const nonEmpty = str => !!(str || "").trim()
 
-export const validUrl = url => /^https?:\/\/[^.]+\.[^.]/.test(url || "")
+export const validUrl = url => /^https:\/\/[^. ]+\.[^. ][^ ]*$/.test(url || "")
 
 export const validDomain = domain => /^[-a-z0-9]+\.[-.a-z0-9]+$/i.test(domain || "")
 
@@ -503,3 +475,61 @@ export const objectMap = (obj, fn) => (
     )
   )
 )
+
+export const getDateLine = ({ timestamp, short }) => {
+  const date = new Date(timestamp)
+  const now = new Date()
+
+  const options = {
+    year: 'numeric',
+    month: short ? 'short' : 'long',
+    day: 'numeric',
+  }
+
+  if(
+    short
+    && date.getTime() > now.getTime() - (1000*60*60*24*31)  // greater than a month ago
+    && date.getTime() < now.getTime() + (1000*60*60*24*31*5)  // less than 5 months in the future
+  ) {
+    delete options.year
+  }
+
+  return date.toLocaleDateString(getLocale(), options)
+}
+
+export const getTimeLine = ({ date, timestamp, short }) => {
+  date = date || new Date(timestamp)
+
+  const options = {
+    hour: 'numeric',
+    minute: '2-digit',
+    // timeZoneName: 'short',
+  }
+
+  if(short && date.getMinutes() === 0) {
+    delete options.minute
+  }
+
+  let timeLine = date.toLocaleTimeString(getLocale(), options)
+  const timeLinePieces = timeLine.split(':')
+  
+  if(timeLinePieces.length === 3) {  // i.e. toLocaleTimeString did not accept options (an Android issue)
+    timeLine = `${timeLinePieces[0]}:${timeLinePieces[1]}`
+  }
+
+  return timeLine
+}
+
+export const splitDraftDataToOptionsAndFrontMatter = (draftData={}) => {
+  const frontMatterDraftData = { ...draftData }
+  const optionsDraftData = {}
+
+  ;[ 'lti_configurations' ].forEach(field => {
+    if(frontMatterDraftData[field] !== undefined) {
+      optionsDraftData[field] = frontMatterDraftData[field]
+    }
+    delete frontMatterDraftData[field]
+  })
+
+  return [ optionsDraftData, frontMatterDraftData ]
+}

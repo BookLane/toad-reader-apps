@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Platform, Alert, TouchableOpacity } from "react-native"
+import { Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { OverflowMenu, Tooltip } from "@ui-kitten/components"
+import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
@@ -15,19 +15,7 @@ import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import CoverAndSpin from "../basic/CoverAndSpin"
-
-const styles = StyleSheet.create({
-  selected: {
-    opacity: 1,
-  },
-  spin: {
-    backgroundColor: 'white',
-  },
-  tooltip: {
-    maxWidth: 140,
-  },
-})
+import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 
 const BookHeader = React.memo(({
   bookId,
@@ -40,7 +28,6 @@ const BookHeader = React.memo(({
 
   books,
   sidePanelSettings,
-  syncStatus,
 
   removeFromBookDownloadQueue,
   setDownloadStatus,
@@ -50,7 +37,6 @@ const BookHeader = React.memo(({
 }) => {
 
   const [ showOptions, toggleShowOptions ] = useToggle(false)
-  const [ showSyncStatus, toggleShowSyncStatus ] = useToggle(false)
 
   const wideMode = useWideMode()
 
@@ -132,58 +118,8 @@ const BookHeader = React.memo(({
     [ bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
-  const syncStatusIconName = {
-    synced: "check",
-    error: "warning",
-    offline: "cloud-off",
-    localonly: "cloud-off",
-  }
-
-  const syncStatusMessages = {
-    synced: i18n("Saved."),
-    patching: i18n("Saving to server..."),
-    refreshing: i18n("Saving to server..."),
-    error: i18n("Unable to save to server."),
-    offline: i18n("You are not connected to the internet. Changes saved offline."),
-    localonly: i18n("Without a login, your changes are only saved locally."),
-  }
-
-  const syncStatusUIStatus = {
-    error: "error",
-    offline: "offline",
-  }
-
   const rightControls = [
-    <Tooltip
-      visible={showSyncStatus}
-      text={syncStatusMessages[syncStatus]}
-      onBackdropPress={toggleShowSyncStatus}
-      style={styles.tooltip}
-    >
-      <TouchableOpacity
-        onPress={toggleShowSyncStatus}
-      >
-        <HeaderIcon
-          iconName={syncStatusIconName[syncStatus] || "check"}
-          iconPack="material"
-          onPress={toggleShowSyncStatus}
-          uiStatus={
-            syncStatusUIStatus[syncStatus]
-            || (
-              wideMode
-                ? "faded"
-                : null
-            )
-          }
-        />
-        {[ 'patching', 'refreshing' ].includes(syncStatus) &&
-          <CoverAndSpin
-            size="small"
-            style={styles.spin}
-          />
-        }
-      </TouchableOpacity>
-    </Tooltip>,
+    <SaveStateHeaderIcon />,
     <HeaderIcon
       iconName="format-size"
       iconPack="materialCommunity"
@@ -248,10 +184,9 @@ const BookHeader = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, sidePanelSettings, syncStatus }) => ({
+const mapStateToProps = ({ books, sidePanelSettings }) => ({
   books,
   sidePanelSettings,
-  syncStatus,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

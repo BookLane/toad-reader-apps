@@ -8,13 +8,15 @@ import { useLayout } from '@react-native-community/hooks'
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, getToolbarHeight, bottomSpace, openURL } from "../../utils/toolbox"
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, bottomSpace,
+         openURL, getToolCfiCounts } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
 import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
+import useIsUpdatingRef from "../../hooks/useIsUpdatingRef"
 
 import PageWebView from "./PageWebView"
 import DisplaySettings from "./DisplaySettings"
@@ -61,6 +63,8 @@ const BookPage = React.memo(props => {
     requestHideSettings,
     latest_location,
     inEditMode,
+    setInPageTurn,
+    unselectText,
 
     books,
     userDataByBookId,
@@ -83,12 +87,14 @@ const BookPage = React.memo(props => {
   const loaded = useRef(false)
   const doAfterLoaded = useRef([])
   const webView = useRef()
-  const view = useRef()
+  // const view = useRef()
+
+  const [ latestLocationIsUpdating, startLatestLocationUpdate ] = useIsUpdatingRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  const { visibleTools, spines, toc, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { visibleTools, spines, toc, instructorHighlights, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
   const getVisibleTools = useInstanceValue(visibleTools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
@@ -133,29 +139,21 @@ const BookPage = React.memo(props => {
 
   useDidUpdate(
     () => {
-      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
-      
-      if(loaded.current) {
-        insertTools()
-      } else {
-        doAfterLoaded.current.push(insertTools)
-      }
-    },
-    [ toolCfiCounts ],
-  )
-
-  useDidUpdate(
-    () => {
       if(Platform.OS === 'web') return
-      if(spineIdRef == null || pageIndexInSpine == null) return
-      if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
-      // The prevPageIndexInSpine === -1 checks if it previously did not have snapshots.
+      if(spineIdRef == null || pageIndexInSpine == null || pageIndexInSpine === -1) return
+
+      // prevPageIndexInSpine === -1 checks if it previously did not have snapshots.
       // In that case, there is no need to update and cause a flash
-  
+      if(prevPageIndexInSpine === -1 && spineIdRef === prevSpineIdRef) return
+
+      // If the page change just came from the WebView, then do not fire the request here.
+      if(latestLocationIsUpdating.current) return
+
       doAfterLoaded.current.push(() => {
         postMessage(webView.current, 'goToPage', {
           spineIdRef,
           pageIndexInSpine: Math.max(pageIndexInSpine, 0),
+          toolCfiCounts,
         })
       })
   
@@ -179,9 +177,22 @@ const BookPage = React.memo(props => {
   useDidUpdate(
     () => {
       if(!hrefToGoTo) return
-      postMessage(webView.current, 'goToHref', { href: hrefToGoTo })
+      postMessage(webView.current, 'goToHref', hrefToGoTo)
     },
     [ hrefToGoTo ],
+  )
+
+  useDidUpdate(
+    () => {
+      const insertTools = () => postMessage(webView.current, 'insertTools', { toolCfiCounts })
+      
+      if(loaded.current) {
+        insertTools()
+      } else {
+        doAfterLoaded.current.push(insertTools)
+      }
+    },
+    [ toolCfiCounts ],
   )
 
   const onMessageEvent = useCallback(
@@ -189,6 +200,18 @@ const BookPage = React.memo(props => {
       if(webView2 !== webView.current) return // just in case
 
       switch(data.identifier) {
+
+        case 'startPageTurn': {
+          unselectText()
+          setInPageTurn(true)
+          return true
+        }
+
+        case 'cancelPageTurn': {
+          setInPageTurn(false)
+          return true
+        }
+
         case 'pageChanged': {
 
           const { newSpineIdRef, newCfi } = data.payload
@@ -215,11 +238,15 @@ const BookPage = React.memo(props => {
             })
           }
 
+          setInPageTurn(false)
+
           indicateLoaded()
           loaded.current = true
           doAfterLoaded.current.forEach(func => func())
           doAfterLoaded.current = []
-  
+
+          startLatestLocationUpdate()
+
           // await this.doTakeSnapshot()
 
           return false  // i.e. still process pageChanged in the general PageWebView component
@@ -235,9 +262,9 @@ const BookPage = React.memo(props => {
           const prevTocSpineIndex = tocSpineIdRefs.indexOf(spineIdRef)
           const pagedToBeginning = newSpineIdRef === undefined && prevTocSpineIndex === 0
           const pagedToEnd = newSpineIdRef === undefined && prevSpineIndex === spineIdRefs.length - 1
+          const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
 
           if(prevSpineIndex !== -1 && (newSpineIndex !== -1 || pagedToBeginning || pagedToEnd)) {
-            const pagedForward = pagedToEnd || newSpineIndex > prevSpineIndex
             const laterSpineIdRef = pagedToEnd
               ? "AFTER LAST SPINE"
               : (
@@ -262,15 +289,28 @@ const BookPage = React.memo(props => {
                 bookId,
                 uid: (pagedForward ? toolsBeforeLaterSpine[0] : toolsBeforeLaterSpine.pop()).uid,
               })
+
+              return true
             }
           }
+
+          postMessage(webView.current, 'goToPage', {
+            spineIdRef: newSpineIdRef,
+            ...(pagedForward
+              ? { pageIndexInSpine: 0 }
+              : { lastPage: true }
+            ),
+            toolCfiCounts: getToolCfiCounts({
+              visibleTools: getVisibleTools(),
+              spineIdRef: newSpineIdRef,
+            }),
+          })
 
           return true
         }
 
         case 'reportToolSpots': {
-          const { toolSpots, offsetX, offsetY } = data.payload
-          const wideModeShift = getToolbarHeight() - 30
+          const { spineIdRef, toolSpots, offsetX, offsetY } = data.payload
 
           reportSpots({
             type: 'BookPage',
@@ -280,7 +320,7 @@ const BookPage = React.memo(props => {
             },
             offsetX,
             spots: toolSpots.map(({ y, cfi, ordering=0 }) => ({
-              y: y + offsetY + wideModeShift,
+              y: y + offsetY,
               spineIdRef,
               cfi,
               ordering,
@@ -395,7 +435,7 @@ const BookPage = React.memo(props => {
           initialToolCfiCountsInThisSpine={toolCfiCounts}
           initialAddlParams={widget ? { widget } : null}
           instructorHighlights={instructorHighlights}
-          viewRef={view}
+          doReportToolSpots={bookVersion !== 'BASE'}
         />
         {wideMode && <View style={styles.webViewContentsIconCover} />}
         <DisplaySettings
