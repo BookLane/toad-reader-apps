@@ -162,12 +162,11 @@ export const updateToolEngagement = ({ bookId, classroomUid, toolUid, text, answ
   doPatch: true,
 })
 
-export const submitToolEngagement = ({ bookId, classroomUid, toolUid, uid, text, answers, score }) => ({
+export const submitToolEngagement = ({ bookId, classroomUid, toolUid, text, answers, score }) => ({
   type: "SUBMIT_TOOL_ENGAGEMENT",
   bookId,
   classroomUid,
   toolUid,
-  uid,  // tools with submission times have uid's and a single user can have more than one engagement per tool
   text,
   answers,
   score,

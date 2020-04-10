@@ -7,6 +7,7 @@ import { i18n } from "inline-i18n"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import EnhancedConnecting from "./EnhancedConnecting"
+import EnhancedScores from "./EnhancedScores"
 import EnhancedScreen from "./EnhancedScreen"
 
 const EnhancedDashboard = React.memo(({
@@ -47,14 +48,9 @@ const EnhancedDashboard = React.memo(({
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
       title: i18n("Scores", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedScores
+          bookId={bookId}
+        />
       ),
     }]),
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{

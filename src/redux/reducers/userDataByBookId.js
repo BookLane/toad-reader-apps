@@ -757,7 +757,7 @@ export default function(state = initialState, action) {
                 ...classroom,
                 tools,
               }
-  
+
               return true
             }
           })

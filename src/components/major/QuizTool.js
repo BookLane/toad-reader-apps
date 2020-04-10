@@ -1,13 +1,13 @@
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
+import { i18n } from "inline-i18n"
 import { ViewPager, Button, RadioGroup, Radio } from "@ui-kitten/components"
 
-import { i18n } from "inline-i18n"
 import { shuffleArray } from '../../utils/toolbox'
-// import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useClassroomInfo from '../../hooks/useClassroomInfo'
+import { submitToolEngagement } from "../../redux/actions"
 
 const radio = {
   borderWidth: 1,
@@ -81,22 +81,23 @@ const styles = StyleSheet.create({
   },
 })
 
-const returnTrue = () => true
-
 const QuizTool = React.memo(({
-  // bookId,
+  bookId,
+  viewingPreview,
 
   questions,
   shuffle,
 
-  // books,
+  books,
+
+  submitToolEngagement,
 }) => {
 
-  const [ pageIndex, setPageIndex ] = useState("")
-  const [ selectedAnswers, setSelectedAnswers ] = useState({})
+  const [ pageIndex, setPageIndex ] = useState(0)
+  const [ selectedAnswers, setSelectedAnswers ] = useState([])
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
 
-  // const { isDefaultClassroom } = useClassroomInfo({ books, bookId })
+  const { classroomUid, selectedToolUid } = useClassroomInfo({ books, bookId })
 
   const executeShuffles = returnResult => {
     let preppedQs = (questions || []).map((question, origQuestionIdx) => ({ question, origQuestionIdx }))
@@ -124,6 +125,27 @@ const QuizTool = React.memo(({
     answersSelection === selectedAnswers[origQuestionIdx]
   )).length
 
+  const checkAnswer = useCallback(
+    () => {
+      if(currentQuestionSubmitted) return
+
+      setCurrentQuestionSubmitted(true)
+      
+      if(!viewingPreview && pageIndex === questions.length - 1) {
+        const score = numAnsweredCorrectly / preppedQuestions.length
+
+        submitToolEngagement({
+          bookId,
+          classroomUid,
+          toolUid: selectedToolUid,
+          answers: selectedAnswers,
+          score,
+        })
+      }
+    },
+    [ currentQuestionSubmitted, pageIndex, viewingPreview, questions, selectedAnswers, numAnsweredCorrectly, bookId, classroomUid, selectedToolUid ],
+  )
+
   return (
     <ViewPager
       style={styles.viewPager}
@@ -143,10 +165,9 @@ const QuizTool = React.memo(({
                 selectedIndex={answers.map(({ origAnswerIdx }) => (selectedAnswers[origQuestionIdx] === origAnswerIdx)).indexOf(true)}
                 onChange={chosenIndex => {
                   if(currentQuestionSubmitted) return
-                  setSelectedAnswers({
-                    ...selectedAnswers,
-                    [origQuestionIdx]: answers[chosenIndex].origAnswerIdx,
-                  })
+                  const newSelectedAnswers = [ ...selectedAnswers ]
+                  newSelectedAnswers[origQuestionIdx] = answers[chosenIndex].origAnswerIdx
+                  setSelectedAnswers(newSelectedAnswers)
                 }}
               >
                 {answers.map(({ answer, origAnswerIdx }) => {
@@ -179,7 +200,7 @@ const QuizTool = React.memo(({
                   <Button
                     style={styles.button}
                     disabled={selectedAnswers[origQuestionIdx] == null}
-                    onPress={() => setCurrentQuestionSubmitted(true)}
+                    onPress={checkAnswer}
                   >
                     {i18n("Check my answer", "", "enhanced")}
                   </Button>
@@ -220,7 +241,7 @@ const QuizTool = React.memo(({
           <Button
             style={styles.button}
             onPress={() => {
-              setSelectedAnswers({})
+              setSelectedAnswers([])
               setPageIndex(0)
               executeShuffles()
             }}
@@ -234,10 +255,11 @@ const QuizTool = React.memo(({
 })
 
 const mapStateToProps = ({ books }) => ({
-  // books,
+  books,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  submitToolEngagement,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(QuizTool)
