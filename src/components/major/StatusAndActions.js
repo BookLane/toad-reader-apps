@@ -253,7 +253,7 @@ const StatusAndActions = React.memo(({
           status="primary"
           style={styles.button}
           size="small"
-          disabled={syncStatus !== 'synced' || !online || [ 'published', 'new' ].includes(publishedStatus) || !isReadyToPublish}
+          disabled={syncStatus !== 'synced' || !online || [ 'published' ].includes(publishedStatus) || !isReadyToPublish}
         >
           {i18n("Publish", "", "enhanced")}
         </Button>
@@ -261,7 +261,7 @@ const StatusAndActions = React.memo(({
           onPress={onDelete}
           status="basic"
           size="small"
-          disabled={(viewingFrontMatter || viewingOptions) && [ 'published', 'new' ].includes(publishedStatus)}
+          disabled={(viewingFrontMatter || viewingOptions) && [ 'published' ].includes(publishedStatus)}
         >
           {(viewingFrontMatter || viewingOptions || selectedTool.currently_published_tool_uid) ? i18n("Discard changes", "", "enhanced") : i18n("Remove", "", "enhanced")}
         </Button>
