@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react"
-import { StyleSheet, View, ScrollView, Text } from "react-native"
+import { StyleSheet, View, ScrollView, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -62,7 +62,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 10,
     paddingRight: 30,
-    flex: 'none',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
   },
   none: {
     textAlign: 'center',
@@ -80,8 +82,7 @@ const styles = StyleSheet.create({
     maxWidth: 150,
   },
   previousAttempts: {
-    fontWeight: 100,
-    marginLeft: 20,
+    fontWeight: '100',
   },
 })
 
@@ -172,12 +173,13 @@ const EnhancedMyScores = React.memo(({
               scores: formattedScores,
             })
 
+            const { score, submitted_at } = scores[0] || {}
             csvData.push([
               name || i18n("Quiz", "", "enhanced"),
-              scores[0].score || ``,
-              scores[1].submitted_at ? getDateLine({ timestamp: scores[1].submitted_at }) : ``,
-              scores[1].submitted_at ? getTimeLine({ timestamp: scores[1].submitted_at }) : ``,
-              scores[1].submitted_at ? new Date(scores[1].submitted_at).toString() : ``,
+              score || ``,
+              submitted_at ? getDateLine({ timestamp: submitted_at }) : ``,
+              submitted_at ? getTimeLine({ timestamp: submitted_at }) : ``,
+              submitted_at ? new Date(submitted_at).toString() : ``,
               formattedScores.slice(1).join("\n"),
             ])
           })
@@ -229,8 +231,9 @@ const EnhancedMyScores = React.memo(({
           columnHeightStyle,
         ]}
       >
-        {dataRows.map(({ name }) => (
+        {dataRows.map(({ name }, idx) => (
           <Text
+            key={idx}
             style={styles.quizNameCell}
             numberOfLines={2}
           >
@@ -246,12 +249,14 @@ const EnhancedMyScores = React.memo(({
         contentContainerStyle={styles.scrollViewContent}
         horizontal={true}
       >
-        {dataRows.map(({ scores }) => (
+        {dataRows.map(({ scores }, idx) => (
           <Text
+            key={idx}
             style={styles.cell}
             numberOfLines={2}
           >
             {scores[0]}
+            {"   "}
             {scores.length > 1 &&
               <Text style={styles.previousAttempts}>
                 {i18n("Previous attempts: {{scores}}", "", "enhanced", { scores: combineItems(...scores.slice(1)) })}
@@ -260,26 +265,27 @@ const EnhancedMyScores = React.memo(({
           </Text>
         ))}
       </ScrollView>
-      <CSVLink
-        data={csvData}
-        filename={
-          i18n("My scores")
-          + " - "
-          + (isDefaultClassroom
-            ? i18n("Enhanced book", "", "enhanced")
-            : (classroom || "").name
-          )
-          + " - "
-          + new Date().toDateString()
-        }
-        target="_blank"
-      >
-        <FAB
-          iconName="md-cloud-download"
-          status="primary"
-        />
-      </CSVLink>
-
+      {Platform.OS === 'web' &&
+        <CSVLink
+          data={csvData}
+          filename={
+            i18n("My scores")
+            + " - "
+            + (isDefaultClassroom
+              ? i18n("Enhanced book", "", "enhanced")
+              : (classroom || "").name
+            )
+            + " - "
+            + new Date().toDateString()
+          }
+          target="_blank"
+        >
+          <FAB
+            iconName="md-cloud-download"
+            status="primary"
+          />
+        </CSVLink>
+      }
     </View>
   )
 })

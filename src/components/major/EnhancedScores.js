@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react"
-import { StyleSheet, View, ScrollView, Text } from "react-native"
+import { StyleSheet, View, ScrollView, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -66,7 +66,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 10,
     paddingRight: 30,
-    flex: 'none',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
   },
   none: {
     textAlign: 'center',
@@ -266,6 +268,7 @@ const EnhancedScores = React.memo(({
         </View>
         {data.students.map(({ fullname, email }) => (
           <Text
+            key={email}
             style={styles.studentNameCell}
             numberOfLines={2}
           >
@@ -281,12 +284,18 @@ const EnhancedScores = React.memo(({
         contentContainerStyle={styles.scrollViewContent}
         horizontal={true}
       >
-        {dataColumns.map(column => (
-          <View style={styles.column}>
+        {dataColumns.map((column, idx) => (
+          <View
+            key={idx}
+            style={styles.column}
+          >
             {column.map((cell, idx) => (
               idx === 0
                 ? (
-                  <View style={styles.headerCellContainer}>
+                  <View
+                    key={idx}
+                    style={styles.headerCellContainer}
+                  >
                     <Text
                       style={styles.headerCell}
                       numberOfLines={2}
@@ -297,6 +306,7 @@ const EnhancedScores = React.memo(({
                 )
                 : (
                   <Text
+                    key={idx}
                     style={styles.cell}
                     numberOfLines={2}
                   >
@@ -307,26 +317,28 @@ const EnhancedScores = React.memo(({
           </View>
         ))}
       </ScrollView>
-      <CSVLink
-        data={csvData}
-        filename={
-          i18n("Quiz scores")
-          + " - "
-          + (isDefaultClassroom
-            ? i18n("Enhanced book", "", "enhanced")
-            : (classroom || "").name
-          )
-          + " - "
-          + new Date().toDateString()
-        }
-        target="_blank"
-      >
-        <FAB
-          iconName="md-cloud-download"
-          status="primary"
-        />
-      </CSVLink>
-    </View>
+      {Platform.OS === 'web' &&
+        <CSVLink
+          data={csvData}
+          filename={
+            i18n("Quiz scores")
+            + " - "
+            + (isDefaultClassroom
+              ? i18n("Enhanced book", "", "enhanced")
+              : (classroom || "").name
+            )
+            + " - "
+            + new Date().toDateString()
+          }
+          target="_blank"
+        >
+          <FAB
+            iconName="md-cloud-download"
+            status="primary"
+          />
+        </CSVLink>
+      }
+      </View>
   )
 })
 
