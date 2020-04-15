@@ -17,6 +17,17 @@ export default function(state, action) {
         return state
       }
 
+      if(
+        !state.currentReadingRecord.bookId
+        || !state.currentReadingRecord.spineIdRef
+        || !state.currentReadingRecord.startTime
+      ) {
+        console.log('ERROR: Tried ending invalid reading record.', state.currentReadingRecord)
+        
+        newState.currentReadingRecord = null
+        return newState
+      }
+
       const book = state.books[state.currentReadingRecord.bookId]
       const endTime = Date.now()
 

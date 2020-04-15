@@ -12,6 +12,10 @@ export default function(state = initialState, action) {
 
       const { bookId, spineIdRef } = action
 
+      if(!bookId || !spineIdRef) {
+        console.log('ERROR: Invalid reading record prevented.', action)
+      }
+
       const newState = {
         bookId,
         spineIdRef,
