@@ -6,7 +6,7 @@ import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
 
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch, getDateLine,
-         getTimeLine, combineItems } from '../../utils/toolbox'
+         getTimeLine, combineItems, orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -95,7 +95,7 @@ const EnhancedMyScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -154,10 +154,8 @@ const EnhancedMyScores = React.memo(({
         ],
       ]
 
-      // TODO: sort spines
-      Object.values(data.quizzesByLoc).forEach(quizzesByCfi => {
-        // TODO: sort cfis
-        Object.values(quizzesByCfi).forEach(quizzes => {
+      orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, toc }).forEach(quizzesByCfi => {
+        orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
           quizzes.forEach(({ name, scores }) => {
             const formattedScores = scores.map(({ score, submitted_at }, idx) => (
               score == undefined

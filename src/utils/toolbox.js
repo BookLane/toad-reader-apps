@@ -533,3 +533,42 @@ export const splitDraftDataToOptionsAndFrontMatter = (draftData={}) => {
 
   return [ optionsDraftData, frontMatterDraftData ]
 }
+
+export const getSpineIdRefsInToc = toc => {
+  const flatToc = []
+  const addToFlatTocRecursive = tocLevel => {
+    tocLevel.forEach(tocItem => {
+      flatToc.push(tocItem)
+      if(tocItem.subNav) {
+        addToFlatTocRecursive(tocItem.subNav)
+      }
+    })
+  }
+  addToFlatTocRecursive(toc || [])
+
+  return [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
+}
+
+export const orderSpineIdRefKeyedObj = ({ obj, toc }) => {
+  const spineIdRefsInToc = getSpineIdRefsInToc(toc)
+
+  const arrayOfObjs = Object.keys(obj).map(key => ([
+    key,
+    obj[key],
+  ]))
+
+  arrayOfObjs.sort((a, b) => spineIdRefsInToc.indexOf(a[0]) - spineIdRefsInToc.indexOf(b[0]))
+
+  return arrayOfObjs.map(([ key, val ]) => val)
+}
+
+export const orderCfiKeyedObj = ({ obj }) => {
+  const arrayOfObjs = Object.keys(obj).map(key => ([
+    key,
+    obj[key],
+  ]))
+
+  arrayOfObjs.sort((a, b) => contentCfiComparator(a[0], b[0]))
+
+  return arrayOfObjs.map(([ key, val ]) => val)
+}

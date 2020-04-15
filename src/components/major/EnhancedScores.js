@@ -5,7 +5,8 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, safeFetch,
+         orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -107,7 +108,7 @@ const EnhancedScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -160,10 +161,8 @@ const EnhancedScores = React.memo(({
 
       if((data || {}).students) {
 
-        // TODO: sort spines
-        Object.values(data.quizzesByLoc).forEach(quizzesByCfi => {
-          // TODO: sort cfis
-          Object.values(quizzesByCfi).forEach(quizzes => {
+        orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, toc }).forEach(quizzesByCfi => {
+          orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
             quizzes.forEach(quiz => {
               orderedQuizzes.push(quiz)
             })
