@@ -8,6 +8,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import EnhancedConnecting from "./EnhancedConnecting"
 import EnhancedScores from "./EnhancedScores"
+import EnhancedMyScores from "./EnhancedMyScores"
 import EnhancedScreen from "./EnhancedScreen"
 
 const EnhancedDashboard = React.memo(({
@@ -69,14 +70,9 @@ const EnhancedDashboard = React.memo(({
     ...(!(myRole === 'STUDENT') ? [] : [{
       title: i18n("My scores", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedMyScores
+          bookId={bookId}
+        />
       ),
     }]),
     {

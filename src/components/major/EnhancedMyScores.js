@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, safeFetch, getDateLine, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -14,7 +14,6 @@ const margin = 10
 const paddingVertical = 10
 
 const cell = {
-  maxWidth: 150,
   height,
   minHeight: height,
   maxHeight: height,
@@ -23,12 +22,6 @@ const cell = {
 
 const cellText = {
   fontWeight: '300',
-  textAlign: 'center',
-}
-
-const cellContainer = {
-  alignItems: 'flex-end',
-  flexDirection: 'row',
 }
 
 const styles = StyleSheet.create({
@@ -50,7 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  students: {
+  quizNames: {
     backgroundColor: 'rgb(247, 249, 252)',
     flexDirection: 'column',
     paddingVertical,
@@ -58,9 +51,11 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    minHeight: '100%',
   },
   scrollViewContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     paddingLeft: 10,
     paddingVertical: 10,
     paddingRight: 30,
@@ -72,24 +67,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '100',
   },
-  row: {
-    flexDirection: 'row',
-  },
-  headerCellContainer: {
-    ...cell,
-    ...cellContainer,
-  },
-  headerCell: {
-    ...cellText,
-    fontWeight: '600',
-  },
   cell: {
     ...cell,
     ...cellText,
   },
+  quizNameCell: {
+    ...cell,
+    ...cellText,
+    maxWidth: 150,
+  },
+  previousAttempts: {
+    fontWeight: 100,
+    marginLeft: 20,
+  },
 })
 
-const EnhancedScores = React.memo(({
+const EnhancedMyScores = React.memo(({
   bookId,
 
   idps,
@@ -112,7 +105,7 @@ const EnhancedScores = React.memo(({
 
         setData()
 
-        const path = `${getDataOrigin(idps[idpId])}/getscores/${classroomUid}`
+        const path = `${getDataOrigin(idps[idpId])}/getmyscores/${classroomUid}`
         let response = {}
 
         try {
@@ -141,47 +134,33 @@ const EnhancedScores = React.memo(({
     [ classroomUid ],
   )
 
-  const dataColumns = useMemo(
+  const dataRows = useMemo(
     () => {
-      const orderedQuizzes = []
-      const studentIndexes = {}
-      let studentIndex = 0
-      let dataColumns = []
+      if(!data) return null
 
-      if((data || {}).students) {
+      let dataRows = []
 
-        // TODO: sort spines
-        Object.values(data.quizzesByLoc).forEach(quizzesByCfi => {
-          // TODO: sort cfis
-          Object.values(quizzesByCfi).forEach(quizzes => {
-            quizzes.forEach(quiz => {
-              orderedQuizzes.push(quiz)
+      // TODO: sort spines
+      Object.values(data.quizzesByLoc).forEach(quizzesByCfi => {
+        // TODO: sort cfis
+        Object.values(quizzesByCfi).forEach(quizzes => {
+          quizzes.forEach(({ name, scores }) => {
+            dataRows.push({
+              name: name || i18n("Quiz", "", "enhanced"),
+              scores: scores.map(({ score, submitted_at }, idx) => (
+                score == undefined
+                  ? ``
+                  : i18n("{{percent}}% ({{date}})", "", "enhanced", {
+                      percent: Math.round(score * 100),
+                      date: getDateLine({ timestamp: submitted_at, short: true }),
+                    })
+              )),
             })
           })
         })
-  
-        data.students.forEach(({ id }) => {
-          studentIndexes[id] = studentIndex++
-        })
-  
-        dataColumns = orderedQuizzes.map(({ name, scores }) => {
-          const scoreArray = []
-  
-          Object.keys(scores).forEach(userId => {
-            scoreArray[studentIndexes[userId]] = scores[userId]
-          })
-  
-          return [
-            name || i18n("Quiz", "", "enhanced"),
-            ...scoreArray.map(score => score == undefined ? `` : i18n("{{percent}}%", {
-              percent: Math.round(score * 100),
-            })),
-          ]
-        })
+      })
 
-      }
-
-      return dataColumns
+      return dataRows
     },
     [ data ],
   )
@@ -204,7 +183,7 @@ const EnhancedScores = React.memo(({
     )
   }
 
-  if(dataColumns.length === 0) {
+  if(dataRows.length === 0) {
     return (
       <View style={styles.genericContainer}>
         <Text style={styles.none}>
@@ -214,42 +193,24 @@ const EnhancedScores = React.memo(({
     )
   }
 
-  if(data.students.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not yet have any students.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
   const columnHeightStyle = {
-    height: (height + margin*2) * (data.students.length + 1) + paddingVertical*2,
+    height: (height + margin*2) * dataRows.length + paddingVertical*2,
   }
 
   return (
     <View style={styles.container}>
       <View
         style={[
-          styles.students,
+          styles.quizNames,
           columnHeightStyle,
         ]}
       >
-        <View style={styles.headerCellContainer}>
+        {dataRows.map(({ name }) => (
           <Text
-            style={styles.headerCell}
+            style={styles.quizNameCell}
             numberOfLines={2}
           >
-            {i18n("Student", "", "enhanced")}
-          </Text>
-        </View>
-        {data.students.map(({ fullname }) => (
-          <Text
-            style={styles.cell}
-            numberOfLines={2}
-          >
-            {fullname}
+            {name}
           </Text>
         ))}
       </View>
@@ -261,30 +222,18 @@ const EnhancedScores = React.memo(({
         contentContainerStyle={styles.scrollViewContent}
         horizontal={true}
       >
-        {dataColumns.map(column => (
-          <View style={styles.column}>
-            {column.map((cell, idx) => (
-              idx === 0
-                ? (
-                  <View style={styles.headerCellContainer}>
-                    <Text
-                      style={styles.headerCell}
-                      numberOfLines={2}
-                    >
-                      {cell}
-                    </Text>
-                  </View>
-                )
-                : (
-                  <Text
-                    style={styles.cell}
-                    numberOfLines={2}
-                  >
-                    {cell}
-                  </Text>
-                )
-            ))}
-          </View>
+        {dataRows.map(({ scores }) => (
+          <Text
+            style={styles.cell}
+            numberOfLines={2}
+          >
+            {scores[0]}
+            {scores.length > 1 &&
+              <Text style={styles.previousAttempts}>
+                {i18n("Previous attempts: {{scores}}", "", "enhanced", { scores: combineItems(...scores.slice(1)) })}
+              </Text>
+            }
+          </Text>
         ))}
       </ScrollView>
     </View>
@@ -301,4 +250,4 @@ const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(EnhancedScores)
+export default connect(mapStateToProps, matchDispatchToProps)(EnhancedMyScores)
