@@ -25,6 +25,9 @@ const parseContentCfi = cont => (
 
 // copied from readium-js/readium-shared-js/plugins/highlights
 export const contentCfiComparator = (cont1, cont2) => {
+  if(cont1 === 'AT THE END') return 1
+  if(cont2 === 'AT THE END') return -1
+
   cont1 = parseContentCfi(cont1);
   cont2 = parseContentCfi(cont2);
 
@@ -550,7 +553,10 @@ export const getSpineIdRefsInToc = toc => {
 }
 
 export const orderSpineIdRefKeyedObj = ({ obj, toc }) => {
-  const spineIdRefsInToc = getSpineIdRefsInToc(toc)
+  const spineIdRefsInToc = [
+    ...getSpineIdRefsInToc(toc),
+    'AFTER LAST SPINE',
+  ]
 
   const arrayOfObjs = Object.keys(obj).map(key => ([
     key,
