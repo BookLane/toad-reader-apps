@@ -44,6 +44,14 @@ const styles = StyleSheet.create({
   container: {
     marginLeft: 30,
     flex: 1,
+  },
+  containerScrollView: {
+    flex: 1,
+    minHeight: '100%',
+  },
+  containerScrollViewContent: {
+    flex: 1,
+    minHeight: '100%',
     flexDirection: 'row',
   },
   quizNames: {
@@ -186,7 +194,7 @@ const EnhancedMyScores = React.memo(({
 
       return { dataRows, csvData }
     },
-    [ data ],
+    [ data, toc ],
   )
 
   if(!classroomUid) return null
@@ -223,45 +231,50 @@ const EnhancedMyScores = React.memo(({
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.quizNames,
-          columnHeightStyle,
-        ]}
-      >
-        {dataRows.map(({ name }, idx) => (
-          <Text
-            key={idx}
-            style={styles.quizNameCell}
-            numberOfLines={2}
-          >
-            {name}
-          </Text>
-        ))}
-      </View>
       <ScrollView
-        style={[
-          styles.scrollView,
-          columnHeightStyle,
-        ]}
-        contentContainerStyle={styles.scrollViewContent}
-        horizontal={true}
+        style={styles.containerScrollView}
+        contentContainerStyle={styles.containerScrollViewContent}
       >
-        {dataRows.map(({ scores }, idx) => (
-          <Text
-            key={idx}
-            style={styles.cell}
-            numberOfLines={2}
-          >
-            {scores[0]}
-            {"   "}
-            {scores.length > 1 &&
-              <Text style={styles.previousAttempts}>
-                {i18n("Previous attempts: {{scores}}", "", "enhanced", { scores: combineItems(...scores.slice(1)) })}
-              </Text>
-            }
-          </Text>
-        ))}
+        <View
+          style={[
+            styles.quizNames,
+            columnHeightStyle,
+          ]}
+        >
+          {dataRows.map(({ name }, idx) => (
+            <Text
+              key={idx}
+              style={styles.quizNameCell}
+              numberOfLines={2}
+            >
+              {name}
+            </Text>
+          ))}
+        </View>
+        <ScrollView
+          style={[
+            styles.scrollView,
+            columnHeightStyle,
+          ]}
+          contentContainerStyle={styles.scrollViewContent}
+          horizontal={true}
+        >
+          {dataRows.map(({ scores }, idx) => (
+            <Text
+              key={idx}
+              style={styles.cell}
+              numberOfLines={2}
+            >
+              {scores[0]}
+              {"   "}
+              {scores.length > 1 &&
+                <Text style={styles.previousAttempts}>
+                  {i18n("Previous attempts: {{scores}}", "", "enhanced", { scores: combineItems(...scores.slice(1)) })}
+                </Text>
+              }
+            </Text>
+          ))}
+        </ScrollView>
       </ScrollView>
       {Platform.OS === 'web' &&
         <CSVLink

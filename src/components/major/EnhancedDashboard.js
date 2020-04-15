@@ -9,6 +9,8 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import EnhancedConnecting from "./EnhancedConnecting"
 import EnhancedScores from "./EnhancedScores"
 import EnhancedMyScores from "./EnhancedMyScores"
+import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
+import EnhancedMyReflectionQuestions from "./EnhancedMyReflectionQuestions"
 import EnhancedScreen from "./EnhancedScreen"
 
 const EnhancedDashboard = React.memo(({
@@ -23,6 +25,8 @@ const EnhancedDashboard = React.memo(({
   const { viewingDashboard, myRole } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   if(!viewingDashboard) return null
+
+  const ReflectionQuestions = myRole === 'INSTRUCTOR' ? EnhancedReflectionQuestions : EnhancedMyReflectionQuestions
 
   const tabs = [
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
@@ -91,14 +95,9 @@ const EnhancedDashboard = React.memo(({
     {
       title: i18n("Reflection questions", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <ReflectionQuestions
+          bookId={bookId}
+        />
       ),
     },
     {

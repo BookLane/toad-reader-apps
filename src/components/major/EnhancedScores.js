@@ -51,6 +51,14 @@ const styles = StyleSheet.create({
   container: {
     marginLeft: 30,
     flex: 1,
+  },
+  containerScrollView: {
+    flex: 1,
+    minHeight: '100%',
+  },
+  containerScrollViewContent: {
+    flex: 1,
+    minHeight: '100%',
     flexDirection: 'row',
   },
   students: {
@@ -204,7 +212,7 @@ const EnhancedScores = React.memo(({
 
       return { dataColumns, csvData }
     },
-    [ data ],
+    [ data, toc ],
   )
 
   if(!classroomUid) return null
@@ -251,70 +259,75 @@ const EnhancedScores = React.memo(({
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.students,
-          columnHeightStyle,
-        ]}
-      >
-        <View style={styles.headerCellContainer}>
-          <Text
-            style={styles.headerCell}
-            numberOfLines={2}
-          >
-            {i18n("Student", "", "enhanced")}
-          </Text>
-        </View>
-        {data.students.map(({ fullname, email }) => (
-          <Text
-            key={email}
-            style={styles.studentNameCell}
-            numberOfLines={2}
-          >
-            {fullname || email}
-          </Text>
-        ))}
-      </View>
       <ScrollView
-        style={[
-          styles.scrollView,
-          columnHeightStyle,
-        ]}
-        contentContainerStyle={styles.scrollViewContent}
-        horizontal={true}
+        style={styles.containerScrollView}
+        contentContainerStyle={styles.containerScrollViewContent}
       >
-        {dataColumns.map((column, idx) => (
-          <View
-            key={idx}
-            style={styles.column}
-          >
-            {column.map((cell, idx) => (
-              idx === 0
-                ? (
-                  <View
-                    key={idx}
-                    style={styles.headerCellContainer}
-                  >
+        <View
+          style={[
+            styles.students,
+            columnHeightStyle,
+          ]}
+        >
+          <View style={styles.headerCellContainer}>
+            <Text
+              style={styles.headerCell}
+              numberOfLines={2}
+            >
+              {i18n("Student", "", "enhanced")}
+            </Text>
+          </View>
+          {data.students.map(({ fullname, email }) => (
+            <Text
+              key={email}
+              style={styles.studentNameCell}
+              numberOfLines={2}
+            >
+              {fullname || email}
+            </Text>
+          ))}
+        </View>
+        <ScrollView
+          style={[
+            styles.scrollView,
+            columnHeightStyle,
+          ]}
+          contentContainerStyle={styles.scrollViewContent}
+          horizontal={true}
+        >
+          {dataColumns.map((column, idx) => (
+            <View
+              key={idx}
+              style={styles.column}
+            >
+              {column.map((cell, idx) => (
+                idx === 0
+                  ? (
+                    <View
+                      key={idx}
+                      style={styles.headerCellContainer}
+                    >
+                      <Text
+                        style={styles.headerCell}
+                        numberOfLines={2}
+                      >
+                        {cell}
+                      </Text>
+                    </View>
+                  )
+                  : (
                     <Text
-                      style={styles.headerCell}
+                      key={idx}
+                      style={styles.cell}
                       numberOfLines={2}
                     >
                       {cell}
                     </Text>
-                  </View>
-                )
-                : (
-                  <Text
-                    key={idx}
-                    style={styles.cell}
-                    numberOfLines={2}
-                  >
-                    {cell}
-                  </Text>
-                )
-            ))}
-          </View>
-        ))}
+                  )
+              ))}
+            </View>
+          ))}
+        </ScrollView>
       </ScrollView>
       {Platform.OS === 'web' &&
         <CSVLink
@@ -337,7 +350,7 @@ const EnhancedScores = React.memo(({
           />
         </CSVLink>
       }
-      </View>
+    </View>
   )
 })
 
