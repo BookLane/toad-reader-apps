@@ -3,11 +3,13 @@ import { StyleSheet, View, ScrollView, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { CSVLink } from "react-csv"
 
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
+import FAB from '../basic/FAB'
 
 const height = 35
 const margin = 10
@@ -87,6 +89,11 @@ const styles = StyleSheet.create({
     ...cell,
     ...cellText,
   },
+  studentNameCell: {
+    ...cell,
+    ...cellText,
+    textAlign: 'left',
+  },
 })
 
 const EnhancedScores = React.memo(({
@@ -98,7 +105,7 @@ const EnhancedScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -141,12 +148,13 @@ const EnhancedScores = React.memo(({
     [ classroomUid ],
   )
 
-  const dataColumns = useMemo(
+  const { dataColumns, csvData } = useMemo(
     () => {
       const orderedQuizzes = []
       const studentIndexes = {}
       let studentIndex = 0
       let dataColumns = []
+      let csvData = []
 
       if((data || {}).students) {
 
@@ -179,9 +187,21 @@ const EnhancedScores = React.memo(({
           ]
         })
 
+        csvData = [
+          [
+            i18n("Student", "", "enhanced"),
+            i18n("Email", "", "enhanced"),
+            ...dataColumns.map(col => col[0]),
+          ],
+          ...data.students.map(({ fullname, email }, idx) => ([
+            fullname,
+            email,
+            ...dataColumns.map(col => col[idx + 1]),
+          ]))
+        ]
       }
 
-      return dataColumns
+      return { dataColumns, csvData }
     },
     [ data ],
   )
@@ -244,12 +264,12 @@ const EnhancedScores = React.memo(({
             {i18n("Student", "", "enhanced")}
           </Text>
         </View>
-        {data.students.map(({ fullname }) => (
+        {data.students.map(({ fullname, email }) => (
           <Text
-            style={styles.cell}
+            style={styles.studentNameCell}
             numberOfLines={2}
           >
-            {fullname}
+            {fullname || email}
           </Text>
         ))}
       </View>
@@ -287,6 +307,25 @@ const EnhancedScores = React.memo(({
           </View>
         ))}
       </ScrollView>
+      <CSVLink
+        data={csvData}
+        filename={
+          i18n("Quiz scores")
+          + " - "
+          + (isDefaultClassroom
+            ? i18n("Enhanced book", "", "enhanced")
+            : (classroom || "").name
+          )
+          + " - "
+          + new Date().toDateString()
+        }
+        target="_blank"
+      >
+        <FAB
+          iconName="md-cloud-download"
+          status="primary"
+        />
+      </CSVLink>
     </View>
   )
 })

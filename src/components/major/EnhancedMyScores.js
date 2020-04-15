@@ -3,11 +3,14 @@ import { StyleSheet, View, ScrollView, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { CSVLink } from "react-csv"
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch, getDateLine, combineItems } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, safeFetch, getDateLine,
+         getTimeLine, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
+import FAB from '../basic/FAB'
 
 const height = 35
 const margin = 10
@@ -91,7 +94,7 @@ const EnhancedMyScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -134,33 +137,54 @@ const EnhancedMyScores = React.memo(({
     [ classroomUid ],
   )
 
-  const dataRows = useMemo(
+  const { dataRows, csvData } = useMemo(
     () => {
-      if(!data) return null
+      if(!data) return {}
 
-      let dataRows = []
+      const dataRows = []
+      const csvData = [
+        [
+          i18n("Quiz name", "", "enhanced"),
+          i18n("Most recent score", "", "enhanced"),
+          i18n("Most recent attempt date", "", "enhanced"),
+          i18n("Most recent attempt time", "", "enhanced"),
+          i18n("Most recent attempt raw date and time", "", "enhanced"),
+          i18n("Previous attempts", "", "enhanced"),
+        ],
+      ]
 
       // TODO: sort spines
       Object.values(data.quizzesByLoc).forEach(quizzesByCfi => {
         // TODO: sort cfis
         Object.values(quizzesByCfi).forEach(quizzes => {
           quizzes.forEach(({ name, scores }) => {
+            const formattedScores = scores.map(({ score, submitted_at }, idx) => (
+              score == undefined
+                ? ``
+                : i18n("{{percent}}% ({{date}})", "", "enhanced", {
+                    percent: Math.round(score * 100),
+                    date: getDateLine({ timestamp: submitted_at, short: true }),
+                  })
+            ))
+
             dataRows.push({
               name: name || i18n("Quiz", "", "enhanced"),
-              scores: scores.map(({ score, submitted_at }, idx) => (
-                score == undefined
-                  ? ``
-                  : i18n("{{percent}}% ({{date}})", "", "enhanced", {
-                      percent: Math.round(score * 100),
-                      date: getDateLine({ timestamp: submitted_at, short: true }),
-                    })
-              )),
+              scores: formattedScores,
             })
+
+            csvData.push([
+              name || i18n("Quiz", "", "enhanced"),
+              scores[0].score || ``,
+              scores[1].submitted_at ? getDateLine({ timestamp: scores[1].submitted_at }) : ``,
+              scores[1].submitted_at ? getTimeLine({ timestamp: scores[1].submitted_at }) : ``,
+              scores[1].submitted_at ? new Date(scores[1].submitted_at).toString() : ``,
+              formattedScores.slice(1).join("\n"),
+            ])
           })
         })
       })
 
-      return dataRows
+      return { dataRows, csvData }
     },
     [ data ],
   )
@@ -236,6 +260,26 @@ const EnhancedMyScores = React.memo(({
           </Text>
         ))}
       </ScrollView>
+      <CSVLink
+        data={csvData}
+        filename={
+          i18n("My scores")
+          + " - "
+          + (isDefaultClassroom
+            ? i18n("Enhanced book", "", "enhanced")
+            : (classroom || "").name
+          )
+          + " - "
+          + new Date().toDateString()
+        }
+        target="_blank"
+      >
+        <FAB
+          iconName="md-cloud-download"
+          status="primary"
+        />
+      </CSVLink>
+
     </View>
   )
 })
