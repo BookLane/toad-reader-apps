@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    minHeight: '100%',
   },
   scrollViewContent: {
     flexDirection: 'row',
