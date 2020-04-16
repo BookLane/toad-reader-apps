@@ -7,6 +7,7 @@ import { i18n } from "inline-i18n"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import EnhancedConnecting from "./EnhancedConnecting"
+import EnhancedMembers from "./EnhancedMembers"
 import EnhancedScores from "./EnhancedScores"
 import EnhancedMyScores from "./EnhancedMyScores"
 import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
@@ -33,6 +34,14 @@ const EnhancedDashboard = React.memo(({
       title: i18n("Connecting", "", "enhanced"),
       content: (
         <EnhancedConnecting
+          bookId={bookId}
+        />
+      ),
+    }]),
+    ...(!(myRole === 'INSTRUCTOR') ? [] : [{
+      title: i18n("Students & Instructors", "", "enhanced"),
+      content: (
+        <EnhancedMembers
           bookId={bookId}
         />
       ),

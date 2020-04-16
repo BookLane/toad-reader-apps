@@ -471,7 +471,12 @@ export default function(state = initialState, action) {
           return (classroom.members || []).some((member, idx) => {
             if(member.user_id === action.userId) {
 
-              classroom = classrooms[idx] = { ...classroom }
+              classroom = classrooms[idx] = {
+                ...classroom,
+                members: [
+                  ...classroom.members,
+                ],
+              }
               member = classroom.members[idx] = { ...member }
 
               ;[

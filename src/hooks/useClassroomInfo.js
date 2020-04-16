@@ -82,16 +82,22 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     || ((classroom || {}).scheduleDates || []).length > 0
     || (classroom || {}).introduction
   )
+
+  const members = useMemo(
+    () => ((classroom || {}).members || []).filter(({ _delete }) => !_delete),
+    [ (classroom || {}).members ],
+  )
+
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = Platform.OS === 'web' && ((bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom))
 
   const students = useMemo(
     () => (
       myRole === 'INSTRUCTOR'
-        ? (classroom || {}).members.filter(({ role }) => role === 'STUDENT')
+        ? members.filter(({ role }) => role === 'STUDENT')
         : null
     ),
-    [ myRole, (classroom || {}).members ],
+    [ myRole, members ],
   )
 
   if(rawInEditMode !== undefined) {
@@ -243,6 +249,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     hasFrontMatterDraftData,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in
+    members,  // requires userDataByBookId to be sent in
     students,  // requires userDataByBookId to be sent in
     inEditMode,  // requires userDataByBookId and rawInEditMode to be sent in
     iCanEdit,  // requires userDataByBookId to be sent in
