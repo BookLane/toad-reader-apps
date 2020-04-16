@@ -80,7 +80,7 @@ const EnhancedReflectionQuestions = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, students, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -133,7 +133,7 @@ const EnhancedReflectionQuestions = React.memo(({
       let answers = {}
       let csvData = []
 
-      if((data || {}).students) {
+      if((data || {}).questionsByLoc) {
 
         orderSpineIdRefKeyedObj({ obj: data.questionsByLoc, toc }).forEach(questionssByCfi => {
           orderCfiKeyedObj({ obj: questionssByCfi }).forEach(questions => {
@@ -146,9 +146,9 @@ const EnhancedReflectionQuestions = React.memo(({
           })
         })
 
-        data.students.forEach(info => {
-          studentIndexes[info.id] = studentIndex++
-          studentInfo[info.id] = info
+        students.forEach(info => {
+          studentIndexes[info.user_id] = studentIndex++
+          studentInfo[info.user_id] = info
         })
 
         orderedQuestions.forEach(question => {
@@ -161,10 +161,10 @@ const EnhancedReflectionQuestions = React.memo(({
             i18n("Email", "", "enhanced"),
             ...orderedQuestions.map(({ text, question }) => `${text}\n${question}`),
           ],
-          ...data.students.map(({ id, fullname, email }, idx) => ([
+          ...students.map(({ user_id, fullname, email }, idx) => ([
             fullname,
             email,
-            ...orderedQuestions.map(({ uid }) => ((answers[uid] || {})[id] || "")),
+            ...orderedQuestions.map(({ uid }) => ((answers[uid] || {})[user_id] || "")),
           ]))
         ]
 
@@ -172,7 +172,7 @@ const EnhancedReflectionQuestions = React.memo(({
 
       return { orderedQuestions, answers, csvData }
     },
-    [ data, toc ],
+    [ students, data, toc ],
   )
 
   const onSelect = useCallback(({ uid }) => setCurrentQuestionUid(uid), [])
@@ -205,7 +205,7 @@ const EnhancedReflectionQuestions = React.memo(({
     )
   }
 
-  if(data.students.length === 0) {
+  if(students.length === 0) {
     return (
       <View style={styles.genericContainer}>
         <Text style={styles.none}>
@@ -235,13 +235,13 @@ const EnhancedReflectionQuestions = React.memo(({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {data.students.map(({ id, fullname, email }) => (
-          <View style={styles.row} key={id}>
+        {students.map(({ user_id, fullname, email }) => (
+          <View style={styles.row} key={user_id}>
             <Text style={styles.student}>
               {fullname || email}
             </Text>
             <Text style={styles.answer}>
-              {(answers[currentQuestion.uid] || {})[id] || ""}
+              {(answers[currentQuestion.uid] || {})[user_id] || ""}
             </Text>
           </View>
         ))}

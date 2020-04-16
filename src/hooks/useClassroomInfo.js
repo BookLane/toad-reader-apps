@@ -85,6 +85,15 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
   const myRole = (bookVersion === 'INSTRUCTOR' && (((classroom || {}).members || []).filter(({ user_id }) => user_id === userId)[0] || {}).role) || 'STUDENT'
   const iCanEdit = Platform.OS === 'web' && ((bookVersion === 'PUBLISHER' && isDefaultClassroom) || (myRole === 'INSTRUCTOR' && !isDefaultClassroom))
 
+  const students = useMemo(
+    () => (
+      myRole === 'INSTRUCTOR'
+        ? (classroom || {}).members.filter(({ role }) => role === 'STUDENT')
+        : null
+    ),
+    [ myRole, (classroom || {}).members ],
+  )
+
   if(rawInEditMode !== undefined) {
     inEditMode = !!(
       rawInEditMode
@@ -234,6 +243,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     hasFrontMatterDraftData,  // requires userDataByBookId to be sent in
     bookVersion,
     myRole,  // requires userDataByBookId to be sent in
+    students,  // requires userDataByBookId to be sent in
     inEditMode,  // requires userDataByBookId and rawInEditMode to be sent in
     iCanEdit,  // requires userDataByBookId to be sent in
     tools,  // requires userDataByBookId to be sent in

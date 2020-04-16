@@ -117,7 +117,7 @@ const EnhancedScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, students, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -168,7 +168,7 @@ const EnhancedScores = React.memo(({
       let dataColumns = []
       let csvData = []
 
-      if((data || {}).students) {
+      if((data || {}).quizzesByLoc) {
 
         orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, toc }).forEach(quizzesByCfi => {
           orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
@@ -178,8 +178,8 @@ const EnhancedScores = React.memo(({
           })
         })
   
-        data.students.forEach(({ id }) => {
-          studentIndexes[id] = studentIndex++
+        students.forEach(({ user_id }) => {
+          studentIndexes[user_id] = studentIndex++
         })
   
         dataColumns = orderedQuizzes.map(({ name, scores }) => {
@@ -203,7 +203,7 @@ const EnhancedScores = React.memo(({
             i18n("Email", "", "enhanced"),
             ...dataColumns.map(col => col[0]),
           ],
-          ...data.students.map(({ fullname, email }, idx) => ([
+          ...students.map(({ fullname, email }, idx) => ([
             fullname,
             email,
             ...dataColumns.map(col => col[idx + 1]),
@@ -213,7 +213,7 @@ const EnhancedScores = React.memo(({
 
       return { dataColumns, csvData }
     },
-    [ data, toc ],
+    [ students, data, toc ],
   )
 
   if(!classroomUid) return null
@@ -244,7 +244,7 @@ const EnhancedScores = React.memo(({
     )
   }
 
-  if(data.students.length === 0) {
+  if(students.length === 0) {
     return (
       <View style={styles.genericContainer}>
         <Text style={styles.none}>
@@ -255,7 +255,7 @@ const EnhancedScores = React.memo(({
   }
 
   const columnHeightStyle = {
-    height: (height + margin*2) * (data.students.length + 1) + paddingVertical*2,
+    height: (height + margin*2) * (students.length + 1) + paddingVertical*2,
   }
 
   return (
@@ -278,7 +278,7 @@ const EnhancedScores = React.memo(({
               {i18n("Student", "", "enhanced")}
             </Text>
           </View>
-          {data.students.map(({ fullname, email }) => (
+          {students.map(({ fullname, email }) => (
             <Text
               key={email}
               style={styles.studentNameCell}
