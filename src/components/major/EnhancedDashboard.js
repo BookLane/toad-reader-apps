@@ -12,6 +12,7 @@ import EnhancedScores from "./EnhancedScores"
 import EnhancedMyScores from "./EnhancedMyScores"
 import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
 import EnhancedMyReflectionQuestions from "./EnhancedMyReflectionQuestions"
+import Highlights from "./Highlights"
 import EnhancedScreen from "./EnhancedScreen"
 
 const EnhancedDashboard = React.memo(({
@@ -68,7 +69,7 @@ const EnhancedDashboard = React.memo(({
       ),
     }]),
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
-      title: i18n("Surveys", "", "enhanced"),
+      title: i18n("Polls", "", "enhanced"),
       content: (
         <Text style={{
           padding: 100,
@@ -112,14 +113,9 @@ const EnhancedDashboard = React.memo(({
     {
       title: i18n("Highlights", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <Highlights
+          bookId={bookId}
+        />
       ),
     },
   ]

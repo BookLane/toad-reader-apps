@@ -73,7 +73,7 @@ const EnhancedMyReflectionQuestions = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -118,8 +118,6 @@ const EnhancedMyReflectionQuestions = React.memo(({
 
   const { dataRows, csvData } = useMemo(
     () => {
-      if(!data) return {}
-
       const dataRows = []
       const csvData = [
         [
@@ -129,33 +127,35 @@ const EnhancedMyReflectionQuestions = React.memo(({
         ],
       ]
 
-      orderSpineIdRefKeyedObj({ obj: data.questionsByLoc, toc }).forEach(questionsByCfi => {
-        orderCfiKeyedObj({ obj: questionsByCfi }).forEach(questions => {
-          questions.forEach(({ name, question, answer }) => {
+      if((data || {}).questionsByLoc) {
+        orderSpineIdRefKeyedObj({ obj: data.questionsByLoc, spines }).forEach(questionsByCfi => {
+          orderCfiKeyedObj({ obj: questionsByCfi }).forEach(questions => {
+            questions.forEach(({ name, question, answer }) => {
 
-            if(!name) {
-              name = i18n("Reflection question", "", "enhanced")
-            }
+              if(!name) {
+                name = i18n("Reflection question", "", "enhanced")
+              }
 
-            dataRows.push({
-              name,
-              question,
-              answer,
+              dataRows.push({
+                name,
+                question,
+                answer,
+              })
+
+              csvData.push([
+                name,
+                question,
+                answer,
+              ])
+
             })
-
-            csvData.push([
-              name,
-              question,
-              answer,
-            ])
-
           })
         })
-      })
+      }
 
       return { dataRows, csvData }
     },
-    [ data, toc ],
+    [ data, spines ],
   )
 
   if(!classroomUid) return null

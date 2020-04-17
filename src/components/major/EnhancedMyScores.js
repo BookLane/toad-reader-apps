@@ -103,7 +103,7 @@ const EnhancedMyScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -148,8 +148,6 @@ const EnhancedMyScores = React.memo(({
 
   const { dataRows, csvData } = useMemo(
     () => {
-      if(!data) return {}
-
       const dataRows = []
       const csvData = [
         [
@@ -162,39 +160,41 @@ const EnhancedMyScores = React.memo(({
         ],
       ]
 
-      orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, toc }).forEach(quizzesByCfi => {
-        orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
-          quizzes.forEach(({ name, scores }) => {
-            const formattedScores = scores.map(({ score, submitted_at }, idx) => (
-              score == undefined
-                ? ``
-                : i18n("{{percent}}% ({{date}})", "", "enhanced", {
-                    percent: Math.round(score * 100),
-                    date: getDateLine({ timestamp: submitted_at, short: true }),
-                  })
-            ))
+      if((data || {}).quizzesByLoc) {
+        orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, spines }).forEach(quizzesByCfi => {
+          orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
+            quizzes.forEach(({ name, scores }) => {
+              const formattedScores = scores.map(({ score, submitted_at }, idx) => (
+                score == undefined
+                  ? ``
+                  : i18n("{{percent}}% ({{date}})", "", "enhanced", {
+                      percent: Math.round(score * 100),
+                      date: getDateLine({ timestamp: submitted_at, short: true }),
+                    })
+              ))
 
-            dataRows.push({
-              name: name || i18n("Quiz", "", "enhanced"),
-              scores: formattedScores,
+              dataRows.push({
+                name: name || i18n("Quiz", "", "enhanced"),
+                scores: formattedScores,
+              })
+
+              const { score, submitted_at } = scores[0] || {}
+              csvData.push([
+                name || i18n("Quiz", "", "enhanced"),
+                score || ``,
+                submitted_at ? getDateLine({ timestamp: submitted_at }) : ``,
+                submitted_at ? getTimeLine({ timestamp: submitted_at }) : ``,
+                submitted_at ? new Date(submitted_at).toString() : ``,
+                formattedScores.slice(1).join("\n"),
+              ])
             })
-
-            const { score, submitted_at } = scores[0] || {}
-            csvData.push([
-              name || i18n("Quiz", "", "enhanced"),
-              score || ``,
-              submitted_at ? getDateLine({ timestamp: submitted_at }) : ``,
-              submitted_at ? getTimeLine({ timestamp: submitted_at }) : ``,
-              submitted_at ? new Date(submitted_at).toString() : ``,
-              formattedScores.slice(1).join("\n"),
-            ])
           })
         })
-      })
+      }
 
       return { dataRows, csvData }
     },
-    [ data, toc ],
+    [ data, spines ],
   )
 
   if(!classroomUid) return null

@@ -552,20 +552,20 @@ export const getSpineIdRefsInToc = toc => {
   return [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
 }
 
-export const orderSpineIdRefKeyedObj = ({ obj, toc }) => {
-  const spineIdRefsInToc = [
-    ...getSpineIdRefsInToc(toc),
+export const orderSpineIdRefKeyedObj = ({ obj, spines }) => {
+  const spineIdRefs = [
+    ...spines.map(({ idref }) => idref),
     'AFTER LAST SPINE',
   ]
 
-  const arrayOfObjs = Object.keys(obj).map(key => ([
-    key,
-    obj[key],
-  ]))
+  const arrayOfObjs = Object.keys(obj).map(key => ({
+    index: spineIdRefs.indexOf(key),
+    value: obj[key],
+  }))
 
-  arrayOfObjs.sort((a, b) => spineIdRefsInToc.indexOf(a[0]) - spineIdRefsInToc.indexOf(b[0]))
+  arrayOfObjs.sort((a, b) => a.index - b.index)
 
-  return arrayOfObjs.map(([ key, val ]) => val)
+  return arrayOfObjs.map(({ value }) => value)
 }
 
 export const orderCfiKeyedObj = ({ obj }) => {

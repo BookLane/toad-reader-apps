@@ -117,7 +117,7 @@ const EnhancedScores = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, students, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -170,7 +170,7 @@ const EnhancedScores = React.memo(({
 
       if((data || {}).quizzesByLoc) {
 
-        orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, toc }).forEach(quizzesByCfi => {
+        orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, spines }).forEach(quizzesByCfi => {
           orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
             quizzes.forEach(quiz => {
               orderedQuizzes.push(quiz)
@@ -213,7 +213,7 @@ const EnhancedScores = React.memo(({
 
       return { dataColumns, csvData }
     },
-    [ students, data, toc ],
+    [ students, data, spines ],
   )
 
   if(!classroomUid) return null

@@ -80,7 +80,7 @@ const EnhancedReflectionQuestions = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, students, toc } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -135,7 +135,7 @@ const EnhancedReflectionQuestions = React.memo(({
 
       if((data || {}).questionsByLoc) {
 
-        orderSpineIdRefKeyedObj({ obj: data.questionsByLoc, toc }).forEach(questionssByCfi => {
+        orderSpineIdRefKeyedObj({ obj: data.questionsByLoc, spines }).forEach(questionssByCfi => {
           orderCfiKeyedObj({ obj: questionssByCfi }).forEach(questions => {
             questions.forEach(question => {
               orderedQuestions.push({
@@ -172,7 +172,7 @@ const EnhancedReflectionQuestions = React.memo(({
 
       return { orderedQuestions, answers, csvData }
     },
-    [ students, data, toc ],
+    [ students, data, spines ],
   )
 
   const onSelect = useCallback(({ uid }) => setCurrentQuestionUid(uid), [])
