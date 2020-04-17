@@ -6,7 +6,7 @@ import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
 import { Select } from "@ui-kitten/components"
 
-import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems, getIDPOrigin } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
 
@@ -149,13 +149,14 @@ const Highlights = React.memo(({
   bookId,
   goTo,
 
+  idps,
   books,
   userDataByBookId,
 
   setSelectedToolUid,
 }) => {
 
-  const { book, spines, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { book, spines, instructorHighlights, myRole, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const selectOptions = useMemo(
     () => ([
@@ -177,15 +178,30 @@ const Highlights = React.memo(({
   
   const [ selectedOptions, setSelectedOptions ] = useState(selectOptions)
 
+  const spineLabelsByIdRef = useMemo(
+    () => {
+      const spineLabelsByIdRef = {}
+
+      spines.forEach(({ idref, label }) => {
+        spineLabelsByIdRef[idref] = label
+      })
+
+      return spineLabelsByIdRef
+    },
+    [ spines ],
+  )
+
   const { highlightGroupsToShow, csvData } = useMemo(
     () => {
       const highlightsByLoc = {}
       const csvData = [
         [
+          i18n("Chapter", "", "enhanced"),
           i18n("Location", "", "enhanced"),
-          i18n("Highlight", "", "enhanced"),
-          i18n("My attached notes", "", "enhanced"),
-          i18n("Instructor’s attached Notes", "", "enhanced"),
+          i18n("Highlight snippet", "", "enhanced"),
+          i18n("Highlighter", "", "enhanced"),
+          i18n("My notes", "", "enhanced"),
+          i18n("Instructor’s Notes", "", "enhanced"),
         ],
       ]
 
@@ -251,24 +267,42 @@ const Highlights = React.memo(({
       const highlightGroupsToShow = orderSpineIdRefKeyedObj({ obj: highlightsByLoc, spines })
       highlightGroupsToShow.forEach(highlightGroupToShow => {
         highlightGroupToShow.highlights = orderCfiKeyedObj({ obj: highlightGroupToShow.highlightsByCfi })
+
+        // set up csv data
+        highlightGroupToShow.highlights.forEach(({ cfi, text, types, notes, instructorHighlightersWithoutNotes }) => {
+
+          const latestLocation = {
+            spineIdRef: highlightGroupToShow.spineIdRef,
+            cfi,
+          }
+
+          text = text || ""
+
+          if(text.length > MAX_EXPORT_QUOTE_CHARACTER_LENGTH) {
+            text = `${text.substr(0, MAX_EXPORT_QUOTE_CHARACTER_LENGTH - 3)}...`
+          }
+  
+          csvData.push([
+
+            spineLabelsByIdRef[highlightGroupToShow.spineIdRef] || "",
+            `${getIDPOrigin(idps[idpId])}/#/book/${bookId}#{"latestLocation":${JSON.stringify(latestLocation)}}`,
+            text,
+            combineItems(...[
+              ...(!types.includes('user') ? [] : [
+                i18n("Me", "", "enhanced"),
+              ]),
+              ...notes.map(({ author_fullname }) => author_fullname).filter(Boolean),
+              ...instructorHighlightersWithoutNotes,
+            ]),
+            (notes.filter(({ author_fullname }) => !author_fullname)[0] || {}).note || "",
+            notes.filter(({ author_fullname }) => author_fullname).map(({ note }) => note).join("\n\n"),
+          ].map(col => col.replace(/"/g, '""')))
+        })
       })
 
       return { highlightGroupsToShow, csvData }
     },
-    [ (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedOptions, spines ],
-  )
-
-  const spineLabelsByIdRef = useMemo(
-    () => {
-      const spineLabelsByIdRef = {}
-
-      spines.forEach(({ idref, label }) => {
-        spineLabelsByIdRef[idref] = label
-      })
-
-      return spineLabelsByIdRef
-    },
-    [ spines ],
+    [ bookId, (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedOptions, spines, idps[idpId], spineLabelsByIdRef ],
   )
 
   const typeStrings = useMemo(
@@ -280,7 +314,7 @@ const Highlights = React.memo(({
   )
 
   const ReadIcon = useCallback(style => <Icon name="book-open-variant" pack="materialCommunity" style={style} />, [])
-  const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
+  // const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
 
   const goRead = useCallback(
     ({ info }) => {
@@ -426,7 +460,8 @@ const Highlights = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, books, userDataByBookId }) => ({
+  idps,
   books,
   userDataByBookId,
 })

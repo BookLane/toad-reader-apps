@@ -309,6 +309,22 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
 }
 
+export const getIDPOrigin = ({ domain, protocol=`https` }) => {
+
+  if(__DEV__) {
+    // dev environment
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:19006`
+  }
+
+  if(isStaging()) {
+    // staging environment
+    return `${protocol}://${dashifyDomain(domain)}.staging.toadreader.com`
+  }
+
+  // production environment
+  return `${protocol}://${domain}`
+}
+
 export const getMBSizeStr = numBytes => {
   const sizeInMB = Math.round(numBytes/10000, 10) / 100
 
