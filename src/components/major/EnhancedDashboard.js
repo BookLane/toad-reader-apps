@@ -19,6 +19,7 @@ const EnhancedDashboard = React.memo(({
   bookId,
   closeToolAndExitReading,
   inEditMode,
+  goTo,
 
   books,
   userDataByBookId,
@@ -115,6 +116,7 @@ const EnhancedDashboard = React.memo(({
       content: (
         <Highlights
           bookId={bookId}
+          goTo={goTo}
         />
       ),
     },

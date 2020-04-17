@@ -310,13 +310,15 @@ export const setLatestLocation = ({ bookId, latestLocation }) => ({
   doPatch: true,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote, forceNewShareCode }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   color,
   note,
+  share_quote,
+  forceNewShareCode,
   doPatch: true,
 })
 
@@ -325,16 +327,6 @@ export const deleteHighlight = ({ bookId, spineIdRef, cfi }) => ({
   bookId,
   spineIdRef,
   cfi,
-  doPatch: true,
-})
-
-export const shareHighlight = ({ bookId, spineIdRef, cfi, share_quote, forceNewShareCode }) => ({
-  type: "SHARE_HIGHLIGHT",
-  bookId,
-  spineIdRef,
-  cfi,
-  share_quote,
-  forceNewShareCode,
   doPatch: true,
 })
 

@@ -988,6 +988,7 @@ const Book = React.memo(({
           <EnhancedDashboard
             bookId={bookId}
             closeToolAndExitReading={closeToolAndExitReading}
+            goTo={goTo}
           />
           <EnhancedOptions
             bookId={bookId}

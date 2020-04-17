@@ -11,6 +11,9 @@ import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
 
 import { setHighlight, deleteHighlight } from "../../redux/actions"
 
+const MAX_QUOTE_WORD_LENGTH = 300
+const MAX_QUOTE_CHARACTER_LENGTH = 1500
+
 const styles = StyleSheet.create({
   container: {
     padding: 15,
@@ -97,7 +100,7 @@ const HighlighterLabel = React.memo(({
 
   const toggleHighlight = useCallback(
     color => {
-      const { spineIdRef, cfi } = selectionInfo || {}
+      const { spineIdRef, cfi, text: share_quote } = selectionInfo || {}
       const note = (highlight || {}).note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
 
       if(highlight && highlight.color === color) {
@@ -115,12 +118,22 @@ const HighlighterLabel = React.memo(({
         setShowDeletedMsgAndUndo(true)
         
       } else {
+
+        if(share_quote.split(' ').length > MAX_QUOTE_WORD_LENGTH) {
+          share_quote = `${share_quote.split(' ').slice(0, MAX_QUOTE_WORD_LENGTH).join(' ')}...`
+        }
+      
+        if(share_quote.length > MAX_QUOTE_CHARACTER_LENGTH) {
+          share_quote = `${share_quote.substr(0, MAX_QUOTE_CHARACTER_LENGTH - 3)}...`
+        }
+
         setHighlight({
           bookId,
           spineIdRef,
           cfi,
           color,
           note,
+          share_quote,
         })
 
         setShowDeletedMsgAndUndo(false)

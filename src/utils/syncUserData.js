@@ -3,7 +3,7 @@ import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
 
 import connectionInfo, { addConnectionInfoEventListener } from "./connectionInfo"
 
-import { updateAccount, updateBookAccount, setSyncStatus, shareHighlight,
+import { updateAccount, updateBookAccount, setSyncStatus, setHighlight,
          updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
@@ -322,7 +322,7 @@ export const patch = () => setTimeout(() => {
                           const badShareCode = dupCodeErrorPieces[1]
                           bookUserData.highlights.some(highlight => {
                             if(highlight.share_code === badShareCode) {
-                              store.dispatch(shareHighlight({
+                              store.dispatch(setHighlight({
                                 ...highlight,
                                 bookId,
                                 forceNewShareCode: true,

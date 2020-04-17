@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import { StyleSheet, View, ScrollView, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -8,8 +8,13 @@ import { Select } from "@ui-kitten/components"
 
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import { setSelectedToolUid } from "../../redux/actions"
 
 import FAB from '../basic/FAB'
+import Icon from "../basic/Icon"
+import Button from "../basic/Button"
+
+const MAX_EXPORT_QUOTE_CHARACTER_LENGTH = 100
 
 const owner = {
   paddingVertical: 3,
@@ -23,6 +28,7 @@ const note = {
   paddingLeft: 10,
   borderLeftWidth: 1,
   marginVertical: 5,
+  marginLeft: 35,
 }
 
 const noteAuthor = {
@@ -59,6 +65,7 @@ const styles = StyleSheet.create({
   },
   types: {
     flexDirection: 'row',
+    zIndex: 1,
   },
   user: {
     ...owner,
@@ -71,6 +78,11 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 10,
     fontSize: 16,
+  },
+  missingText: {
+    marginVertical: 10,
+    fontSize: 16,
+    fontWeight: '100',
   },
   spineLine: {
     height: 1,
@@ -109,32 +121,60 @@ const styles = StyleSheet.create({
   noteAuthors: {
     ...noteAuthor,
   },
+  quote: {
+    flexDirection: 'row',
+  },
+  quoteIcon: {
+    height: 20,
+    marginTop: 7,
+    marginLeft: 10,
+    marginRight: 10,
+    tintColor: 'rgba(0, 0, 0, 1)',
+  },
+  buttons: {
+    position: 'absolute',
+    top: -7,
+    right: 0,
+    height: 35,
+    flexDirection: 'row',
+  },
+  button: {
+    width: 35,
+    paddingHorizontal: 0,
+    borderRadius: 18,
+  },
 })
-
-const selectOptions = [
-  {
-    id: "user",
-    text: i18n("My highlights", "", "enhanced"),
-  },
-  {
-    id: "instructor",
-    text: i18n("Instructor’s highlights", "", "enhanced"),
-  },
-  // {
-  //   id: "classroom",
-  //   text: i18n("Classroom highlights", "", "enhanced"),
-  // },
-]
 
 const Highlights = React.memo(({
   bookId,
+  goTo,
 
   books,
   userDataByBookId,
+
+  setSelectedToolUid,
 }) => {
 
-  const { book, spines, instructorHighlights } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { book, spines, instructorHighlights, myRole } = useClassroomInfo({ books, bookId, userDataByBookId })
 
+  const selectOptions = useMemo(
+    () => ([
+      {
+        id: "user",
+        text: i18n("My highlights", "", "enhanced"),
+      },
+      ...(myRole === 'STUDENT' ? [] : [{
+        id: "instructor",
+        text: i18n("Instructor’s highlights", "", "enhanced"),
+      }]),
+      // {
+      //   id: "classroom",
+      //   text: i18n("Classroom highlights", "", "enhanced"),
+      // },
+    ]),
+    [ myRole ],
+  )
+  
   const [ selectedOptions, setSelectedOptions ] = useState(selectOptions)
 
   const { highlightGroupsToShow, csvData } = useMemo(
@@ -150,7 +190,7 @@ const Highlights = React.memo(({
       ]
 
       // function to make objs
-      const addHighlightSpot = ({ spineIdRef, cfi }) => {
+      const addHighlightSpot = ({ spineIdRef, cfi, share_quote }) => {
         if(!highlightsByLoc[spineIdRef]) {
           highlightsByLoc[spineIdRef] = {
             spineIdRef,
@@ -161,7 +201,7 @@ const Highlights = React.memo(({
           highlightsByLoc[spineIdRef].highlightsByCfi[cfi] = {
             cfi,
             types: [],
-            text: "[[ Quote goes here ]]",
+            text: share_quote,
             notes: [],
             instructorHighlightersWithoutNotes: [],
           }
@@ -173,8 +213,8 @@ const Highlights = React.memo(({
         // put in user
         ;((userDataByBookId[bookId] || {}).highlights || [])
           .filter(({ _delete }) => !_delete)
-          .forEach(({ spineIdRef, cfi, color, note }) => {
-            const highlightToShow = addHighlightSpot({ spineIdRef, cfi })
+          .forEach(({ spineIdRef, cfi, share_quote, color, note }) => {
+            const highlightToShow = addHighlightSpot({ spineIdRef, cfi, share_quote })
             highlightToShow.color = color
             if(note) {
               highlightToShow.notes.push({
@@ -188,8 +228,8 @@ const Highlights = React.memo(({
       if(selectedOptions.some(({ id }) => id === 'instructor')) {
         // put in instructor
         ;(instructorHighlights || [])
-          .forEach(({ spineIdRef, cfi, note, author_fullname }) => {
-            const highlightToShow = addHighlightSpot({ spineIdRef, cfi })
+          .forEach(({ spineIdRef, cfi, share_quote, note, author_fullname }) => {
+            const highlightToShow = addHighlightSpot({ spineIdRef, cfi, share_quote })
             if(note) {
               highlightToShow.notes.push({
                 note,
@@ -238,16 +278,36 @@ const Highlights = React.memo(({
     }),
     [],
   )
-  
+
+  const ReadIcon = useCallback(style => <Icon name="book-open-variant" pack="materialCommunity" style={style} />, [])
+  const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
+
+  const goRead = useCallback(
+    ({ info }) => {
+      goTo(info)
+      setSelectedToolUid({ bookId })  // unselects any tool
+    },
+    [ bookId ],
+  )
+
+  // const goShare = useCallback(
+  //   () => {
+
+  //   },
+  //   [],
+  // )
+
   return (
     <View style={styles.container}>
-      <Select
-        style={styles.select}
-        data={selectOptions}
-        multiSelect={true}
-        selectedOption={selectedOptions}
-        onSelect={setSelectedOptions}
-      />
+      {selectOptions.length > 1 &&
+        <Select
+          style={styles.select}
+          data={selectOptions}
+          multiSelect={true}
+          selectedOption={selectedOptions}
+          onSelect={setSelectedOptions}
+        />
+      }
       {highlightGroupsToShow.length === 0 &&
         <Text style={styles.none}>
           {i18n("None.", "", "enhanced")}
@@ -280,11 +340,42 @@ const Highlights = React.memo(({
                         {typeStrings[type]}
                       </Text>
                     ))}
-                    <View style={styles.spacer}/>
+                    <View style={styles.buttons}>
+                      <Button
+                        style={styles.button}
+                        size="small"
+                        status="basic"
+                        icon={ReadIcon}
+                        appearance="ghost"
+                        onPress={goRead}
+                        info={{
+                          spineIdRef,
+                          cfi,
+                        }}
+                      />
+                      {/* <Button
+                        style={styles.button}
+                        size="small"
+                        status="basic"
+                        icon={ShareIcon}
+                        appearance="ghost"
+                        onPress={goShare}
+                        info={{
+                          spineIdRef,
+                          cfi,
+                        }}
+                      /> */}
+                    </View>
                   </View>
-                  <Text style={styles.text}>
-                    {text}
-                  </Text>
+                  <View style={styles.quote}>
+                    <Icon
+                      name="md-quote"
+                      style={styles.quoteIcon}
+                    />
+                    <Text style={text ? styles.text : styles.missingText}>
+                      {text || i18n("(Highlighted text unavailable.)", "", "enhanced")}
+                    </Text>
+                  </View>
                   <View style={styles.notes}>
                     {notes.map((note, idx) => (
                       <View
@@ -341,6 +432,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Highlights)
