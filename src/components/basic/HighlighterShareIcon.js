@@ -12,11 +12,6 @@ import Dialog from "../major/Dialog"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { shareHighlight } from "../../redux/actions"
-
-const MAX_QUOTE_WORD_LENGTH = 300
-const MAX_QUOTE_CHARACTER_LENGTH = 1500
-
 const styles = StyleSheet.create({
   share: {
     paddingHorizontal: 8,
@@ -46,8 +41,6 @@ const HighlighterShareIcon = React.memo(({
   idps,
   books,
   syncStatus,
-
-  shareHighlight,
 }) => {
 
   const [ showShare, setShowShare ] = useState(false)
@@ -57,32 +50,7 @@ const HighlighterShareIcon = React.memo(({
 
   const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://q.toadreader.com`}/q/${highlight.share_code || ''}`
 
-  let share_quote = selectionInfo.text
-
-  if(share_quote.split(' ').length > MAX_QUOTE_WORD_LENGTH) {
-    share_quote = `${share_quote.split(' ').slice(0, MAX_QUOTE_WORD_LENGTH).join(' ')}...`
-  }
-
-  if(share_quote.length > MAX_QUOTE_CHARACTER_LENGTH) {
-    share_quote = `${share_quote.substr(0, MAX_QUOTE_CHARACTER_LENGTH - 3)}...`
-  }
-
-  const goShare = useCallback(
-    () => {
-      if(!highlight.share_code) {
-        shareHighlight({
-          bookId,
-          spineIdRef: selectionInfo.spineIdRef,
-          cfi: selectionInfo.cfi,
-          share_quote,
-        })
-      }
-
-      // With a timeout to allow for syncStatus to update at the same time as showShare
-      setTimeout(() => setShowShare(true))
-    },
-    [ bookId, selectionInfo ],
-  )
+  const goShare = useCallback(() => setShowShare(true), [])
 
   useEffect(
     () => {
@@ -159,7 +127,6 @@ const mapStateToProps = ({ idps, accounts, books, syncStatus }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  shareHighlight,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(HighlighterShareIcon)

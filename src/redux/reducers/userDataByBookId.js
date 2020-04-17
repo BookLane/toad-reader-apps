@@ -213,7 +213,12 @@ export default function(state = initialState, action) {
       let noChange, highlightShareInfo = {}
       highlights = highlights.filter(highlight => {
         if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
-          if(highlight.color === action.color && highlight.note === action.note && !highlight._delete) {
+          if(
+            highlight.color === action.color
+            && highlight.note === action.note
+            && !highlight._delete
+            && !!highlight.share_code
+          ) {
             noChange = true
           } else {
             if(highlight.share_code) {
@@ -232,12 +237,20 @@ export default function(state = initialState, action) {
         return state
       }
 
+      if(
+        !highlightShareInfo.share_code
+        || action.forceNewShareCode
+      ) {
+        highlightShareInfo.share_code = createShareCode()
+      }
+
       highlights.push({
-        ...highlightShareInfo,
         spineIdRef: action.spineIdRef,
         cfi: action.cfi,
         color: action.color,
         note: action.note,
+        share_quote: action.share_quote,
+        ...highlightShareInfo,
         updated_at: now,
       })
 
@@ -266,40 +279,6 @@ export default function(state = initialState, action) {
       highlights.push({
         ...highlightToDel,
         _delete: true,
-        updated_at: now,
-      })
-
-      newState[action.bookId] = {
-        ...userDataForThisBook,
-        highlights,
-      }
-
-      return newState
-    }
-
-    case "SHARE_HIGHLIGHT": {
-      let highlightToShare
-      highlights = highlights.filter(highlight => {
-        if(
-          highlight.spineIdRef === action.spineIdRef
-          && highlight.cfi === action.cfi
-          && (!highlight.share_code || action.forceNewShareCode)
-          && !highlight._delete
-        ) {
-          highlightToShare = highlight
-          return false
-        }
-        return true
-      })
-
-      if(!highlightToShare) {
-        return state
-      }
-
-      highlights.push({
-        ...highlightToShare,
-        share_code: createShareCode(),
-        share_quote: action.share_quote,
         updated_at: now,
       })
 
@@ -471,7 +450,12 @@ export default function(state = initialState, action) {
           return (classroom.members || []).some((member, idx) => {
             if(member.user_id === action.userId) {
 
-              classroom = classrooms[idx] = { ...classroom }
+              classroom = classrooms[idx] = {
+                ...classroom,
+                members: [
+                  ...classroom.members,
+                ],
+              }
               member = classroom.members[idx] = { ...member }
 
               ;[
@@ -757,7 +741,7 @@ export default function(state = initialState, action) {
                 ...classroom,
                 tools,
               }
-  
+
               return true
             }
           })

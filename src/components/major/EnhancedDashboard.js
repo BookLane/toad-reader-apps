@@ -7,12 +7,19 @@ import { i18n } from "inline-i18n"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import EnhancedConnecting from "./EnhancedConnecting"
+import EnhancedMembers from "./EnhancedMembers"
+import EnhancedScores from "./EnhancedScores"
+import EnhancedMyScores from "./EnhancedMyScores"
+import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
+import EnhancedMyReflectionQuestions from "./EnhancedMyReflectionQuestions"
+import Highlights from "./Highlights"
 import EnhancedScreen from "./EnhancedScreen"
 
 const EnhancedDashboard = React.memo(({
   bookId,
   closeToolAndExitReading,
   inEditMode,
+  goTo,
 
   books,
   userDataByBookId,
@@ -22,11 +29,21 @@ const EnhancedDashboard = React.memo(({
 
   if(!viewingDashboard) return null
 
+  const ReflectionQuestions = myRole === 'INSTRUCTOR' ? EnhancedReflectionQuestions : EnhancedMyReflectionQuestions
+
   const tabs = [
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
       title: i18n("Connecting", "", "enhanced"),
       content: (
         <EnhancedConnecting
+          bookId={bookId}
+        />
+      ),
+    }]),
+    ...(!(myRole === 'INSTRUCTOR') ? [] : [{
+      title: i18n("Students & Instructors", "", "enhanced"),
+      content: (
+        <EnhancedMembers
           bookId={bookId}
         />
       ),
@@ -47,18 +64,13 @@ const EnhancedDashboard = React.memo(({
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
       title: i18n("Scores", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedScores
+          bookId={bookId}
+        />
       ),
     }]),
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
-      title: i18n("Surveys", "", "enhanced"),
+      title: i18n("Polls", "", "enhanced"),
       content: (
         <Text style={{
           padding: 100,
@@ -73,14 +85,9 @@ const EnhancedDashboard = React.memo(({
     ...(!(myRole === 'STUDENT') ? [] : [{
       title: i18n("My scores", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedMyScores
+          bookId={bookId}
+        />
       ),
     }]),
     {
@@ -99,27 +106,18 @@ const EnhancedDashboard = React.memo(({
     {
       title: i18n("Reflection questions", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <ReflectionQuestions
+          bookId={bookId}
+        />
       ),
     },
     {
       title: i18n("Highlights", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <Highlights
+          bookId={bookId}
+          goTo={goTo}
+        />
       ),
     },
   ]

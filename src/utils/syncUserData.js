@@ -3,11 +3,13 @@ import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId,
 
 import connectionInfo, { addConnectionInfoEventListener } from "./connectionInfo"
 
-import { updateAccount, updateBookAccount, setSyncStatus, shareHighlight,
+import { updateAccount, updateBookAccount, setSyncStatus, setHighlight,
          updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
 
 // I record the last time I successfully sent a user data patch for a particular book/account
 // Then, whenever I patch, I filter down to objects which are newer than the last successful patch.
+
+const READING_RECORD_MAX_BATCH_SIZE = 25
 
 let store
 const currentlyReportingReadingsByAccountId = {}
@@ -320,7 +322,7 @@ export const patch = () => setTimeout(() => {
                           const badShareCode = dupCodeErrorPieces[1]
                           bookUserData.highlights.some(highlight => {
                             if(highlight.share_code === badShareCode) {
-                              store.dispatch(shareHighlight({
+                              store.dispatch(setHighlight({
                                 ...highlight,
                                 bookId,
                                 forceNewShareCode: true,
@@ -402,7 +404,7 @@ export const reportReadings = () => setTimeout(() => {
     if(currentlyReportingReadingsByAccountId[accountId]) return
 
     const { idp, userId } = getAccountInfo({ idps, accountId })
-    const readingRecords = readingRecordsByAccountId[accountId]
+    const readingRecords = readingRecordsByAccountId[accountId].slice(0, READING_RECORD_MAX_BATCH_SIZE)
     const path = `${getDataOrigin(idp)}/reportReading`
 
     const flush = () => {
@@ -449,6 +451,13 @@ export const reportReadings = () => setTimeout(() => {
 
           // run again in case something has changed since the reading records were sent
           reportReadings()
+
+        } else if(response.status === 400) {
+          // this indicates something malformed in the post
+          // TODO: report to sentry after I set that up
+
+          // flush, lest this build, repeat and bog down the server
+          flush()
 
         } else if(response.status === 403) {
           // they need to login, but let this get handled by patch

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   containerWideMode: {
     ...container,
-    paddingTop: container.paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
+    paddingTop: container.paddingVertical + (Platform.OS === 'ios' ? statusBarHeight : 0),
   },
   containerWithFrontMatter: {
     paddingBottom: 5,

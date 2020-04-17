@@ -25,6 +25,9 @@ const parseContentCfi = cont => (
 
 // copied from readium-js/readium-shared-js/plugins/highlights
 export const contentCfiComparator = (cont1, cont2) => {
+  if(cont1 === 'AT THE END') return 1
+  if(cont2 === 'AT THE END') return -1
+
   cont1 = parseContentCfi(cont1);
   cont2 = parseContentCfi(cont2);
 
@@ -306,6 +309,22 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
 }
 
+export const getIDPOrigin = ({ domain, protocol=`https` }) => {
+
+  if(__DEV__) {
+    // dev environment
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:19006`
+  }
+
+  if(isStaging()) {
+    // staging environment
+    return `${protocol}://${dashifyDomain(domain)}.staging.toadreader.com`
+  }
+
+  // production environment
+  return `${protocol}://${domain}`
+}
+
 export const getMBSizeStr = numBytes => {
   const sizeInMB = Math.round(numBytes/10000, 10) / 100
 
@@ -532,4 +551,46 @@ export const splitDraftDataToOptionsAndFrontMatter = (draftData={}) => {
   })
 
   return [ optionsDraftData, frontMatterDraftData ]
+}
+
+export const getSpineIdRefsInToc = toc => {
+  const flatToc = []
+  const addToFlatTocRecursive = tocLevel => {
+    tocLevel.forEach(tocItem => {
+      flatToc.push(tocItem)
+      if(tocItem.subNav) {
+        addToFlatTocRecursive(tocItem.subNav)
+      }
+    })
+  }
+  addToFlatTocRecursive(toc || [])
+
+  return [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
+}
+
+export const orderSpineIdRefKeyedObj = ({ obj, spines }) => {
+  const spineIdRefs = [
+    ...spines.map(({ idref }) => idref),
+    'AFTER LAST SPINE',
+  ]
+
+  const arrayOfObjs = Object.keys(obj).map(key => ({
+    index: spineIdRefs.indexOf(key),
+    value: obj[key],
+  }))
+
+  arrayOfObjs.sort((a, b) => a.index - b.index)
+
+  return arrayOfObjs.map(({ value }) => value)
+}
+
+export const orderCfiKeyedObj = ({ obj }) => {
+  const arrayOfObjs = Object.keys(obj).map(key => ([
+    key,
+    obj[key],
+  ]))
+
+  arrayOfObjs.sort((a, b) => contentCfiComparator(a[0], b[0]))
+
+  return arrayOfObjs.map(([ key, val ]) => val)
 }

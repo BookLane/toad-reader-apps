@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
 import { useLayout } from '@react-native-community/hooks'
 
-import { statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { statusBarHeight, bottomSpace, getSpineIdRefsInToc } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -248,18 +248,7 @@ const BookContents = React.memo(({
 
       } else {
 
-        const flatToc = []
-        const addToFlatTocRecursive = tocLevel => {
-          tocLevel.forEach(tocItem => {
-            flatToc.push(tocItem)
-            if(tocItem.subNav) {
-              addToFlatTocRecursive(tocItem.subNav)
-            }
-          })
-        }
-        addToFlatTocRecursive(toc)
-
-        const spineIdRefsInToc = [ ...new Set(flatToc.map(({ spineIdRef }) => spineIdRef)) ]
+        const spineIdRefsInToc = getSpineIdRefsInToc(toc)
         spineIdRef = spineIdRefsInToc[spineIdRefsInToc.indexOf(currentSpineIdRef) + 1] || 'AFTER LAST SPINE'
 
       }

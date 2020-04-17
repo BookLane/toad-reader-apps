@@ -162,12 +162,11 @@ export const updateToolEngagement = ({ bookId, classroomUid, toolUid, text, answ
   doPatch: true,
 })
 
-export const submitToolEngagement = ({ bookId, classroomUid, toolUid, uid, text, answers, score }) => ({
+export const submitToolEngagement = ({ bookId, classroomUid, toolUid, text, answers, score }) => ({
   type: "SUBMIT_TOOL_ENGAGEMENT",
   bookId,
   classroomUid,
   toolUid,
-  uid,  // tools with submission times have uid's and a single user can have more than one engagement per tool
   text,
   answers,
   score,
@@ -311,13 +310,15 @@ export const setLatestLocation = ({ bookId, latestLocation }) => ({
   doPatch: true,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote, forceNewShareCode }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   color,
   note,
+  share_quote,
+  forceNewShareCode,
   doPatch: true,
 })
 
@@ -326,16 +327,6 @@ export const deleteHighlight = ({ bookId, spineIdRef, cfi }) => ({
   bookId,
   spineIdRef,
   cfi,
-  doPatch: true,
-})
-
-export const shareHighlight = ({ bookId, spineIdRef, cfi, share_quote, forceNewShareCode }) => ({
-  type: "SHARE_HIGHLIGHT",
-  bookId,
-  spineIdRef,
-  cfi,
-  share_quote,
-  forceNewShareCode,
   doPatch: true,
 })
 
