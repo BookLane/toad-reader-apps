@@ -6,7 +6,7 @@ import { i18n } from "inline-i18n"
 import { RadioGroup, Radio } from "@ui-kitten/components"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-import { submitToolEngagement } from "../../redux/actions"
+import { updateToolEngagement } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -59,7 +59,7 @@ const PollTool = React.memo(({
   books,
   userDataByBookId,
 
-  submitToolEngagement,
+  updateToolEngagement,
 }) => {
 
   const { isDefaultClassroom, classroomUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
@@ -72,11 +72,11 @@ const PollTool = React.memo(({
 
       if(viewingPreview) return
       
-      submitToolEngagement({
+      updateToolEngagement({
         bookId,
         classroomUid,
         toolUid,
-        answer,
+        answers: [ answer ],
       })
     },
     [ viewingPreview, question, choices, bookId, classroomUid, toolUid ],
@@ -122,7 +122,7 @@ const mapStateToProps = ({ books, userDataByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  submitToolEngagement,
+  updateToolEngagement,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(PollTool)
