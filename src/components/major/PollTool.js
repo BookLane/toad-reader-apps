@@ -64,7 +64,18 @@ const PollTool = React.memo(({
 
   const { isDefaultClassroom, classroomUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const [ selectedAnswer, setSelectedAnswer ] = useState((!viewingPreview && ((selectedTool.engagement || {}).answers || [])[0]) || null)
+  const [ selectedAnswer, setSelectedAnswer ] = useState(() => {
+    if(!viewingPreview) {
+      const { answers } = selectedTool.engagement || {}
+      const [ answer ] = answers || []
+
+      if(answer != null) {
+        return answer
+      }
+    }
+
+    return null
+  })
 
   const selectAnswer = useCallback(
     answer => {
