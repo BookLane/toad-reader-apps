@@ -11,6 +11,10 @@ import ReflectionQuestionTool from './ReflectionQuestionTool'
 import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
 import LTITool from "./LTITool"
+import PollTool from "./PollTool"
+import DocumentTool from "./DocumentTool"
+import ImagesTool from "./ImagesTool"
+import AudioTool from "./AudioTool"
 import HeaderIcon from "../basic/HeaderIcon"
 import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 
@@ -126,6 +130,23 @@ const Tool = React.memo(({
     case 'QUIZ': {
       ToolComponent = QuizTool
       editableByStudent = true
+      break
+    }
+    case 'POLL': {
+      ToolComponent = PollTool
+      editableByStudent = true
+      break
+    }
+    case 'IMAGES': {
+      ToolComponent = ImagesTool
+      break
+    }
+    case 'AUDIO': {
+      ToolComponent = AudioTool
+      break
+    }
+    case 'DOCUMENT': {
+      ToolComponent = DocumentTool
       break
     }
     case 'LTI': {

@@ -1,10 +1,11 @@
 import React from "react"
 import { StyleSheet } from "react-native"
 import * as Font from "expo-font"
-import { Ionicons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons"
+import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons"
 
 const packs = {
   ion: Ionicons,
+  material: MaterialIcons,
   materialCommunity: MaterialCommunityIcons,
   fontAwesome: FontAwesome,
 }

@@ -199,78 +199,86 @@ export const getToolInfo = () => {
       ],
       readyToPublish: ({ data: { question } }) => nonEmpty(question),
     },
-    // {
-    //   toolType: 'POLL',
-    //   name: 'poll',
-    //   pack: 'materialCommunity',
-    //   text: i18n("Poll question", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'question',
-    //       type: 'string',
-    //       label: i18n("Question", "", "enhanced"),
-    //       required: true,
-    //     },
-    //     {
-    //       name: 'choices',
-    //       type: ['string'],
-    //       label: i18n("Choices", "", "enhanced"),
-    //       required: true,
-    //     },
-    //   ],
-    // },
-    // {
-    //   toolType: 'DOCUMENT',
-    //   name: 'md-document',
-    //   text: i18n("Document", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'filename',
-    //       type: 'file',
-    //       fileTypes: [
-    //         'application/pdf',
-    //         'application/msword',
-    //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    //       ],
-    //       required: true,
-    //     },
-    //   ],
-    // },
-    // {
-    //   toolType: 'IMAGES',
-    //   name: 'md-image',
-    //   text: i18n("Images", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'filenames',
-    //       type: 'files',
-    //       fileTypes: [
-    //         'image/png',
-    //         'image/jpeg',
-    //         'image/gif',
-    //         'image/svg+xml',
-    //         'image/webp',
-    //       ],
-    //       required: true,
-    //     },
-    //   ],
-    // },
-    // {
-    //   toolType: 'AUDIO',
-    //   name: 'audiotrack',
-    //   pack: 'material',
-    //   text: i18n("Audio", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'filename',
-    //       type: 'file',
-    //       fileTypes: [
-    //         'audio/mpeg',
-    //       ],
-    //       required: true,
-    //     },
-    //   ],
-    // },
+    {
+      toolType: 'POLL',
+      name: 'poll',
+      pack: 'materialCommunity',
+      text: i18n("Poll", "", "enhanced"),
+      dataStructure: [
+        {
+          name: 'question',
+          type: 'string',
+          label: i18n("Question", "", "enhanced"),
+          required: true,
+        },
+        {
+          name: 'choices',
+          type: ['freechoice'],
+          label: i18n("Choices", "", "enhanced"),
+          required: true,
+          maxItems: 20,
+        },
+      ],
+      readyToPublish: ({ data: { question, choices=[] } }) => (
+        nonEmpty(question)
+        && choices.length >= 2
+        && choices.every(choice => nonEmpty(choice))
+      ),
+    },
+    {
+      toolType: 'DOCUMENT',
+      name: 'md-document',
+      text: i18n("Document", "", "enhanced"),
+      dataStructure: [
+        {
+          name: 'document',
+          type: 'file',
+          fileTypes: [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          ],
+          required: true,
+        },
+      ],
+      readyToPublish: ({ data: { document } }) => !!document,
+    },
+    {
+      toolType: 'IMAGES',
+      name: 'md-image',
+      text: i18n("Images", "", "enhanced"),
+      dataStructure: [
+        {
+          name: 'images',
+          type: 'files',
+          fileTypes: [
+            'image/png',
+            'image/jpeg',
+            'image/gif',
+            'image/svg+xml',
+            'image/webp',
+          ],
+          required: true,
+        },
+      ],
+      readyToPublish: ({ data: { x } }) => false,
+    },
+    {
+      toolType: 'AUDIO',
+      name: 'md-musical-note',
+      text: i18n("Audio", "", "enhanced"),
+      dataStructure: [
+        {
+          name: 'audioFile',
+          type: 'file',
+          fileTypes: [
+            'audio/mpeg',
+          ],
+          required: true,
+        },
+      ],
+      readyToPublish: ({ data: { audioFile } }) => !!audioFile,
+    },
   ]
 
   const toolInfoByType = {}

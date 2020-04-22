@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, View, Text, Platform } from "react-native"
-import * as FileSystem from 'expo-file-system'
+import React, { useEffect, useState } from "react"
+import { StyleSheet, View, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { i18n } from "inline-i18n"
+import * as FileSystem from 'expo-file-system'
 
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
-import useClassroomInfo from '../../hooks/useClassroomInfo'
-import useChangeIndex from '../../hooks/useChangeIndex'
-import useNetwork from '../../hooks/useNetwork'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
+import useNetwork from "../../hooks/useNetwork"
+import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
 
-import EditToolData from './EditToolData'
 import WebView from "./WebView"
-import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   container: {
@@ -38,20 +34,21 @@ const styles = StyleSheet.create({
   },
 })
 
-const Syllabus = React.memo(({
+export const vimeoRegex = /^https:\/\/(?:www\.)?vimeo\.com\/(?:.*?\/video\/|channels\/[^\/]*\/)?([0-9]+)(?:\/[^\/]*)?\/?$/
+export const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*).*$/
+export const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
+
+const DocumentTool = React.memo(({
   bookId,
-  inEditMode,
-  viewingPreview,
-  goUpdateClassroom,
+
+  document={},
 
   idps,
   accounts,
   books,
-  userDataByBookId,
 }) => {
 
-  const { accountId, classroom, idpId, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
-  const { uid, syllabus, draftData } = classroom || {}
+  const { accountId, idpId, classroomUid } = useClassroomInfo({ books, bookId })
 
   const wideMode = useWideMode()
 
@@ -60,19 +57,8 @@ const Syllabus = React.memo(({
   const [ error, setError ] = useState()
   const [ downloading, setDownloading ] = useState()
 
-  const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
-
-  const data = {}
-  const hasDraft = (draftData || {}).syllabus !== undefined
-
-  if(inEditMode && hasDraft) {
-    data.syllabus = draftData.syllabus
-  } else if(syllabus) {
-    data.syllabus = syllabus
-  }
-
-  const uri = data.syllabus && `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}`
-  const tempLocalUri = data.syllabus && `${FileSystem.cacheDirectory}syllabus_${uid}_${data.syllabus.filename}`
+  const uri = `${getDataOrigin(idps[idpId])}/enhanced_assets/${classroomUid}/${document.filename}`
+  const tempLocalUri = `${FileSystem.cacheDirectory}syllabus_${classroomUid}_${document.filename}`
 
   useEffect(
     () => {
@@ -100,7 +86,7 @@ const Syllabus = React.memo(({
             }
 
           } catch(err) {
-            setError(i18n("Error in retrieving syllabus."))
+            setError(i18n("Error in retrieving document."))
           }
 
           setDownloading(false)
@@ -111,33 +97,7 @@ const Syllabus = React.memo(({
     [ uri, tempLocalUri, online, accounts[accountId] ],
   )
 
-  if(!classroom) return null
-
-  if(inEditMode && !viewingPreview) {
-    return (
-      <EditToolData
-        key={changeIndex}
-        classroomUid={uid}
-        isDefaultClassroom={false}
-        accountId={accountId}
-        dataStructure={[
-          {
-            name: 'syllabus',
-            type: 'file',
-            fileTypes: [
-              'application/pdf',
-              'application/msword',
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            ],
-          },
-        ]}
-        data={data}
-        goUpdateTool={goUpdateClassroom}
-      />
-    )
-  }
-
-  if(!uri) return null
+  if(!document.filename) return null
 
   return (
     <View style={wideMode ? styles.containerWideMode : styles.container}>
@@ -171,14 +131,13 @@ const Syllabus = React.memo(({
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books }) => ({
   idps,
   accounts,
   books,
-  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(Syllabus)
+export default connect(mapStateToProps, matchDispatchToProps)(DocumentTool)

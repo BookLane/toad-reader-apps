@@ -163,7 +163,7 @@ const EditToolData = React.memo(({
         dataSegment[dataSegmentKey] = value
       }
 
-      if(info === 'choice') {
+      if([ 'choice', 'freechoice' ].includes(info)) {
         let spliceFrom = dataSegment.length
         for(let i=dataSegment.length - 1; i>=0; i--) {
           if(dataSegment[i].trim() !== '') {
@@ -229,7 +229,7 @@ const EditToolData = React.memo(({
       hasErrorWithMessage=returnFalse,
       required=false,
       addLabel,
-      maxItems,
+      maxItems=99,
       placeholder,
     }, dataStructureIndex) => {
 
@@ -284,7 +284,8 @@ const EditToolData = React.memo(({
           )
         }
 
-        case 'choice': {
+        case 'choice':
+        case 'freechoice': {
           const disabled = name === dataSegment.length - 1
 
           return (
@@ -295,6 +296,7 @@ const EditToolData = React.memo(({
                   info="choiceSelection"
                   style={styles.radio}
                   checked={name === dataSegmentParent[`${dataSegmentKey}Selection`]}
+                  disabled={!!(disabled || type === 'freechoice')}
                   onChange={onChangeInfo}
                 />
                 <Input
@@ -486,20 +488,22 @@ const EditToolData = React.memo(({
               ? [...dataSegment[name]]
               : [simpleArray ? "" : {}]
 
-            if(simpleArray && type[0] === 'choice') {
+            if(simpleArray && [ 'choice', 'freechoice' ].includes(type[0])) {
               if(dataArray.length < maxItems) {
                 // Always have a blank option at the bottom
                 dataArray.push("")
               }
-              dataSegment[`${name}Selection`] = (
-                Math.max(
-                  Math.min(
-                    dataSegment[`${name}Selection`] || 0,
-                    dataArray.length - (dataArray.slice(-1)[0] ? 1 : 2)
-                  ),
-                  0
+              if(type[0] === 'choice') {
+                dataSegment[`${name}Selection`] = (
+                  Math.max(
+                    Math.min(
+                      dataSegment[`${name}Selection`] || 0,
+                      dataArray.length - (dataArray.slice(-1)[0] ? 1 : 2)
+                    ),
+                    0
+                  )
                 )
-              )
+              }
             }
 
             return (
@@ -523,7 +527,7 @@ const EditToolData = React.memo(({
                           dataNameStack: [ ...dataNameStack, name ],
                           dataSegmentParent: dataSegment,
                           dataSegmentKey: name,
-                          allRequired: required && !(type[0] === 'choice' && idx === dataArray.length - 1 && idx > 0),
+                          allRequired: required && !([ 'choice', 'freechoice' ].includes(type[0]) && idx === dataArray.length - 1 && idx > 0),
                         })}
                         {/* {getActionIcons({ idx })} */}
                       </View>

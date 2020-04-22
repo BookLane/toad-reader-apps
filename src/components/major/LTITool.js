@@ -80,7 +80,7 @@ const LTITool = React.memo(({
       setShowWaiting(false)
 
     },
-    [],
+    [ toolUid ],
   )
 
   const invalidSetup = !validLTIUrl({ url, fromDefaultClassroom, classroom })
