@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import { StyleSheet, View, Text, ScrollView, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -6,9 +6,9 @@ import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
 import { Select } from "@ui-kitten/components"
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch,
-         orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useDashboardData from '../../hooks/useDashboardData'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
@@ -82,47 +82,14 @@ const EnhancedReflectionQuestions = React.memo(({
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const [ data, setData ] = useState()
-  const [ error, setError ] = useState()
+  const { data, error } = useDashboardData({
+    classroomUid,
+    idp: idps[idpId],
+    accounts,
+    query: "getreflectionquestions",
+  })
+
   const [ currentQuestionUid, setCurrentQuestionUid ] = useState()
-
-  const accountId = Object.keys(accounts)[0] || ""
-
-  useEffect(
-    () => {
-
-      (async () => {
-
-        setData()
-
-        const path = `${getDataOrigin(idps[idpId])}/getreflectionquestions/${classroomUid}`
-        let response = {}
-
-        try {
-          response = await safeFetch(path, getReqOptionsWithAdditions({
-            headers: {
-              "x-cookie-override": accounts[accountId].cookie,
-            },
-          }))
-        } catch(err) {
-          response.statusText = err.message || 'Internet connection error'
-          response.status = 500
-        }
-
-        const json = response.json ? await response.json() : {}
-
-        if(response.status >= 400) {
-          setError(json.error || response.statusText || 'Unknown error')
-          return
-        }
-
-        setData(json)
-
-      })()
-
-    },
-    [ classroomUid ],
-  )
 
   const { orderedQuestions, answers, csvData } = useMemo(
     () => {

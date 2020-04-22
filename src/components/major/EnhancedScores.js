@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { StyleSheet, View, ScrollView, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch,
-         orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useDashboardData from '../../hooks/useDashboardData'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
@@ -119,46 +119,12 @@ const EnhancedScores = React.memo(({
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
-  const [ data, setData ] = useState()
-  const [ error, setError ] = useState()
-
-  const accountId = Object.keys(accounts)[0] || ""
-
-  useEffect(
-    () => {
-
-      (async () => {
-
-        setData()
-
-        const path = `${getDataOrigin(idps[idpId])}/getscores/${classroomUid}`
-        let response = {}
-
-        try {
-          response = await safeFetch(path, getReqOptionsWithAdditions({
-            headers: {
-              "x-cookie-override": accounts[accountId].cookie,
-            },
-          }))
-        } catch(err) {
-          response.statusText = err.message || 'Internet connection error'
-          response.status = 500
-        }
-
-        const json = response.json ? await response.json() : {}
-
-        if(response.status >= 400) {
-          setError(json.error || response.statusText || 'Unknown error')
-          return
-        }
-
-        setData(json)
-
-      })()
-
-    },
-    [ classroomUid ],
-  )
+  const { data, error } = useDashboardData({
+    classroomUid,
+    idp: idps[idpId],
+    accounts,
+    query: "getscores",
+  })
 
   const { dataColumns, csvData } = useMemo(
     () => {
