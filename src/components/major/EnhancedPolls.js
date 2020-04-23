@@ -146,11 +146,14 @@ const EnhancedPolls = React.memo(({
 
   return (
     <View style={styles.container}>
-      {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }) => {
+      {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }, idx) => {
         const numResponses = userIdsByChoiceIndex.reduce((total, userIds) => total + (userIds || []).length, 0)
 
         return (
-          <View style={styles.poll}>
+          <View
+            key="idx"
+            style={styles.poll}
+          >
             <Text style={styles.toolName}>
               {name || i18n("Poll", "", "enhanced")}
             </Text>
@@ -206,7 +209,7 @@ const EnhancedPolls = React.memo(({
                       }
                     }
                   }]}              
-                  colorScale="blue"
+                  colorScale={[ "blue", "red", "green" ][idx % 3]}
                   labelComponent={<VictoryPortal><VictoryLabel/></VictoryPortal>}
                 />
                 <Text style={styles.numAnswered}>
