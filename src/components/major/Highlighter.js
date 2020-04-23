@@ -118,6 +118,19 @@ const Highlighter = React.memo(({
     [ wideMode ],
   )
 
+  useEffect(
+    () => {
+      if(highlight.current && !highlight.current.share_quote) {
+        setHighlight({
+          ...highlight.current,
+          bookId,
+          share_quote: selectionInfo.text,
+        })
+      }
+    },
+    [ selectionInfo ],
+  )
+
   const setEditingNote = useCallback(
     (editingNote, skipSetSelectionText) => {
       const { spineIdRef, cfi } = selectionInfo || {}

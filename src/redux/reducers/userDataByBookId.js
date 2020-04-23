@@ -3,6 +3,9 @@ import uuidv4 from 'uuid/v4'
 import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid, createShareCode } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
 
+const MAX_QUOTE_WORD_LENGTH = 300
+const MAX_QUOTE_CHARACTER_LENGTH = 1500
+
 const initialState = {}
 
 const getPlacementKey = ({ spineIdRef, cfi=null }) => JSON.stringify({ spineIdRef, cfi })
@@ -217,6 +220,7 @@ export default function(state = initialState, action) {
             highlight.color === action.color
             && highlight.note === action.note
             && !highlight._delete
+            && !!highlight.share_quote
             && !!highlight.share_code
           ) {
             noChange = true
@@ -244,12 +248,21 @@ export default function(state = initialState, action) {
         highlightShareInfo.share_code = createShareCode()
       }
 
+      if(!highlightShareInfo.share_quote) {
+        highlightShareInfo.share_quote = action.share_quote
+        if(highlightShareInfo.share_quote.split(' ').length > MAX_QUOTE_WORD_LENGTH) {
+          highlightShareInfo.share_quote = `${highlightShareInfo.share_quote.split(' ').slice(0, MAX_QUOTE_WORD_LENGTH).join(' ')}...`
+        }
+        if(highlightShareInfo.share_quote.length > MAX_QUOTE_CHARACTER_LENGTH) {
+          highlightShareInfo.share_quote = `${highlightShareInfo.share_quote.substr(0, MAX_QUOTE_CHARACTER_LENGTH - 3)}...`
+        }
+      }
+
       highlights.push({
         spineIdRef: action.spineIdRef,
         cfi: action.cfi,
         color: action.color,
         note: action.note,
-        share_quote: action.share_quote,
         ...highlightShareInfo,
         updated_at: now,
       })

@@ -143,6 +143,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     borderRadius: 18,
   },
+  retrieveButton: {
+    marginLeft: 10,
+    marginVertical: 'auto',
+  },
 })
 
 const Highlights = React.memo(({
@@ -409,6 +413,20 @@ const Highlights = React.memo(({
                     <Text style={text ? styles.text : styles.missingText}>
                       {text || i18n("(Highlighted text unavailable.)", "", "enhanced")}
                     </Text>
+                    {!text && types.includes('user') &&
+                      <Button
+                        style={styles.retrieveButton}
+                        onPress={goRead}
+                        status="basic"
+                        size="tiny"
+                        info={{
+                          spineIdRef,
+                          cfi,
+                        }}
+                      >
+                        {i18n("Retrieve", "", "enhanced")}
+                      </Button>
+                    }
                   </View>
                   <View style={styles.notes}>
                     {notes.map((note, idx) => (
