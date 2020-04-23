@@ -422,6 +422,7 @@ const Highlights = React.memo(({
                         info={{
                           spineIdRef,
                           cfi,
+                          autoSelectHighlight: true,
                         }}
                       >
                         {i18n("Retrieve", "", "enhanced")}
