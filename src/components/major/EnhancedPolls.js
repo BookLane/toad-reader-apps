@@ -151,7 +151,7 @@ const EnhancedPolls = React.memo(({
 
         return (
           <View
-            key="idx"
+            key={idx}
             style={styles.poll}
           >
             <Text style={styles.toolName}>
