@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   spineTextContainer: {
     flexDirection: 'row',
     marginBottom: 20,
-    justifyContent: 'center ',
+    justifyContent: 'center',
   },
   spineText: {
     fontWeight: '100',
