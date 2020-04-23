@@ -8,7 +8,7 @@ import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 
-import { VictoryPie, VictoryLabel, VictoryPortal, VictoryTooltip } from "./Victory"
+import { VictoryPie, VictoryLabel, VictoryPortal } from "./Victory"
 import CoverAndSpin from '../basic/CoverAndSpin'
 
 const numAnswered=  {
