@@ -147,6 +147,7 @@ const Login = ({
 
         addAccount({
           idpId,
+          idp: idps[idpId],
           userId: userInfo.id,
           accountInfo: {
             fullname: userInfo.fullname,
@@ -160,7 +161,7 @@ const Login = ({
 
       }
     },
-    [ addAccount, idpId, onSuccess ],
+    [ idps[idpId], idpId, onSuccess ],
   )
 
   const { authMethod, devAuthMethod } = idps[idpId]

@@ -1,36 +1,33 @@
 import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
-import './src/themes/style'
-
 import { SplashScreen, Updates, AppLoading } from "expo"
-import { AsyncStorage, Platform, StatusBar } from "react-native"
+import { AsyncStorage, Platform } from "react-native"
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
 import { PersistGate } from 'redux-persist/integration/react'
-import reducers from "./src/redux/reducers"
 import { Provider } from "react-redux"
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-
 import { mapping } from "@eva-design/eva"
 import { ApplicationProvider } from "@ui-kitten/components"
+import { i18nSetup } from "inline-i18n"
+
+import './src/themes/style'
+import reducers from "./src/redux/reducers"
 import lightTheme from "./src/themes/light"
 import darkTheme from "./src/themes/dark"
 import customMapping from "./src/themes/custom-mapping"
-
 import updateDataStructure from "./src/utils/updateDataStructure"
 import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
-
-import { i18nSetup } from "inline-i18n"
 import translations from "./src/utils/translations/current.json"
 import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
 import { loadIconFonts } from "./src/components/basic/Icon"
+import useSetTimeout from './src/hooks/useSetTimeout'
+import usePushNotifications from "./src/hooks/usePushNotifications"
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
 import CoverAndSpin from "./src/components/basic/CoverAndSpin"
-
-import useSetTimeout from './src/hooks/useSetTimeout'
 
 const {
   LANGUAGE_CODE='en',
@@ -76,6 +73,8 @@ const App = () => {
   const colorScheme = 'light' // useColorScheme()
 
   const [ setInitialOpenTimeout ] = useSetTimeout()
+
+  usePushNotifications()
 
   useEffect(() => { setIsFirstRender(false) }, [])
 

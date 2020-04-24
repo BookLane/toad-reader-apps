@@ -1,6 +1,7 @@
-export const addAccount = ({ idpId, userId, accountInfo }) => ({
+export const addAccount = ({ idpId, idp, userId, accountInfo }) => ({
   type: "ADD_ACCOUNT",
   idpId,
+  idp,
   userId,
   accountInfo,
 })

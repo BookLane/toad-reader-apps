@@ -16,6 +16,7 @@ import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
 import useWideMode from "../../hooks/useWideMode"
+import usePushToken from "../../hooks/usePushToken"
 
 import { Switch, Route } from "../routers/react-router"
 import SafeLayout from "../basic/SafeLayout"
@@ -341,6 +342,8 @@ const Library = ({
     [],
   )
 
+  const pushToken = usePushToken()
+
   const scope = library.scope || "all"
 
   const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -373,6 +376,7 @@ const Library = ({
             uri: `${getDataOrigin(idps[logOutAccountId.split(':')[0]])}/logout${logOutAccountId ? `` : `/callback`}?noredirect=1`,
             headers: {
               "x-cookie-override": (accounts[logOutAccountId] || {}).cookie,
+              "x-push-token": pushToken,
             },
           })}
           onLoad={logOutOnLoad}

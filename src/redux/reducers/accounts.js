@@ -1,3 +1,8 @@
+import { AsyncStorage } from "react-native"
+
+import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
+import { PUSH_TOKEN_KEY } from '../../hooks/usePushToken'
+
 const initialState = {}
 
 export default function(state = initialState, action) {
@@ -14,6 +19,22 @@ export default function(state = initialState, action) {
           delete newState[accountId]
         }
       })
+
+      // async send the server the push token, when applicable (fail silently)
+      ;(async () => {
+        const token = await AsyncStorage.getItem(PUSH_TOKEN_KEY)
+        if(token) {
+          const path = `${getDataOrigin(action.idp)}/addpushtoken`
+          await safeFetch(path, getReqOptionsWithAdditions({
+            method: 'POST',
+            headers: {
+              "Content-Type": 'application/json',
+              "x-cookie-override": action.accountInfo.cookie,
+            },
+            body: JSON.stringify({ token }),
+          }))
+        }
+      })()
 
       return newState
     }

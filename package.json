@@ -48,6 +48,7 @@
     "expo-device": "~2.0.0",
     "expo-document-picker": "~8.0.0",
     "expo-font": "~8.0.0",
+    "expo-permissions": "^8.1.0",
     "find-in-files": "^0.5.0",
     "inline-i18n": "github:educational-resources-and-services/inline-i18n#d44421bfd684ceddf38e13c7f437ada9fa98432b",
     "jszip": "3.2.2",

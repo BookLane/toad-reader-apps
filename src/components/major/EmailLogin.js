@@ -141,6 +141,7 @@ const EmailLogin = ({
 
       addAccount({
         idpId,
+        idp: idps[idpId],
         userId: userInfo.id,
         accountInfo: {
           fullname: userInfo.fullname,
