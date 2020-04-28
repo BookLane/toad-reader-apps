@@ -1,6 +1,6 @@
 import { useReducer } from 'react'
 
-const useForceUpdate = (fn, dep) => {
+const useForceUpdate = () => {
 
   const [ x, forceUpdate ] = useReducer(x => x + 1, 0)
 

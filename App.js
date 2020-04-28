@@ -23,7 +23,7 @@ import translations from "./src/utils/translations/current.json"
 import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
 import { loadIconFonts } from "./src/components/basic/Icon"
 import useSetTimeout from './src/hooks/useSetTimeout'
-import usePushNotifications from "./src/hooks/usePushNotifications"
+import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -74,7 +74,7 @@ const App = () => {
 
   const [ setInitialOpenTimeout ] = useSetTimeout()
 
-  usePushNotifications()
+  usePushNotificationsSetup()
 
   useEffect(() => { setIsFirstRender(false) }, [])
 

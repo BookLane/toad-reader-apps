@@ -17,6 +17,7 @@ import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
 import useWideMode from "../../hooks/useWideMode"
 import usePushToken from "../../hooks/usePushToken"
+import usePushNotifications from "../../hooks/usePushNotifications"
 
 import { Switch, Route } from "../routers/react-router"
 import SafeLayout from "../basic/SafeLayout"
@@ -37,7 +38,8 @@ import WebView from "../major/WebView"
 
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
-         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, autoUpdateCoreIdps } from "../../redux/actions"
+         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
+         autoUpdateCoreIdps, setLatestLocation } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   flex1: {
@@ -81,6 +83,7 @@ const Library = ({
   setReaderStatus,
   clearAllSpinePageCfis,
   autoUpdateCoreIdps,
+  setLatestLocation,
 
 }) => {
 
@@ -343,6 +346,45 @@ const Library = ({
   )
 
   const pushToken = usePushToken()
+  const notifications = usePushNotifications()
+
+  useEffect(
+    () => {
+      if(notifications.length === 0) return
+
+      const { origin, clear, data } = notifications.slice(-1)[0] || {}
+
+      if(origin !== 'selected') {
+        clear()
+        return
+      }
+
+      const { bookId, spineIdRef } = data || {}
+
+      // check if it is balid and downloaded
+      if((books[bookId] || {}).downloadStatus !== 2) return
+
+      if(spineIdRef) {
+        setLatestLocation({
+          bookId,
+          latestLocation: {
+            spineIdRef: spineIdRef,
+          },
+        })
+      }
+
+      if(bookId && pathname !== `/book/${bookId}`) {
+        for(let attempts=0; pathname !== '/' && attempts < 5; attempts++) {
+          historyGoBack()
+        }
+        historyPush(`/book/${bookId}`)
+      }
+
+      clear()
+
+    },
+    [ notifications, pathname ],
+  )
 
   const scope = library.scope || "all"
 
@@ -495,6 +537,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setReaderStatus,
   clearAllSpinePageCfis,
   autoUpdateCoreIdps,
+  setLatestLocation,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

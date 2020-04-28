@@ -1,51 +1,37 @@
 import { useEffect } from "react"
-import { Platform, AsyncStorage } from "react-native"
 import { Notifications } from "expo"
-import Constants from 'expo-constants'
-import * as Permissions from 'expo-permissions'
+import useForceUpdate from "./useForceUpdate"
 
-import usePushToken, { PUSH_TOKEN_KEY } from './usePushToken'
+// defined outside of the hook so that there is one universal listener and stack
+let notificationsStack = []
+let notificationsIndex = 0
+Notifications.addListener(notification => {
+  const index = notificationsIndex++
+  notificationsStack = [
+    ...notificationsStack,
+    {
+      ...notification,
+      clear: () => {
+        notificationsStack = notificationsStack.filter(n => n.index !== index)
+      },
+      index,
+    },
+  ]
+})
 
 const usePushNotifications = () => {
 
-  const pushToken = usePushToken()
+  const forceUpdate = useForceUpdate()
 
   useEffect(
     () => {
-      if(Constants.isDevice) {
-        (async () => {
-
-          if(pushToken === "none") {
-
-            const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS)
-            let finalStatus = existingStatus
-
-            if(existingStatus !== 'granted') {
-              const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
-              finalStatus = status
-            }
-
-            if(finalStatus !== 'granted') return
-
-            await AsyncStorage.setItem(PUSH_TOKEN_KEY, await Notifications.getExpoPushTokenAsync())
-
-            if(Platform.OS === 'android') {
-              Notifications.createChannelAndroidAsync('default', {
-                name: 'default',
-                sound: true,
-                priority: 'max',
-                vibrate: [0, 250, 250, 250],
-              })
-            }
-
-          }
-          
-        })()
-      }
+      const subscription = Notifications.addListener(forceUpdate)
+      // return subscription.remove
     },
-    [ pushToken ],
+    [],
   )
 
+  return notificationsStack
 }
 
 export default usePushNotifications
