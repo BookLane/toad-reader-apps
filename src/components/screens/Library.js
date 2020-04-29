@@ -39,7 +39,7 @@ import WebView from "../major/WebView"
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
-         autoUpdateCoreIdps, setLatestLocation } from "../../redux/actions"
+         autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   flex1: {
@@ -83,7 +83,8 @@ const Library = ({
   setReaderStatus,
   clearAllSpinePageCfis,
   autoUpdateCoreIdps,
-  setLatestLocation,
+  setCurrentClassroom,
+  setSelectedToolUid,
 
 }) => {
 
@@ -359,19 +360,31 @@ const Library = ({
         return
       }
 
-      const { bookId, spineIdRef } = data || {}
+      const { bookId, classroomUid } = data || {}
 
       // check if it is balid and downloaded
       if((books[bookId] || {}).downloadStatus !== 2) return
 
-      if(spineIdRef) {
-        setLatestLocation({
+      if(classroomUid) {
+        setCurrentClassroom({
           bookId,
-          latestLocation: {
-            spineIdRef: spineIdRef,
-          },
+          uid: classroomUid,
+        })
+
+        setSelectedToolUid({
+          bookId,
+          uid: 'FRONT MATTER',
         })
       }
+
+      // if(spineIdRef) {
+      //   setLatestLocation({
+      //     bookId,
+      //     latestLocation: {
+      //       spineIdRef: spineIdRef,
+      //     },
+      //   })
+      // }
 
       if(bookId && pathname !== `/book/${bookId}`) {
         for(let attempts=0; pathname !== '/' && attempts < 5; attempts++) {
@@ -537,7 +550,8 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setReaderStatus,
   clearAllSpinePageCfis,
   autoUpdateCoreIdps,
-  setLatestLocation,
+  setCurrentClassroom,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)
