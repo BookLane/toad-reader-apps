@@ -5,6 +5,7 @@ import { i18n } from "inline-i18n"
 
 import { nonEmpty } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useRouterState from '../../hooks/useRouterState'
 import { updateClassroom } from "../../redux/actions"
 
 import Syllabus from "./Syllabus"
@@ -27,6 +28,9 @@ const EnhancedFrontMatter = React.memo(({
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
   const { classroom, viewingFrontMatter, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
+  const { historyReplace, routerState } = useRouterState()
+  const { initialSelectedTabId } = routerState || {}
 
   const goUpdateClassroom = useCallback(
     updates => {
@@ -113,6 +117,7 @@ const EnhancedFrontMatter = React.memo(({
       ),
     }]),
     ...(!showScheduleDates ? [] : [{
+      id: 'readingSchedule',
       title: i18n("Reading schedule", "", "enhanced"),
       content: (
         <ReadingSchedule
@@ -139,6 +144,16 @@ const EnhancedFrontMatter = React.memo(({
 
   if(tabs.length === 0 && !viewingPreview) return null
 
+  let initialSelectedTabIndex
+  if(initialSelectedTabId) {
+    tabs.forEach(({ id }, idx) => {
+      if(id === initialSelectedTabId) {
+        initialSelectedTabIndex = idx
+      }
+    })
+    setTimeout(historyReplace)  // clear it out
+  }
+
   return (
     <EnhancedScreen
       bookId={bookId}
@@ -146,6 +161,7 @@ const EnhancedFrontMatter = React.memo(({
       closeToolAndExitReading={closeToolAndExitReading}
       heading={i18n("Front matter", "", "enhanced")}
       tabs={tabs}
+      initialSelectedTabIndex={initialSelectedTabIndex}
       viewingPreview={viewingPreview}
       setViewingPreview={setViewingPreview}
     />

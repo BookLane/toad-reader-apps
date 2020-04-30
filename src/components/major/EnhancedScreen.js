@@ -121,11 +121,12 @@ const EnhancedScreen = React.memo(({
   closeToolAndExitReading,
   heading,
   tabs,
+  initialSelectedTabIndex,
   viewingPreview,
   setViewingPreview,
 }) => {
 
-  const [ selectedTabIndex, setSelectedTabIndex ] = useState()
+  const [ selectedTabIndex, setSelectedTabIndex ] = useState(initialSelectedTabIndex)
   const [ previewSelectedTabIndex, setPreviewSelectedTabIndex ] = useState()
 
   const onExitPreview = useCallback(() => setViewingPreview(false), [])

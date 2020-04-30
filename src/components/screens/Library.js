@@ -390,7 +390,7 @@ const Library = ({
         for(let attempts=0; pathname !== '/' && attempts < 5; attempts++) {
           historyGoBack()
         }
-        historyPush(`/book/${bookId}`)
+        historyPush(`/book/${bookId}`, { initialSelectedTabId: 'readingSchedule' })
       }
 
       clear()
