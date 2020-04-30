@@ -38,7 +38,6 @@ const noteAuthor = {
 }
 
 const container = {
-  paddingTop: 20,
   paddingLeft: 20,
   flex: 1,
 }
@@ -46,6 +45,8 @@ const container = {
 const select = {
   marginRight: 20,
   maxWidth: 400,
+  marginTop: 20,
+  marginBottom: 10,
 }
 
 const scrollViewContent = {
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginTop: 15,
+    paddingTop: 20,
   },
   scrollViewContent: {
     ...scrollViewContent,

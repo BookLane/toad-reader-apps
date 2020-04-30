@@ -8,9 +8,20 @@ import { CSVLink } from "react-csv"
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
+import useWideMode from "../../hooks/useWideMode"
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
+
+const container = {
+  marginLeft: 20,
+  flex: 1,
+}
+
+const containerScrollViewContent = {
+  paddingVertical: 5,
+  paddingRight: 20,
+}
 
 const styles = StyleSheet.create({
   error: {
@@ -26,17 +37,22 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     flex: 1,
   },
-
   container: {
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     marginLeft: 30,
-    flex: 1,
   },
   containerScrollView: {
     flex: 1,
     minHeight: '100%',
   },
   containerScrollViewContent: {
-    paddingVertical: 5,
+    ...containerScrollViewContent,
+  },
+  containerScrollViewContentWideMode: {
+    ...containerScrollViewContent,
     paddingRight: 30,
   },
   row: {
@@ -74,6 +90,8 @@ const EnhancedMyReflectionQuestions = React.memo(({
 }) => {
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const { data, error } = useDashboardData({
     classroomUid,
@@ -153,10 +171,10 @@ const EnhancedMyReflectionQuestions = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       <ScrollView
         style={styles.containerScrollView}
-        contentContainerStyle={styles.containerScrollViewContent}
+        contentContainerStyle={wideMode ? styles.containerScrollViewContentWideMode : styles.containerScrollViewContent}
       >
         {dataRows.map(({ name, question, answer }, idx) => (
           <View style={styles.row} key={idx}>

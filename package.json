@@ -30,7 +30,7 @@
     "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json' && npm run translate-convert-json-to-csv",
     "translate-convert-csv-to-json": "node node_modules/inline-i18n/scripts/convertTranslationCSVtoJSON.js --translations-dir='./src/utils/translations'",
     "translate-convert-json-to-csv": "node node_modules/inline-i18n/scripts/convertTranslationJSONtoCSV.js --translations-dir='./src/utils/translations'",
-    "start": "expo start -w"
+    "start": "expo start --web --no-https"
   },
   "dependencies": {
     "@babel/plugin-transform-react-jsx-source": "7.2.0",
