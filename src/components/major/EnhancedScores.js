@@ -8,6 +8,7 @@ import { CSVLink } from "react-csv"
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
+import useWideMode from "../../hooks/useWideMode"
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
@@ -49,6 +50,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    flex: 1,
+  },
+  containerWideMode: {
     marginLeft: 30,
     flex: 1,
   },
@@ -118,6 +122,8 @@ const EnhancedScores = React.memo(({
 }) => {
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const { data, error } = useDashboardData({
     classroomUid,
@@ -225,7 +231,7 @@ const EnhancedScores = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       <ScrollView
         style={styles.containerScrollView}
         contentContainerStyle={styles.containerScrollViewContent}

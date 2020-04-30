@@ -7,6 +7,7 @@ import { List, ListItem } from '@ui-kitten/components'
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { deleteClassroomMember } from "../../redux/actions"
+import useWideMode from "../../hooks/useWideMode"
 
 import Button from '../basic/Button'
 import Icon from "../basic/Icon"
@@ -21,6 +22,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   listItem: {
+    paddingLeft: 3,
+    paddingRight: 10,
+  },
+  listItemWideMode: {
     paddingHorizontal: 22,
   },
   instructor: {
@@ -38,6 +43,8 @@ const EnhancedMembers = React.memo(({
 }) => {
 
   const { classroomUid, members } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   if(!classroomUid) return null
 
@@ -76,7 +83,7 @@ const EnhancedMembers = React.memo(({
   const renderItem = useCallback(
     ({ item }) => (
       <ListItem
-        style={styles.listItem}
+        style={wideMode ? styles.listItemWideMode : styles.listItem}
         title={i18n("{{fullname}} ({{email}})", "", "enhanced", item)}
         description={
           item.role === 'INSTRUCTOR'

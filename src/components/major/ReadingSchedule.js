@@ -5,13 +5,21 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useWideMode from "../../hooks/useWideMode"
 
 import ReadingScheduleDate from './ReadingScheduleDate'
 
+const container = {
+  flexGrow: 1,
+  margin: 20,
+}
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginVertical: 20,
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     marginHorizontal: 30,
   },
   instructions: {
@@ -32,6 +40,8 @@ const ReadingSchedule = React.memo(({
 }) => {
 
   const { spines, classroom, myRole, scheduleDatesToDisplay } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
+  const wideMode = useWideMode()
 
   const scheduleDatesToDisplayWithAddNew = useMemo(
     () => {
@@ -139,7 +149,7 @@ const ReadingSchedule = React.memo(({
   if(!classroom) return null
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       {!!inEditMode && !viewingPreview &&
         <Text style={styles.instructions}>
           {/* {i18n("Adding a reading schedule enables students to receive reminder notifications and allows you to quickly see how students are keeping up with their reading.", "", "enhanced")} */}

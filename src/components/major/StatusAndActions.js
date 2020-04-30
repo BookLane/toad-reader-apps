@@ -23,6 +23,12 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 10,
   },
+  containerNonTool: {
+    marginTop: 15,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,.1)',
+  },
   containerWideMode: {
     marginTop: 0,
   },
@@ -50,6 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   previewContainerNonTool: {
+    marginTop: -30,
     paddingBottom: 15,
   },
   previewContainerNonToolWideMode: {
@@ -242,10 +249,15 @@ const StatusAndActions = React.memo(({
 
   return (
     <View
-      style={[
-        styles.container,
-        wideMode ? styles.containerWideMode : null,
-      ]}
+      style={
+        wideMode
+          ? styles.containerWideMode
+          : (
+            isTool
+              ? styles.container
+              : styles.containerNonTool
+          )
+      }
     >
       <View style={wideMode ? styles.buttonsWideMode : styles.buttons}>
         <Button
@@ -282,20 +294,20 @@ const StatusAndActions = React.memo(({
       >
         {publishedStatusMessages[publishedStatus]}
       </Text>
-      <View
-        style={[
-          ((wideMode && !isTool) ? styles.previewContainerNonToolWideMode : styles.previewContainer),
-          ((!wideMode && !isTool) ? styles.previewContainerNonTool : null),
-        ]}
-      >
-        {!viewingOptions &&
+      {!viewingOptions &&
+        <View
+          style={[
+            ((wideMode && !isTool) ? styles.previewContainerNonToolWideMode : styles.previewContainer),
+            ((!wideMode && !isTool) ? styles.previewContainerNonTool : null),
+          ]}
+        >
           <TouchableOpacity onPress={onPreview}>
             <Text style={styles.preview}>
               {i18n("Preview", "", "enhanced")}
             </Text>
           </TouchableOpacity>
-        }
-      </View>
+        </View>
+      }
     </View>
   )
 })

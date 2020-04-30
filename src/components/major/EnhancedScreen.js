@@ -8,17 +8,12 @@ import useWideMode from "../../hooks/useWideMode"
 
 import StatusAndActions from "./StatusAndActions"
 import HeaderIcon from "../basic/HeaderIcon"
+import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 
 const container = {
   ...StyleSheet.absoluteFillObject,
   backgroundColor: 'white',
   zIndex: 5,
-  paddingTop: 20,
-}
-
-const topSection = {
-  paddingHorizontal: 30,
-  zIndex: 1,
 }
 
 const tabTitle = {
@@ -29,34 +24,40 @@ const tabTitle = {
   borderBottomColor: 'transparent',
 }
 
-const headingLine = {
-  flexDirection: 'row',
-}
-
 const styles = StyleSheet.create({
   container: {
     ...container,
-    paddingTop: 25,
   },
   constainerWideMode: {
     ...container,
     top: getToolbarHeight(),
+    paddingTop: 20,
   },
   topSection: {
-    ...topSection,
+    zIndex: 1,
   },
   topSectionWideMode: {
-    ...topSection,
+    paddingHorizontal: 30,
+    zIndex: 1,
     flexDirection: 'row',
   },
   headingLine: {
-    ...headingLine,
+    flexDirection: 'row',
+    padding: 8,
+    height: getToolbarHeight(),
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,.1)',
   },
   headingLineWideMode: {
-    ...headingLine,
+    flexDirection: 'row',
     flex: 1,
   },
   heading: {
+    fontSize: 19,
+    flex: 1,
+    lineHeight: 40,
+  },
+  headingWideMode: {
     paddingBottom: 20,
     fontWeight: '600',
     fontSize: 18,
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   exitPreviewContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingBottom: 15,
+    padding: 15,
   },
   exitPreviewContainerWideMode: {
     position: 'absolute',
@@ -104,10 +105,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 5,
   },
-  close: {
-    top: -12,
-    right: -12,
-    height: 38,
+  menu: {
+    paddingVertical: 5,
+  },
+  menuItem: {
+    lineHeight: 50,
+    paddingHorizontal: 15,
+    fontSize: 17,
   },
 })
 
@@ -121,8 +125,8 @@ const EnhancedScreen = React.memo(({
   setViewingPreview,
 }) => {
 
-  const [ selectedTabIndex, setSelectedTabIndex ] = useState(0)
-  const [ previewSelectedTabIndex, setPreviewSelectedTabIndex ] = useState(0)
+  const [ selectedTabIndex, setSelectedTabIndex ] = useState()
+  const [ previewSelectedTabIndex, setPreviewSelectedTabIndex ] = useState()
 
   const onExitPreview = useCallback(() => setViewingPreview(false), [])
 
@@ -132,22 +136,25 @@ const EnhancedScreen = React.memo(({
 
   const tabIndex = viewingPreview ? previewSelectedTabIndex : selectedTabIndex
   const setTabIndex = viewingPreview ? setPreviewSelectedTabIndex : setSelectedTabIndex
+  const resetTabIndex = useCallback(() => setTabIndex(), [ setTabIndex ])
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <View style={wideMode ? styles.headingLineWideMode : styles.headingLine}>
-          <Text style={styles.heading}>{heading}</Text>
-          {!viewingPreview && !wideMode &&
+          {!wideMode &&
             <HeaderIcon
-              iconName="md-close"
-              onPress={closeToolAndExitReading}
-              uiStatus="faded"
-              style={styles.close}
+              iconName="md-arrow-back"
+              onPress={tabIndex === undefined ? closeToolAndExitReading : resetTabIndex}
+              style={styles.back}
             />
           }
+          <Text style={wideMode ? styles.headingWideMode : styles.heading}>
+            {(wideMode || tabIndex === undefined) ? heading : tabs[tabIndex].title}
+          </Text>
+          {!wideMode && inEditMode && tabIndex !== undefined && <SaveStateHeaderIcon />}
         </View>
-        {(inEditMode && !viewingPreview) &&
+        {(inEditMode && !viewingPreview && (wideMode || tabIndex !== undefined)) &&
           <StatusAndActions
             bookId={bookId}
             setViewingPreview={setViewingPreview}
@@ -165,40 +172,60 @@ const EnhancedScreen = React.memo(({
       </View>
       {tabs.length > 0 &&
         <>
-          <ScrollView
-            key={viewingPreview ? `preview-tabs` : `draft-tabs`}
-            style={styles.tabs}
-            horizontal={true}
-          >
-            {tabs.map(({ title }, idx) => (
-              <TouchableOpacity
-                key={idx}
-                onPress={() => setTabIndex(idx)}
-              >
-                <Text
-                  style={idx === tabIndex ? styles.selectedTabTitle : styles.tabTitle}
+          {(wideMode || tabIndex === undefined) && 
+            <ScrollView
+              key={viewingPreview ? `preview-tabs` : `draft-tabs`}
+              style={wideMode ? styles.tabs : styles.menu}
+              horizontal={wideMode}
+            >
+              {tabs.map(({ title }, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => setTabIndex(idx)}
                 >
-                  {title}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <ViewPager
-            key={viewingPreview ? `preview-content` : `draft-content`}
-            style={styles.tabsContent}
-            selectedIndex={tabIndex}
-            onSelect={setTabIndex}
-          >
-            {tabs.map(({ content }, idx) => (
-              <ScrollView
-                key={idx}
-                style={styles.tabContent}
-                contentContainerStyle={styles.tabContentContainer}
-              >
-                {content}
-              </ScrollView>
-            ))}
-          </ViewPager>
+                  <Text
+                    style={
+                      wideMode
+                        ? (
+                          idx === (tabIndex || 0)
+                            ? styles.selectedTabTitle
+                            : styles.tabTitle
+                        )
+                        : styles.menuItem
+                    }
+                  >
+                    {title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          }
+          {wideMode &&
+            <ViewPager
+              key={viewingPreview ? `preview-content` : `draft-content`}
+              style={styles.tabsContent}
+              selectedIndex={tabIndex || 0}
+              onSelect={setTabIndex}
+            >
+              {tabs.map(({ content }, idx) => (
+                <ScrollView
+                  key={idx}
+                  style={styles.tabContent}
+                  contentContainerStyle={styles.tabContentContainer}
+                >
+                  {content}
+                </ScrollView>
+              ))}
+            </ViewPager>
+          }
+          {!wideMode && tabIndex !== undefined &&
+            <ScrollView
+              style={styles.tabContent}
+              contentContainerStyle={styles.tabContentContainer}
+            >
+              {tabs[tabIndex].content}
+            </ScrollView>
+          }
         </>
       }
     </View>

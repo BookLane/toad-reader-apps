@@ -9,11 +9,36 @@ import { Select } from "@ui-kitten/components"
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
+import useWideMode from "../../hooks/useWideMode"
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
 
 const width = 130
+
+const container = {
+  marginTop: 20,
+  marginLeft: 20,
+  flex: 1,
+}
+
+const scrollViewContent = {
+  paddingBottom: 20,
+  paddingRight: 20,
+}
+
+const selectContainer = {
+  maxWidth: 400,
+  marginRight: 20,
+}
+
+const question = {
+  fontWeight: '600',
+  fontSize: 16,
+  marginTop: 25,
+  marginBottom: 15,
+  marginRight: 20,
+}
 
 const styles = StyleSheet.create({
   error: {
@@ -36,24 +61,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    marginTop: 20,
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     marginLeft: 30,
-    flex: 1,
   },
   selectContainer: {
-    maxWidth: 400,
+    ...selectContainer,
+  },
+  selectContainerWideMode: {
+    ...selectContainer,
+    marginRight: 30,
   },
   question: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginTop: 25,
-    marginBottom: 15,
+    ...question,
+  },
+  questionWideMode: {
+    ...question,
+    marginRight: 30,
   },
   scrollView: {
     flex: 1,
   },
   scrollViewContent: {
-    paddingBottom: 20,
+    ...scrollViewContent,
+  },
+  scrollViewContentWideMode: {
+    ...scrollViewContent,
     paddingRight: 30,
   },
   row: {
@@ -81,6 +116,8 @@ const EnhancedReflectionQuestions = React.memo(({
 }) => {
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const { data, error } = useDashboardData({
     classroomUid,
@@ -185,8 +222,8 @@ const EnhancedReflectionQuestions = React.memo(({
   const currentQuestion = orderedQuestions.filter(({ uid }) => uid === currentQuestionUid)[0] || orderedQuestions[0]
 
   return (
-    <View style={styles.container}>
-      <View style={styles.selectContainer}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
+      <View style={wideMode ? styles.selectContainerWideMode : styles.selectContainer}>
         <Select
           label={i18n("Question name", "", "enhanced")}
           style={styles.select}
@@ -195,12 +232,12 @@ const EnhancedReflectionQuestions = React.memo(({
           onSelect={onSelect}
         />
       </View>
-      <Text style={styles.question}>
+      <Text style={wideMode ? styles.questionWideMode : styles.question}>
         {currentQuestion.question}
       </Text>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
+        contentContainerStyle={wideMode ? styles.scrollViewContentWideMode : styles.scrollViewContent}
       >
         {students.map(({ user_id, fullname, email }) => (
           <View style={styles.row} key={user_id}>

@@ -197,9 +197,9 @@ const ToolFlipper = React.memo(({
         ))}
         <View style={styles.toolContainer} />
       </ViewPager>
-      {Platform.OS === 'web' &&
+      {Platform.OS === 'web' && !inEditMode &&
         <>
-          <View style={styles.leftButtonContainer} data-id="here">
+          <View style={styles.leftButtonContainer}>
             <Button
               onPress={() => onPageChange(pageIndex - 1)}
               appearance="ghost"

@@ -1,21 +1,28 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
-import EditToolData from './EditToolData'
-import FlipEditorContent from '../basic/FlipEditorContent'
-
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useChangeIndex from '../../hooks/useChangeIndex'
+import useWideMode from "../../hooks/useWideMode"
+
+import EditToolData from './EditToolData'
+import FlipEditorContent from '../basic/FlipEditorContent'
+
+const container = {
+  padding: 20,
+  flex: 1,
+}
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     paddingHorizontal: 30,
-    flex: 1,
   },
 })
 
@@ -30,6 +37,8 @@ const InstructorsIntroduction = React.memo(({
 }) => {
 
   const { accountId, classroom, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
 
@@ -68,7 +77,7 @@ const InstructorsIntroduction = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       <FlipEditorContent
         content={data.introduction}
       />

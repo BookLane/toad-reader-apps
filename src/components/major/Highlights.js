@@ -9,6 +9,7 @@ import { Select } from "@ui-kitten/components"
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems, getIDPOrigin } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
+import useWideMode from "../../hooks/useWideMode"
 
 import FAB from '../basic/FAB'
 import Icon from "../basic/Icon"
@@ -36,21 +37,46 @@ const noteAuthor = {
   fontWeight: '100',
 }
 
+const container = {
+  paddingTop: 20,
+  paddingLeft: 20,
+  flex: 1,
+}
+
+const select = {
+  marginRight: 20,
+  maxWidth: 400,
+}
+
+const scrollViewContent = {
+  paddingVertical: 5,
+  paddingRight: 20,
+}
+
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     paddingLeft: 30,
-    flex: 1,
   },
   select: {
+    ...select,
+  },
+  selectWideMode: {
+    ...select,
     marginRight: 30,
-    maxWidth: 400,
   },
   scrollView: {
     flex: 1,
     marginTop: 15,
   },
   scrollViewContent: {
+    ...scrollViewContent,
+  },
+  scrollViewContentWideMode: {
+    ...scrollViewContent,
     paddingVertical: 5,
     paddingRight: 30,
   },
@@ -161,6 +187,8 @@ const Highlights = React.memo(({
 }) => {
 
   const { book, spines, instructorHighlights, myRole, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const selectOptions = useMemo(
     () => ([
@@ -336,10 +364,10 @@ const Highlights = React.memo(({
   // )
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       {selectOptions.length > 1 &&
         <Select
-          style={styles.select}
+          style={wideMode ? styles.selectWideMode : styles.select}
           data={selectOptions}
           multiSelect={true}
           selectedOption={selectedOptions}
@@ -354,7 +382,7 @@ const Highlights = React.memo(({
       {highlightGroupsToShow.length !== 0 &&
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
+          contentContainerStyle={wideMode ? styles.scrollViewContentWideMode : styles.scrollViewContent}
         >
           {highlightGroupsToShow.map(({ spineIdRef, highlights }, idx) => (
             <View key={idx}>

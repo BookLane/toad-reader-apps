@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, View, Text, Platform } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
+import { Button } from '@ui-kitten/components'
+
 import { cloneObj, getMBSizeStr, nonEmpty } from '../../utils/toolbox'
+import useInstanceValue from '../../hooks/useInstanceValue'
+import useSetTimeout from '../../hooks/useSetTimeout'
+import useChangeIndex from '../../hooks/useChangeIndex'
+import useWideMode from "../../hooks/useWideMode"
 
 import Icon from "../basic/Icon"
 import Radio from "../basic/Radio"
 import { default as MemoButton } from "../basic/Button"
-import { Button } from '@ui-kitten/components'
 import Input from "../basic/Input"
 import CheckBox from "../basic/CheckBox"
 import FileImporter from "./FileImporter"
 import FlipEditor from "../basic/FlipEditor"
-
-import useInstanceValue from '../../hooks/useInstanceValue'
-import useSetTimeout from '../../hooks/useSetTimeout'
-import useChangeIndex from '../../hooks/useChangeIndex'
 
 const trashButtonStyles = {
   borderRadius: 20,
@@ -25,11 +26,18 @@ const trashButtonStyles = {
   borderColor: 'transparent',
 }
 
+const container = {
+  padding: 20,
+  flex: 1,
+}
+
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    ...container,
+  },
+  containerWideMode: {
+    ...container,
     paddingHorizontal: 30,
-    flex: 1,
   },
   dataLine: {
     maxWidth: 900,
@@ -112,6 +120,8 @@ const EditToolData = React.memo(({
   data,
   goUpdateTool,
 }) => {
+
+  const wideMode = useWideMode()
 
   const changeIndex = useChangeIndex(isDraft, (prev, current) => (prev && !current))
 
@@ -580,7 +590,7 @@ const EditToolData = React.memo(({
   )
 
   return (
-    <View style={styles.container}>
+    <View style={wideMode ? styles.containerWideMode : styles.container}>
       {getDataStructureSet({ dataStructure, dataSegment: dataInEdit })}
       <FileImporter
         open={!!fileImportInfo.open}

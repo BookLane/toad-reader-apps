@@ -7,6 +7,7 @@ import { i18n } from "inline-i18n"
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
+import useWideMode from "../../hooks/useWideMode"
 
 import { VictoryPie, VictoryLabel, VictoryPortal } from "./Victory"
 import CoverAndSpin from '../basic/CoverAndSpin'
@@ -41,6 +42,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   poll: {
+    marginVertical: 20,
+    paddingHorizontal: 20,
+    width: '100%',
+  },
+  pollWideMode: {
     marginVertical: 20,
     marginBottom: 40,
     marginHorizontal: 30,
@@ -78,6 +84,8 @@ const EnhancedPolls = React.memo(({
 }) => {
 
   const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+
+  const wideMode = useWideMode()
 
   const { data, error } = useDashboardData({
     classroomUid,
@@ -152,7 +160,7 @@ const EnhancedPolls = React.memo(({
         return (
           <View
             key={idx}
-            style={styles.poll}
+            style={wideMode ? styles.pollWideMode : styles.poll}
           >
             <Text style={styles.toolName}>
               {name || i18n("Poll", "", "enhanced")}
