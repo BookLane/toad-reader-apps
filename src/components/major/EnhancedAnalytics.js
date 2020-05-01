@@ -12,6 +12,7 @@ import CoverAndSpin from '../basic/CoverAndSpin'
 import EnhancedAnalyticsTotalReading from './EnhancedAnalyticsTotalReading'
 import EnhancedAnalyticsReadingBySpine from './EnhancedAnalyticsReadingBySpine'
 import EnhancedAnalyticsReadingOverTime from './EnhancedAnalyticsReadingOverTime'
+import EnhancedAnalyticsStatusesByDueDate from './EnhancedAnalyticsStatusesByDueDate'
 
 const styles = StyleSheet.create({
   error: {
@@ -151,8 +152,32 @@ const EnhancedAnalytics = React.memo(({
         1,
       ],
     },
-    readingByDueDate: [
-
+    statusesByDuesDate: [
+      {
+        dueDate: 'Jan 1\n3pm',
+        ontime: 1,
+        late: 2,
+      },
+      {
+        dueDate: 'Jan 4\n10am',
+        ontime: 4,
+        late: 0,
+      },
+      {
+        dueDate: 'Jan 5\n3pm',
+        ontime: 3,
+        late: 1,
+      },
+      {
+        dueDate: 'Jan 7\n1pm',
+        ontime: 2,
+        late: 0,
+      },
+      {
+        dueDate: 'Jan 10\n3pm',
+        ontime: 1,
+        late: 0,
+      },
     ],
     completionsByQuiz: [
 
@@ -220,6 +245,17 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsReadingOverTime
           readingOverTime={orderedData.readingOverTime}
           fullPageWidth={fullPageWidth}
+        />
+      </View>
+
+      <View style={wideMode ? styles.chartWideMode : styles.chart}>
+        <Text style={styles.chartName}>
+          {i18n("Reading schedule statuses", "", "enhanced")}
+        </Text>
+        <EnhancedAnalyticsStatusesByDueDate
+          statusesByDuesDate={orderedData.statusesByDuesDate}
+          fullPageWidth={fullPageWidth}
+          numStudents={students.length}
         />
       </View>
 

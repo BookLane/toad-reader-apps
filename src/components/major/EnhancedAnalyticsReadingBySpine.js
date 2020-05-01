@@ -24,13 +24,16 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
         x: (fullPageWidth / readingBySpine.length) / 2
       }}
     >
+
       <VictoryAxis />
+
       <VictoryBar
         data={readingBySpine}
         x="spine"
         y="minutes"
         labels={({ datum: { minutes } }) => getHoursMinutesStr(minutes)}
       />
+
     </VictoryChart>
   )
 })

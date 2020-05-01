@@ -607,3 +607,7 @@ export const getHoursMinutesStr = minutes => {
     return i18n("{{minutes}}m", "", "enhanced", { minutes })
   }
 }
+
+export const fractionToPercent = fraction => (
+  i18n("{{percent}}%", { percent: Math.min(Math.round(fraction * 100), 100) })
+)
