@@ -594,3 +594,16 @@ export const orderCfiKeyedObj = ({ obj }) => {
 
   return arrayOfObjs.map(([ key, val ]) => val)
 }
+
+export const getHoursMinutesStr = minutes => {
+  const hours = parseInt(minutes / 60, 10)
+  minutes = minutes % 60
+
+  if(hours && minutes) {
+    return i18n("{{hours}}h {{minutes}}m", "", "enhanced", { hours, minutes })
+  } else if(hours) {
+    return i18n("{{hours}}h", "", "enhanced", { hours })
+  } else {
+    return i18n("{{minutes}}m", "", "enhanced", { minutes })
+  }
+}
