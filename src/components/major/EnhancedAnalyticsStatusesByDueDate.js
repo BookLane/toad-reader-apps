@@ -6,7 +6,7 @@ import { fractionToPercent } from '../../utils/toolbox'
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryStack, VictoryLegend } from "./Victory"
 
 const EnhancedAnalyticsStatusesByDueDate = React.memo(({
-  statusesByDuesDate,
+  readingScheduleStatuses,
   numStudents,
   fullPageWidth,
 }) => {
@@ -22,7 +22,7 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
       }}
       domainPadding={{
         y: 20,
-        x: (fullPageWidth / statusesByDuesDate.length) / 2
+        x: (fullPageWidth / readingScheduleStatuses.length) / 2
       }}
     >
 
@@ -53,15 +53,15 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
       >
 
         <VictoryBar
-          data={statusesByDuesDate}
-          x="dueDate"
+          data={readingScheduleStatuses}
+          x="dueDateText"
           y="ontime"
           labels={({ datum: { ontime } }) => ontime ? fractionToPercent(ontime / numStudents) : ""}
         />
 
         <VictoryBar
-          data={statusesByDuesDate}
-          x="dueDate"
+          data={readingScheduleStatuses}
+          x="dueDateText"
           y="late"
           labels={({ datum: { late } }) => late ? fractionToPercent(late / numStudents) : ""}
         />
