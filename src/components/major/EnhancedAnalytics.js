@@ -13,6 +13,8 @@ import EnhancedAnalyticsTotalReading from './EnhancedAnalyticsTotalReading'
 import EnhancedAnalyticsReadingBySpine from './EnhancedAnalyticsReadingBySpine'
 import EnhancedAnalyticsReadingOverTime from './EnhancedAnalyticsReadingOverTime'
 import EnhancedAnalyticsStatusesByDueDate from './EnhancedAnalyticsStatusesByDueDate'
+import EnhancedAnalyticsQuizCompletions from './EnhancedAnalyticsQuizCompletions'
+import EnhancedAnalyticsQuizScores from './EnhancedAnalyticsQuizScores'
 
 const styles = StyleSheet.create({
   error: {
@@ -96,34 +98,34 @@ const EnhancedAnalytics = React.memo(({
     readingBySpine: [
       {
         minutes: 15,
-        spine: 'test',
+        spine: 'chapter ',
       },
       {
         minutes: 25,
-        spine: 'test2',
+        spine: 'chapter 2',
       },
       {
         minutes: 105,
-        spine: 'test3',
+        spine: 'chapter 3',
       },
       {
         minutes: 35,
-        spine: 'test4',
+        spine: 'chapter 4',
       },
       {
         minutes: 5,
-        spine: 'test5',
+        spine: 'chapter 5',
       },
       {
         minutes: 7,
-        spine: 'test6',
+        spine: 'chapter 6',
       },
     ],
     readingOverTime: {
       startTime: 1585705612819,
       totals: [
-        101,
-        61,
+        401,
+        361,
         41,
         10,
         121,
@@ -156,7 +158,7 @@ const EnhancedAnalytics = React.memo(({
       {
         dueDate: 'Jan 1\n3pm',
         ontime: 1,
-        late: 2,
+        late: 3,
       },
       {
         dueDate: 'Jan 4\n10am',
@@ -180,10 +182,53 @@ const EnhancedAnalytics = React.memo(({
       },
     ],
     completionsByQuiz: [
-
+      {
+        name: 'Quiz 1',
+        completions: 4,
+      },
+      {
+        name: 'Quiz 2',
+        completions: 4,
+      },
+      {
+        name: 'Quiz 3',
+        completions: 4,
+      },
+      {
+        name: 'Quiz 4',
+        completions: 3,
+      },
+      {
+        name: 'Quiz 5',
+        completions: 0,
+      },
     ],
     averageScoresByQuiz: [
-
+      {
+        name: 'Quiz 1',
+        avgFirstScore: .7,
+        avgBestScore: 1,
+      },
+      {
+        name: 'Quiz 2',
+        avgFirstScore: .6,
+        avgBestScore: .9,
+      },
+      {
+        name: 'Quiz 3',
+        avgFirstScore: .9,
+        avgBestScore: .97,
+      },
+      {
+        name: 'Quiz 4',
+        avgFirstScore: .9,
+        avgBestScore: .93,
+      },
+      {
+        name: 'Quiz 5',
+        avgFirstScore: .3,
+        avgBestScore: .6,
+      },
     ],
   }
 
@@ -256,6 +301,27 @@ const EnhancedAnalytics = React.memo(({
           statusesByDuesDate={orderedData.statusesByDuesDate}
           fullPageWidth={fullPageWidth}
           numStudents={students.length}
+        />
+      </View>
+
+      <View style={wideMode ? styles.chartWideMode : styles.chart}>
+        <Text style={styles.chartName}>
+          {i18n("Quizzes taken", "", "enhanced")}
+        </Text>
+        <EnhancedAnalyticsQuizCompletions
+          completionsByQuiz={orderedData.completionsByQuiz}
+          fullPageWidth={fullPageWidth}
+          numStudents={students.length}
+        />
+      </View>
+
+      <View style={wideMode ? styles.chartWideMode : styles.chart}>
+        <Text style={styles.chartName}>
+          {i18n("Quiz scores", "", "enhanced")}
+        </Text>
+        <EnhancedAnalyticsQuizScores
+          averageScoresByQuiz={orderedData.averageScoresByQuiz}
+          fullPageWidth={fullPageWidth}
         />
       </View>
 

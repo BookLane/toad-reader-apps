@@ -15,11 +15,10 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
     <VictoryChart
       theme={VictoryTheme.material}
       width={fullPageWidth}
-      height={300}
+      height={340}
       padding={{
-        left: 0,
-        right: 0,
         bottom: 50,
+        top: 60,
       }}
       domainPadding={{
         y: 20,
