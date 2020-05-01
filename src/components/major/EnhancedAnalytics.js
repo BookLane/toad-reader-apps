@@ -8,6 +8,7 @@ import { getDateLine, getTimeLine, orderSpineIdRefKeyedObj, orderCfiKeyedObj } f
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
+import useDashboardData from "../../hooks/useDashboardData"
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import EnhancedAnalyticsTotalReading from './EnhancedAnalyticsTotalReading'
@@ -69,103 +70,16 @@ const EnhancedAnalytics = React.memo(({
   const { fullPageWidth } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
 
-  // const { data, error } = useDashboardData({
-  //   classroomUid,
-  //   idp: idps[idpId],
-  //   accounts,
-  //   query: "getanalytics",
-  // })
-  let error
-
-  const data = {
-    readingBySpine: {
-      ch02: 25,
-      ch01: 15,
-      ch03: 105,
-    },
-    readingOverTime: {
-      startTime: 1585705612819,
-      totals: [
-        401,
-        361,
-        41,
-        10,
-        121,
-        13,
-        201,
-        51,
-        19,
-        102,
-        12,
-        401,
-        11,
-      ],
-      numReaders: [
-        11,
-        6,
-        4,
-        1,
-        21,
-        3,
-        21,
-        11,
-        9,
-        12,
-        2,
-        31,
-        1,
-      ],
-    },
-    readingScheduleStatuses: [
-      {
-        dueDate: 32131213123,
-        ontime: 1,
-        late: 3,
-      },
-      {
-        dueDate: 32132221231,
-        ontime: 4,
-        late: 0,
-      },
-      {
-        dueDate: 32132121235,
-        ontime: 3,
-        late: 1,
-      },
- 
-    ],
-    quizzesBySpineIdRef: {
-      ch02: {
-        "/4/1": [
-          {
-            name: 'Quiz 4',
-            data: [ 1, .3, 1 ],
-          },
-        ],
-      },
-      ch01: {
-        "/4/2/3": [
-          {
-            name: 'Quiz 3',
-            data: [ 2, .5, .95 ],
-          },
-        ],
-        "/4/2/2[page41]": [
-          {
-            name: 'Quiz 1',
-            data: [ 4, .7, 1 ],
-          },
-          {
-            name: 'Quiz 2',
-            data: [ 3, .6, .68 ],
-          },
-        ],
-      },
-    },
-  }
+  const { data, error } = useDashboardData({
+    classroomUid,
+    idp: idps[idpId],
+    accounts,
+    query: "getanalytics",
+  })
 
   const orderedData = useMemo(
     () => {
+      if(!data) return {}
 
       const spineLabels = {}
       spines.forEach(({ idref, label }) => {
@@ -219,144 +133,6 @@ const EnhancedAnalytics = React.memo(({
     },
     [ data ],
   )
-
-  // const orderedData = {
-  //   readingBySpine: [
-  //     {
-  //       minutes: 15,
-  //       spine: 'chapter ',
-  //     },
-  //     {
-  //       minutes: 25,
-  //       spine: 'chapter 2',
-  //     },
-  //     {
-  //       minutes: 105,
-  //       spine: 'chapter 3',
-  //     },
-  //     {
-  //       minutes: 35,
-  //       spine: 'chapter 4',
-  //     },
-  //     {
-  //       minutes: 5,
-  //       spine: 'chapter 5',
-  //     },
-  //     {
-  //       minutes: 7,
-  //       spine: 'chapter 6',
-  //     },
-  //   ],
-  //   readingOverTime: {
-  //     startTime: 1585705612819,
-  //     totals: [
-  //       401,
-  //       361,
-  //       41,
-  //       10,
-  //       121,
-  //       13,
-  //       201,
-  //       51,
-  //       19,
-  //       102,
-  //       12,
-  //       401,
-  //       11,
-  //     ],
-  //     numReaders: [
-  //       11,
-  //       6,
-  //       4,
-  //       1,
-  //       21,
-  //       3,
-  //       21,
-  //       11,
-  //       9,
-  //       12,
-  //       2,
-  //       31,
-  //       1,
-  //     ],
-  //   },
-  //   readingScheduleStatuses: [
-  //     {
-  //       dueDateText: 'Jan 1\n3pm',
-  //       ontime: 1,
-  //       late: 3,
-  //     },
-  //     {
-  //       dueDateText: 'Jan 4\n10am',
-  //       ontime: 4,
-  //       late: 0,
-  //     },
-  //     {
-  //       dueDateText: 'Jan 5\n3pm',
-  //       ontime: 3,
-  //       late: 1,
-  //     },
-  //     {
-  //       dueDateText: 'Jan 7\n1pm',
-  //       ontime: 2,
-  //       late: 0,
-  //     },
-  //     {
-  //       dueDateText: 'Jan 10\n3pm',
-  //       ontime: 1,
-  //       late: 0,
-  //     },
-  //   ],
-  //   completionsByQuiz: [
-  //     {
-  //       name: 'Quiz 1',
-  //       completions: 4,
-  //     },
-  //     {
-  //       name: 'Quiz 2',
-  //       completions: 4,
-  //     },
-  //     {
-  //       name: 'Quiz 3',
-  //       completions: 4,
-  //     },
-  //     {
-  //       name: 'Quiz 4',
-  //       completions: 3,
-  //     },
-  //     {
-  //       name: 'Quiz 5',
-  //       completions: 0,
-  //     },
-  //   ],
-  //   averageScoresByQuiz: [
-  //     {
-  //       name: 'Quiz 1',
-  //       avgFirstScore: .7,
-  //       avgBestScore: 1,
-  //     },
-  //     {
-  //       name: 'Quiz 2',
-  //       avgFirstScore: .6,
-  //       avgBestScore: .9,
-  //     },
-  //     {
-  //       name: 'Quiz 3',
-  //       avgFirstScore: .9,
-  //       avgBestScore: .97,
-  //     },
-  //     {
-  //       name: 'Quiz 4',
-  //       avgFirstScore: .9,
-  //       avgBestScore: .93,
-  //     },
-  //     {
-  //       name: 'Quiz 5',
-  //       avgFirstScore: .3,
-  //       avgBestScore: .6,
-  //     },
-  //   ],
-  // }
 
   if(!classroomUid) return null
 
