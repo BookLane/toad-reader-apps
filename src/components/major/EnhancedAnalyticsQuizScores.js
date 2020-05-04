@@ -1,7 +1,7 @@
 import React from "react"
 import { i18n } from "inline-i18n"
 
-import { fractionToPercent } from '../../utils/toolbox'
+import { fractionToPercent, concatText } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryStack, VictoryLegend } from "./Victory"
 
@@ -46,7 +46,9 @@ const EnhancedAnalyticsQuizScores = React.memo(({
         ]}
       />
 
-      <VictoryAxis />
+      <VictoryAxis
+        tickFormat={name => concatText({ text: name, maxLen: 15 })}
+      />
 
       <VictoryStack
         colorScale="heatmap"

@@ -103,8 +103,8 @@ const EnhancedAnalytics = React.memo(({
 
       const { readingOverTime } = data
 
-      const readingScheduleStatuses = data.readingScheduleStatuses.map(({ dueDate, ontime, late }) => ({
-        dueDateText: `${getDateLine({ timestamp: dueDate, short: true })}\n${getTimeLine({ timestamp: dueDate, short: true })}`,
+      const readingScheduleStatuses = data.readingScheduleStatuses.map(({ due_at, ontime, late }) => ({
+        dueAtText: `${getDateLine({ timestamp: due_at, short: true })}\n${getTimeLine({ timestamp: due_at, short: true })}`,
         ontime,
         late,
       }))
@@ -112,7 +112,7 @@ const EnhancedAnalytics = React.memo(({
       const completionsByQuiz = []
       const averageScoresByQuiz = []
 
-      orderSpineIdRefKeyedObj({ obj: data.quizzesBySpineIdRef, spines }).forEach(quizzesByCfi => {
+      orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, spines }).forEach(quizzesByCfi => {
         orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
           quizzes.forEach(({ name, data: [ completions, avgFirstScore, avgBestScore ] }) => {
             completionsByQuiz.push({

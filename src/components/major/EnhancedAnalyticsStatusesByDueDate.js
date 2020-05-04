@@ -54,14 +54,14 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
 
         <VictoryBar
           data={readingScheduleStatuses}
-          x="dueDateText"
+          x="dueAtText"
           y="ontime"
           labels={({ datum: { ontime } }) => ontime ? fractionToPercent(ontime / numStudents) : ""}
         />
 
         <VictoryBar
           data={readingScheduleStatuses}
-          x="dueDateText"
+          x="dueAtText"
           y="late"
           labels={({ datum: { late } }) => late ? fractionToPercent(late / numStudents) : ""}
         />
