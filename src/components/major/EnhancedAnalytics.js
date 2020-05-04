@@ -53,6 +53,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
+  chartExpl: {
+    fontWeight: '100',
+    fontSize: 13,
+    marginTop: -14,
+    marginBottom: 20,
+  },
 })
 
 const EnhancedAnalytics = React.memo(({
@@ -198,6 +204,9 @@ const EnhancedAnalytics = React.memo(({
       <View style={wideMode ? styles.chartWideMode : styles.chart}>
         <Text style={styles.chartName}>
           {i18n("Reading schedule statuses", "", "enhanced")}
+        </Text>
+        <Text style={styles.chartExpl}>
+          {i18n("A chapter is considered complete when a student has spent at least 5 minutes reading it.", "", "enhanced")}
         </Text>
         <EnhancedAnalyticsStatusesByDueDate
           readingScheduleStatuses={orderedData.readingScheduleStatuses}
