@@ -17,7 +17,7 @@ export default function(state = initialState, action) {
 
   const getJSONWithoutConsent = obj => {
     const newObj = {...obj}
-    delete newObj.xapiConsentShown
+    delete newObj.consentShown
     return JSON.stringify(newObj)
   }
 
@@ -39,7 +39,7 @@ export default function(state = initialState, action) {
         ) {
           newState[idpId] = {
             ...initialState[idpId],
-            xapiConsentShown: (state[idpId] || {}).xapiConsentShown || false,
+            consentShown: (state[idpId] || {}).consentShown || false,
           }
           idpWasUpdated = true
         }
@@ -47,11 +47,11 @@ export default function(state = initialState, action) {
       
       return idpWasUpdated ? newState : state
 
-    case "SET_XAPI_CONSENT_SHOWN":
+    case "SET_CONSENT_SHOWN":
       for(let idpId in state) {
         newState[idpId] = {
           ...state[idpId],
-          xapiConsentShown: true,
+          consentShown: true,
         }
       }
 

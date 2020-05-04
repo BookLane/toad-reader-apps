@@ -258,13 +258,13 @@ export const getFirstBookLinkInfo = book => {
   }
 }
 
-export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
+export const showConsent = ({ idps, setConsentShown }) => {
 
-  let text = i18n("Note: By using this app, you consent to us recording usage data for the purpose of better improving our services.")
+  let text = i18n("Note: By using this app, you consent to us recording usage data for the purposes of providing instructors with analytics and better improving our services.")
 
   if(Object.values(idps).some(idpInfo => {
-    if(idpInfo.xapiOn && !idpInfo.xapiConsentShown) {
-      text = idpInfo.xapiConsentText || text
+    if((idpInfo.xapiOn || idpInfo.readingSessionsOn) && !idpInfo.consentShown) {
+      text = idpInfo.consentText || text
       return true
     }
   })) {
@@ -273,7 +273,7 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
     //   text,
     //   buttonText: i18n("Okay"),
     //   duration: 0,
-    //   onClose: setXapiConsentShown,
+    //   onClose: setConsentShown,
     // })
 
   }
