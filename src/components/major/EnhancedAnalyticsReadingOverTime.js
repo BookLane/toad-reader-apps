@@ -41,8 +41,18 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
 
   const { readingOverTimeTotalsData, readingOverTimeNumReadersData, maxTotal, maxNumReaders } = useMemo(
     () => {
-      // const getCleanMax = ary => Math.floor(Math.max(...ary) / 5) * 5
-      const getCleanMax = ary => Math.floor(Math.max(...ary) / 10) * 10
+      const getCleanMax = ary => {
+        const max = Math.max(...ary)
+        return (
+          max > 25
+            ? Math.ceil(max / 10) * 10
+            : (
+              max > 10
+                ? Math.ceil(max / 5) * 5
+                : max
+            )
+        )
+      }
 
       const maxTotal = getCleanMax(readingOverTime.totals)
       const maxNumReaders = getCleanMax(readingOverTime.numReaders)
