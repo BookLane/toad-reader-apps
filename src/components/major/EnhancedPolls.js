@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, concatText } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
@@ -180,11 +180,7 @@ const EnhancedPolls = React.memo(({
                     const maxLen = 40
                     const maxLineLen = 15
 
-                    if(x.length > 30) {
-                      x = i18n("{{text}}...", "", "enhanced", {
-                        text: x.substr(0, maxLen - 3),
-                      })
-                    }
+                    x = concatText({ text: x, maxLen })
 
                     x = x.split(" ").reduce((text, word) => (
                       `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen

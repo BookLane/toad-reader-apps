@@ -1,6 +1,6 @@
 import React from "react"
 
-import { getHoursMinutesStr } from '../../utils/toolbox'
+import { getHoursMinutesStr, concatText } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar } from "./Victory"
 
@@ -25,7 +25,9 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
       }}
     >
 
-      <VictoryAxis />
+      <VictoryAxis
+        tickFormat={spine => concatText({ text: spine, maxLen: 15 })}
+      />
 
       <VictoryBar
         data={readingBySpine}

@@ -611,3 +611,13 @@ export const getHoursMinutesStr = minutes => {
 export const fractionToPercent = fraction => (
   i18n("{{percent}}%", { percent: Math.min(Math.round(fraction * 100), 100) })
 )
+
+export const concatText = ({ text, maxLen }) => {
+  if(text.length > maxLen) {
+    return i18n("{{text}}...", "", "enhanced", {
+      text: text.substr(0, maxLen - 3),
+    })
+  }
+
+  return text
+}
