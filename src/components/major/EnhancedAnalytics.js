@@ -112,7 +112,7 @@ const EnhancedAnalytics = React.memo(({
       const completionsByQuiz = []
       const averageScoresByQuiz = []
 
-      orderSpineIdRefKeyedObj({ obj: data.quizzesByLoc, spines }).forEach(quizzesByCfi => {
+      orderSpineIdRefKeyedObj({ obj: data.quizStatsByLoc, spines }).forEach(quizzesByCfi => {
         orderCfiKeyedObj({ obj: quizzesByCfi }).forEach(quizzes => {
           quizzes.forEach(({ name, data: [ completions, avgFirstScore, avgBestScore ] }) => {
             completionsByQuiz.push({
