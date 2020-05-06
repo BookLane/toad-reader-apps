@@ -5,7 +5,6 @@ import FlipEditorContent from '../basic/FlipEditorContent'
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
     paddingHorizontal: 30,
     flex: 1,
   },

@@ -19,9 +19,8 @@ const FlipEditorContent = React.memo(({
         mode="display"
         initialContent={content}
         style={{
-          marginVertical: -20,
+          // marginVertical: -20,
           marginHorizontal: -30,
-
         }}
         wrapperStyle={{
           overflow: 'auto',
