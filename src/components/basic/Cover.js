@@ -4,14 +4,16 @@ import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Text, Platform } from "react-native"
-import { Link } from "../routers/react-router"
+import { i18n } from "inline-i18n"
 
+import { getDataOrigin } from '../../utils/toolbox'
+
+import { Link } from "../routers/react-router"
 import CoverAndSpin from "./CoverAndSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"
 // import CoverSize from "./CoverSize"
 
-import { getDataOrigin } from '../../utils/toolbox'
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -22,6 +24,7 @@ const styles = StyleSheet.create({
   cover: {
     marginRight: LIBRARY_COVERS_HORIZONTAL_MARGIN,
     marginBottom: LIBRARY_COVERS_VERTICAL_MARGIN,
+    overflow: 'hidden',
   },
   titleContainer: {
     position: 'absolute',
@@ -44,6 +47,28 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(0, 0, 0, .1)',
   },
+  trial: {
+    backgroundColor: 'black',
+    position: 'absolute',
+    top: -25,
+    right: -28,
+    width: 60,
+    height: 30,
+    transform: [
+      {
+        rotate: '45deg'
+      },
+    ],
+    transformOrigin: 0,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    lineHeight: 15,
+    paddingTop: 12,
+    fontSize: 9,
+    color: 'white',
+    fontWeight: '300',
+    backgroundColor: '#B86E00',
+  },
 })
 
 const Cover = ({
@@ -58,7 +83,7 @@ const Cover = ({
   const [ imageError, setImageError ] = useState(false)
   const imageOnError = useCallback(() => setImageError(true), [])
   
-  const { title, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, coverHref } = bookInfo
+  const { title, flags, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, coverHref } = bookInfo
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
@@ -97,6 +122,11 @@ const Cover = ({
       {downloadStatus == 2 && <CoverCheck />}
       {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
       {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
+      {(flags || []).includes("trial") && (
+        <Text style={styles.trial}>
+          {i18n("Trial")}
+        </Text>
+      )}
     </View>
   )
 

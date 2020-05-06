@@ -8,6 +8,7 @@ import { connect } from "react-redux"
 import BookInfoCover from "./BookInfoCover"
 import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
+import BookInfoTrial from "./BookInfoTrial"
 import BookInfoIsbn from "./BookInfoIsbn"
 import BookInfoId from "./BookInfoId"
 import BookInfoDetails from "./BookInfoDetails"
@@ -79,7 +80,7 @@ const BookInfo = ({
   setSubscriptions,
 }) => {
 
-  const { title, author, isbn } = bookInfo
+  const { title, author, flags, isbn } = bookInfo
 
   const { historyPush } = useRouterState()
 
@@ -205,6 +206,7 @@ const BookInfo = ({
       <View style={styles.info}>
         <BookInfoTitle to={`/book/${bookId}`}>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
+        {(flags || []).includes('trial') && <BookInfoTrial/>}
         <BookInfoIsbn isbn={isbn} />
         {!!adminInfo &&
           <BookInfoId id={bookId} />

@@ -360,6 +360,12 @@ const mapping = {
       component: 'BookInfoAuthor',
     },
     {
+      component: 'BookInfoTrial',
+      parameters: {
+        color: 'color-warning-active',
+      },
+    },
+    {
       component: 'BookInfoId',
     },
     ...MAPPING_CUSTOMIZATION,

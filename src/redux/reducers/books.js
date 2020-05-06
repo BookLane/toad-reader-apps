@@ -28,6 +28,7 @@ export default function(state = initialState, action) {
         newState[book.id] = {
           title: book.title,
           author: book.author,
+          flags: book.flags,
           epubSizeInMB: book.epubSizeInMB,
           isbn: book.isbn,
           version: book.version,
