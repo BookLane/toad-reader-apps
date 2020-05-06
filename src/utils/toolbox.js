@@ -621,3 +621,31 @@ export const concatText = ({ text, maxLen }) => {
 
   return text
 }
+
+export const customizeTheme = ({ theme, fontFamily }) => {
+  // See https://formidable.com/open-source/victory/guides/themes
+  
+  const NewVictoryTheme = { ...theme }
+  NewVictoryTheme.customMaterial = cloneObj(NewVictoryTheme.material)
+  
+  NewVictoryTheme.customMaterial.area.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.axis.style.axisLabel.fontFamily =
+  NewVictoryTheme.customMaterial.axis.style.tickLabels.fontFamily =
+  NewVictoryTheme.customMaterial.bar.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.maxLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.medianLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.minLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.q1Labels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.q3Labels.fontFamily =
+  NewVictoryTheme.customMaterial.candlestick.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.errorbar.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.legend.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.line.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.pie.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.scatter.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.tooltip.style.fontFamily =
+  NewVictoryTheme.customMaterial.voronoi.style.labels.fontFamily =
+    fontFamily
+  
+  return NewVictoryTheme
+}

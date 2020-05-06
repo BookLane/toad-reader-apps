@@ -12,7 +12,7 @@ const EnhancedAnalyticsQuizScores = React.memo(({
 
   return (
     <VictoryChart
-      theme={VictoryTheme.material}
+      theme={VictoryTheme.customMaterial}
       width={width}
       height={360}
       padding={{

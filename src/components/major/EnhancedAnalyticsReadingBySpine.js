@@ -11,7 +11,7 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
 
   return (
     <VictoryChart
-      theme={VictoryTheme.material}
+      theme={VictoryTheme.customMaterial}
       width={width}
       height={300}
       padding={{

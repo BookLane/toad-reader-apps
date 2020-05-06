@@ -75,7 +75,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
 
   return (
     <VictoryChart
-      theme={VictoryTheme.material}
+      theme={VictoryTheme.customMaterial}
       padding={{
         top: 0,
         left: 70,
