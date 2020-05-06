@@ -9,7 +9,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
 
-import { VictoryPie, VictoryLabel, VictoryPortal } from "./Victory"
+import { VictoryPie } from "./Victory"
 import CoverAndSpin from '../basic/CoverAndSpin'
 
 const numAnswered=  {
@@ -220,7 +220,6 @@ const EnhancedPolls = React.memo(({
                     }
                   }]}              
                   colorScale={[ "blue", "red", "green" ][idx % 3]}
-                  labelComponent={<VictoryPortal><VictoryLabel/></VictoryPortal>}
                 />
                 <Text style={styles.numAnswered}>
                   {i18n("{{percent}}% of students have answered.", "", "enhanced", {
