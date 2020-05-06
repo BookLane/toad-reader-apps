@@ -31,6 +31,10 @@ const styles = StyleSheet.create({
   instructor: {
     color: 'red',
   },
+  removeIcon: {
+    height: 16,
+    marginHorizontal: 0,
+  }
 })
 
 const EnhancedMembers = React.memo(({
@@ -63,7 +67,7 @@ const EnhancedMembers = React.memo(({
     [ members, bookId, classroomUid ],
   )
 
-  const RemoveIcon = useCallback(style => <Icon name='md-remove-circle' style={style} />, [])
+  const RemoveIcon = useCallback(style => <Icon name='md-remove-circle' style={styles.removeIcon} />, [])
   
   const renderIcon = useCallback(
     (style, index) => (
