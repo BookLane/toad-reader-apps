@@ -10,8 +10,9 @@
       "domain": "read.biblemesh.com",
       "authMethod": "SHIBBOLETH",
       "xapiOn": 1,
-      "xapiConsentText": "This information is used to improve your reading experience.",
-      "xapiConsentShown": true
+      "readingSessionsOn": 1,
+      "consentText": "This information is used to improve your reading experience.",
+      "consentShown": true
     },
     "4": {
       "name": "Zondervan",

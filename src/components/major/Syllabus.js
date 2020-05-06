@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { StyleSheet, View, Text, Platform } from "react-native"
+import { StyleSheet, ScrollView, Text, Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -19,7 +19,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  containerWideMode: {
+  contentContainer: {
+    flex: 1,
+  },
+  contentContainerWideMode: {
     marginVertical: 20,
     marginHorizontal: 30,
     flex: 1,
@@ -115,32 +118,37 @@ const Syllabus = React.memo(({
 
   if(inEditMode && !viewingPreview) {
     return (
-      <EditToolData
-        key={changeIndex}
-        classroomUid={uid}
-        isDefaultClassroom={false}
-        accountId={accountId}
-        dataStructure={[
-          {
-            name: 'syllabus',
-            type: 'file',
-            fileTypes: [
-              'application/pdf',
-              'application/msword',
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            ],
-          },
-        ]}
-        data={data}
-        goUpdateTool={goUpdateClassroom}
-      />
+      <ScrollView style={styles.container}>
+        <EditToolData
+          key={changeIndex}
+          classroomUid={uid}
+          isDefaultClassroom={false}
+          accountId={accountId}
+          dataStructure={[
+            {
+              name: 'syllabus',
+              type: 'file',
+              fileTypes: [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              ],
+            },
+          ]}
+          data={data}
+          goUpdateTool={goUpdateClassroom}
+        />
+      </ScrollView>
     )
   }
 
   if(!uri) return null
 
   return (
-    <View style={wideMode ? styles.containerWideMode : styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={wideMode ? styles.contentContainerWideMode : styles.contentContainer}
+    >
       {downloading &&
         <CoverAndSpin />
       }
@@ -167,7 +175,7 @@ const Syllabus = React.memo(({
           bounces={false}  
         />
       }
-    </View>
+    </ScrollView>
   )
 })
 

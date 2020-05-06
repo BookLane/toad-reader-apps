@@ -369,6 +369,6 @@ export const autoUpdateCoreIdps = () => ({
   type: "AUTO_UPDATE_CORE_IDPS",
 })
 
-export const setXapiConsentShown = () => ({
-  type: "SET_XAPI_CONSENT_SHOWN",
+export const setConsentShown = () => ({
+  type: "SET_CONSENT_SHOWN",
 })

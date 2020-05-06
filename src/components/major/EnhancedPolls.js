@@ -1,15 +1,15 @@
 import React, { useMemo } from "react"
-import { StyleSheet, View, Text, Platform } from "react-native"
+import { StyleSheet, View, Text, Platform, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, concatText } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
 
-import { VictoryPie, VictoryLabel, VictoryPortal } from "./Victory"
+import { VictoryPie } from "./Victory"
 import CoverAndSpin from '../basic/CoverAndSpin'
 
 const numAnswered=  {
@@ -38,6 +38,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    flex: 1,
+  },
+  contentContainer: {
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
@@ -153,7 +156,10 @@ const EnhancedPolls = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }, idx) => {
         const numResponses = userIdsByChoiceIndex.reduce((total, userIds) => total + (userIds || []).length, 0)
 
@@ -180,11 +186,7 @@ const EnhancedPolls = React.memo(({
                     const maxLen = 40
                     const maxLineLen = 15
 
-                    if(x.length > 30) {
-                      x = i18n("{{text}}...", "", "enhanced", {
-                        text: x.substr(0, maxLen - 3),
-                      })
-                    }
+                    x = concatText({ text: x, maxLen })
 
                     x = x.split(" ").reduce((text, word) => (
                       `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen
@@ -218,7 +220,6 @@ const EnhancedPolls = React.memo(({
                     }
                   }]}              
                   colorScale={[ "blue", "red", "green" ][idx % 3]}
-                  labelComponent={<VictoryPortal><VictoryLabel/></VictoryPortal>}
                 />
                 <Text style={styles.numAnswered}>
                   {i18n("{{percent}}% of students have answered.", "", "enhanced", {
@@ -235,7 +236,7 @@ const EnhancedPolls = React.memo(({
           </View>
         )
       })}
-    </View>
+    </ScrollView>
   )
 })
 

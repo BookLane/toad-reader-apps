@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, ScrollView, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
@@ -13,6 +13,9 @@ import useChangeIndex from '../../hooks/useChangeIndex'
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  contentContainer: {
     paddingVertical: 20,
     paddingHorizontal: 30,
   },
@@ -72,54 +75,59 @@ const LTIConfigurations = React.memo(({
   if(inEditMode) {
 
     return (
-      <EditToolData
-        key={changeIndex}
-        classroomUid={uid}
-        classroom={classroom}
-        isDefaultClassroom={isDefaultClassroom}
-        accountId={accountId}
-        dataStructure={[
-          {
-            name: 'lti_configurations',
-            type: [
-              {
-                name: 'domain',
-                type: 'string',
-                label: i18n("Domain", "", "enhanced"),
-                placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "toadreader.com" }),
-                required: true,
-                hasErrorWithMessage: ({ dataSegment: { domain } }) => (
-                  nonEmpty(domain)
-                  && !validDomain(domain)
-                  && i18n("Invalid domain.", "", "enhanced")
-                ),
-              },
-              {
-                name: 'key',
-                type: 'string',
-                label: i18n("Key", "", "enhanced"),
-                required: true,
-              },
-              {
-                name: 'secret',
-                type: 'string',
-                label: i18n("Secret", "", "enhanced"),
-                required: true,
-              },
-            ],
-            addLabel: i18n("Add another LTI configuration", "", "enhanced"),
-            maxItems: 25,
-          },
-        ]}
-        transformData={transformData}
-        data={data}
-        goUpdateTool={goUpdateClassroom}
-      />
+      <ScrollView style={styles.container}>
+        <EditToolData
+          key={changeIndex}
+          classroomUid={uid}
+          classroom={classroom}
+          isDefaultClassroom={isDefaultClassroom}
+          accountId={accountId}
+          dataStructure={[
+            {
+              name: 'lti_configurations',
+              type: [
+                {
+                  name: 'domain',
+                  type: 'string',
+                  label: i18n("Domain", "", "enhanced"),
+                  placeholder: i18n("Eg. {{example}}", "", "enhanced", { example: "toadreader.com" }),
+                  required: true,
+                  hasErrorWithMessage: ({ dataSegment: { domain } }) => (
+                    nonEmpty(domain)
+                    && !validDomain(domain)
+                    && i18n("Invalid domain.", "", "enhanced")
+                  ),
+                },
+                {
+                  name: 'key',
+                  type: 'string',
+                  label: i18n("Key", "", "enhanced"),
+                  required: true,
+                },
+                {
+                  name: 'secret',
+                  type: 'string',
+                  label: i18n("Secret", "", "enhanced"),
+                  required: true,
+                },
+              ],
+              addLabel: i18n("Add another LTI configuration", "", "enhanced"),
+              maxItems: 25,
+            },
+          ]}
+          transformData={transformData}
+          data={data}
+          goUpdateTool={goUpdateClassroom}
+        />
+      </ScrollView>
     )
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       {(data.lti_configurations || [])
         .filter(({ domain, key, secret }) => (
           validDomain(domain)
@@ -132,7 +140,7 @@ const LTIConfigurations = React.memo(({
           </Text>
         ))
       }
-    </View>
+    </ScrollView>
   )
 })
 

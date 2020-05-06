@@ -12,7 +12,7 @@ import EditToolData from './EditToolData'
 import FlipEditorContent from '../basic/FlipEditorContent'
 
 const container = {
-  padding: 20,
+  paddingHorizontal: 20,
   flex: 1,
 }
 

@@ -388,13 +388,13 @@ export const patch = () => setTimeout(() => {
   })
 })
 
-let xapiOffOnServer = false
+let xapiAndReadingSessionsOffOnServer = false
 export const reportReadings = () => setTimeout(() => {
   // the setTimeout ensures this is async
 
   const { idps, accounts, readingRecordsByAccountId } = store.getState()
 
-  if(xapiOffOnServer) return
+  if(xapiAndReadingSessionsOffOnServer) return
   if(Object.values(readingRecordsByAccountId).every(readingRecords => !readingRecords.length)) return
   
   if(!connectionInfo.online) return
@@ -414,7 +414,7 @@ export const reportReadings = () => setTimeout(() => {
       }))
     }
 
-    if(!idp.xapiOn) {
+    if(!idp.xapiOn && !idp.readingSessionsOn) {
       flush()
       return
     }
@@ -439,7 +439,7 @@ export const reportReadings = () => setTimeout(() => {
           try {
             if((await response.json()).off) {
               console.log(`reportReading canceled due to xapi being turned off on the server.`)
-              xapiOffOnServer = true
+              xapiAndReadingSessionsOffOnServer = true
               return
             }
           } catch(err) {}

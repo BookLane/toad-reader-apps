@@ -8,6 +8,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 
 import EnhancedConnecting from "./EnhancedConnecting"
 import EnhancedMembers from "./EnhancedMembers"
+import EnhancedAnalytics from "./EnhancedAnalytics"
 import EnhancedScores from "./EnhancedScores"
 import EnhancedMyScores from "./EnhancedMyScores"
 import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
@@ -52,14 +53,9 @@ const EnhancedDashboard = React.memo(({
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{
       title: i18n("Analytics", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedAnalytics
+          bookId={bookId}
+        />
       ),
     }]),
     ...(!(myRole === 'INSTRUCTOR') ? [] : [{

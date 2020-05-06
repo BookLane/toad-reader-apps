@@ -258,13 +258,13 @@ export const getFirstBookLinkInfo = book => {
   }
 }
 
-export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
+export const showConsent = ({ idps, setConsentShown }) => {
 
-  let text = i18n("Note: By using this app, you consent to us recording usage data for the purpose of better improving our services.")
+  let text = i18n("Note: By using this app, you consent to us recording usage data for the purposes of providing instructors with analytics and better improving our services.")
 
   if(Object.values(idps).some(idpInfo => {
-    if(idpInfo.xapiOn && !idpInfo.xapiConsentShown) {
-      text = idpInfo.xapiConsentText || text
+    if((idpInfo.xapiOn || idpInfo.readingSessionsOn) && !idpInfo.consentShown) {
+      text = idpInfo.consentText || text
       return true
     }
   })) {
@@ -273,7 +273,7 @@ export const showXapiConsent = ({ idps, setXapiConsentShown }) => {
     //   text,
     //   buttonText: i18n("Okay"),
     //   duration: 0,
-    //   onClose: setXapiConsentShown,
+    //   onClose: setConsentShown,
     // })
 
   }
@@ -593,4 +593,59 @@ export const orderCfiKeyedObj = ({ obj }) => {
   arrayOfObjs.sort((a, b) => contentCfiComparator(a[0], b[0]))
 
   return arrayOfObjs.map(([ key, val ]) => val)
+}
+
+export const getHoursMinutesStr = minutes => {
+  const hours = parseInt(minutes / 60, 10)
+  minutes = minutes % 60
+
+  if(hours && minutes) {
+    return i18n("{{hours}}h {{minutes}}m", "", "enhanced", { hours, minutes })
+  } else if(hours) {
+    return i18n("{{hours}}h", "", "enhanced", { hours })
+  } else {
+    return i18n("{{minutes}}m", "", "enhanced", { minutes })
+  }
+}
+
+export const fractionToPercent = fraction => (
+  i18n("{{percent}}%", { percent: Math.min(Math.round(fraction * 100), 100) })
+)
+
+export const concatText = ({ text, maxLen }) => {
+  if(text.length > maxLen) {
+    return i18n("{{text}}...", "", "enhanced", {
+      text: text.substr(0, maxLen - 3),
+    })
+  }
+
+  return text
+}
+
+export const customizeTheme = ({ theme, fontFamily }) => {
+  // See https://formidable.com/open-source/victory/guides/themes
+  
+  const NewVictoryTheme = { ...theme }
+  NewVictoryTheme.customMaterial = cloneObj(NewVictoryTheme.material)
+  
+  NewVictoryTheme.customMaterial.area.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.axis.style.axisLabel.fontFamily =
+  NewVictoryTheme.customMaterial.axis.style.tickLabels.fontFamily =
+  NewVictoryTheme.customMaterial.bar.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.maxLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.medianLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.minLabels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.q1Labels.fontFamily =
+  NewVictoryTheme.customMaterial.boxplot.style.q3Labels.fontFamily =
+  NewVictoryTheme.customMaterial.candlestick.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.errorbar.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.legend.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.line.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.pie.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.scatter.style.labels.fontFamily =
+  NewVictoryTheme.customMaterial.tooltip.style.fontFamily =
+  NewVictoryTheme.customMaterial.voronoi.style.labels.fontFamily =
+    fontFamily
+  
+  return NewVictoryTheme
 }

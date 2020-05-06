@@ -10,7 +10,7 @@ import useSetState from "react-use/lib/useSetState"
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
-         isIPhoneX, setStatusBarHidden, showXapiConsent, getIdsFromAccountId,
+         isIPhoneX, setStatusBarHidden, showConsent, getIdsFromAccountId,
          getToolCfiCounts } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
@@ -23,7 +23,7 @@ import usePageSize from "../../hooks/usePageSize"
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
-import { setLatestLocation, startRecordReading, endRecordReading, setXapiConsentShown,
+import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
 
 import SafeLayout from "../basic/SafeLayout"
@@ -178,7 +178,7 @@ const Book = React.memo(({
   setLatestLocation,
   startRecordReading,
   endRecordReading,
-  setXapiConsentShown,
+  setConsentShown,
   setTocAndSpines,
   updateTool,
   setSelectedToolUid,
@@ -371,7 +371,7 @@ const Book = React.memo(({
   )
 
   useEffect(
-    () => showXapiConsent({ idps, setXapiConsentShown }),
+    () => showConsent({ idps, setConsentShown }),
     [],
   )
 
@@ -1062,7 +1062,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
   startRecordReading,
   endRecordReading,
-  setXapiConsentShown,
+  setConsentShown,
   setTocAndSpines,
   updateTool,
   setSelectedToolUid,

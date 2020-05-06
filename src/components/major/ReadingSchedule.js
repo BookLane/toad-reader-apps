@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -16,9 +16,12 @@ const container = {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  contentContainer: {
     ...container,
   },
-  containerWideMode: {
+  contentContainerWideMode: {
     ...container,
     marginHorizontal: 30,
   },
@@ -149,12 +152,13 @@ const ReadingSchedule = React.memo(({
   if(!classroom) return null
 
   return (
-    <View style={wideMode ? styles.containerWideMode : styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={wideMode ? styles.contentContainerWideMode : styles.contentContainer}
+    >
       {!!inEditMode && !viewingPreview &&
         <Text style={styles.instructions}>
-          {/* {i18n("Adding a reading schedule enables students to receive reminder notifications and allows you to quickly see how students are keeping up with their reading.", "", "enhanced")} */}
-          {/* Adding a reading schedule enables students to see due dates in the book table of contents and allows you to quickly see how students are keeping up with their reading. */}
-          Adding a reading schedule enables students to see due dates in the book’s table of contents.
+          {i18n("Adding a reading schedule enables everyone to see due dates in the book table of content. It also allows students to receive reminder notifications and enables analytics charts which show you how students are keeping up with their reading.", "", "enhanced")}
         </Text>
       }
       {scheduleDatesToDisplayWithAddNew.map((scheduleDateInfo, idx) => (
@@ -168,7 +172,7 @@ const ReadingSchedule = React.memo(({
           goTo={goTo}
         />
       ))}
-    </View>
+    </ScrollView>
   )
 })
 
