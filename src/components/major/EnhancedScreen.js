@@ -83,9 +83,6 @@ const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
   },
-  tabContentContainer: {
-    flex: 1,
-  },
   exitPreview: {
     textTransform: 'uppercase',
     color: 'rgb(51, 102, 255)',
@@ -209,23 +206,21 @@ const EnhancedScreen = React.memo(({
               onSelect={setTabIndex}
             >
               {tabs.map(({ content }, idx) => (
-                <ScrollView
+                <View
                   key={idx}
                   style={styles.tabContent}
-                  contentContainerStyle={styles.tabContentContainer}
                 >
                   {content}
-                </ScrollView>
+                </View>
               ))}
             </ViewPager>
           }
           {!wideMode && tabIndex !== undefined &&
-            <ScrollView
+            <View
               style={styles.tabContent}
-              contentContainerStyle={styles.tabContentContainer}
             >
               {tabs[tabIndex].content}
-            </ScrollView>
+            </View>
           }
         </>
       }

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -17,6 +17,9 @@ import EnhancedAnalyticsReadingOverTime from './EnhancedAnalyticsReadingOverTime
 import EnhancedAnalyticsStatusesByDueDate from './EnhancedAnalyticsStatusesByDueDate'
 import EnhancedAnalyticsQuizCompletions from './EnhancedAnalyticsQuizCompletions'
 import EnhancedAnalyticsQuizScores from './EnhancedAnalyticsQuizScores'
+
+const chartMarginHorizontal = 20
+const chartMarginHorizontalWideMode = 30
 
 const styles = StyleSheet.create({
   error: {
@@ -39,14 +42,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    flex: 1,
+  },
+  contentContainer: {
   },
   chart: {
     marginVertical: 20,
+    marginHorizontal: chartMarginHorizontal,
   },
   chartWideMode: {
     marginVertical: 20,
     marginBottom: 40,
-    marginHorizontal: 30,
+    marginHorizontal: chartMarginHorizontalWideMode,
   },
   chartName: {
     fontWeight: '600',
@@ -75,6 +82,7 @@ const EnhancedAnalytics = React.memo(({
 
   const { fullPageWidth } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
+  const chartWidth = fullPageWidth - (wideMode ? chartMarginHorizontalWideMode : chartMarginHorizontal) * 2
 
   const { data, error } = useDashboardData({
     classroomUid,
@@ -169,7 +177,10 @@ const EnhancedAnalytics = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
 
       <View style={wideMode ? styles.chartWideMode : styles.chart}>
         <Text style={styles.chartName}>
@@ -187,7 +198,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsReadingBySpine
           readingBySpine={orderedData.readingBySpine}
-          fullPageWidth={fullPageWidth}
+          width={chartWidth}
         />
       </View>
 
@@ -197,7 +208,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsReadingOverTime
           readingOverTime={orderedData.readingOverTime}
-          fullPageWidth={fullPageWidth}
+          width={chartWidth}
         />
       </View>
 
@@ -210,7 +221,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsStatusesByDueDate
           readingScheduleStatuses={orderedData.readingScheduleStatuses}
-          fullPageWidth={fullPageWidth}
+          width={chartWidth}
           numStudents={students.length}
         />
       </View>
@@ -221,7 +232,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsQuizCompletions
           completionsByQuiz={orderedData.completionsByQuiz}
-          fullPageWidth={fullPageWidth}
+          width={chartWidth}
           numStudents={students.length}
         />
       </View>
@@ -232,11 +243,11 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsQuizScores
           averageScoresByQuiz={orderedData.averageScoresByQuiz}
-          fullPageWidth={fullPageWidth}
+          width={chartWidth}
         />
       </View>
 
-    </View>
+    </ScrollView>
   )
 })
 

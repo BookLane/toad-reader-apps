@@ -6,13 +6,13 @@ import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar } from "./Victory"
 
 const EnhancedAnalyticsReadingBySpine = React.memo(({
   readingBySpine,
-  fullPageWidth,
+  width,
 }) => {
 
   return (
     <VictoryChart
       theme={VictoryTheme.material}
-      width={fullPageWidth}
+      width={width}
       height={300}
       padding={{
         left: 0,
@@ -21,7 +21,7 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
       }}
       domainPadding={{
         y: 20,
-        x: (fullPageWidth / readingBySpine.length) / 2
+        x: (width / readingBySpine.length) / 2
       }}
     >
 

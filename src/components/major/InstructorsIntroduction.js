@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -11,17 +11,20 @@ import useWideMode from "../../hooks/useWideMode"
 import EditToolData from './EditToolData'
 import FlipEditorContent from '../basic/FlipEditorContent'
 
-const container = {
+const contentContainer = {
   padding: 20,
   flex: 1,
 }
 
 const styles = StyleSheet.create({
   container: {
-    ...container,
+    flex: 1,
   },
-  containerWideMode: {
-    ...container,
+  contentContainer: {
+    ...contentContainer,
+  },
+  contentContainerWideMode: {
+    ...contentContainer,
     paddingHorizontal: 30,
   },
 })
@@ -77,11 +80,14 @@ const InstructorsIntroduction = React.memo(({
   }
 
   return (
-    <View style={wideMode ? styles.containerWideMode : styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={wideMode ? styles.contentContainerWideMode : styles.contentContainer}
+    >
       <FlipEditorContent
         content={data.introduction}
       />
-    </View>
+    </ScrollView>
   )
 
 })

@@ -8,13 +8,13 @@ import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryStack, Vict
 const EnhancedAnalyticsStatusesByDueDate = React.memo(({
   readingScheduleStatuses,
   numStudents,
-  fullPageWidth,
+  width,
 }) => {
 
   return (
     <VictoryChart
       theme={VictoryTheme.material}
-      width={fullPageWidth}
+      width={width}
       height={340}
       padding={{
         bottom: 50,
@@ -22,7 +22,7 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
       }}
       domainPadding={{
         y: 20,
-        x: (fullPageWidth / readingScheduleStatuses.length) / 2
+        x: (width / readingScheduleStatuses.length) / 2
       }}
     >
 

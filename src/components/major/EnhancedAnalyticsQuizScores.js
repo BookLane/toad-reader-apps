@@ -7,14 +7,13 @@ import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryStack, Vict
 
 const EnhancedAnalyticsQuizScores = React.memo(({
   averageScoresByQuiz,
-  numStudents,
-  fullPageWidth,
+  width,
 }) => {
 
   return (
     <VictoryChart
       theme={VictoryTheme.material}
-      width={fullPageWidth}
+      width={width}
       height={360}
       padding={{
         bottom: 50,
@@ -22,7 +21,7 @@ const EnhancedAnalyticsQuizScores = React.memo(({
       }}
       domainPadding={{
         y: 0,
-        x: (fullPageWidth / averageScoresByQuiz.length) / 2
+        x: (width / averageScoresByQuiz.length) / 2
       }}
     >
 

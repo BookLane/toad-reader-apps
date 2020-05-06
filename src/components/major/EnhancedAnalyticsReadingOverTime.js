@@ -36,7 +36,7 @@ const readingOverTimeStyles = {
 }
 const EnhancedAnalyticsReadingOverTime = React.memo(({
   readingOverTime,
-  fullPageWidth,
+  width,
 }) => {
 
   const { readingOverTimeTotalsData, readingOverTimeNumReadersData, maxTotal, maxNumReaders } = useMemo(
@@ -85,7 +85,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
       domainPadding={{
         y: 20,
       }}
-      width={fullPageWidth}
+      width={width}
       height={300}
       // containerComponent={
       //   <VictoryVoronoiContainer

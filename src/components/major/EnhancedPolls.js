@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { StyleSheet, View, Text, Platform } from "react-native"
+import { StyleSheet, View, Text, Platform, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -38,6 +38,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
+    flex: 1,
+  },
+  contentContainer: {
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
@@ -153,7 +156,10 @@ const EnhancedPolls = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }, idx) => {
         const numResponses = userIdsByChoiceIndex.reduce((total, userIds) => total + (userIds || []).length, 0)
 
@@ -231,7 +237,7 @@ const EnhancedPolls = React.memo(({
           </View>
         )
       })}
-    </View>
+    </ScrollView>
   )
 })
 
