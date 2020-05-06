@@ -54,6 +54,13 @@ const scrollViewContent = {
   paddingRight: 20,
 }
 
+const text = {
+  marginVertical: 10,
+  fontSize: 16,
+  flex: 1,
+}
+
+
 const styles = StyleSheet.create({
   container: {
     ...container,
@@ -103,12 +110,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(216, 172, 12, .2)',
   },
   text: {
-    marginVertical: 10,
-    fontSize: 16,
+    ...text,
   },
   missingText: {
-    marginVertical: 10,
-    fontSize: 16,
+    ...text,
     fontWeight: '100',
   },
   spineLine: {
