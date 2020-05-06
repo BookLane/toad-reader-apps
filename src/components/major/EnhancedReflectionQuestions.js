@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   answer: {
+    flex: 1,
   },
   student: {
     width,
