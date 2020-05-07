@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
   trial: {
     backgroundColor: 'black',
     position: 'absolute',
-    top: -25,
-    right: -28,
+    top: -5,
+    right: -20,
     width: 60,
     height: 30,
     transform: [
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
         rotate: '45deg'
       },
     ],
-    transformOrigin: 0,
     textTransform: 'uppercase',
     textAlign: 'center',
     lineHeight: 15,
