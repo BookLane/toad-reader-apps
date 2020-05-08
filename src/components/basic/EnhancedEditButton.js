@@ -1,6 +1,7 @@
-import React from "react"
-import { StyleSheet, View, TouchableWithoutFeedback } from "react-native"
+import React, { useCallback } from "react"
+import { StyleSheet, View, TouchableWithoutFeedback, Alert, Platform } from "react-native"
 import { styled } from "@ui-kitten/components"
+import { i18n } from "inline-i18n"
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useThemedStates from "../../hooks/useThemedStates"
@@ -34,8 +35,20 @@ const EnhancedEditButton = React.memo(({
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
 
+  const alertToNoEditing = useCallback(
+    () => {
+      Alert.alert(
+        i18n("Note"),
+        i18n("Editing is currently restricted to the web app."),
+      )
+    },
+    [],
+  )
+
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback
+      onPress={Platform.OS === 'web' ? onPress : alertToNoEditing}
+    >
       <View
         style={[
           styles.button,
