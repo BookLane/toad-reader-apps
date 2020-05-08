@@ -261,7 +261,7 @@ export const getToolInfo = () => {
           required: true,
         },
       ],
-      readyToPublish: ({ data: { x } }) => false,
+      readyToPublish: ({ data: { images } }) => images.length > 0,
     },
     {
       toolType: 'AUDIO',
