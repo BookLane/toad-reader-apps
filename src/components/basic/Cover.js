@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
   cover: {
     marginRight: LIBRARY_COVERS_HORIZONTAL_MARGIN,
     marginBottom: LIBRARY_COVERS_VERTICAL_MARGIN,
-    overflow: 'hidden',
   },
   titleContainer: {
     position: 'absolute',
@@ -46,6 +45,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(0, 0, 0, .1)',
+  },
+  trialContainer: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
   },
   trial: {
     backgroundColor: 'black',
@@ -122,9 +125,11 @@ const Cover = ({
       {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
       {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
       {(flags || []).includes("trial") && (
-        <Text style={styles.trial}>
-          {i18n("Trial")}
-        </Text>
+        <View style={styles.trialContainer}>
+          <Text style={styles.trial}>
+            {i18n("Trial")}
+          </Text>
+        </View>
       )}
     </View>
   )
