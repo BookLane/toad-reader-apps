@@ -15,8 +15,8 @@ const useScroll = () => {
 
   return {
     onScroll,
-    x: x.current,
-    y: y.current,
+    x,
+    y,
   }
 }
 

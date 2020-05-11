@@ -119,6 +119,7 @@ const BookContents = React.memo(({
         spineIdRef,
         ordering,
         isTool: true,
+        lineHeight: 34,  // default for fallback
       }))
     }
 
@@ -134,6 +135,7 @@ const BookContents = React.memo(({
           key: `${tocItem.label}-${tocItem.href}`,
           numToolsWithin: toolInfoWithin.count,
           isDraft: toolInfoWithin.isDraft,
+          lineHeight: 34,  // default for fallback
         },
         ...getListItems(tocItem.subNav, indentLevel+1, insertedToolUidObj, insertedNumSpineIdRefObj),
       ]
@@ -154,6 +156,28 @@ const BookContents = React.memo(({
     [ toc, JSON.stringify(visibleTools), inEditMode ],
   )
 
+//   Following code not used because it was inconsistent. Turned maxToRenderPerBatch up instead.
+
+//   const prevData = usePrevious(data)
+
+//   useMemo(
+//     () => {
+//       if(!prevData) return
+
+//       // keep lineHeight values from previous data
+//       const prevTocData = prevData.filter(({ isTool }) => !isTool)
+
+//       let tocIndex = 0
+//       data.forEach(item => {
+//         if(!item.isTool) {
+//           item.lineHeight = (prevTocData[tocIndex] || {}).lineHeight
+//         }
+//       })
+
+//     },
+//     [ data ],
+//   )
+
   const { onLayout, width, y: offsetY } = useLayout()
 
   const getWidth = useInstanceValue(width)
@@ -163,6 +187,8 @@ const BookContents = React.memo(({
 
   const reportLineHeight = useCallback(
     ({ index, height }) => {
+      if(height === 0) return
+
       data[index].lineHeight = height
 
       setReportSpotsTimeout(() => {
@@ -302,6 +328,8 @@ const BookContents = React.memo(({
         renderItem={renderItem}
         onLayout={onLayout}
         onScroll={onScroll}
+        initialNumToRender={25}
+        maxToRenderPerBatch={Platform.OS === 'web' ? 9999 : undefined}  // I need this value to work with reportSpots
       />
       {showAddToolButton && inEditMode && !viewingFrontMatter && !viewingOptions && !hideFABs &&
         <FAB

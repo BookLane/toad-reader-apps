@@ -745,7 +745,6 @@ const Book = React.memo(({
   )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
-  const getBookContentsScrollY = useInstanceValue(bookContentsScrollY)
 
   const onToolMove = useCallback(
     ({ nativeEvent, label, toolType, isDraft, uid }) => {
@@ -782,7 +781,7 @@ const Book = React.memo(({
 
         spots.some(({ y, ...info }) => {
           const bookPageAdjustment = (wideMode ? pageTopInWideMode.top : pageTop) * -1 + 2
-          const adjustedY = y - (type === 'BookPage' ? bookPageAdjustment : getBookContentsScrollY())
+          const adjustedY = y - (type === 'BookPage' ? bookPageAdjustment : bookContentsScrollY.current)
           if(adjustedY + 4 > top) {  // the 4 relates to the paddingVertical of listItemWithTool in BookContentsLine
             moveInfo = {
               ...info,

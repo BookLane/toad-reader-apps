@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useMemo, useEffect } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -124,7 +124,12 @@ const BookContentsLine = ({
 
   const { onLayout, height } = useLayout()
 
-  reportLineHeight({ index, height })
+  useEffect(
+    () => {
+      reportLineHeight({ index, height })
+    },
+    [ reportLineHeight, index, height ],
+  )
 
   const indentStyle = { paddingLeft: 20 + indentLevel * 20 }
 
