@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { StyleSheet, View, Platform } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import * as FileSystem from 'expo-file-system'
@@ -10,6 +10,7 @@ import useNetwork from "../../hooks/useNetwork"
 import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
 
 import WebView from "./WebView"
+import CoverAndSpin from '../basic/CoverAndSpin'
 
 const styles = StyleSheet.create({
   container: {
