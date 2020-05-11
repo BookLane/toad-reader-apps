@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Platform, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, Platform, View, Text, TouchableOpacity, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { OverflowMenu } from "@ui-kitten/components"
@@ -143,6 +143,16 @@ const EnhancedHeader = React.memo(({
     [ bookId, classrooms, toggleShowManageClassrooms, toggleShowConnectToAClassroom ],
   )
 
+  const alertToNoEditing = useCallback(
+    () => {
+      Alert.alert(
+        i18n("Note"),
+        i18n("Classroom management is currently restricted to the web app."),
+      )
+    },
+    [],
+  )
+
   const moreOptions = [
     ...sortedClassrooms.map(({ uid, name }) => ({
       title: (
@@ -176,7 +186,7 @@ const EnhancedHeader = React.memo(({
           {i18n("Manage classrooms", "", "enhanced")}
         </Text>
       ),
-      onPress: toggleShowManageClassrooms,
+      onPress: Platform.OS === 'web' ? toggleShowManageClassrooms : alertToNoEditing,
     }]),
     ...(!(bookVersion === 'INSTRUCTOR') ? [] : [{
       title: (
@@ -184,7 +194,7 @@ const EnhancedHeader = React.memo(({
           {i18n("Create a classroom", "", "enhanced")}
         </Text>
       ),
-      onPress: toggleShowCreateClassroom,
+      onPress: Platform.OS === 'web' ? toggleShowCreateClassroom : alertToNoEditing,
     }]),
     ...(!(bookVersion === 'ENHANCED') ? [] : [{
       title: (
