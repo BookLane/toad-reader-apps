@@ -185,7 +185,7 @@ const BookContentsLine = ({
     </View>
   )
 
-  if(uiStatus === 'unselected' || !wideMode) {
+  if(uiStatus === 'unselected' || /#/.test(href) || !wideMode) {
     return (
       <TouchableOpacity onPress={onPress}>
         {line}
