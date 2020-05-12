@@ -169,6 +169,8 @@ const AudioPlayer = ({
   const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
+  useEffect(() => pause, [])  // pause on unload
+
   const setPosition = useCallback(
     async ms => {
       await soundObj.current.setStatusAsync({
