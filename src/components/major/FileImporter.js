@@ -30,8 +30,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   uploading: {
-    color: "red",
+    color: "green",
   },
+  failed: {
+    color: "red",
+  }
 })
 
 const FileImporter = ({
@@ -178,7 +181,12 @@ const FileImporter = ({
                 <Text style={styles.uploading}>{i18n("Uploading...")}</Text>
               }
               {status === 'done' && !result.success &&
-                <Text style={styles.failed}>{i18n("Failed.")}</Text>
+                <Text style={styles.failed}>
+                  {result.errorType == "biblemesh_file_too_large"
+                    ? i18n("File size exceeds {{maxMB}} mb max.", result )
+                    : i18n("Failed.")
+                  }
+                </Text>
               }
               {getSuccessText
                 ? getSuccessText({ result })
