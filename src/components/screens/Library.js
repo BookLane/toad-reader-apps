@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
 import { ScreenOrientation } from "expo"
 import * as FileSystem from 'expo-file-system'
-import { Platform, StyleSheet, View, Text } from "react-native"
+import { Platform, StyleSheet, View, Text, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -92,11 +92,12 @@ const Library = ({
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
+  const [ showLoading, setShowLoading ] = useState(false)
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
 
-  const { historyPush, historyReplace, historyGoBack, routerState, pathname } = useRouterState()
+  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
   const { logOutAccountId, widget, parent_domain } = routerState
 
   const getBooks = useInstanceValue(books)
@@ -355,26 +356,26 @@ const Library = ({
 
       const { origin, clear, data } = notifications.slice(-1)[0] || {}
 
+      clear()
+
       if(origin !== 'selected') {
-        clear()
         return
       }
 
       const { bookId, classroomUid } = data || {}
 
-      // check if it is balid and downloaded
-      if((books[bookId] || {}).downloadStatus !== 2) return
+      historyGoBackToLibrary()
 
-      if(classroomUid) {
-        setCurrentClassroom({
-          bookId,
-          uid: classroomUid,
-        })
+      // check if it is valid and downloaded
+      if((books[bookId] || {}).downloadStatus !== 2) {
+        if(books[bookId]) {
+          Alert.alert(
+            i18n("Note"),
+            i18n("Download “{{title}}” to view your Reading Schedule for this classroom.", "", "enhanced", books[bookId]),    
+          )
+        }
 
-        setSelectedToolUid({
-          bookId,
-          uid: 'FRONT MATTER',
-        })
+        return
       }
 
       // if(spineIdRef) {
@@ -386,17 +387,30 @@ const Library = ({
       //   })
       // }
 
-      if(bookId && pathname !== `/book/${bookId}`) {
-        for(let attempts=0; pathname !== '/' && attempts < 5; attempts++) {
-          historyGoBack()
-        }
-        historyPush(`/book/${bookId}`, { initialSelectedTabId: 'readingSchedule' })
-      }
+      // We need a timeout because we do not know the state of the book and so need
+      // the ui to truly exit it to the library to reset things before opening up.
+      setShowLoading(true)
 
-      clear()
+      setTimeout(() => {
+        if(classroomUid) {
+          setCurrentClassroom({
+            bookId,
+            uid: classroomUid,
+          })
+
+          setSelectedToolUid({
+            bookId,
+            uid: 'FRONT MATTER',
+          })
+        }
+
+        historyPush(`/book/${bookId}`, { initialSelectedTabId: 'readingSchedule' })
+
+        setShowLoading(false)
+      })
 
     },
-    [ notifications, pathname ],
+    [ notifications ],
   )
 
   const scope = library.scope || "all"
@@ -414,6 +428,12 @@ const Library = ({
   ).filter(bookId => books[bookId])  // just in case: to prevent error which crashes the app
 
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
+
+  if(showLoading) {
+    return (
+      <CoverAndSpin />
+    )
+  }
 
   if(showLogin) {
     return (

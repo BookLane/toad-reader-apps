@@ -1,4 +1,5 @@
 import { useCallback } from "react"
+import { Platform } from "react-native"
 import { useHistory, useLocation } from "react-router-dom"
 
 const useRouterState = () => {
@@ -22,10 +23,24 @@ const useRouterState = () => {
     routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
   } catch(e) {}
 
+  const historyGoBackToLibrary = useCallback(
+    () => {
+      if(location.pathname === '/') return
+
+      if(Platform.OS === 'web') {
+        history.goBack()
+      } else {
+        history.go((history.length - 1) * -1)
+      }
+    },
+    [ location.pathname ]
+  )
+
   return {
     historyPush,
     historyReplace,
     historyGoBack: history.goBack,
+    historyGoBackToLibrary,
     historyGo: history.go,
     routerState,
     ...location,
