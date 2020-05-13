@@ -62,21 +62,23 @@ const Login = ({
 
   const confirmLoginUrl = `${getDataOrigin(idps[idpId])}/confirmlogin`
 
+  const { authMethod, devAuthMethod } = idps[idpId]
+
   useEffect(
     () => {
       // Safari does not allow cookies to be set in an iframe if that domain has not
       // been visited outside an iframe and a cookie has been set in that way. Thus,
       // I need to bounce back and forth.
 
-      if(Platform.OS === 'web') {
+      if(Platform.OS === 'web' && ['SHIBBOLETH', 'NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
 
         const userAgent = navigator.userAgent.toLowerCase()
 
         if(/safari/.test(userAgent) && !/chrome/.test(userAgent)) {  // Their browser is Safari
-          const lastFix = localStorage.getItem(`lastSafariFix`)
+          const lastFix = false  //localStorage.getItem(`lastSafariFix`)
 
           if(!lastFix || lastFix < Date.now() - (1000 * 60)) {
-            localStorage.setItem(`lastSafariFix`, Date.now())
+            // localStorage.setItem(`lastSafariFix`, Date.now())
             const { pathname, search, hash } = window.location
             window.location.href = `${getDataOrigin(idps[idpId])}/fixsafari?path=${encodeURIComponent(`${pathname}${search}${hash}`)}`
           }
@@ -163,8 +165,6 @@ const Login = ({
     },
     [ idps[idpId], idpId, onSuccess ],
   )
-
-  const { authMethod, devAuthMethod } = idps[idpId]
 
   if(['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
     return (
