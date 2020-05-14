@@ -5,6 +5,7 @@ import Constants from 'expo-constants'
 import { i18n, getLocale } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
+import * as Sentry from "./sentry"
 
 const {
   REQUEST_OPTIONS,
@@ -648,4 +649,14 @@ export const customizeTheme = ({ theme, fontFamily }) => {
     fontFamily
   
   return NewVictoryTheme
+}
+
+export const sentry = (...params) => {
+  if(params.length === 1 && params[0].error) {
+    Sentry.captureException(params[0].error)
+  } else if(params.length === 1 && params[0].message) {
+    Sentry.captureMessage(String(params[0].message))
+  } else {
+    Sentry.captureException(new Error(params.map(param => JSON.stringify(param)).join("\n")))
+  }
 }
