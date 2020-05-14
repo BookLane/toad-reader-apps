@@ -7,6 +7,7 @@ const WebView = ({
 }) => (
   <RDWebView
     ref={forwardRef}
+    allowsLinkPreview={true}  // Due to a bug, iPhone SE, X, 11, etc don't allow text selection without this.
     {...props}
   />
 )
