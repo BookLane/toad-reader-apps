@@ -24,6 +24,7 @@ import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
 import { loadIconFonts } from "./src/components/basic/Icon"
 import useSetTimeout from './src/hooks/useSetTimeout'
 import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
+import * as Sentry from "./src/utils/sentry"
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -32,7 +33,16 @@ import CoverAndSpin from "./src/components/basic/CoverAndSpin"
 const {
   LANGUAGE_CODE='en',
   IDPS,
+  SENTRY_DSN,
 } = Constants.manifest.extra
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  // enableInExpoDevelopment: true,
+  debug: true,
+})
+
+Sentry.setRelease(Constants.manifest.revisionId)
 
 const patchMiddleware = store => next => action => {
   const result = next(action)
