@@ -8,6 +8,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 const {
   FIRST_LOAD_SPLASH_TEXT_LINE_1="Great eBooks.",
   FIRST_LOAD_SPLASH_TEXT_LINE_2="Beautiful eReader.",
+  FIRST_LOAD_SPLASH_TEXT_COLOR="black",
 } = Constants.manifest.extra
 
 const loadingLine = {
@@ -16,6 +17,7 @@ const loadingLine = {
   textAlign: 'center',
   fontWeight: '200',
   fontSize: 16,
+  color: FIRST_LOAD_SPLASH_TEXT_COLOR,
 }
 
 const windowHeight = Dimensions.get('window').height
