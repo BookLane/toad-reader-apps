@@ -1,43 +1,19 @@
-import React, { useState, useEffect } from "react"
-import { StyleSheet, ScrollView, Text, Platform } from "react-native"
-import * as FileSystem from 'expo-file-system'
+import React from "react"
+import { StyleSheet, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import { getDataOrigin } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useChangeIndex from '../../hooks/useChangeIndex'
-import useNetwork from '../../hooks/useNetwork'
-import useWideMode from "../../hooks/useWideMode"
 
 import EditToolData from './EditToolData'
-import WebView from "./WebView"
-import CoverAndSpin from "../basic/CoverAndSpin"
+import Document from './Document'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  contentContainerWideMode: {
-    marginVertical: 20,
-    marginHorizontal: 30,
-    flex: 1,
-  },
-  webViewContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  webView: {
-    width: '100%',
-    height: '100%',
-  },
-  error: {
-    textAlign: 'center',
-    paddingTop: 80,
-    fontWeight: '100',
   },
 })
 
@@ -48,20 +24,12 @@ const Syllabus = React.memo(({
   goUpdateClassroom,
 
   idps,
-  accounts,
   books,
   userDataByBookId,
 }) => {
 
   const { accountId, classroom, idpId, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId })
   const { uid, syllabus, draftData } = classroom || {}
-
-  const wideMode = useWideMode()
-
-  const { online } = useNetwork()
-
-  const [ error, setError ] = useState()
-  const [ downloading, setDownloading ] = useState()
 
   const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
 
@@ -75,44 +43,6 @@ const Syllabus = React.memo(({
   }
 
   const uri = data.syllabus && `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}`
-  const tempLocalUri = data.syllabus && `${FileSystem.cacheDirectory}syllabus_${uid}_${data.syllabus.filename}`
-
-  useEffect(
-    () => {
-      if(uri && Platform.OS !== 'web' && online) {
-        (async () => {
-
-          if(Platform.OS === 'android') {
-            setError("Android does not yet support viewing a syllabus.")
-            return
-          }
-
-          setDownloading(true)
-          setError()
-
-          try {
-
-            const { status } = await FileSystem.downloadAsync(uri, tempLocalUri, getReqOptionsWithAdditions({
-              headers: {
-                "x-cookie-override": accounts[accountId].cookie,
-              },
-            }))
-
-            if(status >= 400) {
-              setError(i18n("Network error: {{status}}"), { status })
-            }
-
-          } catch(err) {
-            setError(i18n("Error in retrieving syllabus."))
-          }
-
-          setDownloading(false)
-
-        })()
-      }
-    },
-    [ uri, tempLocalUri, online, accounts[accountId] ],
-  )
 
   if(!classroom) return null
 
@@ -145,43 +75,17 @@ const Syllabus = React.memo(({
   if(!uri) return null
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={wideMode ? styles.contentContainerWideMode : styles.contentContainer}
-    >
-      {downloading &&
-        <CoverAndSpin />
-      }
-      {!!error &&
-        <Text style={styles.error}>
-          {!online
-            ? i18n("Check your internet connection.")
-            : error
-          }
-        </Text>
-      }
-      {!downloading && !error &&
-        <WebView
-          containerStyle={styles.webViewContainer}
-          style={styles.webView}
-          source={{
-            uri: Platform.OS === 'web' ? uri : tempLocalUri,
-          }}
-          allowingReadAccessToURL={FileSystem.cacheDirectory}
-          allowUniversalAccessFromFileURLs={true}
-          allowFileAccess={true}
-          originWhitelist={['*']}
-          mixedContentMode="always"
-          bounces={false}  
-        />
-      }
-    </ScrollView>
+    <Document
+      name={i18n("Syllabus")}
+      filename={data.syllabus.filename}
+      uri={uri}
+      accountId={accountId}
+    />
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, books, userDataByBookId }) => ({
   idps,
-  accounts,
   books,
   userDataByBookId,
 })
