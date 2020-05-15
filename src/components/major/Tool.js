@@ -191,6 +191,7 @@ const Tool = React.memo(({
         <ToolComponent
           bookId={bookId}
           toolUid={tool.uid}
+          toolName={tool.name}
           inEditMode={inEditMode}
           viewingPreview={viewingPreview}
           {...data}
