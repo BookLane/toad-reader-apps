@@ -231,6 +231,7 @@ const PageWebView = ({
         .replace(/(<head>)/i, `
           $1
           <script>
+            window.isWebPlatform = true;
             window.doReportToolSpots = ${doReportToolSpots};
             window.initialToolCfiCountsObjFromWebView = ${JSON.stringify(initialToolCfiCountsInThisSpine)};
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
