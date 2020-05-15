@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback } from "react"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import { ScreenOrientation } from "expo"
 import { getLocale } from "inline-i18n"
@@ -41,7 +41,7 @@ const VideoTool = React.memo(({
 
   useEffect(
     () => async () => {
-      if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
+      if(Platform.OS === 'ios' && !wideModeWithEitherOrientation) {
 
         const { width, height } = Dimensions.get('window')
 
@@ -54,6 +54,21 @@ const VideoTool = React.memo(({
       }
     },
     [],
+  )
+
+  const onFullscreenUpdate = useCallback(
+    ({ fullscreenUpdate }) => {
+      if(Platform.OS === 'android' && !wideModeWithEitherOrientation) {
+
+        if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT) {
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+        } else if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+        }
+
+      }
+    },
+    [ wideModeWithEitherOrientation ],
   )
 
   videoLink = videoLink || ""
@@ -147,6 +162,7 @@ const VideoTool = React.memo(({
           containerStyle={styles.webViewContainer}
           style={styles.webView}
           source={{ uri }}
+          allowsFullscreenVideo={true}
         />
       )
 
@@ -185,9 +201,10 @@ const VideoTool = React.memo(({
         return (
           <Video
             source={{ uri: videoLink }}
-            resizeMode="cover"
+            resizeMode={Video.RESIZE_MODE_CONTAIN}
             useNativeControls
             style={styles.webViewContainer}
+            onFullscreenUpdate={onFullscreenUpdate}
           />
         )
       }
