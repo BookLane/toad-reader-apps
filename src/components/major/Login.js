@@ -211,8 +211,18 @@ const Login = ({
         onNavigationStateChange={onNavigationStateChange}
         onLoad={onLoad}
         injectedJavaScript={`
+
+          // old Android phones must have an update to Chrome
+          var chromeVersion = navigator.userAgent.match(/Chrome\\/([0-9]+)\\./);
+          if(chromeVersion && parseInt(chromeVersion[1], 10) < 60) {
+            alert("You must update your Chrome app (via the Play Store) to use this e-reader.\\n\\nAfter updating Chrome, close and reopen this app.");
+            location.href = "about:blank";
+          }
+
+          // needed to prevent a bug on Android by which the user cannot scroll to the input
           document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
-        `}  // this is needed to prevent a bug on Android by which the user cannot scroll to the input
+
+        `}
         forwardRef={webView}
         onMessage={onMessageEvent}
         incognito={true}
