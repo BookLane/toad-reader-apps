@@ -46,6 +46,7 @@ const Login = ({
   accounts,
 }) => {
 
+  const [ onFirstLoad, setOnFirstLoad ] = useState(true)
   const [ loading, setLoading ] = useState(true)
   const [ leaving, setLeaving ] = useState(false)
   const [ error, setError ] = useState(null)
@@ -121,7 +122,10 @@ const Login = ({
   )
 
   const onLoad = useCallback(
-    () => setLoading(false),
+    () => {
+      setOnFirstLoad(false)
+      setLoading(false)
+    },
     [ idps ],
   )
 
@@ -212,12 +216,13 @@ const Login = ({
         onLoad={onLoad}
         injectedJavaScript={`
 
-          // old Android phones must have an update to Chrome
-          var chromeVersion = navigator.userAgent.match(/Chrome\\/([0-9]+)\\./);
-          if(chromeVersion && parseInt(chromeVersion[1], 10) < 60) {
-            alert("You must update your Chrome app (via the Play Store) to use this e-reader.\\n\\nAfter updating Chrome, close and reopen this app.");
-            location.href = "about:blank";
-          }
+          ${!onFirstLoad ? `` : `
+            // old Android phones must have an update to Chrome
+            var chromeVersion = navigator.userAgent.match(/Chrome\\/([0-9]+)\\./);
+            if(chromeVersion && parseInt(chromeVersion[1], 10) < 71) {
+              alert("You may have to update your Chrome app (via the Play Store) to use this e-reader.\\n\\nAfter updating Chrome, close and reopen this app.");
+            }
+          `}
 
           // needed to prevent a bug on Android by which the user cannot scroll to the input
           document.querySelectorAll('input').forEach(el => el.setAttribute("autocomplete", "off"));
