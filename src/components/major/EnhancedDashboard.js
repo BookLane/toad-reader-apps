@@ -5,6 +5,7 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useRouterState from '../../hooks/useRouterState'
 
 import EnhancedConnecting from "./EnhancedConnecting"
 import EnhancedMembers from "./EnhancedMembers"
@@ -28,6 +29,9 @@ const EnhancedDashboard = React.memo(({
 }) => {
 
   const { viewingDashboard, myRole } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+
+  const { historyReplace, routerState } = useRouterState()
+  const { initialSelectedTabId } = routerState || {}
 
   if(!viewingDashboard) return null
 
@@ -104,6 +108,7 @@ const EnhancedDashboard = React.memo(({
       ),
     },
     {
+      id: 'highlights',
       title: i18n("Highlights", "", "enhanced"),
       content: (
         <Highlights
@@ -114,6 +119,16 @@ const EnhancedDashboard = React.memo(({
     },
   ]
 
+  let initialSelectedTabIndex
+  if(initialSelectedTabId) {
+    tabs.forEach(({ id }, idx) => {
+      if(id === initialSelectedTabId) {
+        initialSelectedTabIndex = idx
+      }
+    })
+    setTimeout(historyReplace)  // clear it out
+  }
+
   return (
     <EnhancedScreen
       bookId={bookId}
@@ -121,6 +136,7 @@ const EnhancedDashboard = React.memo(({
       closeToolAndExitReading={closeToolAndExitReading}
       heading={i18n("Dashboard", "", "enhanced")}
       tabs={tabs}
+      initialSelectedTabIndex={initialSelectedTabIndex}
     />
   )
 })

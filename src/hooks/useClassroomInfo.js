@@ -104,7 +104,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     inEditMode = !!(
       rawInEditMode
       && iCanEdit
-      && !['DASHBOARD'].includes(selectedToolUid)
+      && !['DASHBOARD', 'HIGHLIGHTS'].includes(selectedToolUid)
     )
   }
 
@@ -195,13 +195,14 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     [ enhancedIsOff, inEditMode, tools, draftToolByCurrentlyPublishedToolUid, selectedToolUid ]
   )
 
-  const selectedTool = [ 'DASHBOARD', 'OPTIONS OR SETTINGS', 'FRONT MATTER' ].includes(selectedToolUid) ? {} : visibleTools.filter(({ uid }) => uid === selectedToolUid)[0]
+  const selectedTool = [ 'HIGHLIGHTS', 'DASHBOARD', 'OPTIONS OR SETTINGS', 'FRONT MATTER' ].includes(selectedToolUid) ? {} : visibleTools.filter(({ uid }) => uid === selectedToolUid)[0]
 
   if(userDataByBookId[bookId] && !selectedTool && selectedToolUid) {
     // Make this consistent when we can (i.e. when userDataByBookId is sent over).
     selectedToolUid = undefined
   }
 
+  const viewingHighlights = selectedToolUid === 'HIGHLIGHTS'
   const viewingDashboard = selectedToolUid === 'DASHBOARD'
   const viewingOptions = selectedToolUid === 'OPTIONS OR SETTINGS'
   const viewingFrontMatter = selectedToolUid === 'FRONT MATTER'
@@ -256,6 +257,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     tools,  // requires userDataByBookId to be sent in
     selectedToolUid,  // requires userDataByBookId and inEditMode to be sent in to be most accurate
     selectedTool,  // requires userDataByBookId and inEditMode to be sent in
+    viewingHighlights,
     viewingDashboard,
     viewingOptions,  // requires inEditMode to be sent in
     viewingFrontMatter,  // requires inEditMode to be sent in

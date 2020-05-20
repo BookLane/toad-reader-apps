@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { Platform, Alert } from "react-native"
+import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { OverflowMenu } from "@ui-kitten/components"
@@ -9,13 +9,20 @@ import useToggle from "react-use/lib/useToggle"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
-import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen } from "../../redux/actions"
+import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen, setSelectedToolUid } from "../../redux/actions"
 import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
+
+const styles = StyleSheet.create({
+  optionsMenu: {
+    width: 'auto',
+    maxWidth: 300,
+  }
+})
 
 const BookHeader = React.memo(({
   bookId,
@@ -25,8 +32,10 @@ const BookHeader = React.memo(({
   showDisplaySettings,
   toggleBookView,
   onBackPress,
+  setModeToPage,
 
   books,
+  userDataByBookId,
   sidePanelSettings,
 
   removeFromBookDownloadQueue,
@@ -34,17 +43,18 @@ const BookHeader = React.memo(({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   toggleSidePanelOpen,
+  setSelectedToolUid,
 }) => {
 
   const [ showOptions, toggleShowOptions ] = useToggle(false)
 
   const wideMode = useWideMode()
 
-  const { book } = useClassroomInfo({ books, bookId })
+  const { book, canViewDashboard } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
 
-  const { historyGo } = useRouterState()
+  const { historyGo, historyPush, historyReplace } = useRouterState()
 
   const goToBookLink = useCallback(
     () => {
@@ -88,11 +98,32 @@ const BookHeader = React.memo(({
     [ books, bookId ],
   )
 
+  const goToHighlights = useCallback(
+    () => {
+      if(canViewDashboard) {
+        historyReplace(null, { initialSelectedTabId: 'highlights' })
+        setSelectedToolUid({
+          bookId,
+          uid: 'DASHBOARD',
+        })
+
+      } else {
+        setSelectedToolUid({
+          bookId,
+          uid: 'HIGHLIGHTS',
+        })
+      }
+
+      setModeToPage && setTimeout(setModeToPage)
+    },
+    [ bookId, canViewDashboard ],
+  )
+
   const moreOptions = [
-    // {
-    //   title: i18n("My highlights and notes"),
-    //   onPress: goToHighlights,
-    // },
+    {
+      title: i18n("My highlights and notes"),
+      onPress: goToHighlights,
+    },
     // {
     //   title: i18n("Recommend this book"),
     //   onPress: recommendBook,
@@ -153,6 +184,7 @@ const BookHeader = React.memo(({
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
         placement='bottom end'
+        style={styles.optionsMenu}
       >
         <HeaderIcon
           iconName="md-more"
@@ -184,8 +216,9 @@ const BookHeader = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, sidePanelSettings }) => ({
+const mapStateToProps = ({ books, userDataByBookId, sidePanelSettings }) => ({
   books,
+  userDataByBookId,
   sidePanelSettings,
 })
 
@@ -195,6 +228,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   toggleSidePanelOpen,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(BookHeader)

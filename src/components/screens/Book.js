@@ -42,6 +42,7 @@ import PageCaptureManager from "../major/PageCaptureManager"
 import CustomKeepAwake from "../basic/CustomKeepAwake"
 import BookTools from "../major/BookTools"
 import ToolChip from "../basic/ToolChip"
+import HighlightsWrapper from "../major/HighlightsWrapper"
 
 
 const {
@@ -229,7 +230,7 @@ const Book = React.memo(({
   const wideMode = useWideMode()
   const { pageWidth } = usePageSize({ sidePanelSettings })
 
-  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingFrontMatter, viewingOptions, viewingDashboard,
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
           bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
@@ -684,11 +685,6 @@ const Book = React.memo(({
 
   // const recommendBook = useCallback(() => alert('Recommend this book'), [])
 
-  // const goToHighlights = useCallback(
-  //   () => historyPush(`${match.url}/highlights`),
-  //   [ match ],
-  // )
-
   const setPauseProcessing = useCallback(
     processingPaused => {
       clearTemporarilyPauseProcessingTimeout()
@@ -899,6 +895,7 @@ const Book = React.memo(({
                 showDisplaySettings={showDisplaySettings}
                 width={width}  // By sending this as a prop, I force a rerender
                 onBackPress={historyGoBack}
+                setModeToPage={setModeToPage}
               />
             </View>
           }
@@ -984,6 +981,13 @@ const Book = React.memo(({
             goTo={goTo}
             closeToolAndExitReading={closeToolAndExitReading}
           />
+          {viewingHighlights &&
+            <HighlightsWrapper
+              bookId={bookId}
+              closeToolAndExitReading={closeToolAndExitReading}
+              goTo={goTo}
+            />
+          }
           <EnhancedDashboard
             bookId={bookId}
             closeToolAndExitReading={closeToolAndExitReading}
