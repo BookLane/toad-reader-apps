@@ -660,3 +660,21 @@ export const sentry = (...params) => {
     Sentry.captureException(new Error(params.map(param => JSON.stringify(param)).join("\n")))
   }
 }
+
+export const getQueryString = () => {
+  const query = {}
+
+  if(Platform.OS === 'web') {
+    window.location.search.substring(1)
+      .split('&')
+      .filter(Boolean)
+      .forEach(param => {
+        const paramPieces = param.split("=")
+        if(paramPieces[0]) {
+          query[decodeURIComponent(paramPieces[0])] = decodeURIComponent(paramPieces.slice(1))
+        }
+      })
+  }
+
+  return query
+}

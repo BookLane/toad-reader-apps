@@ -20,7 +20,7 @@ import customMapping from "./src/themes/custom-mapping"
 import updateDataStructure from "./src/utils/updateDataStructure"
 import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
 import translations from "./src/utils/translations/current.json"
-import { getDataOrigin, setStatusBarHidden } from './src/utils/toolbox'
+import { getDataOrigin, setStatusBarHidden, getQueryString } from './src/utils/toolbox'
 import { loadIconFonts } from "./src/components/basic/Icon"
 import useSetTimeout from './src/hooks/useSetTimeout'
 import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
@@ -140,54 +140,41 @@ const App = () => {
           })
         }
 
+        const query = getQueryString()
+
         // re-route old links
-        if(Platform.OS === 'web' && !/^\/?$/.test(window.location.pathname)) {
-          if(/^\/book\/[0-9]+$/.test(window.location.pathname)) {
-            const query = {}
-        
-            window.location.search.substring(1)
-              .split('&')
-              .filter(Boolean)
-              .forEach(param => {
-                const paramPieces = param.split("=")
-                if(paramPieces[0]) {
-                  query[decodeURIComponent(paramPieces[0])] = decodeURIComponent(paramPieces.slice(1))
-                }
-              })
-        
-            if(query.highlight) {  // it is a share quote
-              window.history.replaceState("", "", `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`)
+        if(Platform.OS === 'web' && /^\/book\/[0-9]+$/.test(window.location.pathname)) {
 
-            } else if(query.goto) {
-              try {
-                const { idref: spineIdRef, elementCfi: cfi } = JSON.parse(query.goto)
+          if(query.highlight) {  // it is a share quote
+            window.history.replaceState({}, document.title, `${getDataOrigin(Object.values(IDPS)[0])}${window.location.pathname}${window.location.search}`)
 
-                query.latestLocation = {
-                  spineIdRef,
-                  cfi,
-                }
-              } catch(e) {}
+          } else if(query.goto) {
+            try {
+              const { idref: spineIdRef, elementCfi: cfi } = JSON.parse(query.goto)
 
-              delete query.goto
+              query.latestLocation = {
+                spineIdRef,
+                cfi,
+              }
+            } catch(e) {}
 
-              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`)
+            delete query.goto
 
-            } else {
-              window.history.replaceState("", "", `${window.location.origin}/#${window.location.pathname}`)
-            }
+            window.history.replaceState({}, document.title, `${window.location.origin}/#${window.location.pathname}#${encodeURIComponent(JSON.stringify(query))}`)
 
           } else {
-            window.history.replaceState("", "", `${window.location.origin}/#/`)
+            window.history.replaceState({}, document.title, `${window.location.origin}/#${window.location.pathname}`)
           }
 
           window.location.reload()
 
           return
+
         }
 
         // remove query string (coming from google analytics and the like)
-        if(Platform.OS === 'web' && window.location.search) {
-          window.history.replaceState(null, '', window.location.href.replace(/\?[^#]*/, ''))
+        if(Platform.OS === 'web' && window.location.search && !query.loginInfo) {
+          window.history.replaceState({}, document.title, window.location.href.replace(/\?[^#]*/, ''))
         }
 
         await Promise.all([

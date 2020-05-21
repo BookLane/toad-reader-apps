@@ -9,7 +9,7 @@ import { i18n } from "inline-i18n"
 import EmailLogin from "./EmailLogin"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
-import { getReqOptionsWithAdditions, getDataOrigin } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getQueryString } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
@@ -61,32 +61,68 @@ const Login = ({
 
   const [ setReloadTimeout ] = useSetTimeout()
 
-  const confirmLoginUrl = `${getDataOrigin(idps[idpId])}/confirmlogin`
+  const userAgent = Platform.OS === 'web' && navigator.userAgent.toLowerCase()
+  const isSafari = Platform.OS === 'web' && /safari/.test(userAgent) && !/chrome/.test(userAgent)
+  const confirmLoginUrl = isSafari
+    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web`
+    : `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const { authMethod, devAuthMethod } = idps[idpId]
 
+  const logIn = useCallback(
+    info => {
+      const { cookie, currentServerTime, userInfo } = info || {}
+
+      if(cookie == null || !currentServerTime || !userInfo) {
+        historyPush("/error", {
+          critical: true,
+        })
+        return false
+      }
+
+      addAccount({
+        idpId,
+        idp: idps[idpId],
+        userId: userInfo.id,
+        accountInfo: {
+          fullname: userInfo.fullname,
+          serverTimeOffset: currentServerTime - Date.now(),
+          isAdmin: !!userInfo.isAdmin,
+          cookie,
+        },
+      })
+
+      setTimeout(onSuccess)
+
+      return true
+
+    },
+    [ idps[idpId], idpId, onSuccess ],
+  )
+
   useEffect(
     () => {
-      // Safari does not allow cookies to be set in an iframe if that domain has not
-      // been visited outside an iframe and a cookie has been set in that way. Thus,
-      // I need to bounce back and forth.
+      if(!isSafari) return
 
-      if(Platform.OS === 'web' && ['SHIBBOLETH', 'NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
+      const query = getQueryString()
 
-        const userAgent = navigator.userAgent.toLowerCase()
-
-        if(/safari/.test(userAgent) && !/chrome/.test(userAgent)) {  // Their browser is Safari
-          const lastFix = false  //localStorage.getItem(`lastSafariFix`)
-
-          if(!lastFix || lastFix < Date.now() - (1000 * 60)) {
-            // localStorage.setItem(`lastSafariFix`, Date.now())
-            const { pathname, search, hash } = window.location
-            window.location.href = `${getDataOrigin(idps[idpId])}/fixsafari?path=${encodeURIComponent(`${pathname}${search}${hash}`)}`
+      if(query.loginInfo) {
+        try {
+          if(logIn(JSON.parse(query.loginInfo))) {
+            window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`)
           }
+        } catch(err) {
+          historyPush("/error", {
+            critical: true,
+          })
         }
+
+      } else {
+        window.location.href = confirmLoginUrl
       }
+
     },
-    [],
+    [ logIn, confirmLoginUrl ],
   )
 
   const onError = useCallback(
@@ -141,34 +177,13 @@ const Login = ({
       }
 
       if(data.identifier === 'sendCookiePlus') {
-
-        const { cookie, currentServerTime, userInfo } = data.payload || {}
-
-        if(cookie == null || !currentServerTime || !userInfo) {
-          historyPush("/error", {
-            critical: true,
-          })
-          return
-        }
-
-        addAccount({
-          idpId,
-          idp: idps[idpId],
-          userId: userInfo.id,
-          accountInfo: {
-            fullname: userInfo.fullname,
-            serverTimeOffset: currentServerTime - Date.now(),
-            isAdmin: !!userInfo.isAdmin,
-            cookie,
-          },
-        })
-
-        onSuccess()
-
+        logIn(data.payload)
       }
     },
-    [ idps[idpId], idpId, onSuccess ],
+    [ logIn ],
   )
+
+  if(isSafari) return null
 
   if(['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
     return (
