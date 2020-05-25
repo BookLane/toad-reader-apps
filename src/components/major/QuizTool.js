@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
 
 const QuizTool = React.memo(({
   bookId,
+  toolUid,
   viewingPreview,
 
   questions,
@@ -97,7 +98,7 @@ const QuizTool = React.memo(({
   const [ selectedAnswers, setSelectedAnswers ] = useState([])
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
 
-  const { classroomUid, selectedToolUid } = useClassroomInfo({ books, bookId })
+  const { classroomUid } = useClassroomInfo({ books, bookId })
 
   const executeShuffles = returnResult => {
     let preppedQs = (questions || []).map((question, origQuestionIdx) => ({ question, origQuestionIdx }))
@@ -137,13 +138,13 @@ const QuizTool = React.memo(({
         submitToolEngagement({
           bookId,
           classroomUid,
-          toolUid: selectedToolUid,
+          toolUid,
           answers: selectedAnswers,
           score,
         })
       }
     },
-    [ currentQuestionSubmitted, pageIndex, viewingPreview, questions, selectedAnswers, numAnsweredCorrectly, bookId, classroomUid, selectedToolUid ],
+    [ currentQuestionSubmitted, pageIndex, viewingPreview, questions, selectedAnswers, numAnsweredCorrectly, bookId, classroomUid, toolUid ],
   )
 
   return (

@@ -52,21 +52,21 @@ const PollTool = React.memo(({
   bookId,
   toolUid,
   viewingPreview,
+  priorEngagement,
 
   question,
   choices,
 
   books,
-  userDataByBookId,
 
   updateToolEngagement,
 }) => {
 
-  const { isDefaultClassroom, classroomUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { isDefaultClassroom, classroomUid } = useClassroomInfo({ books, bookId })
 
   const [ selectedAnswer, setSelectedAnswer ] = useState(() => {
     if(!viewingPreview) {
-      const { answers } = selectedTool.engagement || {}
+      const { answers } = priorEngagement || {}
       const [ answer ] = answers || []
 
       if(answer != null) {
@@ -127,9 +127,8 @@ const PollTool = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books }) => ({
   books,
-  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

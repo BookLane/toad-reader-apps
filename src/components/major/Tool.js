@@ -107,7 +107,7 @@ const Tool = React.memo(({
     )
   }
 
-  const { toolType, name, data, cfi } = tool
+  const { toolType, name, data, cfi, engagement } = tool
   const isInlineTool = !!cfi
 
   let ToolComponent = View
@@ -192,8 +192,8 @@ const Tool = React.memo(({
           bookId={bookId}
           toolUid={tool.uid}
           toolName={tool.name}
-          inEditMode={inEditMode}
           viewingPreview={viewingPreview}
+          priorEngagement={engagement}
           {...data}
         />
       </ScrollView>

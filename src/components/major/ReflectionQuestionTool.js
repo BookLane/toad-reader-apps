@@ -37,20 +37,19 @@ const styles = StyleSheet.create({
 const ReflectionQuestionTool = React.memo(({
   bookId,
   toolUid,
-  inEditMode,
   viewingPreview,
+  priorEngagement,
 
   question,
 
   books,
-  userDataByBookId,
 
   updateToolEngagement,
 }) => {
 
-  const { isDefaultClassroom, classroomUid, selectedTool } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { isDefaultClassroom, classroomUid } = useClassroomInfo({ books, bookId })
 
-  const [ answerValue, setAnswerValue ] = useState((!viewingPreview && (selectedTool.engagement || {}).text) || "")
+  const [ answerValue, setAnswerValue ] = useState((!viewingPreview && (priorEngagement || {}).text) || "")
 
   const [ setAnswerSaveTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
@@ -109,9 +108,8 @@ const ReflectionQuestionTool = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId }) => ({
+const mapStateToProps = ({ books }) => ({
   books,
-  userDataByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
