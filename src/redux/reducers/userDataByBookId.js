@@ -344,9 +344,9 @@ export default function(state = initialState, action) {
 
       classrooms.push(newClassroom)
 
-      if(action.duplicateFromUid) {
+      if(action.based_off_classroom_uid) {
         classrooms.some((classroom, idx) => {
-          if(classroom.uid === action.duplicateFromUid) {
+          if(classroom.uid === action.based_off_classroom_uid) {
   
             ;[
               'syllabus',
@@ -364,6 +364,8 @@ export default function(state = initialState, action) {
                 }
               }
             })
+
+            newClassroom.based_off_classroom_uid = action.based_off_classroom_uid
 
             // TODO: When I get classroom_group's working, be sure to insert an updated classroom_group_uid where relevant
             // TODO: I may need to adjust due_at and closes_at in a smart way when an old classroom is being copied from

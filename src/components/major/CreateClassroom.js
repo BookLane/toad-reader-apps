@@ -56,7 +56,7 @@ const CreateClassroom = React.memo(({
         bookId,
         name,
         userId,
-        duplicateFromUid: basedOffUid,
+        based_off_classroom_uid: basedOffUid,
       })
 
       setCurrentClassroom({
@@ -72,19 +72,28 @@ const CreateClassroom = React.memo(({
   const onChangeText = useCallback(name => setName(name), [])
 
   const basedOffOptions = useMemo(
-    () => sortedClassrooms.map(({ uid, name }) => ({
-      text: (
-        uid === defaultClassroomUid
-          ? i18n("Enhanced book", "", "enhanced")
-          : (
-            !uid
-              ? i18n("None", "", "enhanced")  
-              : name
-          )
-      ),
-      uid,
-    })),
-    [ sortedClassrooms, defaultClassroomUid ]
+    () => sortedClassrooms
+      .filter(({ uid, members=[] }) => {
+        const myRole = (members.filter(({ user_id }) => user_id === userId)[0] || {}).role || 'STUDENT'
+        return (
+          !uid
+          || uid === defaultClassroomUid
+          || myRole === 'INSTRUCTOR'
+        )
+      })
+      .map(({ uid, name }) => ({
+        text: (
+          uid === defaultClassroomUid
+            ? i18n("Enhanced book", "", "enhanced")
+            : (
+              !uid
+                ? i18n("None", "", "enhanced")
+                : name
+            )
+        ),
+        uid,
+      })),
+    [ sortedClassrooms, defaultClassroomUid, userId ]
   )
 
   const onSelect = useCallback(({ uid }) => setBasedOffUid(uid), [])
