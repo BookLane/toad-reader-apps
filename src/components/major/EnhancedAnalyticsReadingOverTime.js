@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
-import { i18n, getLocale } from "inline-i18n"
+import { i18n } from "inline-i18n"
 
-import { getHoursMinutesStr } from '../../utils/toolbox'
+import { getHoursMinutesStr, getDateLine } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryLine, VictoryLegend } from "./Victory"
 import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
@@ -137,14 +137,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
         tickFormat={idx => {
           const date = new Date(readingOverTime.startTime)
           date.setDate(date.getDate() + idx)
-          return date.toLocaleString(
-            getLocale(),
-            {
-              month: 'short',
-              day: 'numeric',
-              year: readingOverTimeTotalsData.length > 500 ? 'numeric' : undefined,
-            }
-          )
+          return getDateLine({ timestamp: date.getTime(), short: true })
         }}
         tickCount={Math.min(Math.ceil(minWidth / 150), readingOverTime.totals.length)}
         standalone={false}
