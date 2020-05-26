@@ -338,6 +338,8 @@ export default function(state = initialState, action) {
             user_id: action.userId,
             role: 'INSTRUCTOR',
             updated_at: now,
+            fullname: action.fullname,
+            email: action.email,
           },
         ],
       }

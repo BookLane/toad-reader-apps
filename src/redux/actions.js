@@ -67,12 +67,14 @@ export const setSelectedToolUid = ({ bookId, uid }) => ({
   uid,
 })
 
-export const createClassroom = ({ uid, bookId, name, userId, based_off_classroom_uid }) => ({
+export const createClassroom = ({ uid, bookId, name, userId, fullname, email, based_off_classroom_uid }) => ({
   type: "CREATE_CLASSROOM",
   uid,
   bookId,
   name,
   userId,
+  fullname,
+  email,
   based_off_classroom_uid,
   doPatch: true,
 })
