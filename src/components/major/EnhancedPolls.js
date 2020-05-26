@@ -179,31 +179,35 @@ const EnhancedPolls = React.memo(({
                 <VictoryPie
                   width={300}
                   height={300}
-                  data={userIdsByChoiceIndex.filter(userIds => (userIds || []).length).map((userIds, idx) => {
-                    const y = userIds.length
-                    let x = (y > 0 && choices[idx]) || ""
+                  data={userIdsByChoiceIndex
+                    .map((userIds, idx) => {
+                      if((userIds || []).length === 0) return null
+                      const y = userIds.length
+                      let x = (y > 0 && choices[idx]) || ""
 
-                    const maxLen = 40
-                    const maxLineLen = 15
+                      const maxLen = 40
+                      const maxLineLen = 15
 
-                    x = concatText({ text: x, maxLen })
+                      x = concatText({ text: x, maxLen })
 
-                    x = x.split(" ").reduce((text, word) => (
-                      `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen
-                        ? `${text}\n${word}`
-                        : `${text} ${word}`
-                    ), "")
+                      x = x.split(" ").reduce((text, word) => (
+                        `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen
+                          ? `${text}\n${word}`
+                          : `${text} ${word}`
+                      ), "")
 
-                    const numStudents = i18n("{{num}} student(s)", "", "enhanced", {
-                      num: y,
+                      const numStudents = i18n("{{num}} student(s)", "", "enhanced", {
+                        num: y,
+                      })
+                      const percent = i18n("{{percent}}%", "", "enhanced", {
+                        percent: parseInt((y / numResponses) * 100),
+                      })
+                      const tooltip = `${numStudents}\n${percent}`
+
+                      return { x, y, tooltip }
                     })
-                    const percent = i18n("{{percent}}%", "", "enhanced", {
-                      percent: parseInt((y / numResponses) * 100),
-                    })
-                    const tooltip = `${numStudents}\n${percent}`
-
-                    return { x, y, tooltip }
-                  })}
+                    .filter(Boolean)
+                }
                   events={[{
                     target: "data",
                     eventHandlers: {
