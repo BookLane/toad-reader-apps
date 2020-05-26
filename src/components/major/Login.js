@@ -86,6 +86,7 @@ const Login = ({
         userId: userInfo.id,
         accountInfo: {
           fullname: userInfo.fullname,
+          email: userInfo.email,
           serverTimeOffset: currentServerTime - Date.now(),
           isAdmin: !!userInfo.isAdmin,
           cookie,
