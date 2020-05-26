@@ -61,13 +61,13 @@ const Login = ({
 
   const [ setReloadTimeout ] = useSetTimeout()
 
-  const userAgent = Platform.OS === 'web' && navigator.userAgent.toLowerCase()
-  const isSafari = Platform.OS === 'web' && /safari/.test(userAgent) && !/chrome/.test(userAgent)
-  const confirmLoginUrl = isSafari
+  const confirmLoginUrl = Platform.OS === 'web'
     ? `${getDataOrigin(idps[idpId])}/confirmlogin-web`
     : `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const { authMethod, devAuthMethod } = idps[idpId]
+
+  const useEmailLogin = ['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
   const logIn = useCallback(
     info => {
@@ -103,7 +103,7 @@ const Login = ({
 
   useEffect(
     () => {
-      if(!isSafari) return
+      if(Platform.OS !== 'web' || useEmailLogin) return
 
       const query = getQueryString()
 
@@ -184,13 +184,20 @@ const Login = ({
     [ logIn ],
   )
 
-  if(isSafari) return null
-
-  if(['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)) {
+  if(useEmailLogin) {
     return (
       <EmailLogin
         idpId={idpId}
         onSuccess={onSuccess}
+      />
+    )
+  }
+
+  if(Platform.OS === 'web') {
+    return (
+      <CoverAndSpin
+        text={i18n("Loading login portal...")}
+        style={{ backgroundColor: 'white' }}
       />
     )
   }
