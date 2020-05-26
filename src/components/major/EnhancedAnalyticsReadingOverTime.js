@@ -4,6 +4,7 @@ import { i18n, getLocale } from "inline-i18n"
 import { getHoursMinutesStr } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryLine, VictoryLegend } from "./Victory"
+import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
 
 const color1 = '#d62020'
 const color2 = '#f1b00e'
@@ -39,6 +40,8 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
   width,
 }) => {
 
+  const minWidth = readingOverTime.totals.length < 5 ? width : Math.max(500, width)
+
   const { readingOverTimeTotalsData, readingOverTimeNumReadersData, maxTotal, maxNumReaders } = useMemo(
     () => {
       const getCleanMax = ary => {
@@ -73,7 +76,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
     [ readingOverTime ],
   )
 
-  return (
+  const chart = (
     <VictoryChart
       theme={VictoryTheme.customMaterial}
       padding={{
@@ -85,7 +88,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
       domainPadding={{
         y: 20,
       }}
-      width={width}
+      width={minWidth}
       height={300}
       // containerComponent={
       //   <VictoryVoronoiContainer
@@ -143,6 +146,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
             }
           )
         }}
+        tickCount={Math.min(Math.ceil(minWidth / 150), readingOverTime.totals.length)}
         standalone={false}
       />
 
@@ -182,6 +186,18 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
 
     </VictoryChart>
   )
+
+  if(minWidth > width) {
+    return (
+      <EnhancedAnalyticsScrollContainer
+        chart={chart}
+        minWidth={minWidth}
+      />
+    )
+  } else {
+    return chart
+  }
+
 })
 
 export default EnhancedAnalyticsReadingOverTime
