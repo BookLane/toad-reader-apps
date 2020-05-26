@@ -190,7 +190,7 @@ const EnhancedScores = React.memo(({
 
   if(!classroomUid) return null
 
-  if(error) {
+  if(error && !classroom.isNew) {
     return (
       <Text style={styles.error}>
         Error: {error}
@@ -198,20 +198,10 @@ const EnhancedScores = React.memo(({
     )
   }
 
-  if(!data) {
+  if(!data && !(error && classroom.isNew)) {
     return (
       <View style={styles.genericContainer}>
         <CoverAndSpin />
-      </View>
-    )
-  }
-
-  if(dataColumns.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any quizzes.", "", "enhanced")}
-        </Text>
       </View>
     )
   }
@@ -221,6 +211,16 @@ const EnhancedScores = React.memo(({
       <View style={styles.genericContainer}>
         <Text style={styles.none}>
           {i18n("This classroom does not yet have any students.", "", "enhanced")}
+        </Text>
+      </View>
+    )
+  }
+
+  if(dataColumns.length === 0) {
+    return (
+      <View style={styles.genericContainer}>
+        <Text style={styles.none}>
+          {i18n("This classroom does not contain any quizzes.", "", "enhanced")}
         </Text>
       </View>
     )

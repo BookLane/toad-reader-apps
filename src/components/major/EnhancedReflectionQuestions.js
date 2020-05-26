@@ -184,7 +184,7 @@ const EnhancedReflectionQuestions = React.memo(({
 
   if(!classroomUid) return null
 
-  if(error) {
+  if(error && !classroom.isNew) {
     return (
       <Text style={styles.error}>
         Error: {error}
@@ -192,20 +192,10 @@ const EnhancedReflectionQuestions = React.memo(({
     )
   }
 
-  if(!data) {
+  if(!data && !(error && classroom.isNew)) {
     return (
       <View style={styles.genericContainer}>
         <CoverAndSpin />
-      </View>
-    )
-  }
-
-  if(orderedQuestions.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any reflection questions.", "", "enhanced")}
-        </Text>
       </View>
     )
   }
@@ -215,6 +205,16 @@ const EnhancedReflectionQuestions = React.memo(({
       <View style={styles.genericContainer}>
         <Text style={styles.none}>
           {i18n("This classroom does not yet have any students.", "", "enhanced")}
+        </Text>
+      </View>
+    )
+  }
+
+  if(orderedQuestions.length === 0) {
+    return (
+      <View style={styles.genericContainer}>
+        <Text style={styles.none}>
+          {i18n("This classroom does not contain any reflection questions.", "", "enhanced")}
         </Text>
       </View>
     )

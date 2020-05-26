@@ -342,6 +342,7 @@ export default function(state = initialState, action) {
             email: action.email,
           },
         ],
+        isNew: true,
       }
 
       classrooms.push(newClassroom)

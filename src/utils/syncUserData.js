@@ -123,6 +123,7 @@ export const patch = () => setTimeout(() => {
             ...classroomToPush,
           }
           delete classroomToPush.created_at
+          delete classroomToPush.isNew
           classroomHasUpdate = true
         }
 

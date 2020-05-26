@@ -15,6 +15,7 @@ const useDashboardData = ({ classroomUid, idp, accounts, query }) => {
       (async () => {
 
         setData()
+        setError()
 
         const path = `${getDataOrigin(idp)}/${query}/${classroomUid}`
         let response = {}

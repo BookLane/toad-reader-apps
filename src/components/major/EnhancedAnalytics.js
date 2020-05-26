@@ -150,7 +150,7 @@ const EnhancedAnalytics = React.memo(({
 
   if(!classroomUid) return null
 
-  if(error) {
+  if(error && !classroom.isNew) {
     return (
       <Text style={styles.error}>
         Error: {error}
@@ -158,7 +158,7 @@ const EnhancedAnalytics = React.memo(({
     )
   }
 
-  if(!data) {
+  if(!data && !(error && classroom.isNew)) {
     return (
       <View style={styles.genericContainer}>
         <CoverAndSpin />
