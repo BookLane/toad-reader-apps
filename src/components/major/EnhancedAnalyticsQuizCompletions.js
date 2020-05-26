@@ -3,7 +3,8 @@ import { i18n } from "inline-i18n"
 
 import { fractionToPercent, concatText } from '../../utils/toolbox'
 
-import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryLegend } from "./Victory"
+import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryLegend, VictoryLabel } from "./Victory"
+import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
 
 const EnhancedAnalyticsQuizCompletions = React.memo(({
   completionsByQuiz,
@@ -11,18 +12,21 @@ const EnhancedAnalyticsQuizCompletions = React.memo(({
   numStudents,
 }) => {
 
-  return (
+  const showInCondensedMode = width / completionsByQuiz.length < 90
+  const minWidth = Math.max(completionsByQuiz.length * 35, width)
+
+  const chart = (
     <VictoryChart
       theme={VictoryTheme.customMaterial}
-      width={width}
+      width={minWidth}
       height={300}
       padding={{
-        bottom: 30,
+        bottom: showInCondensedMode ? 60 : 30,
         top: 50,
       }}
       domainPadding={{
         y: 0,
-        x: (width / completionsByQuiz.length) / 2
+        x: (minWidth / completionsByQuiz.length) / 2
       }}
     >
 
@@ -47,6 +51,16 @@ const EnhancedAnalyticsQuizCompletions = React.memo(({
 
       <VictoryAxis
         tickFormat={name => concatText({ text: name, maxLen: 15 })}
+        tickLabelComponent={
+          !showInCondensedMode ? undefined : (
+            <VictoryLabel
+              angle={30}
+              textAnchor="start"
+              dy={-5}
+              dx={-5}
+            />
+          )
+        }
       />
 
       <VictoryBar
@@ -58,6 +72,18 @@ const EnhancedAnalyticsQuizCompletions = React.memo(({
 
     </VictoryChart>
   )
+
+  if(minWidth > width) {
+    return (
+      <EnhancedAnalyticsScrollContainer
+        chart={chart}
+        minWidth={minWidth}
+      />
+    )
+  } else {
+    return chart
+  }
+
 })
 
 export default EnhancedAnalyticsQuizCompletions
