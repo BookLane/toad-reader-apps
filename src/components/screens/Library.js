@@ -98,14 +98,14 @@ const Library = ({
   const hasNoAuth = useHasNoAuth(accounts)
 
   const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
-  const { logOutAccountId, widget, parent_domain } = routerState
+  const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
 
   const previousPathname = usePrevious(pathname)
-  const numAccounts = Object.keys(accounts).length
-  const previousNumAccounts = usePrevious(numAccounts)
+  const accountIds = Object.keys(accounts).join(',')
+  const previousAccountIds = usePrevious(accountIds)
 
   useEffect(
     () => {
@@ -275,7 +275,7 @@ const Library = ({
           pathname === '/'
           && !['/drawer', '/'].includes(previousPathname)
         )
-        || numAccounts > previousNumAccounts  // i.e. they just logged in
+        || accountIds > previousAccountIds  // i.e. they just logged in
       ) {
         (async () => {
 
@@ -308,7 +308,13 @@ const Library = ({
     [ idps, accounts, pathname ],
   )
 
-  const onLoginSuccess = useCallback(() => setShowLogin(false), [])
+  const onLoginSuccess = useCallback(
+    () => {
+      setShowLogin(false)
+      historyReplace()  // clears out doEmailLogin
+    },
+    [],
+  )
 
   const logOutOnLoad = useCallback(
     async () => {
@@ -435,15 +441,6 @@ const Library = ({
     )
   }
 
-  if(showLogin) {
-    return (
-      <Login
-        idpId={Object.keys(idps)[0]}
-        onSuccess={onLoginSuccess}
-      />
-    )
-  }
-
   if(logOutAccountId) {
     return (
       <SafeLayout>
@@ -475,6 +472,16 @@ const Library = ({
           style={{ backgroundColor: 'white' }}
         />
       </SafeLayout>
+    )
+  }
+
+  if(showLogin || doEmailLogin) {
+    return (
+      <Login
+        idpId={Object.keys(idps)[0]}
+        onSuccess={onLoginSuccess}
+        doEmailLogin={doEmailLogin}
+      />
     )
   }
 

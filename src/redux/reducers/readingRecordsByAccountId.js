@@ -13,6 +13,11 @@ export default function(state = initialState, action) {
 
     }
 
+    case "ADD_ACCOUNT": {  // I need this for NONE_OR_EMAIL with new email login
+      // TODO: If I enable multiple accounts at once, this will need to be changed.
+      return {}
+    }
+
     case "REMOVE_ACCOUNT": {
       // TODO: If I enable multiple accounts at once, this will need to be changed.
       return {}

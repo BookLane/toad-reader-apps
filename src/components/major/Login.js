@@ -40,10 +40,12 @@ const styles = StyleSheet.create({
 const Login = ({
   idpId,
   onSuccess,
-  addAccount,
+  doEmailLogin,
 
   idps,
   accounts,
+
+  addAccount,
 }) => {
 
   const [ onFirstLoad, setOnFirstLoad ] = useState(true)
@@ -67,7 +69,7 @@ const Login = ({
 
   const { authMethod, devAuthMethod } = idps[idpId]
 
-  const useEmailLogin = ['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
+  const useEmailLogin = ['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod) || doEmailLogin
 
   const logIn = useCallback(
     info => {

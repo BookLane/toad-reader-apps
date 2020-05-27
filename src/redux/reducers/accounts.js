@@ -11,11 +11,20 @@ export default function(state = initialState, action) {
   switch (action.type) {
 
     case "ADD_ACCOUNT": {
-      newState[`${action.idpId}:${action.userId}`] = action.accountInfo
+      const newAccountId = `${action.idpId}:${action.userId}`
+      const noLoginAccountId = `${action.idpId}:-${action.idpId}`
 
-      // weed out needToLogInAgain accounts
+      newState[newAccountId] = action.accountInfo
+
       Object.keys(newState).forEach(accountId => {
-        if(newState[accountId].needToLogInAgain) {
+        if(
+          newState[accountId].needToLogInAgain  // weed out needToLogInAgain accounts
+          || (  // weed out no-login accounts (unless the current add is no-login)
+            accountId === noLoginAccountId
+            && newAccountId !== noLoginAccountId
+          )
+          || accountId !== newAccountId  // at this point, make sure we are left to only the new account (just in case)
+        ) {
           delete newState[accountId]
         }
       })

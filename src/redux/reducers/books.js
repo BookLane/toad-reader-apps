@@ -3,12 +3,15 @@ const initialState = {}
 export default function(state = initialState, action) {
   const newState = {...state}
 
-  const removeAccount = (exceptBookIds = []) => {
+  const removeAccount = ({ exceptBookIds=[], accountId }={}) => {
     for(let bookId in newState) {
       if(exceptBookIds.includes(bookId)) continue
+
       const accounts = {...newState[bookId].accounts}
-      delete accounts[action.accountId]
+      delete accounts[accountId || action.accountId]
+
       const newNumAccounts = Object.keys(accounts).length
+
       if(newNumAccounts === 0) {
         delete newState[bookId]
       } else if(Object.keys(state[bookId].accounts).length !== newNumAccounts) {
@@ -23,7 +26,7 @@ export default function(state = initialState, action) {
   switch (action.type) {
 
     case "ADD_BOOKS":
-      removeAccount(action.books.map(book => book.id))
+      removeAccount({ exceptBookIds: action.books.map(book => book.id) })
       action.books.forEach(book => {
         newState[book.id] = {
           title: book.title,
@@ -50,7 +53,7 @@ export default function(state = initialState, action) {
               ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
               ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
               subscriptions: book.subscriptions,
-              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || Date.now(),
+              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || 0,
             },
           },
         }
@@ -72,6 +75,12 @@ export default function(state = initialState, action) {
         return newState
       }
       return state
+
+    case "ADD_ACCOUNT": {
+      const noLoginAccountId = `${action.idpId}:-${action.idpId}`
+      removeAccount({ accountId: noLoginAccountId })
+      return newState
+    }
 
     case "REMOVE_ACCOUNT":
       removeAccount()

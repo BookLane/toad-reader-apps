@@ -6,6 +6,8 @@ import connectionInfo, { addConnectionInfoEventListener } from "./connectionInfo
 import { updateAccount, updateBookAccount, setSyncStatus, setHighlight,
          updateClassroom, setUserData, flushReadingRecords } from "../redux/actions"
 
+import { getAccountIdIsNoAuth } from "../hooks/useHasNoAuth"
+
 // I record the last time I successfully sent a user data patch for a particular book/account
 // Then, whenever I patch, I filter down to objects which are newer than the last successful patch.
 
@@ -67,11 +69,12 @@ export const patch = () => setTimeout(() => {
   Object.keys(accounts).forEach(accountId => {
 
     const { idpId, idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
+    const isNoAuth = getAccountIdIsNoAuth(accountId)
     const patchTime = Date.now()
     const newUserData = {}
     let somethingToPatch = false
 
-    if(!idp || !userId || (((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL')) {
+    if(!idp || !userId || isNoAuth) {
       store.dispatch(setSyncStatus("localonly"))
       return
     }
@@ -402,6 +405,7 @@ export const reportReadings = () => setTimeout(() => {
 
   Object.keys(readingRecordsByAccountId).forEach(accountId => {
 
+    if(!accounts[accountId]) return
     if(currentlyReportingReadingsByAccountId[accountId]) return
 
     const { idp, userId } = getAccountInfo({ idps, accountId })
@@ -497,8 +501,9 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
   if(!books[bookId].accounts[accountId]) return resolve()
 
   const { idp, userId, serverTimeOffset } = getAccountInfo({ idps, accountId })
+  const isNoAuth = getAccountIdIsNoAuth(accountId)
 
-  if(((__DEV__ && idp.devAuthMethod) || idp.authMethod) === 'NONE_OR_EMAIL') return resolve()
+  if(isNoAuth) return resolve()
 
   const lastSuccessfulPatch = books[bookId].accounts[accountId].lastSuccessfulPatch || 0
 

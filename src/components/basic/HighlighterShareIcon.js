@@ -11,6 +11,7 @@ import WebView from '../major/WebView'
 import Dialog from "../major/Dialog"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import { getAccountIdIsNoAuth } from "../../hooks/useHasNoAuth"
 
 const styles = StyleSheet.create({
   share: {
@@ -44,9 +45,8 @@ const HighlighterShareIcon = React.memo(({
 }) => {
 
   const [ showShare, setShowShare ] = useState(false)
-  const { idpId } = useClassroomInfo({ books, bookId })
-
-  const { authMethod, devAuthMethod } = idps[idpId]
+  const { idpId, accountId } = useClassroomInfo({ books, bookId })
+  const isNoAuth = getAccountIdIsNoAuth(accountId)
 
   const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://q.toadreader.com`}/q/${highlight.share_code || ''}`
 
@@ -85,7 +85,7 @@ const HighlighterShareIcon = React.memo(({
 
   const setShowShareToFalse = useCallback(() => setShowShare(false), [])
 
-  if(((__DEV__ && devAuthMethod) || authMethod) === 'NONE_OR_EMAIL') return null
+  if(isNoAuth) return null
 
   return (
     <>

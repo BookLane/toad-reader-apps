@@ -78,6 +78,8 @@ const AppMenu = ({
   const { historyPush, historyReplace, historyGoBack, pathname } = useRouterState()
 
   const hasNoAuth = useHasNoAuth(accounts)
+  const { authMethod, devAuthMethod } = Object.values(idps)[0] || {}
+  const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
   const showAll = useCallback(
     () => {
@@ -146,6 +148,18 @@ const AppMenu = ({
       )
     },
     [ accounts, idps, books ],
+  )
+
+  const doEmailLogin = useCallback(
+    () => {
+      historyGoBack()
+      setTimeout(() => {
+        historyReplace("/", {
+          doEmailLogin: true,
+        })
+      }, 100)
+    },
+    [],
   )
 
   const confirmRemoveAllEPubs = useCallback(
@@ -250,7 +264,7 @@ const AppMenu = ({
         historyGoBack()
       },
     }))),
-    ...((Platform.OS === 'web' && hasNoAuth) ? [] : [
+    ...((Platform.OS === 'web' && hasNoAuth && !isNoneOrEmail) ? [] : [
       {
         style: styles.separator,
       },
@@ -272,6 +286,13 @@ const AppMenu = ({
         title: i18n("Log out"),
         // icon: logOutIcon,
         onSelect: confirmLogOut,
+      },
+    ]),
+    ...(!(hasNoAuth && isNoneOrEmail) ? [] : [
+      {
+        title: i18n("Log in with email"),
+        // icon: logOutIcon,
+        onSelect: doEmailLogin,
       },
     ]),
     ...(!isAdmin ? [] : [
