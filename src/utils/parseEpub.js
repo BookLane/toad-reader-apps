@@ -52,6 +52,17 @@ const findNavToc = objOrArray => {
   }
 }
 
+const addDirToHref = ({ href, navRelativeUri, opfDir }) => {
+  if(href && !/^\//.test(href)) {
+    const navRelativeUriDir = navRelativeUri.split('/').slice(0,-1).join('/')
+    if(navRelativeUriDir) {
+      href = `${navRelativeUriDir.substr(opfDir.length)}/${href}`
+    }
+  }
+
+  return href
+}
+
 export default async ({ bookId, idp, account }) => {
 
   const baseUri = Platform.OS === 'web'
@@ -139,13 +150,15 @@ export default async ({ bookId, idp, account }) => {
               li.a
               && li.a[0]
               && ((li.a[0].$ && li.a[0].$.title) || li.a[0]._)
-            const href = 
+            let href = 
               li.a
               && li.a[0]
               && li.a[0].$
               && li.a[0].$.href
-            
+
             if(!label || !href) return null
+
+            href = addDirToHref({ href, navRelativeUri, opfDir })
 
             const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
 
@@ -194,13 +207,15 @@ export default async ({ bookId, idp, account }) => {
               && navPoint.navLabel[0]
               && navPoint.navLabel[0].text
               && (navPoint.navLabel[0].text[0]._ || navPoint.navLabel[0].text[0])
-            const href = 
+            let href = 
               navPoint.content
               && navPoint.content[0]
               && navPoint.content[0].$
               && navPoint.content[0].$.src
 
             if(!label || !href) return null
+
+            href = addDirToHref({ href, navRelativeUri, opfDir })
 
             tocLabelsByHref[href] = label
 
