@@ -196,7 +196,7 @@ const EnhancedHeader = React.memo(({
       ),
       onPress: Platform.OS === 'web' ? toggleShowCreateClassroom : alertToNoEditing,
     }]),
-    ...(!(bookVersion === 'ENHANCED') ? [] : [{
+    ...(!(bookVersion === 'ENHANCED' || (bookVersion === 'INSTRUCTOR' && Platform.OS !== 'web')) ? [] : [{
       title: (
         <Text style={styles.optionsAction}>
           {i18n("Connect to a classroom", "", "enhanced")}

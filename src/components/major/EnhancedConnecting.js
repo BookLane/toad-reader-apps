@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import QRCode from "qrcode.react"
 
 import { i18n } from "inline-i18n"
 
@@ -23,6 +24,7 @@ const styles = StyleSheet.create({
   },
   codeLine: {
     flexDirection: 'row',
+    marginBottom: 15,
   },
   textCodeLabel: {
     marginRight: 4,
@@ -68,6 +70,10 @@ const EnhancedConnecting = React.memo(({
             {access_code}
           </Text>
         </View>
+        <QRCode
+          value={access_code}
+          size={250}
+        />
         {/* <View style={styles.codeLine}>
           <Text style={styles.textCodeLabel}>
             {i18n("Or use the QR code:", "", "enhanced")}
@@ -89,14 +95,20 @@ const EnhancedConnecting = React.memo(({
           </Text>
         }
         {!!showInstructorAccessCode &&
-          <View style={styles.codeLine}>
-            <Text style={styles.textCodeLabel}>
-              {i18n("Text code:", "", "enhanced")}
-            </Text>
-            <Text style={styles.textCode}>
-              {instructor_access_code}
-            </Text>
-          </View>
+          <>
+            <View style={styles.codeLine}>
+              <Text style={styles.textCodeLabel}>
+                {i18n("Text code:", "", "enhanced")}
+              </Text>
+              <Text style={styles.textCode}>
+                {instructor_access_code}
+              </Text>
+            </View>
+            <QRCode
+              value={instructor_access_code}
+              size={250}
+            />
+          </>
         }
       </View>
     </View>
