@@ -88,7 +88,13 @@ export default function(state = initialState, action) {
   let classrooms = [ ...(userDataForThisBook.classrooms || []) ]
   const now = Date.now()
 
-  const retainFilter = items => (items || []).filter(({ updated_at, _delete }) => updated_at > action.lastSuccessfulPatch && !_delete)
+  const retainFilter = items => (items || []).filter(({ updated_at, forcePatch, _delete }) => (
+    (
+      updated_at > action.lastSuccessfulPatch
+      || forcePatch
+    )
+    && !_delete
+  ))
 
   switch (action.type) {
 
@@ -219,6 +225,7 @@ export default function(state = initialState, action) {
           if(
             highlight.color === action.color
             && highlight.note === action.note
+            && !!highlight.forcePatch === !!action.forcePatch
             && !highlight._delete
             && !!highlight.share_quote
             && !!highlight.share_code
@@ -906,6 +913,37 @@ export default function(state = initialState, action) {
     case "REMOVE_ACCOUNT": {
       // TODO: If I enable multiple accounts at once, this will need to be changed.
       return {}
+    }
+
+    case "ADD_ACCOUNT": {
+      // Previously saved highlights should get flagged so that they get saved
+
+      let hasHighlightsToUpdate = false
+
+      for(let bookId in newState) {
+
+        const userDataForThisBook = newState[bookId] || {}
+        const highlights = (userDataForThisBook.highlights || [])
+
+        if(highlights.length === 0) continue
+
+        hasHighlightsToUpdate = true
+
+        highlights.forEach((highlight, idx) => {
+          highlights[idx] = {
+            ...highlight,
+            forcePatch: true,
+          }
+        })
+
+        newState[bookId] = {
+          ...userDataForThisBook,
+          highlights,
+        }
+
+      }
+
+      return hasHighlightsToUpdate ? newState : state
     }
 
   }

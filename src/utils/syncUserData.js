@@ -79,6 +79,8 @@ export const patch = () => setTimeout(() => {
       return
     }
 
+    const forcePatchHighlights = []
+
     // Filter down the userData object to only new items
     // Also, ignore things I did not and cannot modify
     for(let bookId in userDataByBookId) {
@@ -99,8 +101,11 @@ export const patch = () => setTimeout(() => {
       }
 
       ;(bookUserData.highlights || []).forEach(highlight => {
-        if(highlight.updated_at > lastSuccessfulPatch) {
-          newUserData[bookId].highlights.push({ ...highlight })
+        if(highlight.updated_at > lastSuccessfulPatch || highlight.forcePatch) {
+          const highlightToPush = { ...highlight }
+          delete highlightToPush.forcePatch
+          newUserData[bookId].highlights.push(highlightToPush)
+          forcePatchHighlights.push(highlightToPush)
           somethingToPatch = true
         }
       })
@@ -251,6 +256,14 @@ export const patch = () => setTimeout(() => {
               lastSuccessfulPatch: patchTime,
             },
           }))
+
+          forcePatchHighlights.forEach(highlight => {
+            // this gets rid of forcePatch
+            store.dispatch(setHighlight({
+              ...highlight,
+              bookId,
+            }))
+          })
 
           // save it here too in case patch gets called again before I have a fresh books var
           books[bookId].accounts[accountId].lastSuccessfulPatch = patchTime

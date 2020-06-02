@@ -53,7 +53,7 @@ export default function(state = initialState, action) {
               ...(!book.expires_at ? {} : { expires_at: book.expires_at }),
               ...(!book.enhanced_tools_expire_at ? {} : { enhanced_tools_expire_at: book.enhanced_tools_expire_at }),
               subscriptions: book.subscriptions,
-              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || 0,
+              lastSuccessfulPatch: (((state[book.id] && state[book.id].accounts) || {})[action.accountId] || {}).lastSuccessfulPatch || Date.now(),
             },
           },
         }
