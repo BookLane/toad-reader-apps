@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import QRCode from "qrcode.react"
@@ -7,12 +7,35 @@ import QRCode from "qrcode.react"
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useWideMode from '../../hooks/useWideMode'
 
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
     marginHorizontal: 30,
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  codesContainer: {
+    flex: 1,
+  },
+  instructionsContainer: {
+    marginLeft: 30,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(0, 0, 0, .1)',
+  },
+  instructions: {
+    width: 210,
+    marginTop: 15,
+    marginLeft: 30,
+    marginBottom: 20,
+    fontSize: 12,
+  },
+  image: {
+    marginLeft: 30,
+    height: 415,
+    width: 210,
   },
   codeSection: {
     marginBottom: 30,
@@ -48,6 +71,8 @@ const EnhancedConnecting = React.memo(({
 
   const [ showInstructorAccessCode, setShowInstructorAccessCode ] = useState(false)
 
+  const wideMode = useWideMode()
+
   const setShowInstructorAccessCodeTrue = useCallback(() => setShowInstructorAccessCode(true), [])
 
   const { classroom } = useClassroomInfo({ books, bookId, userDataByBookId })
@@ -58,59 +83,67 @@ const EnhancedConnecting = React.memo(({
 
   return (
     <View style={styles.container}>
-      <View style={styles.codeSection}>
-        <Text style={styles.codeSectionLabel}>
-          {i18n("Students", "", "enhanced")}
-        </Text>
-        <View style={styles.codeLine}>
-          <Text style={styles.textCodeLabel}>
-            {i18n("Text code:", "", "enhanced")}
+      <View style={styles.codesContainer}>
+        <View style={styles.codeSection}>
+          <Text style={styles.codeSectionLabel}>
+            {i18n("Students", "", "enhanced")}
           </Text>
-          <Text style={styles.textCode}>
-            {access_code}
-          </Text>
-        </View>
-        <QRCode
-          value={access_code}
-          size={250}
-        />
-        {/* <View style={styles.codeLine}>
-          <Text style={styles.textCodeLabel}>
-            {i18n("Or use the QR code:", "", "enhanced")}
-          </Text>
-        </View> */}
-      </View>
-      <View style={styles.codeSection}>
-        <Text style={styles.codeSectionLabel}>
-          {i18n("Instructors", "", "enhanced")}
-        </Text>
-        {!showInstructorAccessCode &&
-          <Text>
-            <Text
-              style={styles.showForInstructors}
-              onPress={setShowInstructorAccessCodeTrue}
-            >
-              {i18n("Connect additional instructors", "", "enhanced")}
+          <View style={styles.codeLine}>
+            <Text style={styles.textCodeLabel}>
+              {i18n("Text code:", "", "enhanced")}
             </Text>
+            <Text style={styles.textCode}>
+              {access_code}
+            </Text>
+          </View>
+          <QRCode
+            value={access_code}
+            size={250}
+          />
+        </View>
+        <View style={styles.codeSection}>
+          <Text style={styles.codeSectionLabel}>
+            {i18n("Instructors", "", "enhanced")}
           </Text>
-        }
-        {!!showInstructorAccessCode &&
-          <>
-            <View style={styles.codeLine}>
-              <Text style={styles.textCodeLabel}>
-                {i18n("Text code:", "", "enhanced")}
+          {!showInstructorAccessCode &&
+            <Text>
+              <Text
+                style={styles.showForInstructors}
+                onPress={setShowInstructorAccessCodeTrue}
+              >
+                {i18n("Connect additional instructors", "", "enhanced")}
               </Text>
-              <Text style={styles.textCode}>
-                {instructor_access_code}
-              </Text>
-            </View>
-            <QRCode
-              value={instructor_access_code}
-              size={250}
-            />
-          </>
-        }
+            </Text>
+          }
+          {!!showInstructorAccessCode &&
+            <>
+              <View style={styles.codeLine}>
+                <Text style={styles.textCodeLabel}>
+                  {i18n("Text code:", "", "enhanced")}
+                </Text>
+                <Text style={styles.textCode}>
+                  {instructor_access_code}
+                </Text>
+              </View>
+              <QRCode
+                value={instructor_access_code}
+                size={250}
+              />
+            </>
+          }
+        </View>
       </View>
+      {wideMode &&
+        <View style={styles.instructionsContainer}>
+          <Text style={styles.instructions}>
+            {i18n("Users with the enhanced version of this book can connect to this classroom via the main enhanced pull-down.", "", "enhanced")}
+          </Text>
+          <Image
+            source={require("../../../assets/qr-code-how-to.png")}
+            style={styles.image}
+          />
+        </View>
+      }
     </View>
   )
 })
