@@ -192,7 +192,7 @@ const Highlights = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { book, spines, instructorHighlights, myRole, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { book, spines, instructorHighlights, enhancedIsOff, isDefaultClassroom, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -202,7 +202,7 @@ const Highlights = React.memo(({
         id: "user",
         text: i18n("My highlights", "", "enhanced"),
       },
-      ...(myRole === 'STUDENT' ? [] : [{
+      ...(!(!enhancedIsOff && !isDefaultClassroom) ? [] : [{
         id: "instructor",
         text: i18n("Instructor’s highlights", "", "enhanced"),
       }]),
@@ -211,7 +211,7 @@ const Highlights = React.memo(({
       //   text: i18n("Classroom highlights", "", "enhanced"),
       // },
     ]),
-    [ myRole ],
+    [ enhancedIsOff, isDefaultClassroom ],
   )
   
   const [ selectedOptions, setSelectedOptions ] = useState(selectOptions)
