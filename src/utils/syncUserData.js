@@ -105,7 +105,9 @@ export const patch = () => setTimeout(() => {
           const highlightToPush = { ...highlight }
           delete highlightToPush.forcePatch
           newUserData[bookId].highlights.push(highlightToPush)
-          forcePatchHighlights.push(highlightToPush)
+          if(highlight.forcePatch) {
+            forcePatchHighlights.push(highlightToPush)
+          }
           somethingToPatch = true
         }
       })
