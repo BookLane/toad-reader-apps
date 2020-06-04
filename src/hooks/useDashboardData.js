@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../utils/toolbox'
 
-const useDashboardData = ({ classroomUid, idp, accounts, query }) => {
+const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItems=[] }) => {
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
 
   const accountId = Object.keys(accounts)[0] || ""
+  const appendToPath = [ "", ...appendToPathItems.filter(Boolean) ].join('/')
 
   useEffect(
     () => {
@@ -17,7 +18,7 @@ const useDashboardData = ({ classroomUid, idp, accounts, query }) => {
         setData()
         setError()
 
-        const path = `${getDataOrigin(idp)}/${query}/${classroomUid}`
+        const path = `${getDataOrigin(idp)}/${query}/${classroomUid}${appendToPath}`
         let response = {}
 
         try {
@@ -43,7 +44,7 @@ const useDashboardData = ({ classroomUid, idp, accounts, query }) => {
       })()
   
     },
-    [ query, classroomUid ],
+    [ query, classroomUid, appendToPath ],
   )
 
   return {

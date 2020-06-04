@@ -56,6 +56,7 @@ const BookContentsLine = ({
   uid,
   label,
   toolType,
+  data,
   isDraft,
   numToolsWithin,
   goTo,
@@ -148,6 +149,7 @@ const BookContentsLine = ({
           uid={uid}
           label={label}
           toolType={toolType}
+          data={data}
           isDraft={isDraft}
           onPress={onPress}
           onToolMove={onToolMove}

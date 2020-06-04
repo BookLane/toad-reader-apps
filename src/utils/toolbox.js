@@ -496,9 +496,19 @@ export const objectMap = (obj, fn) => (
   )
 )
 
-export const getDateLine = ({ timestamp, short }) => {
+export const getDateLine = ({ timestamp, short, relative }) => {
   const date = new Date(timestamp)
+  const today = new Date()
+  const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
   const now = new Date()
+
+  if(relative) {
+    if(date.toDateString() === today.toDateString()) {
+      return i18n("Today", "", "enhanced")
+    } else if(date.toDateString() === yesterday.toDateString()) {
+      return i18n("Yesterday", "", "enhanced")
+    }
+  }
 
   const options = {
     year: 'numeric',

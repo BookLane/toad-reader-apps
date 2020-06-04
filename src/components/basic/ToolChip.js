@@ -51,6 +51,7 @@ const ToolChip = React.memo(({
   uid,
   label,
   toolType,
+  data,
   isDraft,
   onPress,
   onToolMove,
@@ -76,6 +77,7 @@ const ToolChip = React.memo(({
         uid,
         label,
         toolType,
+        data,
         isDraft,
       })) {
         setHideTool(true)
@@ -112,7 +114,11 @@ const ToolChip = React.memo(({
           {...themedStateEvents}
         >
           <Icon
-            {...toolInfoByType[toolType]}
+            {...(
+              typeof toolInfoByType[toolType].icon === 'function'
+                ? toolInfoByType[toolType].icon(data)
+                : toolInfoByType[toolType].icon
+            )}
             style={[
               styles.icon,
               iconThemedStyle,
