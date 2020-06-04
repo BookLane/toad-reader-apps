@@ -54,9 +54,9 @@ const findNavToc = objOrArray => {
 
 const addDirToHref = ({ href, navRelativeUri, opfDir }) => {
   if(href && !/^\//.test(href)) {
-    const navRelativeUriDir = navRelativeUri.split('/').slice(0,-1).join('/')
-    if(navRelativeUriDir) {
-      href = `${navRelativeUriDir.substr(opfDir.length)}/${href}`
+    const navRelativeUriWithoutOpfDir = navRelativeUri.substr(opfDir.length)
+    if(/\//.test(navRelativeUriWithoutOpfDir)) {
+      href = navRelativeUriWithoutOpfDir.replace(/\/[^\/]+$/, `/${href}`)
     }
   }
 
