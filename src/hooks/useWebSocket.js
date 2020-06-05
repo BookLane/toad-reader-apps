@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { i18n } from "inline-i18n"
 
 import { getDataOrigin } from '../utils/toolbox'
 import useSetTimeout from './useSetTimeout'
@@ -67,7 +68,7 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
             wsSend: noop,
             wsClose: noop,
             connecting: false,
-            error: e.reason,
+            error: e.reason || i18n("Connection closed", "", "enhanced"),
           })
           setReInitWebSocketTimeout(initWebSocket, 1000 * 10)
         }

@@ -212,6 +212,10 @@ export const getToolInfo = () => {
           name: 'isDiscussion',
           type: 'boolean',
           label: i18n("Classroom discussion style", "", "enhanced"),
+          isHiddenWithMessage: ({ isDefaultClassroom }) => (
+            isDefaultClassroom
+            && i18n("Classrooms will also have the option of turning this reflection question into a discussion.", "", "enhanced")
+          ),
         },
       ],
       readyToPublish: ({ data: { question } }) => nonEmpty(question),

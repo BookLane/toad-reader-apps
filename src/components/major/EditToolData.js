@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 8,
   },
+  hiddenMessage: {
+    color: 'rgb(143, 155, 179)',
+    fontSize: 15,
+    marginBottom: 20,
+    fontStyle: 'italic',
+  },
   file: {
     marginBottom: 30,
   },
@@ -339,6 +345,16 @@ const EditToolData = React.memo(({
         }
 
         case 'boolean': {
+          const hiddenMessage = isHiddenWithMessage({ data, dataSegment, isDefaultClassroom })
+
+          if(hiddenMessage) {
+            return (
+              <Text style={styles.hiddenMessage}>
+                {hiddenMessage}
+              </Text>
+            )
+          }
+
           return (
             <View key={id} style={styles.dataLine}>
               <View style={styles.buttonContainer}>
