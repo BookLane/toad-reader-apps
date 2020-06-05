@@ -160,7 +160,7 @@ const Tool = React.memo(({
     <>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.name}>
-          {name || (toolInfoByType[toolType] | {}).text || ""}
+          {name || (toolInfoByType[toolType] || {}).text || ""}
         </Text>
         {inEditMode &&
           <TouchableOpacity onPress={onExitPreview}>

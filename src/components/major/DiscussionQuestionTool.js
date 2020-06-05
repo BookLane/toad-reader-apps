@@ -183,35 +183,41 @@ const DiscussionQuestionTool = React.memo(({
     [],
   )
 
-  const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height), [])
+  const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height + bottomSpace), [])
 
-  const goUpdateEngagement = useCallback(
-    updates => {
+  const sendNewResponse = useCallback(
+    event => {
 
-      if(viewingPreview) {
-        const message = i18n("In the live discussion, this would add your response to the bottom of the feed.")
+      const text = getNewResponseValue().trim()
 
-        if(Platform.OS === 'web') {
-          alert(message)
-        } else {
-          Alert.alert(
-            i18n("Note"),
-            message,
-          )
+      if(text) {
+
+        if(viewingPreview) {
+          const message = i18n("In the live discussion, this would add your response to the bottom of the feed.")
+
+          if(Platform.OS === 'web') {
+            alert(message)
+          } else {
+            Alert.alert(
+              i18n("Note"),
+              message,
+            )
+          }
+
+          setNewResponseValue("")
+          setInputHeight(0)
+
+          return
         }
 
-        setNewResponseValue("")
-        setInputHeight(0)
+        wsSend({
+          action: 'addResponse',
+          data: {
+            text,
+          },
+        })
 
-        return
       }
-
-      wsSend({
-        action: 'addResponse',
-        data: {
-          text: getNewResponseValue(),
-        },
-      })
 
       setNewResponseValue("")
       setInputHeight(0)
@@ -289,14 +295,21 @@ const DiscussionQuestionTool = React.memo(({
               height: Math.max(35, inputHeight),
             },
           ]}
+          returnKeyType="send"
+          returnKeyLabel={!newResponseValue.trim() ? i18n("Cancel", "", "enhanced") : null}
+          enablesReturnKeyAutomatically={true}
+          blurOnSubmit={Platform.OS !== 'web'}
+          onSubmitEditing={sendNewResponse}
         />
-        <Button
-          style={styles.sendButton}
-          appearance="ghost"
-          icon={SendIcon}
-          onPress={goUpdateEngagement}
-          disabled={!newResponseValue.trim()}
-        />
+        {Platform.OS === 'web' &&
+          <Button
+            style={styles.sendButton}
+            appearance="ghost"
+            icon={SendIcon}
+            onPress={sendNewResponse}
+            disabled={!newResponseValue.trim()}
+          />
+        }
       </View>
     </KeyboardAvoidingView>
   )
