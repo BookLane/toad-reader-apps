@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useRef } from "react"
 import { StyleSheet, KeyboardAvoidingView, View, ScrollView, Text, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -8,6 +8,7 @@ import { submitToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
+import useScroll from '../../hooks/useScroll'
 import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
@@ -133,6 +134,9 @@ const DiscussionQuestionTool = React.memo(({
   const [ responses, setResponses ] = useState([])
   const [ newResponseValue, setNewResponseValue ] = useState("")
 
+  const { scrolledToEnd, onScroll } = useScroll({ scrolledToEndGraceY: 50 })
+  const scrollViewRef = useRef()
+
   const getResponses = useInstanceValue(responses)
   const getNewResponseValue = useInstanceValue(newResponseValue)
 
@@ -154,6 +158,8 @@ const DiscussionQuestionTool = React.memo(({
       })
     },
     onMessage: ({ message: { responses } }) => {
+      const wasScrolledToEnd = scrolledToEnd.current
+
       let newResponses = [
         ...responses,
         ...getResponses(),
@@ -170,6 +176,10 @@ const DiscussionQuestionTool = React.memo(({
       })
 
       setResponses(newResponses)
+
+      if(wasScrolledToEnd || (responses[0] || {}).user_id === userId) {
+        scrollViewRef.current.scrollToEnd({ animated: true })
+      }
     },
   })
 
@@ -248,7 +258,11 @@ const DiscussionQuestionTool = React.memo(({
       <Text style={styles.question}>
         {question}
       </Text>
-      <ScrollView style={styles.discussionContainer}>
+      <ScrollView
+        style={styles.discussionContainer}
+        onScroll={onScroll}
+        ref={scrollViewRef}
+      >
         <View style={styles.discussion}>
           {connecting && <CoverAndSpin />}
           {!connecting && responses.map(({ uid, text, user_id, fullname, submitted_at }) => {
