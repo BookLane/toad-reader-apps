@@ -160,9 +160,11 @@ const DiscussionQuestionTool = React.memo(({
     onMessage: ({ message: { responses } }) => {
       const wasScrolledToEnd = scrolledToEnd.current
 
+      const existingResponses = getResponses()
+
       let newResponses = [
         ...responses,
-        ...getResponses(),
+        ...existingResponses,
       ]
 
       newResponses.sort((a, b) => a.submitted_at - b.submitted_at)
@@ -178,7 +180,7 @@ const DiscussionQuestionTool = React.memo(({
       setResponses(newResponses)
 
       if(wasScrolledToEnd || (responses[0] || {}).user_id === userId) {
-        scrollViewRef.current.scrollToEnd({ animated: true })
+        scrollViewRef.current.scrollToEnd({ animated: existingResponses.length > 0 })
       }
     },
   })
