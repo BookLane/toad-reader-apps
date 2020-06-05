@@ -8,7 +8,7 @@ import { submitToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
-import { getDateLine, getTimeLine } from "../../utils/toolbox"
+import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
     paddingHorizontal: 5,
+    paddingBottom: bottomSpace,
   },
   newResponseInput: {
     flex: 1,
