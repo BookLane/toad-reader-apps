@@ -178,22 +178,6 @@ export const getToolInfo = () => {
         && !hasErrorWithMessageForTime(endTime)
       ),
     },
-    // {
-    //   toolType: 'DISCUSSION_QUESTION',
-    //   icon: {
-    //     name: 'question-answer',
-    //     pack: 'material',
-    //   },
-    //   text: i18n("Discussion question", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'question',
-    //       type: 'string',
-    //       label: i18n("Question", "", "enhanced"),
-    //       required: true,
-    //     },
-    //   ],
-    // },
     {
       toolType: 'QUESTION',
       icon: ({ isDiscussion }={}) => ({
@@ -205,7 +189,11 @@ export const getToolInfo = () => {
         {
           name: 'question',
           type: 'string',
-          label: i18n("Question", "", "enhanced"),
+          label: ({ dataSegment }) => (
+            dataSegment.isDiscussion
+              ? i18n("Discussion question", "", "enhanced")
+              : i18n("Reflection question", "", "enhanced")
+          ),
           required: true,
         },
         {

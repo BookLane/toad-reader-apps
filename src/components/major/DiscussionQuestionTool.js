@@ -276,7 +276,7 @@ const DiscussionQuestionTool = React.memo(({
       </ScrollView>
       <View style={styles.newResponse}>
         <TextInput
-          placeholder={i18n("Type a response", "", "enhanced")}
+          placeholder={i18n("Type a response (seen by entire classroom)", "", "enhanced")}
           multiline
           value={newResponseValue}
           onChangeText={handleInputTextChange}

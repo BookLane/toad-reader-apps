@@ -257,6 +257,10 @@ const EditToolData = React.memo(({
 
       const isRequired = allRequired || required
 
+      if(typeof label === 'function') {
+        label = label({ data, dataSegment, isDefaultClassroom })
+      }
+
       switch(type) {
 
         case 'string': {
