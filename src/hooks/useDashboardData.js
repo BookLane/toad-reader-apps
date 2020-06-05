@@ -8,23 +8,23 @@ const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItem
   const [ error, setError ] = useState()
 
   const accountId = Object.keys(accounts)[0] || ""
+  const { cookie } = accounts[accountId] || {}
   const appendToPath = [ "", ...appendToPathItems.filter(Boolean) ].join('/')
+  const path = `${getDataOrigin(idp)}/${query}/${classroomUid}${appendToPath}`
 
   useEffect(
     () => {
-
       (async () => {
 
         setData()
         setError()
 
-        const path = `${getDataOrigin(idp)}/${query}/${classroomUid}${appendToPath}`
         let response = {}
 
         try {
           response = await safeFetch(path, getReqOptionsWithAdditions({
             headers: {
-              "x-cookie-override": accounts[accountId].cookie,
+              "x-cookie-override": cookie,
             },
           }))
         } catch(err) {
@@ -42,9 +42,8 @@ const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItem
         setData(json)
 
       })()
-  
     },
-    [ query, classroomUid, appendToPath ],
+    [ path, cookie ],
   )
 
   return {

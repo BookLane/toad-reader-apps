@@ -3,12 +3,21 @@ const initialState = {}
 export default function(state = initialState, action) {
   const newState = {...state}
 
-  const removeAccount = ({ exceptBookIds=[], accountId }={}) => {
+  const removeAccount = ({ exceptBookIds=[], accountId, exceptAccountId }={}) => {
     for(let bookId in newState) {
       if(exceptBookIds.includes(bookId)) continue
 
       const accounts = {...newState[bookId].accounts}
-      delete accounts[accountId || action.accountId]
+
+      if(exceptAccountId) {
+        for(let acctId in accounts) {
+          if(acctId !== exceptAccountId) {
+            delete accounts[acctId]
+          }
+        }
+      } else {
+        delete accounts[accountId || action.accountId]
+      }
 
       const newNumAccounts = Object.keys(accounts).length
 
@@ -77,8 +86,10 @@ export default function(state = initialState, action) {
       return state
 
     case "ADD_ACCOUNT": {
-      const noLoginAccountId = `${action.idpId}:-${action.idpId}`
-      removeAccount({ accountId: noLoginAccountId })
+      // const noLoginAccountId = `${action.idpId}:-${action.idpId}`
+      // removeAccount({ accountId: noLoginAccountId })
+      const newAccountId = `${action.idpId}:${action.userId}`
+      removeAccount({ exceptAccountId: newAccountId })
       return newState
     }
 

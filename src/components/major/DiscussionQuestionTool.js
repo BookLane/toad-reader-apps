@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, KeyboardAvoidingView, View, Text, Platform, Alert } from "react-native"
+import { StyleSheet, KeyboardAvoidingView, View, ScrollView, Text, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -7,7 +7,7 @@ import { i18n } from "inline-i18n"
 import { submitToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
-import useDashboardData from '../../hooks/useDashboardData'
+import useWebSocket from '../../hooks/useWebSocket'
 import { getDateLine, getTimeLine } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
@@ -33,19 +33,20 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   container: {
-    marginVertical: 20,
-    marginHorizontal: 30,
     flex: 1,
   },
   question: {
     fontSize: 16,
     fontWeight: '500',
-    marginBottom: 20,
+    marginVertical: 20,
+    marginHorizontal: 30,
+  },
+  discussionContainer: {
+    flex: 1,
   },
   discussion: {
     paddingHorizontal: 30,
-    marginHorizontal: -30,
-    flex: 1,
+    marginVertical: 20,
     maxWidth: 600,
   },
   responseDate: {
@@ -81,8 +82,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
-    marginHorizontal: -30,
-    marginBottom: -20,
     paddingHorizontal: 15,
   },
   newResponseInput: {
@@ -129,20 +128,47 @@ const DiscussionQuestionTool = React.memo(({
   const [ until, setUntil ] = useState('now')
   const [ fromAtLeast, setFromAtLeast ] = useState(Date.now() - (1000*60*60*24))
   const [ inputHeight, setInputHeight ] = useState(0)
+  const [ responses, setResponses ] = useState([])
   const [ newResponseValue, setNewResponseValue ] = useState("")
+
+  const getResponses = useInstanceValue(responses)
   const getNewResponseValue = useInstanceValue(newResponseValue)
 
-
-  const { data, error } = useDashboardData({
-    classroomUid,
+  const { wsSend, connecting, error } = useWebSocket({
     idp: idps[idpId],
     accounts,
-    query: "getdiscussion",
+    socketName: 'discussion',
     appendToPathItems: [
+      classroomUid,
       toolUid,
-      until,
-      fromAtLeast,
     ],
+    onOpen: ({ wsSend }) => {
+      wsSend({
+        action: 'getResponses',
+        data: {
+          until,
+          fromAtLeast,
+        },
+      })
+    },
+    onMessage: ({ message: { responses } }) => {
+      let newResponses = [
+        ...responses,
+        ...getResponses(),
+      ]
+
+      newResponses.sort((a, b) => a.submitted_at - b.submitted_at)
+
+      const uids = {}
+      newResponses = newResponses.filter(({ uid }) => {
+        if(!uids[uid]) {
+          uids[uid] = true
+          return true
+        }
+      })
+
+      setResponses(newResponses)
+    },
   })
 
   const handleInputTextChange = useCallback(
@@ -178,18 +204,18 @@ const DiscussionQuestionTool = React.memo(({
         return
       }
 
-      submitToolEngagement({
-        bookId,
-        classroomUid,
-        toolUid,
-        text: getNewResponseValue(),
+      wsSend({
+        action: 'addResponse',
+        data: {
+          text: getNewResponseValue(),
+        },
       })
 
       setNewResponseValue("")
       setInputHeight(0)
 
     },
-    [ viewingPreview, bookId, classroomUid, toolUid ],
+    [ viewingPreview, wsSend ],
   )
 
   const SendIcon = useCallback(style => <Icon name='md-send' style={styles.sendIcon} />, [])
@@ -214,38 +240,40 @@ const DiscussionQuestionTool = React.memo(({
       <Text style={styles.question}>
         {question}
       </Text>
-      <View style={styles.discussion}>
-        {!data && <CoverAndSpin />}
-        {!!data && data.responses.map(({ text, user_id, fullname, submitted_at }) => {
+      <ScrollView style={styles.discussionContainer}>
+        <View style={styles.discussion}>
+          {connecting && <CoverAndSpin />}
+          {!connecting && responses.map(({ uid, text, user_id, fullname, submitted_at }) => {
 
-          const newDate = new Date(submitted_at).toDateString()
-          const displayDate = newDate !== lastDate
-          lastDate = newDate
+            const newDate = new Date(submitted_at).toDateString()
+            const displayDate = newDate !== lastDate
+            lastDate = newDate
 
-          return (
-            <>
-              {displayDate &&
-                <Text style={styles.responseDate}>
-                  {getDateLine({ timestamp: submitted_at, short: false, relative: true })}
-                </Text>
-              }
-              <View style={user_id == userId ? styles.myResponse : styles.response}>
-                <Text style={styles.responseText}>
-                  {text}
-                </Text>
-                <View style={styles.responseInfo}>
-                  <Text style={styles.responseAuthor}>
-                    {fullname}
+            return (
+              <View key={uid}>
+                {displayDate &&
+                  <Text style={styles.responseDate}>
+                    {getDateLine({ timestamp: submitted_at, short: false, relative: true })}
                   </Text>
-                  <Text style={styles.responseTime}>
-                    {getTimeLine({ timestamp: submitted_at, short: true })}
+                }
+                <View style={user_id == userId ? styles.myResponse : styles.response}>
+                  <Text style={styles.responseText}>
+                    {text}
                   </Text>
+                  <View style={styles.responseInfo}>
+                    <Text style={styles.responseAuthor}>
+                      {fullname}
+                    </Text>
+                    <Text style={styles.responseTime}>
+                      {getTimeLine({ timestamp: submitted_at, short: true })}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </>
-          )
-        })}
-      </View>
+            )
+          })}
+        </View>
+      </ScrollView>
       <View style={styles.newResponse}>
         <TextInput
           placeholder={i18n("Type a response", "", "enhanced")}
