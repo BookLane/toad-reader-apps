@@ -94,6 +94,8 @@ const ToolChip = React.memo(({
     [ onToolRelease ],
   )
 
+  const toolInfo = toolInfoByType[toolType] || {}
+
   return (
     <View
       {...(!onToolMove ? {} : {
@@ -115,9 +117,9 @@ const ToolChip = React.memo(({
         >
           <Icon
             {...(
-              typeof toolInfoByType[toolType].icon === 'function'
-                ? toolInfoByType[toolType].icon(data)
-                : toolInfoByType[toolType].icon
+              typeof toolInfo.icon === 'function'
+                ? toolInfo.icon(data)
+                : toolInfo.icon
             )}
             style={[
               styles.icon,
@@ -133,7 +135,7 @@ const ToolChip = React.memo(({
             ]}
             selectable={false}
           >
-            {label || toolInfoByType[toolType].text}
+            {label || toolInfo.text || ""}
           </Text>
         </View>
       </TouchableOpacity>
