@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   responseAuthor: {
     flex: 1,
-    fontWeight: '800',
+    fontWeight: 'bold',
     fontSize: 11,
   },
   responseTime: {
@@ -82,11 +82,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
   },
   newResponseInput: {
     flex: 1,
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
+    marginLeft: 10,
     marginVertical: 10,
     paddingVertical: 8,
     maxHeight: 150,
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: 50,
     height: 50,
-    marginRight: -10,
-    backgroundColor: 'none',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
   },
   sendIcon: {
     height: 22,
