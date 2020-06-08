@@ -14,7 +14,10 @@ import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
+import Spin from "../basic/Spin"
 import CoverAndSpin from "../basic/CoverAndSpin"
+
+const PAGE_SIZE = 20
 
 const response = {
   backgroundColor: 'rgb(228, 233, 242)',
@@ -49,6 +52,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     marginVertical: 20,
     maxWidth: 600,
+  },
+  spinContainer1: {
+    position: 'relative',
+    zIndex: 1,
+  },
+  spinContainer2: {
+    position: 'absolute',
+    width: '100%',
+    top: -15,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  spinContainer3: {
+    backgroundColor: 'white',
+    elevation: 4,
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: "black",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    borderRadius: 18,
+    padding: 8,
   },
   responseDate: {
     marginVertical: 4,
@@ -128,17 +153,35 @@ const DiscussionQuestionTool = React.memo(({
 
   const { classroomUid, idpId, userId } = useClassroomInfo({ books, bookId })
 
-  const [ until, setUntil ] = useState('now')
-  const [ fromAtLeast, setFromAtLeast ] = useState(Date.now() - (1000*60*60*24))
   const [ inputHeight, setInputHeight ] = useState(0)
   const [ responses, setResponses ] = useState([])
   const [ newResponseValue, setNewResponseValue ] = useState("")
+  const [ gettingResponses, setGettingResponses ] = useState(false)
 
-  const { scrolledToEnd, onScroll } = useScroll({ scrolledToEndGraceY: 50 })
-  const scrollViewRef = useRef()
+  const prevContentSizeHeight = useRef()
 
   const getResponses = useInstanceValue(responses)
   const getNewResponseValue = useInstanceValue(newResponseValue)
+
+  const handleScrolledToTop = useCallback(
+    () => {
+      const existingResponses = getResponses()
+
+      if(existingResponses.length >= PAGE_SIZE) {
+        setGettingResponses(true)
+        wsSend.current({
+          action: 'getResponses',
+          data: {
+            until: existingResponses[0].submitted_at,
+          },
+        })
+      }
+    },
+    [],
+  )
+
+  const { scrolledToEnd, contentSizeHeight, y, onScroll, onContentSizeChange } = useScroll({ scrolledToEndGraceY: 50, handleScrolledToTop })
+  const scrollViewRef = useRef()
 
   const { wsSend, connecting, error } = useWebSocket({
     idp: idps[idpId],
@@ -148,17 +191,19 @@ const DiscussionQuestionTool = React.memo(({
       classroomUid,
       toolUid,
     ],
-    onOpen: ({ wsSend }) => {
-      wsSend({
+    onOpen: () => {
+      setGettingResponses(true)
+      wsSend.current({
         action: 'getResponses',
         data: {
-          until,
-          fromAtLeast,
+          until: 'now',
+          fromAtLeast: Date.now() - (1000*60*60*24),
         },
       })
     },
     onMessage: ({ message: { responses } }) => {
       const wasScrolledToEnd = scrolledToEnd.current
+      const prevY = y.current
 
       const existingResponses = getResponses()
 
@@ -177,13 +222,40 @@ const DiscussionQuestionTool = React.memo(({
         }
       })
 
+      const gotNewPage = (responses.slice(-1)[0] || {}).submitted_at <= (existingResponses[0] || {}).submitted_at
+
+      prevContentSizeHeight.current = gotNewPage ? contentSizeHeight.current : null
+
+      setGettingResponses(false)
       setResponses(newResponses)
 
-      if(wasScrolledToEnd || (responses[0] || {}).user_id === userId) {
+      if(
+        !gotNewPage
+        && (
+          wasScrolledToEnd
+          || (responses[0] || {}).user_id === userId
+        )
+      ) {
         scrollViewRef.current.scrollToEnd({ animated: existingResponses.length > 0 })
       }
     },
   })
+
+  const handleScrollViewHeightChange = useCallback(
+    (contentWidth, contentHeight) => {
+      onContentSizeChange(contentWidth, contentHeight)
+
+      if(prevContentSizeHeight.current) {
+        scrollViewRef.current.scrollTo({
+          x: 0,
+          y: y.current + (contentSizeHeight.current - prevContentSizeHeight.current),
+          animated: false,
+        })
+        prevContentSizeHeight.current = null
+      }
+    },
+    [],
+  )
 
   const handleInputTextChange = useCallback(
     value => {
@@ -222,7 +294,7 @@ const DiscussionQuestionTool = React.memo(({
           return
         }
 
-        wsSend({
+        wsSend.current({
           action: 'addResponse',
           data: {
             text,
@@ -235,7 +307,7 @@ const DiscussionQuestionTool = React.memo(({
       setInputHeight(0)
 
     },
-    [ viewingPreview, wsSend ],
+    [ viewingPreview ],
   )
 
   const SendIcon = useCallback(style => <Icon name='md-send' style={styles.sendIcon} />, [])
@@ -263,9 +335,19 @@ const DiscussionQuestionTool = React.memo(({
       <ScrollView
         style={styles.discussionContainer}
         onScroll={onScroll}
+        onContentSizeChange={handleScrollViewHeightChange}
         ref={scrollViewRef}
       >
         <View style={styles.discussion}>
+          {!connecting && gettingResponses &&
+            <View style={styles.spinContainer1}>
+              <View style={styles.spinContainer2}>
+                <View style={styles.spinContainer3}>
+                  <Spin size="small" />
+                </View>
+              </View>
+            </View>
+          }
           {connecting && <CoverAndSpin />}
           {!connecting && responses.map(({ uid, text, user_id, fullname, submitted_at }) => {
 

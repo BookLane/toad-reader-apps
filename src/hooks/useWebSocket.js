@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { i18n } from "inline-i18n"
 
 import { getDataOrigin } from '../utils/toolbox'
@@ -8,9 +8,10 @@ const noop = () => {}
 
 const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen, onMessage }) => {
 
+  const wsSend = useRef(noop)
+  const wsClose = useRef(noop)
+
   const [ state, setState ] = useState({
-    wsSend: noop,
-    wsClose: noop,
     connecting: false,
     error: null,
   })
@@ -32,17 +33,19 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
 
         ws.onopen = () => {
           console.log('Websocket: open', { path })
-          const wsSend = obj => {
+
+          wsSend.current = obj => {
             console.log('Websocket: send', { obj, path })
             ws.send(JSON.stringify(obj))
           }
+          wsClose.current = ws.close
+
           setState({
-            wsSend,
-            wsClose: ws.close,
             connecting: false,
             error: null,
           })
-          onOpen({ wsSend })
+
+          onOpen({ wsSend: wsSend.current })
         }
 
         ws.onmessage = ({ data }) => {
@@ -63,19 +66,20 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
         ws.onclose = e => {
           // connection closed
           console.log('Websocket: closed early', { code: e.code, reason: e.reason, path })
+
           ws = null
+          wsSend.current = wsClose.current = noop
+
           setState({
-            wsSend: noop,
-            wsClose: noop,
             connecting: false,
             error: e.reason || i18n("Connection closed", "", "enhanced"),
           })
+
           setReInitWebSocketTimeout(initWebSocket, 1000 * 10)
         }
 
+        wsSend.current = wsClose.current = noop
         setState({
-          wsSend: noop,
-          wsClose: noop,
           connecting: true,
           error: null,
         })
@@ -88,9 +92,8 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
           ws.onclose = null
           console.log('Websocket: closed', { path })
           ws.close()
+          wsSend.current = wsClose.current = noop
           setState({
-            wsSend: noop,
-            wsClose: noop,
             connecting: false,
             error: null,
           })
@@ -100,7 +103,11 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
     [ path, cookie ],
   )
 
-  return state
+  return {
+    ...state,
+    wsSend,
+    wsClose,
+  }
 }
 
 export default useWebSocket
