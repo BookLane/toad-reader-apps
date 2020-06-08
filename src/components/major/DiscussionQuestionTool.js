@@ -236,7 +236,13 @@ const DiscussionQuestionTool = React.memo(({
           || (responses[0] || {}).user_id === userId
         )
       ) {
-        scrollViewRef.current.scrollToEnd({ animated: existingResponses.length > 0 })
+        const doScroll = () => scrollViewRef.current.scrollToEnd({ animated: existingResponses.length > 0 })
+
+        if(Platform.OS === 'web') {
+          doScroll()
+        } else {
+          setTimeout(doScroll)
+        }
       }
     },
   })
