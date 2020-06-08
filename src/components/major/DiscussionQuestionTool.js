@@ -262,7 +262,7 @@ const DiscussionQuestionTool = React.memo(({
       if(value.length === 0) {
         setInputHeight(0)
       }
-      setNewResponseValue(value)
+      setNewResponseValue(value.replace(/(\n\s*\n\s*)\n+/g, '$1'))
     },
     [],
   )
