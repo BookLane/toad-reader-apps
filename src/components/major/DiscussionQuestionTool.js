@@ -9,6 +9,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
 import useScroll from '../../hooks/useScroll'
+import useKeyboardSize from '../../hooks/useKeyboardSize'
 import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
@@ -183,6 +184,16 @@ const DiscussionQuestionTool = React.memo(({
   const { scrolledToEnd, contentSizeHeight, y, onScroll, onContentSizeChange } = useScroll({ scrolledToEndGraceY: 50, handleScrolledToTop })
   const scrollViewRef = useRef()
 
+  useKeyboardSize({
+    handleChange: ({ changeInHeight }) => {
+      scrollViewRef.current.scrollTo({
+        x: 0,
+        y: y.current + changeInHeight,
+        animated: false,
+      })
+    },
+  })
+
   const { wsSend, connecting, error } = useWebSocket({
     idp: idps[idpId],
     accounts,
@@ -352,6 +363,7 @@ const DiscussionQuestionTool = React.memo(({
         onScroll={onScroll}
         onContentSizeChange={handleScrollViewHeightChange}
         ref={scrollViewRef}
+        scrollEventThrottle={100}
       >
         <View style={styles.discussion}>
           {!connecting && gettingResponses &&
