@@ -257,6 +257,15 @@ const DiscussionQuestionTool = React.memo(({
     [],
   )
 
+  const handleInputKeyPress = useCallback(
+    ({ nativeEvent: { key, metaKey, ctrlKey } }) => {
+      if(key === 'Enter' && (metaKey || ctrlKey)) {
+        sendNewResponse()
+      }
+    },
+    [],
+  )
+
   const handleInputTextChange = useCallback(
     value => {
       if(value.length === 0) {
@@ -270,7 +279,7 @@ const DiscussionQuestionTool = React.memo(({
   const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height + bottomSpace), [])
 
   const sendNewResponse = useCallback(
-    event => {
+    () => {
 
       const text = getNewResponseValue().trim()
 
@@ -382,9 +391,24 @@ const DiscussionQuestionTool = React.memo(({
       </ScrollView>
       <View style={styles.newResponse}>
         <TextInput
-          placeholder={i18n("Type a response (seen by entire classroom)", "", "enhanced")}
+          placeholder={
+            i18n("Type a response (seen by entire classroom)", "", "enhanced")
+            + (
+              Platform.OS !== 'web'
+                ? ``
+                : (
+                  `     `
+                  + (
+                    /^Mac/i.test(window.navigator.platform)
+                      ? i18n("⌘ ↩ to send", "", "enhanced")
+                      : i18n("Ctrl ↩ to send", "", "enhanced")
+                  )
+                )
+            )
+          }
           multiline
           value={newResponseValue}
+          onKeyPress={handleInputKeyPress}
           onChangeText={handleInputTextChange}
           onContentSizeChange={handleInputHeightChange}
           style={[
