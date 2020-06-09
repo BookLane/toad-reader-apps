@@ -27,9 +27,11 @@
             + '}'
             + '.erasereader-widget-reference {'
             + 'text-align: right;'
+            + 'display: flex;'
+            + 'justify-content: flex-end;'
             + '}'
             + '.erasereader-widget-reference-a {'
-            + 'display: inline-block;'
+            + 'display: block;'
             + 'color: black;'
             + 'text-decoration: none;'
             + 'position: relative;'
@@ -51,9 +53,8 @@
             + 'font-size: 1em;'
             + 'padding-bottom: 5px;'
             + '}'
-            + '.erasereader-widget-reference::before {'
+            + '.erasereader-widget-reference::after {'
             + 'content: "”";'
-            + 'float: right;'
             + 'font-size: 100px;'
             + 'font-family: cursive;'
             + 'color: #1c60ab;'
@@ -225,9 +226,9 @@
             window.addEventListener('message', function (event) {
                 var data = event.data;
                 var iframeEl = d.getElementById(data.iframeid);
-                var spinnerEl = iframeEl.nextSibling;
 
                 if (iframeEl) {
+                    var spinnerEl = iframeEl.nextSibling;
                     switch (data.action) {
                         case 'setHeight':
                             var height = parseInt(data.payload, 10);
