@@ -44,6 +44,12 @@ Sentry.init({
 
 Sentry.setRelease(Constants.manifest.revisionId)
 
+if(Platform.OS === 'web') {
+  window.productionLog = (...params) => {
+    eval(`console.log("PRODUCTION LOG: ", ${params.map(param => `"${String(param).replace(/"/g, '\"')}"`).join(',')})`)
+  }
+}
+
 const patchMiddleware = store => next => action => {
   const result = next(action)
   if(action.doPatch) {

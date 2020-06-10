@@ -11,7 +11,7 @@ import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
-         isStaging, dashifyDomain } from "../../utils/toolbox"
+         isStaging, dashifyDomain, getQueryString } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -88,20 +88,21 @@ const Library = ({
 
 }) => {
 
+  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
+  const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
+
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
-  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(false)
+  const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
 
-  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
-  const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
-
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
+  const getRouterState = useInstanceValue(routerState)
 
   const previousPathname = usePrevious(pathname)
   const accountIds = Object.keys(accounts).join(',')
@@ -270,6 +271,11 @@ const Library = ({
         return
       }
 
+      // remove query string if it still has one (with loginInfo)
+      if(Platform.OS === 'web' && window.location.search) {
+        window.history.replaceState({}, document.title, window.location.href.replace(/\?[^#]*/, ''))
+      }
+
       if(
         (
           pathname === '/'
@@ -311,7 +317,11 @@ const Library = ({
   const onLoginSuccess = useCallback(
     () => {
       setShowLogin(false)
-      historyReplace()  // clears out doEmailLogin
+      const newRouterState = { ...getRouterState() }
+      if(Object.keys(newRouterState).length > 0) {
+        delete newRouterState.doEmailLogin
+        historyReplace(null, Object.keys(newRouterState).length > 0 ? newRouterState : null)
+      }
     },
     [],
   )
@@ -475,12 +485,15 @@ const Library = ({
     )
   }
 
-  if(showLogin || doEmailLogin) {
+  const query = getQueryString()
+
+  if(showLogin || doEmailLogin || query.loginInfo) {
     return (
       <Login
         idpId={Object.keys(idps)[0]}
         onSuccess={onLoginSuccess}
         doEmailLogin={doEmailLogin}
+        redirectCheckComplete={redirectCheckComplete}
       />
     )
   }

@@ -221,6 +221,17 @@
                 divEl.appendChild(iframeEl);
                 divEl.appendChild(spinnerEl);
                 el.parentNode.replaceChild(divEl, el);
+
+                setTimeout(function() {
+                    if(iframeEl.style.opacity === "0") {  // It did not load
+                        var noLoadEl = newEl('div', {
+                            className: 'erasereader-widget-forbidden',
+                            innerText: 'ERROR: Unable to load.',
+                        });
+                        iframeEl.parentNode.replaceChild(noLoadEl, iframeEl);
+                        spinnerEl.parentNode.removeChild(spinnerEl);
+                    }
+                }, 1000 * 30);
             }
 
             window.addEventListener('message', function (event) {

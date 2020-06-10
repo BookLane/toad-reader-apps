@@ -41,6 +41,7 @@ const Login = ({
   idpId,
   onSuccess,
   doEmailLogin,
+  redirectCheckComplete,
 
   idps,
   accounts,
@@ -64,7 +65,7 @@ const Login = ({
   const [ setReloadTimeout ] = useSetTimeout()
 
   const confirmLoginUrl = Platform.OS === 'web'
-    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web`
+    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web?hash=${encodeURIComponent(window.location.hash)}`
     : `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const { authMethod, devAuthMethod } = idps[idpId]
@@ -105,14 +106,15 @@ const Login = ({
 
   useEffect(
     () => {
-      if(Platform.OS !== 'web' || useEmailLogin) return
+      if(Platform.OS !== 'web' || useEmailLogin || !redirectCheckComplete) return
 
       const query = getQueryString()
 
       if(query.loginInfo) {
         try {
           if(logIn(JSON.parse(query.loginInfo))) {
-            window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`)
+            window.history.replaceState({}, document.title, `/`)
+            window.history.pushState({}, document.title, `${window.location.pathname}${query.hash || `#/`}`)
           }
         } catch(err) {
           historyPush("/error", {
@@ -125,7 +127,7 @@ const Login = ({
       }
 
     },
-    [ logIn, confirmLoginUrl ],
+    [ redirectCheckComplete ],
   )
 
   const onError = useCallback(
