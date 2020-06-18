@@ -7,6 +7,7 @@ import { i18n } from "inline-i18n"
 import { updateToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
+import { isIPhoneX } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
 
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     paddingHorizontal: 30,
     marginHorizontal: -30,
+    textAlignVertical: 'top',
     flex: 1,
   },
 })
@@ -85,8 +87,8 @@ const ReflectionQuestionTool = React.memo(({
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
-      keyboardVerticalOffset={80}
-      enabled={Platform.OS === 'ios'}
+      keyboardVerticalOffset={(Platform.OS === 'android' || isIPhoneX) ? 80 : 70}
+      enabled={!(Platform.OS === 'android' && __DEV__)}
     >
       <Text style={styles.question}>
         {question}

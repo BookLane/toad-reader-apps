@@ -10,7 +10,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
 import useScroll from '../../hooks/useScroll'
 import useKeyboardSize from '../../hooks/useKeyboardSize'
-import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
+import { getDateLine, getTimeLine, bottomSpace, isIPhoneX } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
@@ -352,8 +352,8 @@ const DiscussionQuestionTool = React.memo(({
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
-      keyboardVerticalOffset={80}
-      enabled={Platform.OS === 'ios'}
+      keyboardVerticalOffset={Platform.OS === 'android' ? 100 : (isIPhoneX ? 76 : 82)}
+      enabled={!(Platform.OS === 'android' && __DEV__)}
     >
       <Text style={styles.question}>
         {question}
