@@ -4,7 +4,6 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { submitToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
@@ -148,8 +147,6 @@ const DiscussionQuestionTool = React.memo(({
   idps,
   accounts,
   books,
-
-  submitToolEngagement,
 }) => {
 
   const { classroomUid, idpId, userId } = useClassroomInfo({ books, bookId })
@@ -462,7 +459,6 @@ const mapStateToProps = ({ idps, accounts, books }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-  submitToolEngagement,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(DiscussionQuestionTool)
