@@ -48,8 +48,12 @@ const BookImporter = ({
           {!!(result || {}).success &&
             <Text style={styles.result}>
               {(result || {}).note === 'already-associated'
-                ? i18n("Already in the library.")
-                : i18n("Imported successfully.")
+                ? i18n("Not imported as this book is already in the library.")
+                : (
+                  (result || {}).note === 'associated-to-existing'
+                    ? i18n("Not imported as this book is already in the library of an associated site. Created association to this library.")
+                    : i18n("Imported successfully.")
+                )
               }
             </Text>
           }
