@@ -366,6 +366,9 @@ const mapping = {
       },
     },
     {
+      component: 'BookInfoSize',
+    },
+    {
       component: 'BookInfoId',
     },
     ...MAPPING_CUSTOMIZATION,
