@@ -2,12 +2,12 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import QRCode from "qrcode.react"
-
 import { i18n } from "inline-i18n"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from '../../hooks/useWideMode'
+
+import QRCode from "../basic/QRCode"
 
 const styles = StyleSheet.create({
   container: {
@@ -96,10 +96,12 @@ const EnhancedConnecting = React.memo(({
               {access_code}
             </Text>
           </View>
-          <QRCode
-            value={access_code}
-            size={250}
-          />
+          {!!QRCode &&
+            <QRCode
+              value={access_code}
+              size={250}
+            />
+          }
         </View>
         <View style={styles.codeSection}>
           <Text style={styles.codeSectionLabel}>
@@ -125,10 +127,12 @@ const EnhancedConnecting = React.memo(({
                   {instructor_access_code}
                 </Text>
               </View>
-              <QRCode
-                value={instructor_access_code}
-                size={250}
-              />
+              {!!QRCode &&
+                <QRCode
+                  value={instructor_access_code}
+                  size={250}
+                />
+              }
             </>
           }
         </View>

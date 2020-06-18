@@ -145,7 +145,7 @@ const EnhancedReflectionQuestions = React.memo(({
             questions.forEach(question => {
               orderedQuestions.push({
                 ...question,
-                text: question.name || i18n("Reflection question", "", "enhanced"),
+                text: question.name || i18n("Question", "", "enhanced"),
               })
             })
           })

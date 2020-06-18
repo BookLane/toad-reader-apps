@@ -141,6 +141,7 @@ const DiscussionQuestionTool = React.memo(({
   bookId,
   toolUid,
   viewingPreview,
+  extraKeyboardVerticalOffset=0,
 
   question,
 
@@ -349,7 +350,7 @@ const DiscussionQuestionTool = React.memo(({
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
-      keyboardVerticalOffset={Platform.OS === 'android' ? 100 : (isIPhoneX ? 76 : 82)}
+      keyboardVerticalOffset={(Platform.OS === 'android' ? 100 : (isIPhoneX ? 76 : 82)) + extraKeyboardVerticalOffset}
       enabled={!(Platform.OS === 'android' && __DEV__)}
     >
       <Text style={styles.question}>

@@ -1,5 +1,4 @@
 import React from "react"
-import { Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -14,6 +13,7 @@ import EnhancedScores from "./EnhancedScores"
 import EnhancedMyScores from "./EnhancedMyScores"
 import EnhancedReflectionQuestions from "./EnhancedReflectionQuestions"
 import EnhancedMyReflectionQuestions from "./EnhancedMyReflectionQuestions"
+import EnhancedDiscussionQuestions from "./EnhancedDiscussionQuestions"
 import EnhancedPolls from "./EnhancedPolls"
 import Highlights from "./Highlights"
 import EnhancedScreen from "./EnhancedScreen"
@@ -89,14 +89,9 @@ const EnhancedDashboard = React.memo(({
     {
       title: i18n("Discussions", "", "enhanced"),
       content: (
-        <Text style={{
-          padding: 100,
-          textAlign: 'center',
-          fontSize: 18,
-          fontWeight: '100',
-        }}>
-          Coming soon...
-        </Text>
+        <EnhancedDiscussionQuestions
+          bookId={bookId}
+        />
       ),
     },
     {
