@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react"
-import { StyleSheet, KeyboardAvoidingView, View, ScrollView, Text, Platform, Alert } from "react-native"
+import { StyleSheet, View, ScrollView, Text, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -9,13 +9,14 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
 import useScroll from '../../hooks/useScroll'
 import useKeyboardSize from '../../hooks/useKeyboardSize'
-import { getDateLine, getTimeLine, bottomSpace, isIPhoneX } from "../../utils/toolbox"
+import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import Spin from "../basic/Spin"
 import CoverAndSpin from "../basic/CoverAndSpin"
+import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 const PAGE_SIZE = 20
 
@@ -35,9 +36,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     color: 'red',
     fontSize: 17,
-  },
-  container: {
-    flex: 1,
   },
   question: {
     fontSize: 16,
@@ -347,12 +345,7 @@ const DiscussionQuestionTool = React.memo(({
   let lastDate
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={(Platform.OS === 'android' ? 100 : (isIPhoneX ? 76 : 82)) + extraKeyboardVerticalOffset}
-      enabled={!(Platform.OS === 'android' && __DEV__)}
-    >
+    <KeyboardAvoidingView>
       <Text style={styles.question}>
         {question}
       </Text>

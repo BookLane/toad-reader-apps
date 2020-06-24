@@ -1,21 +1,21 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, KeyboardAvoidingView, Text, Platform } from "react-native"
+import { StyleSheet, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
+import { bottomSpace } from "../../utils/toolbox"
 import { updateToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
-import { isIPhoneX } from "../../utils/toolbox"
 
 import TextInput from "../basic/TextInput"
+import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
     marginHorizontal: 30,
-    flex: 1,
   },
   question: {
     fontSize: 16,
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '100',
     marginTop: 20,
+    paddingBottom: bottomSpace,
   },
   answer: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
@@ -84,12 +85,7 @@ const ReflectionQuestionTool = React.memo(({
   )
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={(Platform.OS === 'android' || isIPhoneX) ? 80 : 70}
-      enabled={!(Platform.OS === 'android' && __DEV__)}
-    >
+    <KeyboardAvoidingView style={styles.container}>
       <Text style={styles.question}>
         {question}
       </Text>
