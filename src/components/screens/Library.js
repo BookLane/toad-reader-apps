@@ -11,7 +11,7 @@ import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
-         isStaging, dashifyDomain, getQueryString } from "../../utils/toolbox"
+         isStaging, isBeta, dashifyDomain, getQueryString } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -140,6 +140,8 @@ const Library = ({
             if(redirectToDomain && redirectToDomain !== window.location.host) {
               if(isStaging()) {
                 redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+              } else if(isBeta()) {
+                redirectToDomain = `${dashifyDomain(redirectToDomain)}.beta.toadreader.com`
               }
               window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
             } else {

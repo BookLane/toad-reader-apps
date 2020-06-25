@@ -321,9 +321,8 @@ const Highlights = React.memo(({
           }
   
           csvData.push([
-
             spineLabelsByIdRef[highlightGroupToShow.spineIdRef] || "",
-            `${getIDPOrigin(idps[idpId])}/#/book/${bookId}#{"latestLocation":${JSON.stringify(latestLocation)}}`,
+            `${getIDPOrigin({ ...idps[idpId], noBeta: true })}/#/book/${bookId}#{"latestLocation":${JSON.stringify(latestLocation)}}`,
             text,
             combineItems(...[
               ...(!types.includes('user') ? [] : [

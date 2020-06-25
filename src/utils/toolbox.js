@@ -293,6 +293,14 @@ export const isStaging = () => (
   )
 )
 
+export const isBeta = () => (
+  Constants.manifest.releaseChannel === 'beta'
+  || (
+    Platform.OS === 'web'
+    && /\.beta\.toadreader\.com$/.test(window.location.hostname)
+  )
+)
+
 export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
   if(__DEV__) {
@@ -305,12 +313,12 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
     return `${protocol}://${dashifyDomain(domain)}.data.staging.toadreader.com`
   }
 
-  // production environment
+  // production or beta environment
   return `${protocol}://${dashifyDomain(domain)}.data.toadreader.com`
 
 }
 
-export const getIDPOrigin = ({ domain, protocol=`https` }) => {
+export const getIDPOrigin = ({ domain, protocol=`https`, noBeta }) => {
 
   if(__DEV__) {
     // dev environment
@@ -322,7 +330,12 @@ export const getIDPOrigin = ({ domain, protocol=`https` }) => {
     return `${protocol}://${dashifyDomain(domain)}.staging.toadreader.com`
   }
 
-  // production environment
+  if(isBeta() && !noBeta) {
+    // beta environment
+    return `${protocol}://${dashifyDomain(domain)}.beta.toadreader.com`
+  }
+
+  // production (or maybe beta) environment
   return `${protocol}://${domain}`
 }
 

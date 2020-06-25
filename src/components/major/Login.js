@@ -9,7 +9,7 @@ import { i18n } from "inline-i18n"
 import EmailLogin from "./EmailLogin"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
-import { getReqOptionsWithAdditions, getDataOrigin, getQueryString } from "../../utils/toolbox"
+import { getReqOptionsWithAdditions, getDataOrigin, getQueryString, isBeta } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
@@ -65,7 +65,7 @@ const Login = ({
   const [ setReloadTimeout ] = useSetTimeout()
 
   const confirmLoginUrl = Platform.OS === 'web'
-    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web?hash=${encodeURIComponent(window.location.hash)}`
+    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web?hash=${encodeURIComponent(window.location.hash)}${isBeta() ? `&isBeta=1` : ``}`
     : `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const { authMethod, devAuthMethod } = idps[idpId]
