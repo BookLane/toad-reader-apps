@@ -8,6 +8,7 @@ import useWideMode from '../../hooks/useWideMode'
 import NotesInsertTool from './NotesInsertTool'
 import VideoTool from './VideoTool'
 import ReflectionQuestionTool from './ReflectionQuestionTool'
+import DiscussionQuestionTool from './DiscussionQuestionTool'
 import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
 import LTITool from "./LTITool"
@@ -122,8 +123,8 @@ const Tool = React.memo(({
       ToolComponent = VideoTool
       break
     }
-    case 'REFLECTION_QUESTION': {
-      ToolComponent = ReflectionQuestionTool
+    case 'QUESTION': {
+      ToolComponent = data.isDiscussion ? DiscussionQuestionTool : ReflectionQuestionTool
       editableByStudent = true
       break
     }
@@ -159,7 +160,7 @@ const Tool = React.memo(({
     <>
       <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
         <Text style={styles.name}>
-          {name || toolInfoByType[toolType].text}
+          {name || (toolInfoByType[toolType] || {}).text || ""}
         </Text>
         {inEditMode &&
           <TouchableOpacity onPress={onExitPreview}>

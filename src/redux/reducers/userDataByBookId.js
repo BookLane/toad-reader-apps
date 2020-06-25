@@ -255,7 +255,7 @@ export default function(state = initialState, action) {
         highlightShareInfo.share_code = createShareCode()
       }
 
-      if(!highlightShareInfo.share_quote) {
+      if(!highlightShareInfo.share_quote && action.share_quote) {
         highlightShareInfo.share_quote = action.share_quote
         if(highlightShareInfo.share_quote.split(' ').length > MAX_QUOTE_WORD_LENGTH) {
           highlightShareInfo.share_quote = `${highlightShareInfo.share_quote.split(' ').slice(0, MAX_QUOTE_WORD_LENGTH).join(' ')}...`

@@ -2,19 +2,27 @@ import { useCallback } from "react"
 import { Platform } from "react-native"
 import { useHistory, useLocation } from "react-router-dom"
 
+import useInstanceValue from "./useInstanceValue"
+
 const useRouterState = () => {
 
   const history = useHistory()
   const location = useLocation()
 
+  const getLocation = useInstanceValue(location)
+
   const historyPush = useCallback(
-    (route, state) => history.push(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
-    [ history, location ],
+    (route, state) => {
+      history.push(`${route || getLocation().pathname}${state ? `#${JSON.stringify(state)}` : ``}`)
+    },
+    [],
   )
 
   const historyReplace = useCallback(
-    (route, state) => history.replace(`${route || location.pathname}${state ? `#${JSON.stringify(state)}` : ``}`),
-    [ history, location ],
+    (route, state) => {
+      history.replace(`${route || getLocation().pathname}${state ? `#${JSON.stringify(state)}` : ``}`)
+    },
+    [],
   )
 
   let routerState = {}

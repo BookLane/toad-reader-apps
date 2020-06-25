@@ -11,6 +11,7 @@ import BookInfoAuthor from "./BookInfoAuthor"
 import BookInfoTrial from "./BookInfoTrial"
 import BookInfoIsbn from "./BookInfoIsbn"
 import BookInfoId from "./BookInfoId"
+import BookInfoSize from "./BookInfoSize"
 import BookInfoDetails from "./BookInfoDetails"
 import { i18n } from "inline-i18n"
 import Dialog from "../major/Dialog"
@@ -80,7 +81,7 @@ const BookInfo = ({
   setSubscriptions,
 }) => {
 
-  const { title, author, flags, isbn } = bookInfo
+  const { title, author, flags, isbn, epubSizeInMB } = bookInfo
 
   const { historyPush } = useRouterState()
 
@@ -207,6 +208,7 @@ const BookInfo = ({
         <BookInfoTitle to={`/book/${bookId}`}>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
         {(flags || []).includes('trial') && <BookInfoTrial/>}
+        <BookInfoSize epubSizeInMB={epubSizeInMB} />
         <BookInfoIsbn isbn={isbn} />
         {!!adminInfo &&
           <BookInfoId id={bookId} />

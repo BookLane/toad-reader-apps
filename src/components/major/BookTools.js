@@ -47,7 +47,7 @@ const BookTools = React.memo(({
       .map(({ cfi, y, ordering }) => {
         if(ordering !== 0) return null
     
-        return (spineToolsByCfi[cfi] || []).map(({ uid, toolType, published_at, name }, idx) => (
+        return (spineToolsByCfi[cfi] || []).map(({ uid, toolType, data, published_at, name }, idx) => (
           <View
             key={uid}
             style={[
@@ -64,6 +64,7 @@ const BookTools = React.memo(({
               uid={uid}
               label={name}
               toolType={toolType}
+              data={data}
               isDraft={!published_at}
               onPress={() => setSelectedToolUid({
                 bookId,

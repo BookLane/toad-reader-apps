@@ -109,12 +109,13 @@ const BookContents = React.memo(({
         insertedToolUidObj[uid] = true
       })
 
-      return toolsToInsert.map(({ uid, name, toolType, published_at, spineIdRef, ordering }) => ({
+      return toolsToInsert.map(({ uid, name, toolType, data, published_at, spineIdRef, ordering }) => ({
         key: uid,
         uid,
         indentLevel,
         label: name,
         toolType,
+        data,
         isDraft: !published_at,
         spineIdRef,
         ordering,

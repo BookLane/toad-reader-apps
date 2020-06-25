@@ -183,6 +183,7 @@ const EmailLogin = ({
               <Input
                 label={i18n("Email")}
                 value={email}
+                name="email"
                 onChangeText={setEmail}
                 disabled={stage === 'SENDING_EMAIL'}
                 autoCorrect={false}

@@ -99,7 +99,7 @@ const GroupedToolsChip = ({
           ]}
           contentContainerStyle={styles.toolChipsContainer}
         >
-          {spineToolSets.flat().map(({ uid, toolType, published_at, name }) => (
+          {spineToolSets.flat().map(({ uid, toolType, data, published_at, name }) => (
             <View
               key={uid}
               style={styles.toolChipContainer}
@@ -108,6 +108,7 @@ const GroupedToolsChip = ({
                 uid={uid}
                 label={name}
                 toolType={toolType}
+                data={data}
                 isDraft={!published_at}
                 onPress={() => {
                   setSelectedToolUid({ bookId, uid })

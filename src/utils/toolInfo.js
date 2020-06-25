@@ -17,8 +17,10 @@ export const getToolInfo = () => {
   const toolTypes = [
     {
       toolType: 'NOTES_INSERT',
-      name: 'lead-pencil',
-      pack: 'materialCommunity',
+      icon: {
+        name: 'lead-pencil',
+        pack: 'materialCommunity',
+      },
       text: i18n("Notes insert", "", "enhanced"),
       dataStructure: [
         {
@@ -32,7 +34,9 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'QUIZ',
-      name: 'md-checkbox',
+      icon: {
+        name: 'md-checkbox',
+      },
       text: i18n("Quiz", "", "enhanced"),
       dataStructure: [
         {
@@ -80,8 +84,10 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'LTI',
-      name: 'wrench',
-      pack: 'materialCommunity',
+      icon: {
+        name: 'wrench',
+        pack: 'materialCommunity',
+      },
       text: i18n("Learning (LTI) tool", "", "enhanced"),
       dataStructure: [
         {
@@ -126,8 +132,10 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'VIDEO',
-      name: 'youtube-play',
-      pack: 'fontAwesome',
+      icon: {
+        name: 'youtube-play',
+        pack: 'fontAwesome',
+      },
       text: i18n("Video", "", "enhanced"),
       dataStructure: [
         {
@@ -170,39 +178,42 @@ export const getToolInfo = () => {
         && !hasErrorWithMessageForTime(endTime)
       ),
     },
-    // {
-    //   toolType: 'DISCUSSION_QUESTION',
-    //   name: 'question-answer',
-    //   pack: 'material',
-    //   text: i18n("Discussion question", "", "enhanced"),
-    //   dataStructure: [
-    //     {
-    //       name: 'question',
-    //       type: 'string',
-    //       label: i18n("Question", "", "enhanced"),
-    //       required: true,
-    //     },
-    //   ],
-    // },
     {
-      toolType: 'REFLECTION_QUESTION',
-      name: 'comment-question',
-      pack: 'materialCommunity',
-      text: i18n("Reflection question", "", "enhanced"),
+      toolType: 'QUESTION',
+      icon: ({ isDiscussion }={}) => ({
+        name: isDiscussion ? 'question-answer' : 'comment-question',
+        pack: isDiscussion ? 'material' : 'materialCommunity',
+      }),
+      text: i18n("Question", "", "enhanced"),
       dataStructure: [
         {
           name: 'question',
           type: 'string',
-          label: i18n("Question", "", "enhanced"),
+          label: ({ dataSegment }) => (
+            dataSegment.isDiscussion
+              ? i18n("Discussion question", "", "enhanced")
+              : i18n("Reflection question", "", "enhanced")
+          ),
           required: true,
+        },
+        {
+          name: 'isDiscussion',
+          type: 'boolean',
+          label: i18n("Classroom discussion style", "", "enhanced"),
+          isHiddenWithMessage: ({ isDefaultClassroom }) => (
+            isDefaultClassroom
+            && i18n("Classrooms will also have the option of turning this reflection question into a discussion.", "", "enhanced")
+          ),
         },
       ],
       readyToPublish: ({ data: { question } }) => nonEmpty(question),
     },
     {
       toolType: 'POLL',
-      name: 'poll',
-      pack: 'materialCommunity',
+      icon: {
+        name: 'poll',
+        pack: 'materialCommunity',
+      },
       text: i18n("Poll", "", "enhanced"),
       dataStructure: [
         {
@@ -227,7 +238,9 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'DOCUMENT',
-      name: 'md-document',
+      icon: {
+        name: 'md-document',
+      },
       text: i18n("Document", "", "enhanced"),
       dataStructure: [
         {
@@ -245,7 +258,9 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'IMAGES',
-      name: 'md-image',
+      icon: {
+        name: 'md-image',
+      },
       text: i18n("Images", "", "enhanced"),
       dataStructure: [
         {
@@ -265,7 +280,9 @@ export const getToolInfo = () => {
     },
     {
       toolType: 'AUDIO',
-      name: 'md-musical-note',
+      icon: {
+        name: 'md-musical-note',
+      },
       text: i18n("Audio", "", "enhanced"),
       dataStructure: [
         {

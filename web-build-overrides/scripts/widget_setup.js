@@ -27,9 +27,11 @@
             + '}'
             + '.erasereader-widget-reference {'
             + 'text-align: right;'
+            + 'display: flex;'
+            + 'justify-content: flex-end;'
             + '}'
             + '.erasereader-widget-reference-a {'
-            + 'display: inline-block;'
+            + 'display: block;'
             + 'color: black;'
             + 'text-decoration: none;'
             + 'position: relative;'
@@ -51,9 +53,8 @@
             + 'font-size: 1em;'
             + 'padding-bottom: 5px;'
             + '}'
-            + '.erasereader-widget-reference::before {'
+            + '.erasereader-widget-reference::after {'
             + 'content: "”";'
-            + 'float: right;'
             + 'font-size: 100px;'
             + 'font-family: cursive;'
             + 'color: #1c60ab;'
@@ -220,14 +221,25 @@
                 divEl.appendChild(iframeEl);
                 divEl.appendChild(spinnerEl);
                 el.parentNode.replaceChild(divEl, el);
+
+                setTimeout(function() {
+                    if(iframeEl.style.opacity === "0") {  // It did not load
+                        var noLoadEl = newEl('div', {
+                            className: 'erasereader-widget-forbidden',
+                            innerText: 'ERROR: Unable to load.',
+                        });
+                        iframeEl.parentNode.replaceChild(noLoadEl, iframeEl);
+                        spinnerEl.parentNode.removeChild(spinnerEl);
+                    }
+                }, 1000 * 30);
             }
 
             window.addEventListener('message', function (event) {
                 var data = event.data;
                 var iframeEl = d.getElementById(data.iframeid);
-                var spinnerEl = iframeEl.nextSibling;
 
                 if (iframeEl) {
+                    var spinnerEl = iframeEl.nextSibling;
                     switch (data.action) {
                         case 'setHeight':
                             var height = parseInt(data.payload, 10);

@@ -743,7 +743,7 @@ const Book = React.memo(({
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
 
   const onToolMove = useCallback(
-    ({ nativeEvent, label, toolType, isDraft, uid }) => {
+    ({ nativeEvent, label, toolType, data, isDraft, uid }) => {
       if(!getInEditMode()) return false
 
       if(!movingToolOffsets.current) {
@@ -804,6 +804,7 @@ const Book = React.memo(({
             top,
           },
           toolType,
+          data,
           isDraft,
           label,
         },

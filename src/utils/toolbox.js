@@ -293,11 +293,19 @@ export const isStaging = () => (
   )
 )
 
+export const isBeta = () => (
+  Constants.manifest.releaseChannel === 'beta'
+  || (
+    Platform.OS === 'web'
+    && /\.beta\.toadreader\.com$/.test(window.location.hostname)
+  )
+)
+
 export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
   if(__DEV__) {
     // dev environment
-    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
+    return `${protocol.replace(/s$/, '')}://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
   }
 
   if(isStaging()) {
@@ -305,12 +313,12 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
     return `${protocol}://${dashifyDomain(domain)}.data.staging.toadreader.com`
   }
 
-  // production environment
+  // production or beta environment
   return `${protocol}://${dashifyDomain(domain)}.data.toadreader.com`
 
 }
 
-export const getIDPOrigin = ({ domain, protocol=`https` }) => {
+export const getIDPOrigin = ({ domain, protocol=`https`, noBeta }) => {
 
   if(__DEV__) {
     // dev environment
@@ -322,7 +330,12 @@ export const getIDPOrigin = ({ domain, protocol=`https` }) => {
     return `${protocol}://${dashifyDomain(domain)}.staging.toadreader.com`
   }
 
-  // production environment
+  if(isBeta() && !noBeta) {
+    // beta environment
+    return `${protocol}://${dashifyDomain(domain)}.beta.toadreader.com`
+  }
+
+  // production (or maybe beta) environment
   return `${protocol}://${domain}`
 }
 
@@ -496,9 +509,19 @@ export const objectMap = (obj, fn) => (
   )
 )
 
-export const getDateLine = ({ timestamp, short }) => {
+export const getDateLine = ({ timestamp, short, relative }) => {
   const date = new Date(timestamp)
+  const today = new Date()
+  const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
   const now = new Date()
+
+  if(relative) {
+    if(date.toDateString() === today.toDateString()) {
+      return i18n("Today", "", "enhanced")
+    } else if(date.toDateString() === yesterday.toDateString()) {
+      return i18n("Yesterday", "", "enhanced")
+    }
+  }
 
   const options = {
     year: 'numeric',
