@@ -59,7 +59,7 @@ const BookHeader = React.memo(({
   const goToBookLink = useCallback(
     () => {
       const bookLinkInfo = getFirstBookLinkInfo(book)
-      openURL({ url: bookLinkInfo.href, newTab: false, historyPush })
+      openURL({ url: bookLinkInfo.href, newTab: true, historyPush })
     },
     [ book ],
   )
