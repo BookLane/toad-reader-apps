@@ -701,3 +701,20 @@ export const getQueryString = () => {
 
   return query
 }
+
+export const normalizePath = path => {
+
+  // get rid of unneeded ./
+  path = path.replace(/(^|\/)\.\//g, "$1")
+
+  // get rid of double /
+  path = path.replace(/\/\/+/g, "/")
+
+  // get rid of unneeded ../'s
+  const removeDirBack = p => p.replace(/[^\/]+\/\.\.\//g, "")
+  while(removeDirBack(path) !== path) {
+    path = removeDirBack(path)
+  }
+
+  return path
+}
