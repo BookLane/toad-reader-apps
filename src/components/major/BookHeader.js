@@ -30,7 +30,6 @@ const BookHeader = React.memo(({
   subtitle,
   mode,
   showDisplaySettings,
-  toggleBookView,
   onBackPress,
   setModeToPage,
 
@@ -157,26 +156,6 @@ const BookHeader = React.memo(({
       onPress={showDisplaySettings}
       uiStatus={wideMode ? "faded" : null}
     />,
-    // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
-    //   <HeaderIcon
-    //     iconName="md-apps"
-    //     onPress={togglePageBrowser}
-    //     uiStatus="faded"
-    //   />
-    // ]),
-    ...(!(wideMode) ? [] : [
-      <HeaderIcon
-        iconName="md-list"
-        onPress={toggleSidePanelOpen}
-        uiStatus={sidePanelSettings.open ? null : "faded"}
-      />
-    ]),
-    ...(!(!wideMode && Platform.OS !== 'web') ? [] : [
-      <HeaderIcon
-        iconName={[ 'pages', 'zooming' ].includes(mode) ? "md-list" : "md-apps"}
-        onPress={toggleBookView}
-      />
-    ]),
     ...(moreOptions.length === 0 ? [] : [
       <OverflowMenu
         data={moreOptions}
@@ -192,6 +171,20 @@ const BookHeader = React.memo(({
           uiStatus={wideMode ? "faded" : null}
         />
       </OverflowMenu>,
+    ]),
+    // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
+    //   <HeaderIcon
+    //     iconName="md-apps"
+    //     onPress={togglePageBrowser}
+    //     uiStatus="faded"
+    //   />
+    // ]),
+    ...(!(wideMode) ? [] : [
+      <HeaderIcon
+        iconName="md-list"
+        onPress={toggleSidePanelOpen}
+        uiStatus={sidePanelSettings.open ? null : "faded"}
+      />
     ]),
   ]
 

@@ -30,10 +30,6 @@ const styles = StyleSheet.create({
   listFooter: {
     paddingTop: 70 + bottomSpace,
   },
-  backToReadingFAB: {
-    right: 'auto',
-    left: 15,
-  },
 })
 
 const BookContents = React.memo(({
@@ -45,7 +41,6 @@ const BookContents = React.memo(({
   onScroll,
   inEditMode,
   toggleInEditMode,
-  backToReading,
   setModeToPage,
   hideFABs,
 
@@ -337,15 +332,6 @@ const BookContents = React.memo(({
           iconName="md-add"
           status="primary"
           onPress={createNewTool}
-        />
-      }
-      {!!backToReading && !hideFABs &&
-        <FAB
-          iconName="book-open-variant"
-          iconPack="materialCommunity"
-          status="primary"
-          onPress={backToReading}
-          style={styles.backToReadingFAB}
         />
       }
     </>

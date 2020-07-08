@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, Text, Platform } from "react-native"
+import { StyleSheet, Text, View, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -10,12 +10,12 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 import TextInput from "../basic/TextInput"
-import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
     marginHorizontal: 30,
+    flex: 1,
   },
   question: {
     fontSize: 16,
@@ -85,7 +85,7 @@ const ReflectionQuestionTool = React.memo(({
   )
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.question}>
         {question}
       </Text>
@@ -102,7 +102,7 @@ const ReflectionQuestionTool = React.memo(({
           : i18n("This is a reflection question. Your answer may be seen by you and your instructor(s).", "", "enhanced")
         }
       </Text>
-    </KeyboardAvoidingView>
+    </View>
   )
 })
 

@@ -263,6 +263,7 @@ export default async ({ bookId, idp, account }) => {
           && opfManifestItemsByIdref[idref].$
           && tocLabelsByHref[opfManifestItemsByIdref[idref].$.href]
         ) || "",
+        path: `${opfDir}${opfManifestItemsByIdref[idref].$.href}`,
       }
     })
     
