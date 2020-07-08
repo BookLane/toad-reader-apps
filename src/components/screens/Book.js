@@ -342,7 +342,7 @@ const Book = React.memo(({
   )
 
   const selectedTabIndex = tabs[tabsSelectedIndex] ? tabsSelectedIndex : 0
-  const selectedTabId = tabs[selectedTabIndex].id
+  const selectedTabId = (tabs[selectedTabIndex] || {}).id
 
   const toggleInEditMode = useCallback(
     () => {
