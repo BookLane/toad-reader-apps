@@ -4,10 +4,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
-import escapeStringRegexp from "escape-string-regexp"
 
 // import {  } from "../../utils/toolbox"
-import { searchBook, getAutoSuggest } from "../../utils/indexEpub"
+import { searchBook, getAutoSuggest, getResultLineInJSX } from "../../utils/indexEpub"
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 import AppHeader from "../basic/AppHeader"
@@ -16,9 +15,6 @@ import HeaderIcon from "../basic/HeaderIcon"
 import Input from "../basic/Input"
 import BackFunction from "../basic/BackFunction"
 import CoverAndSpin from "../basic/CoverAndSpin"
-
-const SEARCH_RESULT_ELLIPSISIZE_TEXT_CUT_OFF_LENGTH = 30
-const SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF = 4
 
 const styles = StyleSheet.create({
   header: {
@@ -90,59 +86,15 @@ const Search = ({
   )
 
   const renderResult = useCallback(
-    ({ item: { spineIdRef, cfi, terms, text } }) => {
-      const lowerCaseTerms = terms.map(term => term.toLowerCase())
-      const wordDividersRegEx = /[ ]+/g
-      return (
-        <View key={`${spineIdRef}\n${cfi}`}>
-          <Text>
-            {
-              text
-                .split(
-                  new RegExp(`(${terms.map(term => escapeStringRegexp(term)).join('|')})`, 'gi')
-                )
-                .map((part, idx) => (
-                  lowerCaseTerms.includes(part.toLowerCase())
-                    ? (
-                      <Text
-                        key={idx}
-                        style={styles.term}
-                      >
-                        {part}
-                      </Text>
-                    )
-                    : (
-                      (
-                        text.length > SEARCH_RESULT_ELLIPSISIZE_TEXT_CUT_OFF_LENGTH
-                        && part.split(wordDividersRegEx).length > SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF * 2
-                      )
-                        ? (
-                          part
-                            .split(wordDividersRegEx)
-                            .map((word, idx2) => (
-                              idx2 === SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF * 2
-                                ? '...'
-                                : word
-                            ))
-                            .filter((word, idx3, ary) => (
-                              (
-                                idx !== 0
-                                && idx3/2 <= SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF
-                              )
-                              || (ary.length - idx3 - 1)/2 < SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF
-                            ))
-                            .join('')
-                        )
-                        : part
-                    )
-                ))
-            }
-          </Text>
-          <Text>{spineIdRef}</Text>
-          <Text>{cfi}</Text>
-        </View>
-      )
-    },
+    ({ item: { spineIdRef, cfi, terms, text } }) => (
+      <View key={`${spineIdRef}\n${cfi}`}>
+        <Text>
+          {getResultLineInJSX({ text, terms, termStyle: styles.term })}
+        </Text>
+        <Text>{spineIdRef}</Text>
+        <Text>{cfi}</Text>
+      </View>
+    ),
     [],
   )
 
