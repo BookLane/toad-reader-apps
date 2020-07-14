@@ -1,9 +1,10 @@
 import React from "react"
 import { Text } from "react-native"
 import MiniSearch from "minisearch"
+import * as FileSystem from 'expo-file-system'
 
-import getEpubTextNodeDocuments from "./getEpubTextNodeDocuments"
-import { getBooksDir } from "./toolbox"
+import { getDataOrigin, getReqOptionsWithAdditions } from "./toolbox"
+import downloadAsync from "./downloadAsync"
 
 let currentMiniSearch, currentIndexBookId
 
@@ -15,48 +16,56 @@ const SPACE_OR_PUNCTUATION = "[\\n\\r -#%-*,-/:;?@[-\\]_{}\\u00A0\\u00A1\\u00A7\
 const SEARCH_RESULT_ELLIPSISIZE_TEXT_CUT_OFF_LENGTH = 70
 const SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART_HALF = 3
 
-export const indexBook = async ({ bookId, spines }) => {
+export const loadIndex = async ({ idp, bookId, cookie }) => {
 
-  const startTime = Date.now()
+  if(Platform.OS === 'web') return
+  if(currentIndexBookId === bookId) return
 
   currentIndexBookId = undefined
-  currentMiniSearch = new MiniSearch({
-    idField: 'cfi',
-    fields: ['text'],  // fields to index for full-text search
-    storeFields: ['spineIdRef', 'cfi', 'text'],  // fields to return with search results
-    tokenize: str => str.split(new RegExp(SPACE_OR_PUNCTUATION, 'u')),
-    // Using STOP_WORDS did not significantly speed up indexing or reduce the index size. Thus, it is commented out.
-    // processTerm: term => {
-    //   const lowerCaseTerm = term.toLowerCase()
-    //   return STOP_WORDS.has(lowerCaseTerm) ? null : lowerCaseTerm
-    // },
-    searchOptions: {
-      // prefix: term => term.length > 3,
-      // fuzzy: term => term.length > 3 ? 0.2 : null,
-      combineWith: 'AND',
-     },
-  })
 
-  if(spines.length > 0 && !spines[0].path) {
-    // TODO: I need to re-parse the OPF to get spine paths
-    return
-  }
+  const searchIndexUri = `${getDataOrigin(idp)}/epub_content/book_${bookId}/search_index.json`
+  const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
 
-  for(let spine of spines) {
-    const spineItemPath = `${getBooksDir()}${bookId}/${spine.path}`
+  // download search file if not already done
+  const success = await downloadAsync(
+    searchIndexUri,
+    searchIndexLocalUri,
+    {
+      skipIfExists: true,
+      headers: (
+        getReqOptionsWithAdditions({
+          headers: {
+            "x-cookie-override": cookie,
+          },
+        }).headers
+      ),
+    },
+  )
 
-    const documents = await getEpubTextNodeDocuments({ spineItemPath, spineIdRef: spine.idref })
+  if(!success) return
 
-    await currentMiniSearch.addAllAsync(documents)
-  }
-
-  console.log('TOTAL INDEX SECONDS:', (Date.now() - startTime)/1000)
-  console.log('INDEX SIZE:', JSON.stringify(currentMiniSearch.toJSON()).length)
+  currentMiniSearch = MiniSearch.loadJSON(
+    await FileSystem.readAsStringAsync(searchIndexLocalUri),
+    {
+      idField: 'cfi',
+      fields: ['text'],  // fields to index for full-text search
+      storeFields: ['spineIdRef', 'cfi', 'text'],  // fields to return with search results
+      tokenize: str => str.split(new RegExp(SPACE_OR_PUNCTUATION, 'u')),
+      // Using STOP_WORDS did not significantly speed up indexing or reduce the index size. Thus, it is commented out.
+      // processTerm: term => {
+      //   const lowerCaseTerm = term.toLowerCase()
+      //   return STOP_WORDS.has(lowerCaseTerm) ? null : lowerCaseTerm
+      // },
+      searchOptions: {
+        // prefix: term => term.length > 3,
+        // fuzzy: term => term.length > 3 ? 0.2 : null,
+        combineWith: 'AND',
+      },
+    },
+  )
 
   currentIndexBookId = bookId
 }
-
-export const getCurrentIndexBookId = () => currentIndexBookId
 
 export const getAutoSuggest = partialSearchStr => {
 

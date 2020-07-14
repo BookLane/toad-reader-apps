@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, FlatList } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -8,13 +8,9 @@ import useToggle from "react-use/lib/useToggle"
 // import {  } from "../../utils/toolbox"
 import { searchBook, getAutoSuggest, getResultLineInJSX } from "../../utils/indexEpub"
 import useSetTimeout from '../../hooks/useSetTimeout'
+import { loadIndex } from "../../utils/indexEpub"
 
-import AppHeader from "../basic/AppHeader"
-import SafeLayout from "../basic/SafeLayout"
-import HeaderIcon from "../basic/HeaderIcon"
 import Input from "../basic/Input"
-import BackFunction from "../basic/BackFunction"
-import CoverAndSpin from "../basic/CoverAndSpin"
 
 const styles = StyleSheet.create({
   header: {
@@ -29,8 +25,9 @@ const styles = StyleSheet.create({
 
 const Search = ({
   bookId,
-  close,
 
+  idp,
+  accounts,
   books,
   recentSearchesByBookId,
 }) => {
@@ -44,6 +41,16 @@ const Search = ({
   const [ setSearchTimeout ] = useSetTimeout()
 
   const inputRef = useRef()
+
+  const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
+  const { cookie } = accounts[accountId] || {}
+
+  useEffect(
+    () => {
+      loadIndex({ idp, bookId, cookie })
+    },
+    [ idp, bookId, cookie ],
+  )
 
   useEffect(
     () => {
@@ -160,7 +167,9 @@ const Search = ({
   )
 }
 
-const mapStateToProps = ({ books, recentSearchesByBookId }) => ({
+const mapStateToProps = ({ idp, accounts, books, recentSearchesByBookId }) => ({
+  idp,
+  accounts,
   books,
   recentSearchesByBookId,
 })

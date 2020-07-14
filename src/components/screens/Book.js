@@ -10,7 +10,6 @@ import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { indexBook, getCurrentIndexBookId } from "../../utils/indexEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showConsent, getIdsFromAccountId,
          getToolCfiCounts } from "../../utils/toolbox"
@@ -465,22 +464,6 @@ const Book = React.memo(({
   useEffect(
     () => showConsent({ idps, setConsentShown }),
     [],
-  )
-
-  useEffect(
-    () => {
-      if(
-        Platform.OS !== 'web'
-        && bookLoaded
-        && getCurrentIndexBookId() !== bookId
-      ) {
-        indexBook({
-          bookId,
-          spines: books[bookId].spines,
-        })
-      }
-    },
-    [ bookId, bookLoaded, books[bookId].spines ],
   )
 
   useEffect(

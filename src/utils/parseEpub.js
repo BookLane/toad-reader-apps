@@ -1,3 +1,4 @@
+// Should accord with file by same name in toad-reader-server
 // See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
 
 import { Platform } from "react-native"
