@@ -12,7 +12,7 @@ import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showConsent, getIdsFromAccountId,
-         getToolCfiCounts } from "../../utils/toolbox"
+         getToolCfiCounts, bottomSpace } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 2,
-    height: BOTTOM_NAVIGATION_HEIGHT,
+    height: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
     backgroundColor: '#fff',
   },
   bottomNavigation: {
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
     left: RETURN_TO_READING_WIDTH,
     right: 0,
     top: 0,
-    bottom: 0,
+    bottom: bottomSpace,
   },
   backToReading: {
     position: 'absolute',
     left: 0,
     width: RETURN_TO_READING_WIDTH,
     top: 0,
-    bottom: 0,
+    bottom: bottomSpace,
   },
 })
 
