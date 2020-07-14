@@ -73,7 +73,7 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT,
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: '#F7F9FC',
@@ -83,7 +83,7 @@ const pagesStyles = {
 const searchStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT,
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: '#F7F9FC',
@@ -101,7 +101,7 @@ const zoomStyles = {
 const contentsStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT,
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: '#fff',

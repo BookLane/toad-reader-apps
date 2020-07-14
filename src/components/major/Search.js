@@ -18,6 +18,20 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     backgroundColor: '#fff',
   },
+  container: {
+    flex: 1,
+  },
+  flatListContent: {
+    paddingVertical: 10,
+  },
+  suggestion: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  result: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   term: {
     fontWeight: 'bold',
   },
@@ -84,7 +98,7 @@ const Search = ({
           blurInput()
         }}
       >
-        <Text>
+        <Text style={styles.suggestion}>
           {suggestion}
         </Text>
       </TouchableOpacity>
@@ -94,7 +108,10 @@ const Search = ({
 
   const renderResult = useCallback(
     ({ item: { spineIdRef, cfi, terms, text } }) => (
-      <View key={`${spineIdRef}\n${cfi}`}>
+      <View
+        key={`${spineIdRef}\n${cfi}`}
+        style={styles.result}
+      >
         <Text>
           {getResultLineInJSX({ text, terms, termStyle: styles.term })}
         </Text>
@@ -110,7 +127,10 @@ const Search = ({
   const { title } = books[bookId]
 
   return (
-    <View onStartShouldSetResponder={blurInput}>
+    <View
+      onStartShouldSetResponder={blurInput}
+      style={styles.container}
+    >
       {/* <BackFunction func={historyGoBack} /> */}
       <View style={styles.header}>
         <Input
@@ -135,8 +155,9 @@ const Search = ({
         </Text>
       }
       {!showResults && !!normalizedSearchStr &&
-        <View style={styles.suggestions}>
+        <>
           <FlatList
+            contentContainerStyle={styles.flatListContent}
             data={suggestions}
             renderItem={renderSuggestion}
             keyExtractor={({ suggestion }) => suggestion}
@@ -147,11 +168,12 @@ const Search = ({
               Term not found
             </Text>
           }
-        </View>
+        </>
       }
       {showResults &&
-        <View style={styles.results}>
+        <>
           <FlatList
+            contentContainerStyle={styles.flatListContent}
             data={results}
             renderItem={renderResult}
             keyExtractor={({ spineIdRef, cfi }) => `${spineIdRef}\n${cfi}`}
@@ -161,7 +183,7 @@ const Search = ({
               No results
             </Text>
           }
-        </View>
+        </>
       }
     </View>
   )

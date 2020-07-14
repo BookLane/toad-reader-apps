@@ -75,7 +75,7 @@ export const getAutoSuggest = partialSearchStr => {
     partialSearchStr,
     {
       prefix: true,
-      fuzzy: term => term.length > 3 ? 0.5 : null,
+      fuzzy: term => term.length > 3 ? 0.2 : null,
       combineWith: 'AND',
     }
   )
