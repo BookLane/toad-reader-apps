@@ -42,7 +42,7 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
     },
   )
 
-  if(!success) return
+  if(success === false) return  // download failed
 
   currentMiniSearch = MiniSearch.loadJSON(
     await FileSystem.readAsStringAsync(searchIndexLocalUri),
@@ -69,6 +69,8 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
 
 export const getAutoSuggest = partialSearchStr => {
 
+  if(!currentMiniSearch) return []  // TODO: get from the server
+
   return currentMiniSearch.autoSuggest(
     partialSearchStr,
     {
@@ -81,6 +83,8 @@ export const getAutoSuggest = partialSearchStr => {
 }
 
 export const searchBook = searchStr => {
+
+  if(!currentMiniSearch) return []  // TODO: get from the server
 
   return currentMiniSearch.search(
     searchStr,
