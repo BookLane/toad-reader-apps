@@ -5,7 +5,7 @@ import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import { parseString } from "xml2js"
 
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
+import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch, normalizePath } from "./toolbox"
 
 const getXmlAsObj = async ({ url, account }) => {
   const urlWithoutHash = url.replace(/#.*$/, '')
@@ -57,7 +57,7 @@ const addDirToHref = ({ href, navRelativeUri, opfDir }) => {
   if(href && !/^\//.test(href)) {
     const navRelativeUriWithoutOpfDir = navRelativeUri.substr(opfDir.length)
     if(/\//.test(navRelativeUriWithoutOpfDir)) {
-      href = navRelativeUriWithoutOpfDir.replace(/\/[^\/]+$/, `/${href}`)
+      href = normalizePath(navRelativeUriWithoutOpfDir.replace(/\/[^\/]+$/, `/${href}`))
     }
   }
 
@@ -159,7 +159,7 @@ export default async ({ bookId, idp, account }) => {
 
             if(!label || !href) return null
 
-            href = addDirToHref({ href, navRelativeUri, opfDir })
+            href = normalizePath(addDirToHref({ href, navRelativeUri, opfDir }))
 
             const spineIdRef = ((opfManifestItemsByHref[href.replace(/[?#].*$/, '')] || {}).$ || {}).id
 
@@ -216,7 +216,7 @@ export default async ({ bookId, idp, account }) => {
 
             if(!label || !href) return null
 
-            href = addDirToHref({ href, navRelativeUri, opfDir })
+            href = normalizePath(addDirToHref({ href, navRelativeUri, opfDir }))
 
             tocLabelsByHref[href] = label
 
@@ -264,7 +264,7 @@ export default async ({ bookId, idp, account }) => {
           && opfManifestItemsByIdref[idref].$
           && tocLabelsByHref[opfManifestItemsByIdref[idref].$.href]
         ) || "",
-        path: `${opfDir}${opfManifestItemsByIdref[idref].$.href}`,
+        path: normalizePath(`${opfDir}${opfManifestItemsByIdref[idref].$.href}`),
       }
     })
     
