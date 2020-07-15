@@ -13,6 +13,8 @@ import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
 
+import { addRecentSearch } from "../../redux/actions"
+
 const styles = StyleSheet.create({
   header: {
     padding: 14,
@@ -53,6 +55,8 @@ const Search = ({
   accounts,
   books,
   recentSearchesByBookId,
+
+  addRecentSearch,
 }) => {
 
   const [ showResults, toggleShowResults ] = useToggle(false)
@@ -96,6 +100,20 @@ const Search = ({
     [ normalizedSearchStr, showResults ],
   )
 
+  useEffect(
+    () => {
+      if(showResults) {
+        addRecentSearch({
+          bookId,
+          info: {
+            str: normalizedSearchStr,
+          },
+        })
+      }
+    },
+    [ showResults ],
+  )
+
   const blurInput = useCallback(() => inputRef.current.blur(), [])
 
   const spineLabelsByIdRef = useMemo(
@@ -112,17 +130,17 @@ const Search = ({
   )
 
   const renderSuggestion = useCallback(
-    ({ item: { suggestion } }) => (
+    ({ item: { suggestion, str } }) => (
       <TouchableOpacity
-        key={suggestion}
+        key={suggestion || str}
         onPress={() => {
-          setSearchStr(suggestion)
+          setSearchStr(suggestion || str)
           toggleShowResults(true)
           blurInput()
         }}
       >
         <Text style={styles.suggestion}>
-          {suggestion}
+          {suggestion || str}
         </Text>
       </TouchableOpacity>
     ),
@@ -193,18 +211,13 @@ const Search = ({
           forwardRef={inputRef}
         />
       </View>
-      {!showResults && !normalizedSearchStr &&
-        <Text>
-          History
-        </Text>
-      }
-      {!showResults && !!normalizedSearchStr &&
+      {!showResults &&
         <>
           <FlatList
             contentContainerStyle={styles.flatListContent}
-            data={suggestions}
+            data={normalizedSearchStr ? suggestions : (recentSearchesByBookId[bookId] || [])}
             renderItem={renderSuggestion}
-            keyExtractor={({ suggestion }) => suggestion}
+            keyExtractor={({ suggestion, str }) => suggestion || `recent search\n${str}`}
             keyboardShouldPersistTaps='handled'
           />
           {suggestions.length === 0 &&
@@ -241,6 +254,7 @@ const mapStateToProps = ({ idp, accounts, books, recentSearchesByBookId }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  addRecentSearch,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Search)

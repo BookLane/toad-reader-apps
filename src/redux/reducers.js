@@ -17,6 +17,7 @@ import syncStatus from "./reducers/syncStatus"
 import userDataByBookId from "./reducers/userDataByBookId"
 import currentReadingRecord from "./reducers/currentReadingRecord"
 import readingRecordsByAccountId from "./reducers/readingRecordsByAccountId"
+import recentSearchesByBookId from "./reducers/recentSearchesByBookId"
 
 import setSort from "./reducers/setSort"
 import endRecordReading from "./reducers/endRecordReading"
@@ -38,6 +39,7 @@ const slicedReducers = combineReducers({
   userDataByBookId,
   currentReadingRecord,
   readingRecordsByAccountId,
+  recentSearchesByBookId,
 })
 
 const allReducers = reduceReducers(

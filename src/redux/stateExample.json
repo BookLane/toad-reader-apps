@@ -255,8 +255,12 @@
   },
   "recentSearchesByBookId": {
     "65": [
-      "wonder",
-      "strong faith"
+      {
+        "str": "wonder"
+      },
+      {
+        "str": "strong faith"
+      }
     ]
   },
   "highlights": {
