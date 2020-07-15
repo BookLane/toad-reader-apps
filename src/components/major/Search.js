@@ -42,6 +42,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 5,
   },
+  termNotFound: {
+    textAlign: 'center',
+    marginTop: 40,
+    opacity: .35,
+  },
+  noResults: {
+    textAlign: 'center',
+    marginTop: 40,
+  },
   term: {
     fontWeight: 'bold',
   },
@@ -213,6 +222,11 @@ const Search = ({
       </View>
       {!showResults &&
         <>
+          {!!normalizedSearchStr && suggestions.length === 0 &&
+            <Text style={styles.termNotFound}>
+              {i18n("Term not found")}
+            </Text>
+          }
           <FlatList
             contentContainerStyle={styles.flatListContent}
             data={normalizedSearchStr ? suggestions : (recentSearchesByBookId[bookId] || [])}
@@ -220,26 +234,21 @@ const Search = ({
             keyExtractor={({ suggestion, str }) => suggestion || `recent search\n${str}`}
             keyboardShouldPersistTaps='handled'
           />
-          {suggestions.length === 0 &&
-            <Text>
-              Term not found
-            </Text>
-          }
         </>
       }
       {showResults &&
         <>
+          {results.length === 0 &&
+            <Text style={styles.noResults}>
+              {i18n("No results")}
+            </Text>
+          }
           <FlatList
             contentContainerStyle={styles.flatListContent}
             data={results}
             renderItem={renderResult}
             keyExtractor={({ spineIdRef, id }) => `${spineIdRef}\n${id}`}
           />
-          {results.length === 0 &&
-            <Text>
-              No results
-            </Text>
-          }
         </>
       }
     </View>
