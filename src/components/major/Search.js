@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
 
 const Search = ({
   bookId,
+  goTo,
 
   idp,
   accounts,
@@ -107,19 +108,38 @@ const Search = ({
   )
 
   const renderResult = useCallback(
-    ({ item: { spineIdRef, cfi, terms, text } }) => (
-      <View
-        key={`${spineIdRef}\n${cfi}`}
-        style={styles.result}
-      >
-        <Text>
-          {getResultLineInJSX({ text, terms, termStyle: styles.term })}
-        </Text>
-        <Text>{spineIdRef}</Text>
-        <Text>{cfi}</Text>
-      </View>
-    ),
-    [],
+    ({ item: { spineIdRef, terms, text, hitIndex } }) => {
+      const jsx = getResultLineInJSX({ text, terms, termStyle: styles.term })
+
+      let charsBeforeFirstHit = 0
+      for(let i=0; typeof jsx[i] === 'string'; i++) {
+        charsBeforeFirstHit += jsx[i].length
+      }
+
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            goTo({
+              spineIdRef,
+              textNodeInfo: {
+                content: text,
+                hitIndex,
+                startOffset: charsBeforeFirstHit,
+                endOffset: charsBeforeFirstHit + 1,
+              },
+            })
+          }}
+        >
+          <View style={styles.result}>
+            <Text>
+              {jsx}
+            </Text>
+            <Text>{spineIdRef}</Text>
+          </View>
+        </TouchableOpacity>
+      )
+    },
+    [ goTo ],
   )
 
   if(!books[bookId]) return null
@@ -176,7 +196,7 @@ const Search = ({
             contentContainerStyle={styles.flatListContent}
             data={results}
             renderItem={renderResult}
-            keyExtractor={({ spineIdRef, cfi }) => `${spineIdRef}\n${cfi}`}
+            keyExtractor={({ spineIdRef, id }) => `${spineIdRef}\n${id}`}
           />
           {results.length === 0 &&
             <Text>

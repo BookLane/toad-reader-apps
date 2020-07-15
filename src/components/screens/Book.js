@@ -1011,6 +1011,7 @@ const Book = React.memo(({
             <View style={wideMode ? styles.searchWideMode : styles.search}>
               <Search
                 bookId={bookId}
+                goTo={goTo}
               />
             </View>
           }

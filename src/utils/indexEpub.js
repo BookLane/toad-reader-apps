@@ -47,9 +47,9 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
   currentMiniSearch = MiniSearch.loadJSON(
     await FileSystem.readAsStringAsync(searchIndexLocalUri),
     {
-      idField: 'cfi',
+      idField: 'id',
       fields: ['text'],  // fields to index for full-text search
-      storeFields: ['spineIdRef', 'cfi', 'text'],  // fields to return with search results
+      storeFields: ['spineIdRef', 'text', 'hitIndex', 'id'],  // fields to return with search results
       tokenize: str => str.split(new RegExp(SPACE_OR_PUNCTUATION, 'u')),
       // Using STOP_WORDS did not significantly speed up indexing or reduce the index size. Thus, it is commented out.
       // processTerm: term => {
