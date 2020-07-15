@@ -12,6 +12,7 @@ import useSetTimeout from '../../hooks/useSetTimeout'
 import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
+import Icon from "../basic/Icon"
 
 import { addRecentSearch } from "../../redux/actions"
 
@@ -53,6 +54,17 @@ const styles = StyleSheet.create({
   },
   term: {
     fontWeight: 'bold',
+  },
+  clear: {
+    position: 'absolute',
+    top: 5,
+    right: 20,
+  },
+  clearIcon: {
+    height: 17,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    opacity: .7,
   },
 })
 
@@ -193,6 +205,15 @@ const Search = ({
     [ goTo ],
   )
 
+  const clearSearchStr = useCallback(
+    () => {
+      setSearchStr("")
+      toggleShowResults(false)
+      inputRef.current.focus()
+    },
+    [],
+  )
+
   if(!books[bookId]) return null
 
   const { title } = books[bookId]
@@ -205,9 +226,7 @@ const Search = ({
       {/* <BackFunction func={historyGoBack} /> */}
       <View style={styles.header}>
         <Input
-          placeholder={i18n("Search {{title}}", {
-            title,
-          })}
+          placeholder={i18n("Search book")}
           value={searchStr}
           onChangeText={setSearchStr}
           returnKeyType="search"
@@ -219,6 +238,15 @@ const Search = ({
           onFocus={() => toggleShowResults(false)}
           forwardRef={inputRef}
         />
+        <TouchableOpacity
+          onPress={clearSearchStr}
+          style={styles.clear}
+        >
+          <Icon
+            name="md-close"
+            style={styles.clearIcon}
+          />
+        </TouchableOpacity>
       </View>
       {!showResults &&
         <>
