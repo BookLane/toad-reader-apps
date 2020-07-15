@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,6 +7,7 @@ import useToggle from "react-use/lib/useToggle"
 
 // import {  } from "../../utils/toolbox"
 import { searchBook, getAutoSuggest, getResultLineInJSX } from "../../utils/indexEpub"
+import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import { loadIndex } from "../../utils/indexEpub"
 
@@ -31,6 +32,13 @@ const styles = StyleSheet.create({
   result: {
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  resultText: {
+  },
+  resultSpine: {
+    opacity: .35,
+    fontSize: 12,
+    marginBottom: 5,
   },
   term: {
     fontWeight: 'bold',
@@ -57,7 +65,8 @@ const Search = ({
 
   const inputRef = useRef()
 
-  const accountId = Object.keys((books[bookId] || {}).accounts || {})[0]
+  const { spines, accountId } = useClassroomInfo({ books, bookId })
+
   const { cookie } = accounts[accountId] || {}
 
   useEffect(
@@ -88,6 +97,19 @@ const Search = ({
   )
 
   const blurInput = useCallback(() => inputRef.current.blur(), [])
+
+  const spineLabelsByIdRef = useMemo(
+    () => {
+      const labelsByIdRef = {}
+
+      spines.forEach(({ idref, label }) => {
+        labelsByIdRef[idref] = label
+      })
+
+      return labelsByIdRef
+    },
+    [ spines ],
+  )
 
   const renderSuggestion = useCallback(
     ({ item: { suggestion } }) => (
@@ -131,10 +153,12 @@ const Search = ({
           }}
         >
           <View style={styles.result}>
-            <Text>
+            <Text style={styles.resultSpine}>
+              {spineLabelsByIdRef[spineIdRef] || spineIdRef}
+            </Text>
+            <Text style={styles.resultText}>
               {jsx}
             </Text>
-            <Text>{spineIdRef}</Text>
           </View>
         </TouchableOpacity>
       )
