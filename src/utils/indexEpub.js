@@ -21,7 +21,7 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
   if(Platform.OS === 'web') return
   if(currentIndexBookId === bookId) return
 
-  currentIndexBookId = undefined
+  currentMiniSearch = currentIndexBookId = undefined
 
   const searchIndexUri = `${getDataOrigin(idp)}/epub_content/book_${bookId}/search_index.json`
   const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
@@ -44,6 +44,8 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
 
   if(success === false) return  // download failed
 
+  console.log(`Load MiniSearch for book id ${bookId}...`)
+
   currentMiniSearch = MiniSearch.loadJSON(
     await FileSystem.readAsStringAsync(searchIndexLocalUri),
     {
@@ -63,6 +65,8 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
       },
     },
   )
+
+  console.log(`...loaded.`)
 
   currentIndexBookId = bookId
 }

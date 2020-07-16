@@ -10,6 +10,8 @@ export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
     if(localUriInfo.exists) return
   }
 
+  console.log(`Attempting to download ${remoteUri} to ${localUri}...`)
+
   const localDir = `${localUri.replace(/\/[^\/]*$/, '')}`
   // const localDirInfo = await FileSystem.getInfoAsync(localDir)
 
@@ -19,7 +21,14 @@ export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
   } catch(e) {}
 
   const { status } = await FileSystem.downloadAsync(remoteUri, localUri, { headers })
+  const success = status >= 200 && status < 300
 
-  return status >= 200 && status < 300
+  if(!success) {
+    await FileSystem.deleteAsync(localUri, { idempotent: true })
+  }
+
+  console.log(`...download from ${remoteUri} to ${localUri}: ${success ? `successful` : `failed`}.`)
+
+  return success
 
 }

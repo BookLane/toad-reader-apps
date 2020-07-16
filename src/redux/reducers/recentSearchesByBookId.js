@@ -21,6 +21,15 @@ export default (state = initialState, action) => {
       }
     }
 
+    case "CLEAR_USER_DATA_EXCEPT_PROGRESS": {
+      const { bookId } = action
+
+      if(newState[bookId]) {
+        delete newState[bookId]
+        return newState
+      }
+    }
+
   }
 
   return state

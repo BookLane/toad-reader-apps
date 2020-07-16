@@ -19,6 +19,7 @@ const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2020-03-12"
 
 export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
   const localBaseUri = `${getBooksDir()}${bookId}/`
+  const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
 
   removeFromBookDownloadQueue({ bookId })
   cancelFetch({ localBaseUri })
@@ -28,6 +29,7 @@ export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, s
   AsyncStorage.removeItem(`assetDownloads:${localBaseUri}`)
   await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
   await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
+  await FileSystem.deleteAsync(searchIndexLocalUri, { idempotent: true })
   
   if(removeCover) {
     await FileSystem.deleteAsync(`${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}`, { idempotent: true })
