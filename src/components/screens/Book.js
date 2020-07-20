@@ -1014,6 +1014,7 @@ const Book = React.memo(({
                 inEditMode={inEditMode}
                 toggleInEditMode={toggleInEditMode}
                 setModeToPage={setModeToPage}
+                footerHeight={showBottomNav ? (BOTTOM_NAVIGATION_HEIGHT + bottomSpace) : 0}
               />
             </View>
           }

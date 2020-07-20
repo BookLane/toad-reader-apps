@@ -10,7 +10,7 @@ import PagesPage from "../basic/PagesPage"
 // import BookProgress from "./BookProgress"
 import EnhancedHeader from "./EnhancedHeader"
 
-import { getFooterHeight, getToolbarHeight, statusBarHeight, getPageCfisKey } from '../../utils/toolbox'
+import { getToolbarHeight, statusBarHeight, getPageCfisKey } from '../../utils/toolbox'
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
@@ -53,6 +53,7 @@ const BookPages = React.memo(({
   inEditMode,
   toggleInEditMode,
   setModeToPage,
+  footerHeight,
 
   books,
   userDataByBookId,
@@ -102,7 +103,7 @@ const BookPages = React.memo(({
       // clear the list, but keep the same array
       list.splice(0, list.length)
     
-      const listHeight = (height - getFooterHeight() - getToolbarHeight())
+      const listHeight = (height - footerHeight - getToolbarHeight())
       let offset = 0
       
       spines.forEach(spine => {
@@ -149,7 +150,7 @@ const BookPages = React.memo(({
       }
 
     },
-    [ spines, height, displaySettings, fullPageWidth, fullPageHeight, visibleTools ],
+    [ spines, height, displaySettings, fullPageWidth, fullPageHeight, visibleTools, footerHeight ],
   )
 
   const getItemLayout = useCallback(
@@ -215,9 +216,9 @@ const BookPages = React.memo(({
       // since this might not be immediately rendered (given the FlatList), let's calculate its position
       const thisItemOffset = getItemLayout(list, index).offset
       const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - getFooterHeight())/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeight
+      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - footerHeight)/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeight
       const lastItemLayout = getItemLayout(list, list.length - 1)
-      const scrolledToBottomYPos = heightWithoutStatusBar - getFooterHeight() - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
+      const scrolledToBottomYPos = heightWithoutStatusBar - footerHeight - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
       updateSnapshotCoords({
         x: PAGES_HORIZONTAL_MARGIN + (pageWidth + PAGES_HORIZONTAL_MARGIN) * indexInRow,
         y: Math.max( Math.min( middleYPos, scrolledToTopYPos ), scrolledToBottomYPos )
