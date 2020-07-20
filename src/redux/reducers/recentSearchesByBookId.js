@@ -8,17 +8,19 @@ export default (state = initialState, action) => {
     case "ADD_RECENT_SEARCH": {
       const { bookId, info } = action
 
-      if(!(state[bookId] || []).some(({ str }) => str === info.str)) {
+      if((state[bookId] || [])[0].str !== info.str) {
         newState[bookId] = (
           [
             info,
-            ...(state[bookId] || []),
+            ...(state[bookId] || []).filter(({ str }) => str !== info.str),
           ]
             .slice(0, 20)
         )
 
         return newState
       }
+
+      return state
     }
 
     case "CLEAR_USER_DATA_EXCEPT_PROGRESS": {
