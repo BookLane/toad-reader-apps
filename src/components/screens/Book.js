@@ -20,7 +20,6 @@ import useWideMode from "../../hooks/useWideMode"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-import usePageSize from "../../hooks/usePageSize"
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
@@ -259,6 +258,7 @@ const Book = React.memo(({
 
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
+  const searchInputRef = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { widget } = routerState
@@ -274,7 +274,6 @@ const Book = React.memo(({
 
   const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
-  const { pageWidth } = usePageSize({ sidePanelSettings })
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
           bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
@@ -636,6 +635,10 @@ const Book = React.memo(({
 
   const backToReading = useCallback(
     () => {
+      try {
+        searchInputRef.current.blur()
+      } catch(e) {}
+
       setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
@@ -1015,6 +1018,7 @@ const Book = React.memo(({
               <Search
                 bookId={bookId}
                 goTo={goTo}
+                inputRef={searchInputRef}
               />
             </View>
           }

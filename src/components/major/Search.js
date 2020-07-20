@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
 const Search = ({
   bookId,
   goTo,
+  inputRef,
 
   idp,
   accounts,
@@ -87,8 +88,6 @@ const Search = ({
   const [ results, setResults ] = useState([])
 
   const [ setSearchTimeout ] = useSetTimeout()
-
-  const inputRef = useRef()
 
   const { spines, accountId } = useClassroomInfo({ books, bookId })
 
