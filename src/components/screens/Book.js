@@ -299,6 +299,14 @@ const Book = React.memo(({
     [ JSON.stringify(visibleTools), spineIdRef ],
   )
 
+  const cornerSnapshotCoords = useMemo(
+    () => ({
+      x: 0,
+      y: height - bottomSpace,
+    }),
+    [ height ],
+  )
+
   const BackToReadingIcon = useCallback(style => <Icon name='book-open-variant' pack="materialCommunity" style={styles.tabsIcon} />, [])
   const ThumbnailsIcon = useCallback(style => <Icon name='md-apps' style={styles.tabsIcon} />, [])
   const ContentsIcon = useCallback(style => <Icon name='md-list' style={styles.tabsIcon} />, [])
@@ -628,16 +636,11 @@ const Book = React.memo(({
 
   const backToReading = useCallback(
     () => {
-      const snapshotCoords = {
-        x: width / 2  - pageWidth / 2,
-        y: height,
-      }
-      
       setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
-        snapshotCoords,
+        snapshotCoords: cornerSnapshotCoords,  // TODO: improve this by zooming from the selected
         snapshotZoomed: true,
         onZoomCompletion: () => {
           setState({
@@ -654,7 +657,7 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef, width, height, pageWidth, wideMode ],
+    [ bookId, spineIdRef, cornerSnapshotCoords, wideMode ],
   )
 
   const setModeToPage = useCallback(
@@ -1086,7 +1089,11 @@ const Book = React.memo(({
               pageCfisKey={pageCfisKey}
               pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
               onZoomCompletion={onZoomCompletion}
-              snapshotCoords={snapshotCoords}
+              snapshotCoords={
+                selectedTabId === 'thumbnails'
+                  ? snapshotCoords
+                  : cornerSnapshotCoords
+              }
               zoomed={snapshotZoomed}
               zoomingEnabled={mode === 'zooming'}
               pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
