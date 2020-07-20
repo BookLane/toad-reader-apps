@@ -75,13 +75,25 @@ export const getAutoSuggest = partialSearchStr => {
 
   if(!currentMiniSearch) return []  // TODO: get from the server
 
-  return currentMiniSearch.autoSuggest(
-    partialSearchStr,
-    {
-      prefix: true,
-      fuzzy: term => term.length > 3 ? 0.2 : null,
-      combineWith: 'AND',
-    }
+  const partialSearchStrParts = partialSearchStr.split(new RegExp(`(${SPACE_OR_PUNCTUATION})`, 'u'))
+
+  return (
+    currentMiniSearch.autoSuggest(
+      partialSearchStrParts.slice(-1)[0],
+      {
+        prefix: true,
+        fuzzy: term => term.length > 3 ? 0.2 : null,
+      }
+    )
+    .map(obj => ({
+      ...obj,
+      suggestion: (
+        [
+          ...partialSearchStrParts.slice(0, -1),
+          obj.suggestion,
+        ].join('')
+      ),
+    }))
   )
 
 }
