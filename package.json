@@ -56,6 +56,7 @@
     "inline-i18n": "github:educational-resources-and-services/inline-i18n#d44421bfd684ceddf38e13c7f437ada9fa98432b",
     "jszip": "3.2.2",
     "md5": "2.2.1",
+    "minisearch": "2.4.1",
     "node-libs-browser": "2.2.1",
     "qrcode.react": "^1.0.0",
     "react": "16.9.0",

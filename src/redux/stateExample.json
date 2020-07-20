@@ -133,6 +133,7 @@
       "spines": [
         {
           "idref": "intro",
+          "path": "../pages/intro.html",
           "label": "Introduction",
           "pageCfis": {
             "640x320_100_1_DF82flasdfhjasdgDkjSVH": [
@@ -251,6 +252,16 @@
     "textSize": 100,
     "textSpacing": 1,
     "theme": "night-theme"
+  },
+  "recentSearchesByBookId": {
+    "65": [
+      {
+        "str": "wonder"
+      },
+      {
+        "str": "strong faith"
+      }
+    ]
   },
   "highlights": {
     "onlyShowColor": null

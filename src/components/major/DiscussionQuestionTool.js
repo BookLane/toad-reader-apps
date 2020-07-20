@@ -16,12 +16,11 @@ import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import Spin from "../basic/Spin"
 import CoverAndSpin from "../basic/CoverAndSpin"
-import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 const PAGE_SIZE = 20
 
 const response = {
-  backgroundColor: 'rgb(228, 233, 242)',
+  backgroundColor: 'rgb(211, 218, 230)',
   paddingVertical: 13,
   paddingHorizontal: 15,
   borderRadius: 4,
@@ -29,6 +28,9 @@ const response = {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   error: {
     marginVertical: 20,
     marginHorizontal: 30,
@@ -345,7 +347,7 @@ const DiscussionQuestionTool = React.memo(({
   let lastDate
 
   return (
-    <KeyboardAvoidingView>
+    <View style={styles.container}>
       <Text style={styles.question}>
         {question}
       </Text>
@@ -442,7 +444,7 @@ const DiscussionQuestionTool = React.memo(({
           />
         }
       </View>
-    </KeyboardAvoidingView>
+    </View>
   )
 })
 

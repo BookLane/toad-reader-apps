@@ -19,6 +19,7 @@ const Input = React.memo(({
   style,
   textStyle,
   labelStyle,
+  forwardRef,
   ...otherProps
  }) => {
 
@@ -48,6 +49,7 @@ const Input = React.memo(({
         labelStyle,
       ]}
       onChangeText={customOnChangeText}
+      ref={forwardRef}
     />
   )
 })

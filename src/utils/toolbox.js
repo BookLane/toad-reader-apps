@@ -116,7 +116,7 @@ const getBottomSpace = () => (
 )
 export const statusBarHeight = getStatusBarHeight()
 export const statusBarHeightSafe = getStatusBarHeight(true)
-export const getFooterHeight = () => 0 //56
+export const getFooterHeight = () => 0  // Not used now; will bring back with BookProgress
 export const getToolbarHeight = () => 56
 export const bottomSpace = getBottomSpace() / 2
 

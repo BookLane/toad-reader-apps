@@ -88,16 +88,21 @@ const AppHeader = ({
       }
       {!!titleCentered && <View style={styles.flex1} />}
       <View style={titleCentered ? styles.titleViewCentered : styles.titleView}>
-        <Text
-          numberOfLines={1}
-          style={[
-            styles.title,
-            labelThemedStyle,
-            labelStyle,
-          ]}
-        >
-          {title}
-        </Text>
+        {typeof title === 'string'
+          ? (
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.title,
+                labelThemedStyle,
+                labelStyle,
+              ]}
+            >
+              {title}
+            </Text>
+          )
+          : title
+        }
         {!!subtitle &&
           <Text
             numberOfLines={1}

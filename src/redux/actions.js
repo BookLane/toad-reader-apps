@@ -374,3 +374,9 @@ export const autoUpdateCoreIdps = () => ({
 export const setConsentShown = () => ({
   type: "SET_CONSENT_SHOWN",
 })
+
+export const addRecentSearch = ({ bookId, info }) => ({
+  type: "ADD_RECENT_SEARCH",
+  bookId,
+  info,
+})

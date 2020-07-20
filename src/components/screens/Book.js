@@ -6,12 +6,13 @@ import { connect } from "react-redux"
 import { useParams } from "react-router-dom"
 import { i18n } from "inline-i18n"
 import useSetState from "react-use/lib/useSetState"
+import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
          isIPhoneX, setStatusBarHidden, showConsent, getIdsFromAccountId,
-         getToolCfiCounts } from "../../utils/toolbox"
+         getToolCfiCounts, bottomSpace } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -19,7 +20,6 @@ import useWideMode from "../../hooks/useWideMode"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
-import usePageSize from "../../hooks/usePageSize"
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
@@ -43,10 +43,15 @@ import CustomKeepAwake from "../basic/CustomKeepAwake"
 import BookTools from "../major/BookTools"
 import ToolChip from "../basic/ToolChip"
 import HighlightsWrapper from "../major/HighlightsWrapper"
+import Icon from "../basic/Icon"
+import Search from "../major/Search"
+import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 
 const {
   PAGE_ZOOM_MILLISECONDS,
+  BOTTOM_NAVIGATION_HEIGHT=58,
+  RETURN_TO_READING_WIDTH=60,
 } = Constants.manifest.extra
 
 const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
@@ -67,10 +72,20 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: 0,
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
-  backgroundColor: '#F7F9FC',
+  backgroundColor: 'rgb(238, 241, 245)',
+  zIndex: 2,
+}
+
+const searchStyles = {
+  position: 'absolute',
+  top: getToolbarHeight(),
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
+  left: 0,
+  right: 0,
+  backgroundColor: 'rgb(238, 241, 245)',
   zIndex: 2,
 }
 
@@ -85,7 +100,7 @@ const zoomStyles = {
 const contentsStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: 0,
+  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: '#fff',
@@ -117,7 +132,16 @@ const styles = StyleSheet.create({
   },
   pagesWideMode: {
     ...pagesStyles,
-    backgroundColor: '#EDF1F7',
+    // backgroundColor: 'rgb(238, 241, 245)',
+  },
+  noBottomNav: {
+    bottom: 0,
+  },
+  search: {
+    ...searchStyles,
+  },
+  searchWideMode: {
+    ...searchStyles,
   },
   showZoom: {
     ...zoomStyles,
@@ -144,6 +168,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sidePanel: {
+    position: 'relative',
+    top: 0,
     backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
@@ -162,6 +188,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 2,
     backgroundColor: 'rgb(51, 102, 255)',
+  },
+  bottomNavigationContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 2,
+    height: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
+    backgroundColor: '#fff',
+  },
+  bottomNavigation: {
+    position: 'absolute',
+    left: RETURN_TO_READING_WIDTH,
+    right: 0,
+    top: 0,
+    bottom: bottomSpace,
+  },
+  backToReading: {
+    position: 'absolute',
+    left: 0,
+    width: RETURN_TO_READING_WIDTH,
+    top: 0,
+    bottom: bottomSpace,
   },
 })
 
@@ -193,6 +242,7 @@ const Book = React.memo(({
   const [ toolMoveInfo, setToolMoveInfo ] = useState()
   const [ rawInEditMode, setRawInEditMode ] = useState(false)
   const [ inPageTurn, setInPageTurn ] = useState(false)
+  const [ tabsSelectedIndex, setTabsSelectedIndex ] = useState(0)
 
   const [{
     bookLoaded,
@@ -213,6 +263,7 @@ const Book = React.memo(({
 
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
+  const searchInputRef = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { widget } = routerState
@@ -228,7 +279,6 @@ const Book = React.memo(({
 
   const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
-  const { pageWidth } = usePageSize({ sidePanelSettings })
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
           bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
@@ -252,6 +302,58 @@ const Book = React.memo(({
     () => getToolCfiCounts({ visibleTools, spineIdRef }),
     [ JSON.stringify(visibleTools), spineIdRef ],
   )
+
+  const cornerSnapshotCoords = useMemo(
+    () => ({
+      x: 0,
+      y: height - bottomSpace,
+    }),
+    [ height ],
+  )
+
+  const BackToReadingIcon = useCallback(style => <Icon name='book-open-variant' pack="materialCommunity" style={styles.tabsIcon} />, [])
+  const ThumbnailsIcon = useCallback(style => <Icon name='md-apps' style={styles.tabsIcon} />, [])
+  const ContentsIcon = useCallback(style => <Icon name='md-list' style={styles.tabsIcon} />, [])
+  const SearchIcon = useCallback(style => <Icon name='md-search' style={styles.tabsIcon} />, [])
+
+  const tabs = useMemo(
+    () => [
+      ...(!(Platform.OS !== 'web') ? [] : [{
+        id: 'thumbnails',
+        tab: (
+          <BottomNavigationTab
+            key="thumbnails"
+            title={i18n("Thumbnails")}
+            icon={ThumbnailsIcon}
+          />
+        ),
+      }]),
+      ...(!(!wideMode) ? [] : [{
+        id: 'contents',
+        tab: (
+          <BottomNavigationTab
+            key="contents"
+            title={i18n("Contents")}
+            icon={ContentsIcon}
+          />
+        ),
+      }]),
+      ...(!(Platform.OS !== 'web') ? [] : [{
+        id: 'search',
+        tab: (
+          <BottomNavigationTab
+            key="search"
+            title={i18n("Search")}
+            icon={SearchIcon}
+          />
+        ),
+      }]),
+    ],
+    [ wideMode ],
+  )
+
+  const selectedTabIndex = tabs[tabsSelectedIndex] ? tabsSelectedIndex : 0
+  const selectedTabId = (tabs[selectedTabIndex] || {}).id
 
   const toggleInEditMode = useCallback(
     () => {
@@ -536,38 +638,17 @@ const Book = React.memo(({
     [ bookId, spineIdRef, reportSpots, wideMode ],
   )
 
-  const toggleBookView = useCallback(
-    () => {
-
-      if(wideMode) {
-        if(mode === 'page') {
-          requestShowPages()
-        } else {
-          backToReading()
-        }
-        return
-      }
-
-      setState({
-        mode: mode === 'pages' ? 'contents' : 'pages',
-      })
-
-    },
-    [ mode, wideMode ],
-  )
-
   const backToReading = useCallback(
     () => {
-      const snapshotCoords = {
-        x: width / 2  - pageWidth / 2,
-        y: height,
-      }
-      
+      try {
+        searchInputRef.current.blur()
+      } catch(e) {}
+
       setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
       setState({
         mode: 'zooming',
-        snapshotCoords,
+        snapshotCoords: cornerSnapshotCoords,  // TODO: improve this by zooming from the selected
         snapshotZoomed: true,
         onZoomCompletion: () => {
           setState({
@@ -584,7 +665,7 @@ const Book = React.memo(({
       })
 
     },
-    [ bookId, spineIdRef, width, height, pageWidth, wideMode ],
+    [ bookId, spineIdRef, cornerSnapshotCoords, wideMode ],
   )
 
   const setModeToPage = useCallback(
@@ -601,7 +682,7 @@ const Book = React.memo(({
     () => {
       setSelectedToolUid({ bookId })
       setState({
-        mode: Platform.OS === 'web' ? 'contents' : 'pages',
+        mode: 'info',
         snapshotZoomed: false,
       })
     },
@@ -624,7 +705,7 @@ const Book = React.memo(({
         snapshotZoomed: false,
         onZoomCompletion: () => {
           setState({
-            mode: Platform.OS === 'web' ? 'contents' : 'pages',
+            mode: 'info',
             onZoomCompletion: null,
           })
         },
@@ -861,6 +942,23 @@ const Book = React.memo(({
     )
   }
 
+  const bookContents = (
+    <BookContents
+      goTo={goTo}
+      bookId={bookId}
+      reportSpots={reportSpots}
+      onToolMove={onToolMove}
+      onToolRelease={onToolRelease}
+      onScroll={onBookContentsScroll}
+      inEditMode={inEditMode}
+      toggleInEditMode={toggleInEditMode}
+      setModeToPage={!wideMode ? setModeToPage : null}
+      hideFABs={mode !== 'contents' && !(wideMode && sidePanelSettings.open)}
+    />
+  )
+
+  const showBottomNav = !wideMode && tabs.length > 1
+
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
@@ -878,11 +976,11 @@ const Book = React.memo(({
         />
       }
 
-      <View style={styles.panels}>
+      <KeyboardAvoidingView style={styles.panels}>
         <View
           style={[
             styles.mainPanel,
-            mode !== 'contents' ? showStyles : null,
+            !(mode === 'info' && selectedTabId === 'contents') ? showStyles : null,
           ]}
         >
           {!widget &&
@@ -891,8 +989,6 @@ const Book = React.memo(({
                 bookId={bookId}
                 title={title}
                 mode={mode}
-                toggleBookView={toggleBookView}
-                backToReading={backToReading}
                 showDisplaySettings={showDisplaySettings}
                 width={width}  // By sending this as a prop, I force a rerender
                 onBackPress={historyGoBack}
@@ -901,7 +997,12 @@ const Book = React.memo(({
             </View>
           }
           {Platform.OS !== 'web' &&
-            <View style={wideMode ? styles.pagesWideMode : styles.pages}>
+            <View
+              style={[
+                wideMode ? styles.pagesWideMode : styles.pages,
+                showBottomNav ? null : styles.noBottomNav,
+              ]}
+            >
               <BookPages
                 bookId={bookId}
                 spineIdRef={spineIdRef}
@@ -913,7 +1014,45 @@ const Book = React.memo(({
                 inEditMode={inEditMode}
                 toggleInEditMode={toggleInEditMode}
                 setModeToPage={setModeToPage}
+                footerHeight={showBottomNav ? (BOTTOM_NAVIGATION_HEIGHT + bottomSpace) : 0}
               />
+            </View>
+          }
+          {!widget && !wideMode &&
+            <View
+              style={[
+                selectedTabId === 'contents' ? styles.showContents : styles.hideContents,
+                showBottomNav ? null : styles.noBottomNav,
+              ]}
+              onStartShouldSetResponderCapture={unselectText}
+            >
+              {bookContents}
+            </View>
+          }
+          {selectedTabId === 'search' &&
+            <View style={wideMode ? styles.searchWideMode : styles.search}>
+              <Search
+                bookId={bookId}
+                goTo={goTo}
+                inputRef={searchInputRef}
+              />
+            </View>
+          }
+          {showBottomNav &&
+            <View style={styles.bottomNavigationContainer}>
+              <BottomNavigationTab
+                key="backToReading"
+                icon={BackToReadingIcon}
+                style={styles.backToReading}
+                onSelect={backToReading}
+              />
+              <BottomNavigation
+                style={styles.bottomNavigation}
+                selectedIndex={selectedTabIndex}
+                onSelect={setTabsSelectedIndex}
+              >
+                {tabs.map(({ tab }) => tab)}
+              </BottomNavigation>
             </View>
           }
           <View style={
@@ -970,7 +1109,11 @@ const Book = React.memo(({
               pageCfisKey={pageCfisKey}
               pageIndexInSpine={zoomToInfo ? zoomToInfo.pageIndexInSpine : pageIndexInSpine}
               onZoomCompletion={onZoomCompletion}
-              snapshotCoords={snapshotCoords}
+              snapshotCoords={
+                selectedTabId === 'thumbnails'
+                  ? snapshotCoords
+                  : cornerSnapshotCoords
+              }
               zoomed={snapshotZoomed}
               zoomingEnabled={mode === 'zooming'}
               pageCfiKnown={!!(zoomToInfo ? zoomToInfo.cfi : pageCfisKnown)}
@@ -1006,32 +1149,21 @@ const Book = React.memo(({
             goTo={goTo}
           />
         </View>
-        {!widget &&
+        {!widget && wideMode &&
           <View
             style={[
-              mode === 'contents' ? styles.showContents : (!wideMode ? styles.hideContents : null),
-              wideMode ? styles.sidePanel : null,
-              (wideMode && sidePanelSettings.open) ? { width: sidePanelSettings.width } : null,
+              styles.showContents,
+              showBottomNav ? null : styles.noBottomNav,
+              styles.sidePanel,
+              sidePanelSettings.open ? { width: sidePanelSettings.width } : null,
             ]}
             onStartShouldSetResponderCapture={unselectText}
           >
-            <BookContents
-              goTo={goTo}
-              bookId={bookId}
-              reportSpots={reportSpots}
-              onToolMove={onToolMove}
-              onToolRelease={onToolRelease}
-              onScroll={onBookContentsScroll}
-              inEditMode={inEditMode}
-              toggleInEditMode={toggleInEditMode}
-              backToReading={!wideMode ? backToReading : null}
-              setModeToPage={!wideMode ? setModeToPage : null}
-              hideFABs={mode !== 'contents' && !(wideMode && sidePanelSettings.open)}
-            />
+            {bookContents}
           </View>
         }
         <View />
-      </View>
+      </KeyboardAvoidingView>
 
       {!!toolMoveInfo &&
         <>
