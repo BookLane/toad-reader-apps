@@ -8,7 +8,7 @@ export default (state = initialState, action) => {
     case "ADD_RECENT_SEARCH": {
       const { bookId, info } = action
 
-      if((state[bookId] || [])[0].str !== info.str) {
+      if(((state[bookId] || [])[0] || {}).str !== info.str) {
         newState[bookId] = (
           [
             info,
