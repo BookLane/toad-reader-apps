@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 1,
-    backgroundColor: '#EDF1F7',
+    backgroundColor: 'rgb(238, 241, 245)',
     flex: 1,
   },
   hiddenWebview: {

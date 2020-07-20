@@ -289,8 +289,8 @@ const mapping = {
     {
       component: 'EnhancedHeader',
       parameters: {
-        backgroundColor: 'background-basic-color-4',
-        alt0BackgroundColor: 'background-basic-color-3',
+        backgroundColor: 'rgb(211, 218, 230)',
+        alt0BackgroundColor: 'rgb(224, 231, 241)',
       },
     },
     {

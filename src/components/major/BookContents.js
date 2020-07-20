@@ -30,6 +30,9 @@ const styles = StyleSheet.create({
   listFooter: {
     paddingTop: 70 + bottomSpace,
   },
+  list: {
+    backgroundColor: 'rgb(238, 241, 245)',
+  },
 })
 
 const BookContents = React.memo(({
@@ -326,6 +329,7 @@ const BookContents = React.memo(({
         onScroll={onScroll}
         initialNumToRender={25}
         maxToRenderPerBatch={Platform.OS === 'web' ? 9999 : undefined}  // I need this value to work with reportSpots
+        style={styles.list}
       />
       {showAddToolButton && inEditMode && !viewingFrontMatter && !viewingOptions && !hideFABs &&
         <FAB

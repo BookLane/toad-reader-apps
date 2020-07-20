@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
-import { StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native"
+import React, { useState, useEffect, useCallback, useMemo } from "react"
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   clearIcon: {
     height: 17,
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 12,
     opacity: .7,
   },
 })

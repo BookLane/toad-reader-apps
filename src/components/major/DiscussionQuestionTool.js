@@ -20,7 +20,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 const PAGE_SIZE = 20
 
 const response = {
-  backgroundColor: 'rgb(228, 233, 242)',
+  backgroundColor: 'rgb(211, 218, 230)',
   paddingVertical: 13,
   paddingHorizontal: 15,
   borderRadius: 4,

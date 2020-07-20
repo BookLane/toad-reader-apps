@@ -75,7 +75,7 @@ const pagesStyles = {
   bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
-  backgroundColor: '#F7F9FC',
+  backgroundColor: 'rgb(238, 241, 245)',
   zIndex: 2,
 }
 
@@ -85,7 +85,7 @@ const searchStyles = {
   bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
-  backgroundColor: '#F7F9FC',
+  backgroundColor: 'rgb(238, 241, 245)',
   zIndex: 2,
 }
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   pagesWideMode: {
     ...pagesStyles,
-    backgroundColor: '#EDF1F7',
+    // backgroundColor: 'rgb(238, 241, 245)',
   },
   noBottomNav: {
     bottom: 0,
