@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
     ...pagesStyles,
     backgroundColor: '#EDF1F7',
   },
+  noBottomNav: {
+    bottom: 0,
+  },
   search: {
     ...searchStyles,
   },
@@ -165,6 +168,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sidePanel: {
+    position: 'relative',
+    top: 0,
     backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
@@ -952,6 +957,8 @@ const Book = React.memo(({
     />
   )
 
+  const showBottomNav = !wideMode && tabs.length > 1
+
   return (
     <SafeLayout>
       {mode !== 'page' && <BackFunction func={backToReading} />}
@@ -990,7 +997,12 @@ const Book = React.memo(({
             </View>
           }
           {Platform.OS !== 'web' &&
-            <View style={wideMode ? styles.pagesWideMode : styles.pages}>
+            <View
+              style={[
+                wideMode ? styles.pagesWideMode : styles.pages,
+                showBottomNav ? null : styles.noBottomNav,
+              ]}
+            >
               <BookPages
                 bookId={bookId}
                 spineIdRef={spineIdRef}
@@ -1007,7 +1019,10 @@ const Book = React.memo(({
           }
           {!widget && !wideMode &&
             <View
-              style={selectedTabId === 'contents' ? styles.showContents : styles.hideContents}
+              style={[
+                selectedTabId === 'contents' ? styles.showContents : styles.hideContents,
+                showBottomNav ? null : styles.noBottomNav,
+              ]}
               onStartShouldSetResponderCapture={unselectText}
             >
               {bookContents}
@@ -1022,7 +1037,7 @@ const Book = React.memo(({
               />
             </View>
           }
-          {!wideMode && tabs.length > 1 &&
+          {showBottomNav &&
             <View style={styles.bottomNavigationContainer}>
               <BottomNavigationTab
                 key="backToReading"
@@ -1137,6 +1152,7 @@ const Book = React.memo(({
           <View
             style={[
               styles.showContents,
+              showBottomNav ? null : styles.noBottomNav,
               styles.sidePanel,
               sidePanelSettings.open ? { width: sidePanelSettings.width } : null,
             ]}
