@@ -169,8 +169,8 @@ const Search = ({
   )
 
   const renderResult = useCallback(
-    ({ item: { spineIdRef, terms, text, hitIndex } }) => {
-      const jsx = getResultLineInJSX({ text, terms, termStyle: styles.term })
+    ({ item: { spineIdRef, terms, text, context, hitIndex } }) => {
+      const jsx = getResultLineInJSX({ text, context, terms, termStyle: styles.term })
 
       let charsBeforeFirstHit = 0
       for(let i=0; typeof jsx[i] === 'string'; i++) {
