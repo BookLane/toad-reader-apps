@@ -281,7 +281,7 @@ const Book = React.memo(({
   const wideMode = useWideMode()
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
-          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode, idpId } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
   const zoomToInfoSpineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef: (zoomToInfo || {}).spineIdRef })
@@ -1032,6 +1032,7 @@ const Book = React.memo(({
           {selectedTabId === 'search' &&
             <View style={wideMode ? styles.searchWideMode : styles.search}>
               <Search
+                idpId={idpId}
                 bookId={bookId}
                 goTo={goTo}
                 inputRef={searchInputRef}

@@ -72,8 +72,9 @@ const Search = ({
   bookId,
   goTo,
   inputRef,
+  idpId,
 
-  idp,
+  idps,
   accounts,
   books,
   recentSearchesByBookId,
@@ -95,9 +96,9 @@ const Search = ({
 
   useEffect(
     () => {
-      loadIndex({ idp, bookId, cookie })
+      loadIndex({ idp: idps[idpId], bookId, cookie })
     },
-    [ idp, bookId, cookie ],
+    [ idps[idpId], bookId, cookie ],
   )
 
   useEffect(
@@ -282,8 +283,8 @@ const Search = ({
   )
 }
 
-const mapStateToProps = ({ idp, accounts, books, recentSearchesByBookId }) => ({
-  idp,
+const mapStateToProps = ({ idps, accounts, books, recentSearchesByBookId }) => ({
+  idps,
   accounts,
   books,
   recentSearchesByBookId,
