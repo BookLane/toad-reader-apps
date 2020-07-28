@@ -653,7 +653,7 @@ const Library = ({
                 {i18n("Example 2: If you are building out default enhanced content and end users do not yet have access when you discover a need to correct the EPUB, replacing the EPUB is a good option. However, understand that some inline tools may be misplaced or missing as a result.")}
               </Text>
               <Text style={styles.exampleP}>
-                {i18n("Example 3: You realize a need to reduce the size of EPUB assets. So long as the assets are not renamed and there are no structure or content changes, user data will not be affected.")}
+                {i18n("Example 3: You realize a need to reduce the size of EPUB assets after end users already have access. So long as the assets are not renamed and there are no structure or content changes, user data will not be affected.")}
               </Text>
             </View>
             <Text style={styles.p}>
