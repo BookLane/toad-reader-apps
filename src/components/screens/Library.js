@@ -35,6 +35,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
+import Dialog from "../major/Dialog"
 
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
@@ -63,6 +64,26 @@ const styles = StyleSheet.create({
     left: 0,
     width: 1,
     height: 1,
+  },
+  p: {
+    color: 'rgba(0,0,0,.4)',
+    marginBottom: 10,
+  },
+  exampleP: {
+    color: 'rgba(0,0,0,.7)',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  warningP: {
+    color: "red",
+    marginBottom: 15,
+  },
+  heading: {
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  section: {
+    marginVertical: 5,
   },
 })
 
@@ -94,6 +115,8 @@ const Library = ({
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
+  const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
+  const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
 
@@ -352,7 +375,30 @@ const Library = ({
     [],
   )
 
-  const closeImportingBooks = useCallback(() => setImportingBooks(false), [])
+  const openConfirmReplaceExisting = useCallback(
+    () => {
+      setConfirmReplaceExisting(true)
+    },
+    [],
+  )
+
+  const closeImportingBooks = useCallback(
+    () => {
+      setImportingBooks(false)
+      setConfirmReplaceExisting(false)
+      setReplaceExisting(false)
+    },
+    [],
+  )
+
+  const yesConfirmReplaceExisting = useCallback(
+    () => {
+      historyGoBack()
+      setConfirmReplaceExisting(false)
+      setReplaceExisting(true)
+    },
+    [],
+  )
 
   useEffect(
     () => {
@@ -506,7 +552,16 @@ const Library = ({
     <SideMenu
       open={pathname === '/drawer'}
       onClose={historyGoBack}
-      menu={widget ? null : <AppMenu onImportBooks={openImportBooks} />}
+      menu={
+        widget
+          ? null
+          : (
+            <AppMenu
+              onImportBooks={openImportBooks}
+              onReplaceExisting={openConfirmReplaceExisting}
+            />
+          )
+      }
     >
 
       <Switch>
@@ -549,10 +604,63 @@ const Library = ({
       />
 
       <BookImporter
-        open={!!importingBooks}
+        open={!!(importingBooks || replaceExisting)}
         accountId={bookImporterAccountId}
         updateBooks={updateBooks}
         onClose={closeImportingBooks}
+        replaceExisting={!!replaceExisting}
+      />
+
+      <Dialog
+        open={!!confirmReplaceExisting}
+        title={i18n("Are you sure?")}
+        type="confirm"
+        onConfirm={yesConfirmReplaceExisting}
+        onCancel={closeImportingBooks}
+        message={
+          <>
+            <Text style={styles.warningP}>
+              {i18n("Warning: Replacing EPUBs is highly discouraged as it can corrupt user data and enhanced content.")}
+            </Text>
+            <Text style={styles.p}>
+              {i18n("User highlights and notes are based upon the EPUB structure. Therefore, replacing an EPUB will corrupt this user data if any structural elements or content has been changed. In addition, if this is an enhanced book, replacing an EPUB can corrupt the placement of tools. Finally, replacing an EPUB may result in users viewing cached copies of the old EPUB’s content or assets at times, and not the new versions.")}
+            </Text>
+            <Text style={styles.p}>
+              {i18n("For these reasons, replacing an EPUB should only be used as a last resort.")}
+            </Text>
+            <View style={styles.section}>
+              <Text style={styles.heading}>
+                {i18n("Reasons NOT to replace an EPUB")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 1: If end users do not yet have access to your EPUB, it is often easiest to simply delete it and then import it afresh.")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 2: If you are wanting to import a new addition of a book, it is often best to do so without deleting the existing version. That way, users with highlights in the existing version will not lose their data while new users can be given access to the new addition.")}
+              </Text>
+            </View>
+            <Text style={styles.p}>
+              {i18n("That said, there are some uncommon scenarios when you may want to replace an existing EPUB.")}
+            </Text>
+            <View style={styles.section}>
+              <Text style={styles.heading}>
+                {i18n("Valid reasons to consider replacing an EPUB")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 1: If you find your EPUB has an ugly typo and end users already have access to it, replacing the EPUB might be your best option. If the only change to the EPUB is a letter being swapped for another, user highlights and enhanced tools will not be corrupted. If the edit is slightly more involved, minor user data corruption may be introduced.")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 2: If you are building out default enhanced content and end users do not yet have access when you discover a need to correct the EPUB, replacing the EPUB is a good option. However, understand that some inline tools may be misplaced or missing as a result.")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 3: You realize a need to reduce the size of EPUB assets. So long as the assets are not renamed and there are no structure or content changes, user data will not be affected.")}
+              </Text>
+            </View>
+            <Text style={styles.p}>
+              {i18n("If you still wish to replace an EPUB, click confirm below and then upload an EPUB file whose ISBN, Title and Author match those of the existing book to be replaced.")}
+            </Text>
+          </>
+        }
       />
 
       {doSetCookie &&

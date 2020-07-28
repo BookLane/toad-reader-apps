@@ -182,10 +182,11 @@ const FileImporter = ({
               }
               {status === 'done' && !result.success &&
                 <Text style={styles.failed}>
-                  {result.errorType == "biblemesh_file_too_large"
-                    ? i18n("File size exceeds {{maxMB}} mb max.", result )
-                    : i18n("Failed.")
-                  }
+                  {{
+                    biblemesh_file_too_large: i18n("File size exceeds {{maxMB}} mb max.", result),
+                    search_indexing_failed: i18n("Failed. File produced search index which exceeds limit."),
+                    'does-not-exist': i18n("Replacement failed as the existing book was not found."),
+                  }[result.errorType] || i18n("Failed.", result)}
                 </Text>
               }
               {getSuccessText

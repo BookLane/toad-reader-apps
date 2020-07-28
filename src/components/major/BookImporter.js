@@ -22,6 +22,7 @@ const BookImporter = ({
   accountId,
   updateBooks,
   onClose,
+  replaceExisting,
 }) => {
 
   const getFileLink = useCallback(
@@ -47,14 +48,17 @@ const BookImporter = ({
         <>
           {!!(result || {}).success &&
             <Text style={styles.result}>
-              {(result || {}).note === 'already-associated'
-                ? i18n("Not imported as this book is already in the library.")
-                : (
-                  (result || {}).note === 'associated-to-existing'
-                    ? i18n("Not imported as this book is already in the library of an associated site. Created association to this library.")
+              {(
+                {
+                  'already-associated': i18n("Not imported as this book is already in the library."),
+                  'associated-to-existing': i18n("Not imported as this book is already in the library of an associated site. Created association to this library."),
+                }[(result || {}).note]
+                || (
+                  replaceExisting
+                    ? i18n("Replaced successfully.")
                     : i18n("Imported successfully.")
                 )
-              }
+              )}
             </Text>
           }
           {!!(result || {}).success &&
@@ -63,7 +67,7 @@ const BookImporter = ({
         </>
       )
     },
-    [],
+    [ replaceExisting ],
   )
 
   const refresh = useCallback(
@@ -74,10 +78,10 @@ const BookImporter = ({
   return (
     <FileImporter
       open={open}
-      title={i18n("Importing books")}
+      title={replaceExisting ? i18n("Replacing EPUB") : i18n("Importing books")}
       fileType='application/epub+zip'
-      multiple={true}
-      relativePath='/importbook.json'
+      multiple={!replaceExisting}
+      relativePath={`/importbook.json${replaceExisting ? `?replaceExisting=1` : ``}`}
       accountId={accountId}
       getFileLink={getFileLink}
       getSuccessText={getSuccessText}
