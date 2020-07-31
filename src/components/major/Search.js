@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react"
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Platform } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Platform, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
-// import {  } from "../../utils/toolbox"
 import { searchBook, getAutoSuggest, getResultLineInJSX } from "../../utils/indexEpub"
-import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
 import Icon from "../basic/Icon"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { addRecentSearch } from "../../redux/actions"
 
@@ -25,8 +24,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  flatListContent: {
+  suggestionContentContainer: {
     paddingVertical: 10,
+  },
+  suggestionScrollView: {
+    flex: 1,
   },
   suggestion: {
     paddingHorizontal: 20,
@@ -63,8 +65,16 @@ const styles = StyleSheet.create({
   clearIcon: {
     height: 17,
     paddingHorizontal: 10,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 12,
+    paddingVertical: {
+      android: 12,
+      ios: 10,
+      web: 9,
+    }[Platform.OS],
     opacity: .7,
+  },
+  results: {
+    position: 'relative',
+    flex: 1,
   },
 })
 
@@ -73,6 +83,7 @@ const Search = ({
   goTo,
   inputRef,
   idpId,
+  requestClose,
 
   idps,
   accounts,
@@ -90,9 +101,7 @@ const Search = ({
 
   const [ setSearchTimeout ] = useSetTimeout()
 
-  const { spines, accountId } = useClassroomInfo({ books, bookId })
-
-  const { cookie } = accounts[accountId] || {}
+  const { cookie } = Object.values(accounts)[0] || {}
 
   useEffect(
     () => {
@@ -108,17 +117,18 @@ const Search = ({
           if(showResults) {
             setResults(searchBook(normalizedSearchStr))
           } else if(normalizedSearchStr) {
-            setSuggestions(
-              getAutoSuggest(normalizedSearchStr)
-                .slice(0, 100)
-                .filter(({ terms }) => terms.length === 1)
-                .slice(0, 10)
-            )
+            getAutoSuggest({
+              partialSearchStr: normalizedSearchStr,
+              setSuggestions,
+              idp: idps[idpId],
+              cookie,
+              bookId,
+            })
           }
         }
       )
     },
-    [ normalizedSearchStr, showResults ],
+    [ normalizedSearchStr, showResults, bookId, idps[idpId], cookie ],
   )
 
   useEffect(
@@ -137,39 +147,29 @@ const Search = ({
 
   const blurInput = useCallback(() => inputRef.current.blur(), [])
 
-  const spineLabelsByIdRef = useMemo(
+  const spineLabelsByBookIdAndIdRef = useMemo(
     () => {
-      const labelsByIdRef = {}
+      const labelsByBookIdAndIdRef = {}
 
-      spines.forEach(({ idref, label }) => {
-        labelsByIdRef[idref] = label
+      const booksObj = bookId ? { [bookId]: books[bookId] } : books
+      Object.keys(booksObj).forEach(bookId => {
+        if(booksObj[bookId].spines) {
+          booksObj[bookId].spines.forEach(({ idref, label }) => {
+            if(!labelsByBookIdAndIdRef[bookId]) {
+              labelsByBookIdAndIdRef[bookId] = {}
+            }
+            labelsByBookIdAndIdRef[bookId][idref] = label
+          })
+        }
       })
 
-      return labelsByIdRef
+      return labelsByBookIdAndIdRef
     },
-    [ spines ],
-  )
-
-  const renderSuggestion = useCallback(
-    ({ item: { suggestion, str } }) => (
-      <TouchableOpacity
-        key={suggestion || str}
-        onPress={() => {
-          setSearchStr(suggestion || str)
-          toggleShowResults(true)
-          blurInput()
-        }}
-      >
-        <Text style={styles.suggestion}>
-          {suggestion || str}
-        </Text>
-      </TouchableOpacity>
-    ),
-    [],
+    [ bookId ? books[bookId].spines : books ],
   )
 
   const renderResult = useCallback(
-    ({ item: { spineIdRef, terms, text, context, hitIndex } }) => {
+    ({ item: { book_id, spineIdRef, terms, text, context, hitIndex } }) => {
       const jsx = getResultLineInJSX({ text, context, terms, termStyle: styles.term })
 
       let charsBeforeFirstHit = 0
@@ -181,6 +181,7 @@ const Search = ({
         <TouchableOpacity
           onPress={() => {
             goTo({
+              bookId: book_id,
               spineIdRef,
               textNodeInfo: {
                 content: text,
@@ -193,7 +194,7 @@ const Search = ({
         >
           <View style={styles.result}>
             <Text style={styles.resultSpine}>
-              {spineLabelsByIdRef[spineIdRef] || spineIdRef}
+              {(spineLabelsByBookIdAndIdRef[book_id] || {})[spineIdRef] || spineIdRef}
             </Text>
             <Text style={styles.resultText}>
               {jsx}
@@ -214,9 +215,7 @@ const Search = ({
     [],
   )
 
-  if(!books[bookId]) return null
-
-  const { title } = books[bookId]
+  if(bookId && !books[bookId]) return null
 
   return (
     <View
@@ -226,7 +225,7 @@ const Search = ({
       {/* <BackFunction func={historyGoBack} /> */}
       <View style={styles.header}>
         <Input
-          placeholder={i18n("Search book")}
+          placeholder={bookId ? i18n("Search book") : i18n("Search all books")}
           value={searchStr}
           onChangeText={setSearchStr}
           returnKeyType="search"
@@ -239,7 +238,7 @@ const Search = ({
           forwardRef={inputRef}
         />
         <TouchableOpacity
-          onPress={clearSearchStr}
+          onPress={searchStr ? clearSearchStr : requestClose}
           style={styles.clear}
         >
           <Icon
@@ -249,20 +248,35 @@ const Search = ({
         </TouchableOpacity>
       </View>
       {!showResults &&
-        <>
+        <View style={styles.results}>
           {!!normalizedSearchStr && suggestions.length === 0 &&
             <Text style={styles.termNotFound}>
               {i18n("Term not found")}
             </Text>
           }
-          <FlatList
-            contentContainerStyle={styles.flatListContent}
-            data={normalizedSearchStr ? suggestions : (recentSearchesByBookId[bookId] || [])}
-            renderItem={renderSuggestion}
-            keyExtractor={({ suggestion, str }) => suggestion || `recent search\n${str}`}
-            keyboardShouldPersistTaps='handled'
-          />
-        </>
+          {!!normalizedSearchStr && suggestions === 'fetching' && <CoverAndSpin />}
+          <ScrollView
+            style={styles.suggestionScrollView}
+            contentContainerStyle={styles.suggestionContentContainer}
+          >
+            {!(!!normalizedSearchStr && suggestions === 'fetching') &&
+              (normalizedSearchStr ? suggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ suggestion, str }, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => {
+                    setSearchStr(suggestion || str)
+                    toggleShowResults(true)
+                    blurInput()
+                  }}
+                >
+                  <Text style={styles.suggestion}>
+                    {suggestion || str}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            }
+          </ScrollView>
+        </View>
       }
       {showResults &&
         <>

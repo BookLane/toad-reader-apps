@@ -3,7 +3,7 @@ import { Text } from "react-native"
 import MiniSearch from "minisearch"
 import * as FileSystem from 'expo-file-system'
 
-import { getDataOrigin, getReqOptionsWithAdditions } from "./toolbox"
+import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 import downloadAsync from "./downloadAsync"
 
 let currentMiniSearch, currentIndexBookId
@@ -19,7 +19,7 @@ const SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART = 3
 export const loadIndex = async ({ idp, bookId, cookie }) => {
 
   if(Platform.OS === 'web') return
-  if(currentIndexBookId === bookId) return
+  if(!bookId || currentIndexBookId === bookId) return
 
   currentMiniSearch = currentIndexBookId = undefined
 
@@ -71,20 +71,68 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
   currentIndexBookId = bookId
 }
 
-export const getAutoSuggest = partialSearchStr => {
+const cachedSuggestionsByBookIdAndTerm = {}  // cached with each session
+let currentAutoSuggestInfo = ``
 
-  if(!currentMiniSearch) return []  // TODO: get from the server
+export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId, idp, cookie }) => {
+
+  let suggestions
+  const thisAutoSuggestInfo = currentAutoSuggestInfo = `${bookId} ${partialSearchStr}`
 
   const partialSearchStrParts = partialSearchStr.split(new RegExp(`(${SPACE_OR_PUNCTUATION})`, 'u'))
 
-  return (
-    currentMiniSearch.autoSuggest(
-      partialSearchStrParts.slice(-1)[0],
-      {
-        prefix: true,
-        fuzzy: term => term.length > 3 ? 0.2 : null,
+  if(!currentMiniSearch) {
+    if(!cachedSuggestionsByBookIdAndTerm[bookId || 'all']) {
+      cachedSuggestionsByBookIdAndTerm[bookId || 'all'] = {}
+    }
+
+    suggestions = cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialSearchStr]
+
+    if(!suggestions) {
+      // get from the server
+
+      try { setSuggestions('fetching') } catch(e) {}
+      
+      try {
+
+        const path = `${getDataOrigin(idp)}/searchtermsuggest${bookId ? `/${bookId}` : ``}?termPrefix=${encodeURIComponent(partialSearchStr)}`
+        const response = await safeFetch(path, getReqOptionsWithAdditions({
+        // const { suggestions } = await safeFetch(path, getReqOptionsWithAdditions({
+          headers: {
+            "x-cookie-override": cookie,
+          },
+        }))
+        suggestions = (
+          await response.json()
+        ).suggestions.map(suggestion => ({ suggestion }))
+
+        cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialSearchStr] = suggestions
+
+      } catch(err) {
+        console.log(`/searchtermsuggest error`, err)
+      } finally {
+        if(!suggestions) return
       }
+
+    }
+
+  } else {
+    suggestions = (
+      currentMiniSearch.autoSuggest(
+        partialSearchStrParts.slice(-1)[0],
+        {
+          prefix: true,
+          fuzzy: term => term.length > 3 ? 0.2 : null,
+        }
+      )
+        .slice(0, 100)
+        .filter(({ terms }) => terms.length === 1)
+        .slice(0, 10)
     )
+  }
+
+  // rejoin the multi-word suggestions
+  suggestions = suggestions
     .map(obj => ({
       ...obj,
       suggestion: (
@@ -94,8 +142,11 @@ export const getAutoSuggest = partialSearchStr => {
         ].join('')
       ),
     }))
-  )
 
+  // set the suggestions for the UI
+  if(thisAutoSuggestInfo === currentAutoSuggestInfo) {
+    try { setSuggestions(suggestions) } catch(e) {}
+  }
 }
 
 export const searchBook = searchStr => {
