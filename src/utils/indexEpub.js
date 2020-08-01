@@ -1,5 +1,5 @@
 import React from "react"
-import { Text } from "react-native"
+import { Text, Platform } from "react-native"
 import MiniSearch from "minisearch"
 import * as FileSystem from 'expo-file-system'
 
