@@ -109,7 +109,7 @@ const Library = ({
 
 }) => {
 
-  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
+  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname, clearKeyFromRouterState } = useRouterState()
   const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
 
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
@@ -125,7 +125,6 @@ const Library = ({
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
-  const getRouterState = useInstanceValue(routerState)
 
   const previousPathname = usePrevious(pathname)
   const accountIds = Object.keys(accounts).join(',')
@@ -342,11 +341,7 @@ const Library = ({
   const onLoginSuccess = useCallback(
     () => {
       setShowLogin(false)
-      const newRouterState = { ...getRouterState() }
-      if(Object.keys(newRouterState).length > 0) {
-        delete newRouterState.doEmailLogin
-        historyReplace(null, Object.keys(newRouterState).length > 0 ? newRouterState : null)
-      }
+      clearKeyFromRouterState('doEmailLogin')
     },
     [],
   )

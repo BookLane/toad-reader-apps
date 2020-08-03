@@ -1,35 +1,20 @@
-import React, { useCallback, useRef } from "react"
-import { StyleSheet, View, TouchableWithoutFeedback } from "react-native"
+import React, { useCallback } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { OverflowMenu } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
 
-import { getIdsFromAccountId, statusBarHeight } from "../../utils/toolbox"
+import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
-import Search from "./Search"
+import HeaderSearch from "../basic/HeaderSearch"
 
 import { setSort, toggleView } from "../../redux/actions"
 
-const styles = StyleSheet.create({
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, .5)",
-    zIndex: 10,
-  },
-  searchContainer: {
-    marginHorizontal: 'auto',
-    paddingTop: 5 - statusBarHeight,
-    width: 500,
-    maxWidth: '90%',
-    minHeight: 300,
-    maxHeight: '90%',
-    backgroundColor: 'white',
-  },
-})
+// const styles = StyleSheet.create({
+// })
 
 const LibraryHeader = ({
   idps,
@@ -41,8 +26,6 @@ const LibraryHeader = ({
 
   const [ showOptions, toggleShowOptions ] = useToggle(false)
   const [ showSearch, toggleShowSearch ] = useToggle(false)
-
-  const searchInputRef = useRef()
 
   const onPressToggleView = useCallback(toggleView, [])
 
@@ -123,20 +106,11 @@ const LibraryHeader = ({
           </OverflowMenu>,
         ]}
       />
-      {showSearch &&
-        <TouchableWithoutFeedback onPress={toggleShowSearch}>
-          <View style={styles.modalBackdrop}>
-            <View style={styles.searchContainer}>
-              <Search
-                goTo={() => {}}
-                inputRef={searchInputRef}
-                idpId={idpId}
-                requestClose={toggleShowSearch}
-              />
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      }
+      <HeaderSearch
+        showSearch={showSearch}
+        toggleShowSearch={toggleShowSearch}
+        idpId={idpId}
+      />
     </>
   )
 }

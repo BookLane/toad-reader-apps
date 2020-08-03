@@ -9,7 +9,14 @@ const useRouterState = () => {
   const history = useHistory()
   const location = useLocation()
 
+  let routerState = {}
+
+  try {
+    routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
+  } catch(e) {}
+
   const getLocation = useInstanceValue(location)
+  const getRouterState = useInstanceValue(routerState)
 
   const historyPush = useCallback(
     (route, state) => {
@@ -25,12 +32,6 @@ const useRouterState = () => {
     [],
   )
 
-  let routerState = {}
-
-  try {
-    routerState = JSON.parse(decodeURIComponent(location.hash).slice(1))
-  } catch(e) {}
-
   const historyGoBackToLibrary = useCallback(
     () => {
       if(location.pathname === '/') return
@@ -44,6 +45,17 @@ const useRouterState = () => {
     [ location.pathname ]
   )
 
+  const clearKeyFromRouterState = useCallback(
+    key => {
+      const newRouterState = { ...getRouterState() }
+      delete newRouterState[key]
+      if(Object.keys(getRouterState()).length !== Object.keys(newRouterState).length) {
+        historyReplace(null, Object.keys(newRouterState).length > 0 ? newRouterState : null)
+      }
+    },
+    [],
+  )
+
   return {
     historyPush,
     historyReplace,
@@ -51,6 +63,7 @@ const useRouterState = () => {
     historyGoBackToLibrary,
     historyGo: history.go,
     routerState,
+    clearKeyFromRouterState,
     ...location,
   }
 }

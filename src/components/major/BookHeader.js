@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   optionsMenu: {
     width: 'auto',
     maxWidth: 300,
-  }
+  },
 })
 
 const BookHeader = React.memo(({
@@ -32,6 +32,7 @@ const BookHeader = React.memo(({
   showDisplaySettings,
   onBackPress,
   setModeToPage,
+  toggleShowSearch,
 
   books,
   userDataByBookId,
@@ -150,6 +151,12 @@ const BookHeader = React.memo(({
 
   const rightControls = [
     <SaveStateHeaderIcon />,
+    ...(!(wideMode) ? [] : [
+      <HeaderIcon
+        iconName="md-search"
+        onPress={toggleShowSearch}
+      />,
+    ]),
     <HeaderIcon
       iconName="format-size"
       iconPack="materialCommunity"
