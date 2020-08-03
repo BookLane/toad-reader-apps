@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import { StyleSheet, View, TouchableWithoutFeedback } from "react-native"
+import { StyleSheet, View, TouchableWithoutFeedback, Platform } from "react-native"
 
 import Search from "../major/Search"
 import useWideMode from "../../hooks/useWideMode"
@@ -27,6 +27,9 @@ const styles = StyleSheet.create({
     maxWidth: '90%',
     minHeight: 300,
     maxHeight: '90%',
+    ...(Platform.OS === 'web' ? {} : {
+      flex: 1,
+    }),
   },
   header: {
     paddingBottom: 4,
