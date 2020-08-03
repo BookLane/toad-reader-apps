@@ -7,7 +7,6 @@ import useToggle from "react-use/lib/useToggle"
 
 import { searchBook, getAutoSuggest, getResultLineInJSX, SPACE_OR_PUNCTUATION } from "../../utils/indexEpub"
 import useSetTimeout from '../../hooks/useSetTimeout'
-import useRouterState from '../../hooks/useRouterState'
 import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
@@ -122,8 +121,6 @@ const Search = ({
   const [ offlineSearchFailed, setOfflineSearchFailed ] = useState(false)
 
   const [ setSearchTimeout ] = useSetTimeout()
-
-  const { historyPush, pathname } = useRouterState()
 
   const { cookie } = Object.values(accounts)[0] || {}
 
@@ -249,6 +246,7 @@ const Search = ({
         <TouchableOpacity
           onPress={() => {
             const info = {
+              bookId: book_id,
               spineIdRef,
               textNodeInfo: {
                 content: text,
@@ -257,13 +255,7 @@ const Search = ({
                 endOffset: charsBeforeFirstHit + 1,
               },
             }
-            if(pathname === '/') {
-              historyPush(`/book/${book_id}`, {
-                goToInfo: info
-              })
-            } else {
-              goTo(info)
-            }
+            goTo(info)
           }}
         >
           <View style={styles.result}>
@@ -285,7 +277,7 @@ const Search = ({
         </TouchableOpacity>
       )
     },
-    [ !bookId ? books : spineLabelsByBookIdAndIdRef, goTo, pathname ],
+    [ !bookId ? books : spineLabelsByBookIdAndIdRef, goTo ],
   )
 
   const clearSearchStr = useCallback(
@@ -376,7 +368,7 @@ const Search = ({
                 onPress={() => {
                   blurInput()
                   if(bookId) {
-                    historyPush(`/book/${bookId}`)
+                    goTo({ bookId })
                   } else {
                     setSearchStr(suggestion || str)
                     toggleShowResults(true)

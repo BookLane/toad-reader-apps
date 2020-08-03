@@ -212,9 +212,10 @@ export const deleteInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cf
   doPatch: true,
 })
 
-export const pushToBookDownloadQueue = ({ bookId }) => ({
+export const pushToBookDownloadQueue = ({ bookId, pushToFront }) => ({
   type: "PUSH_TO_BOOK_DOWNLOAD_QUEUE",
   bookId,
+  pushToFront,
 })
 
 export const removeFromBookDownloadQueue = ({ bookId }) => ({
