@@ -96,6 +96,14 @@ const styles = StyleSheet.create({
   },
 })
 
+const normalizeSearchStr = str => (
+  str
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(new RegExp(SPACE_OR_PUNCTUATION, 'u'), ' ')
+    .trim()
+)
+
 const Search = ({
   bookId,
   goTo,
@@ -114,7 +122,7 @@ const Search = ({
 
   const [ showResults, toggleShowResults ] = useToggle(false)
   const [ searchStr, setSearchStr ] = useState("")
-  const normalizedSearchStr = searchStr.trim().toLowerCase()
+  const normalizedSearchStr = normalizeSearchStr(searchStr)
   const [ suggestions, setSuggestions ] = useState([])
   const [ bookSuggestions, setBookSuggestions ] = useState([])
   const [ results, setResults ] = useState([])
@@ -143,7 +151,7 @@ const Search = ({
         booksAry.push({
           bookId,
           ...books[bookId],
-          searchTerms: `${title} ${author} ${isbn}`.toLowerCase().split(new RegExp(SPACE_OR_PUNCTUATION, 'u')),
+          searchTerms: normalizeSearchStr(`${title} ${author} ${isbn}`).split(' '),
         })
       }
       return booksAry
@@ -168,10 +176,13 @@ const Search = ({
 
           } else if(normalizedSearchStr) {
 
+            const normalizedSearchTerms = normalizedSearchStr.split(' ')
             const newBookSuggestions = (bookId ? [] : booksArray)
               .filter(({ searchTerms }) => (
-                searchTerms.some(term => (
-                  term.indexOf(normalizedSearchStr) === 0
+                normalizedSearchTerms.every(searchTerm => (
+                  searchTerms.some(term => (
+                    term.indexOf(searchTerm) === 0
+                  ))
                 ))
               ))
             setBookSuggestions(newBookSuggestions)
