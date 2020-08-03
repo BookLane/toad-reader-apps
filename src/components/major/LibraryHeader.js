@@ -6,6 +6,7 @@ import { OverflowMenu } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
 
 import { getIdsFromAccountId } from "../../utils/toolbox"
+import useNetwork from "../../hooks/useNetwork"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
@@ -28,6 +29,8 @@ const LibraryHeader = ({
   const [ showSearch, toggleShowSearch ] = useToggle(false)
 
   const onPressToggleView = useCallback(toggleView, [])
+
+  const { online } = useNetwork()
 
   const scope = library.scope || "all"
 
@@ -85,6 +88,8 @@ const LibraryHeader = ({
           <HeaderIcon
             iconName="md-search"
             onPress={toggleShowSearch}
+            disabled={!online}
+            uiStatus={!online ? "disabled" : null}
           />,
           <HeaderIcon
             iconName={library.view == "covers" ? "ios-list" : "md-apps"}

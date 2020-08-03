@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
     opacity: .35,
+    paddingHorizontal: 30,
   },
   noResults: {
     textAlign: 'center',
@@ -118,6 +119,7 @@ const Search = ({
   const [ suggestions, setSuggestions ] = useState([])
   const [ bookSuggestions, setBookSuggestions ] = useState([])
   const [ results, setResults ] = useState([])
+  const [ offlineSearchFailed, setOfflineSearchFailed ] = useState(false)
 
   const [ setSearchTimeout ] = useSetTimeout()
 
@@ -127,7 +129,11 @@ const Search = ({
 
   useEffect(
     () => {
-      loadIndex({ idp: idps[idpId], bookId, cookie })
+      loadIndex({ idp: idps[idpId], bookId, cookie }).then(success => {
+        if(!success) {
+          setOfflineSearchFailed(true)
+        }
+      })
     },
     [ idps[idpId], bookId, cookie ],
   )
@@ -346,7 +352,12 @@ const Search = ({
           />
         </TouchableOpacity>
       </View>
-      {!showResults &&
+      {offlineSearchFailed &&
+        <Text style={styles.termNotFound}>
+          {i18n("Internet connection required the first time you search a book. Check your connection and try again.")}
+        </Text>
+      }
+      {!offlineSearchFailed && !showResults &&
         <View style={styles.results}>
           {!!normalizedSearchStr && suggestions !== 'fetching' && allSuggestions.length === 0 &&
             <Text style={styles.termNotFound}>
@@ -392,7 +403,7 @@ const Search = ({
           </ScrollView>
         </View>
       }
-      {showResults &&
+      {!offlineSearchFailed && showResults &&
         <>
           {results.length === 0 &&
             <Text style={styles.noResults}>

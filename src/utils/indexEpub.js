@@ -48,8 +48,8 @@ const formQueryStr = query => {
 
 export const loadIndex = async ({ idp, bookId, cookie }) => {
 
-  if(Platform.OS === 'web') return
-  if(!bookId || currentIndexBookId === bookId) return
+  if(Platform.OS === 'web') return true  // no need to download
+  if(!bookId || currentIndexBookId === bookId) return true  // full library search or already loaded
 
   currentMiniSearch = currentIndexBookId = undefined
 
@@ -72,7 +72,7 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
     },
   )
 
-  if(success === false) return  // download failed
+  if(success === false) return false  // download failed
 
   console.log(`Load MiniSearch for book id ${bookId}...`)
 
@@ -99,6 +99,8 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
   console.log(`...loaded.`)
 
   currentIndexBookId = bookId
+
+  return true  // download successful
 }
 
 const cachedSuggestionsByBookIdAndTerm = {}  // cached with each session

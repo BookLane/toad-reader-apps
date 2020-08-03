@@ -6,6 +6,7 @@ import { OverflowMenu } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
+import useNetwork from "../../hooks/useNetwork"
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
@@ -49,6 +50,8 @@ const BookHeader = React.memo(({
   const [ showOptions, toggleShowOptions ] = useToggle(false)
 
   const wideMode = useWideMode()
+
+  const { online } = useNetwork()
 
   const { book, canViewDashboard } = useClassroomInfo({ books, bookId, userDataByBookId })
 
@@ -149,12 +152,19 @@ const BookHeader = React.memo(({
     [ bookLinkInfo, goToBookLink, removeFromDevice ],
   )
 
+  const searchUnavailable = (
+    Platform.OS === 'web'
+    && !online
+  )
+
   const rightControls = [
     <SaveStateHeaderIcon />,
     ...(!(wideMode) ? [] : [
       <HeaderIcon
         iconName="md-search"
         onPress={toggleShowSearch}
+        disabled={searchUnavailable}
+        uiStatus={searchUnavailable ? "disabled" : (wideMode ? "faded" : null)}
       />,
     ]),
     <HeaderIcon
