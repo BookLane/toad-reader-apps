@@ -5,8 +5,9 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
-import { searchBook, getAutoSuggest, getResultLineInJSX } from "../../utils/indexEpub"
+import { searchBook, getAutoSuggest, getResultLineInJSX, SPACE_OR_PUNCTUATION } from "../../utils/indexEpub"
 import useSetTimeout from '../../hooks/useSetTimeout'
+import useRouterState from '../../hooks/useRouterState'
 import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
@@ -33,6 +34,16 @@ const styles = StyleSheet.create({
   suggestion: {
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  bookSuggestion: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  bookSuggestionTitle: {
+    fontWeight: 'bold',
+  },
+  bookSuggestionInfo: {
+    color: `rgba(0, 0, 0, .5)`,
   },
   result: {
     paddingHorizontal: 20,
@@ -102,11 +113,14 @@ const Search = ({
 
   const [ showResults, toggleShowResults ] = useToggle(false)
   const [ searchStr, setSearchStr ] = useState("")
-  const normalizedSearchStr = searchStr.trim()
+  const normalizedSearchStr = searchStr.trim().toLowerCase()
   const [ suggestions, setSuggestions ] = useState([])
+  const [ bookSuggestions, setBookSuggestions ] = useState([])
   const [ results, setResults ] = useState([])
 
   const [ setSearchTimeout ] = useSetTimeout()
+
+  const { historyPush } = useRouterState()
 
   const { cookie } = Object.values(accounts)[0] || {}
 
@@ -115,6 +129,22 @@ const Search = ({
       loadIndex({ idp: idps[idpId], bookId, cookie })
     },
     [ idps[idpId], bookId, cookie ],
+  )
+
+  const booksArray = useMemo(
+    () => {
+      const booksAry = []
+      for(let bookId in books) {
+        const { title, author, isbn } = books[bookId]
+        booksAry.push({
+          bookId,
+          ...books[bookId],
+          searchTerms: `${title} ${author} ${isbn}`.toLowerCase().split(new RegExp(SPACE_OR_PUNCTUATION, 'u')),
+        })
+      }
+      return booksAry
+    },
+    [ books ],
   )
 
   useEffect(
@@ -131,7 +161,17 @@ const Search = ({
               bookId,
             })
             inputRef.current.blur()
+
           } else if(normalizedSearchStr) {
+
+            const newBookSuggestions = (bookId ? [] : booksArray)
+              .filter(({ searchTerms }) => (
+                searchTerms.some(term => (
+                  term.indexOf(normalizedSearchStr) === 0
+                ))
+              ))
+            setBookSuggestions(newBookSuggestions)
+
             if(suggestions.length === 0) {
               setSuggestions('fetching')
             }
@@ -142,13 +182,14 @@ const Search = ({
               cookie,
               bookId,
             })
+
           } else {
             setSuggestions([])
           }
         }
       )
     },
-    [ normalizedSearchStr, showResults, bookId, idps[idpId], cookie ],
+    [ normalizedSearchStr, showResults, bookId, idps[idpId], cookie, !bookId && booksArray ],
   )
 
   useEffect(
@@ -252,6 +293,14 @@ const Search = ({
     [ !searchStr ],
   )
 
+  const allSuggestions = useMemo(
+    () => ([
+      ...bookSuggestions,
+      ...(suggestions instanceof Array ? suggestions : []),
+    ]),
+    [ suggestions, bookSuggestions ],
+  )
+
   if(bookId && !books[bookId]) return null
 
   return (
@@ -287,32 +336,46 @@ const Search = ({
       </View>
       {!showResults &&
         <View style={styles.results}>
-          {!!normalizedSearchStr && suggestions.length === 0 &&
+          {!!normalizedSearchStr && suggestions !== 'fetching' && allSuggestions.length === 0 &&
             <Text style={styles.termNotFound}>
               {i18n("Term not found")}
             </Text>
           }
-          {!!normalizedSearchStr && suggestions === 'fetching' && <CoverAndSpin />}
+          {!!normalizedSearchStr && suggestions === 'fetching' && bookSuggestions.length === 0 && <CoverAndSpin />}
           <ScrollView
             style={styles.suggestionScrollView}
             contentContainerStyle={styles.suggestionContentContainer}
           >
-            {!(!!normalizedSearchStr && suggestions === 'fetching') &&
-              (normalizedSearchStr ? suggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ suggestion, str }, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  onPress={() => {
+            {(normalizedSearchStr ? allSuggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => {
+                  blurInput()
+                  if(bookId) {
+                    historyPush(`/book/${bookId}`)
+                  } else {
                     setSearchStr(suggestion || str)
                     toggleShowResults(true)
-                    blurInput()
                   }}
-                >
-                  <Text style={styles.suggestion}>
+                }
+              >
+                {!!bookId &&
+                  <View style={styles.bookSuggestion}>
+                    <Text style={styles.bookSuggestionTitle}>
+                      {title}
+                    </Text>
+                    <Text style={styles.bookSuggestionInfo}>
+                      {`${author} / ${isbn}`}
+                    </Text>
+                  </View>
+                }
+                {!bookId &&
+                  <Text style={styles[bookId ? 'bookSuggestion' : 'suggestion']}>
                     {suggestion || str}
                   </Text>
-                </TouchableOpacity>
-              ))
-            }
+                }
+              </TouchableOpacity>
+            ))}
           </ScrollView>
         </View>
       }
