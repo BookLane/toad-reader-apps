@@ -36,6 +36,7 @@ import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
 import Dialog from "../major/Dialog"
+import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
@@ -85,6 +86,12 @@ const styles = StyleSheet.create({
   section: {
     marginVertical: 5,
   },
+  keyboardAvoidingView: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  flex1View: {
+    flex: 1,
+  }
 })
 
 const Library = ({
@@ -109,7 +116,7 @@ const Library = ({
 
 }) => {
 
-  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname } = useRouterState()
+  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname, clearKeyFromRouterState } = useRouterState()
   const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
 
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
@@ -125,7 +132,6 @@ const Library = ({
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
-  const getRouterState = useInstanceValue(routerState)
 
   const previousPathname = usePrevious(pathname)
   const accountIds = Object.keys(accounts).join(',')
@@ -342,11 +348,7 @@ const Library = ({
   const onLoginSuccess = useCallback(
     () => {
       setShowLogin(false)
-      const newRouterState = { ...getRouterState() }
-      if(Object.keys(newRouterState).length > 0) {
-        delete newRouterState.doEmailLogin
-        historyReplace(null, Object.keys(newRouterState).length > 0 ? newRouterState : null)
-      }
+      clearKeyFromRouterState('doEmailLogin')
     },
     [],
   )
@@ -571,29 +573,33 @@ const Library = ({
         <Route>
 
           <SafeLayout>
-            <LibraryHeader
-              scope={scope}
-            />
-            {doingInitialFetch
-              ? (
-                <View style={styles.spinnerContainer}>
-                  <Spin />
-                </View>
-              )
-              : (
-                bookList.length == 0
+            <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+              <View style={styles.flex1View}>
+                <LibraryHeader
+                  scope={scope}
+                />
+                {doingInitialFetch
                   ? (
-                    <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-                  )
-                  : (
-                    <View style={styles.content}>
-                      <LibraryViewer
-                        bookList={bookList}
-                      />
+                    <View style={styles.spinnerContainer}>
+                      <Spin />
                     </View>
                   )
-              )
-            }
+                  : (
+                    bookList.length == 0
+                      ? (
+                        <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                      )
+                      : (
+                        <View style={styles.content}>
+                          <LibraryViewer
+                            bookList={bookList}
+                          />
+                        </View>
+                      )
+                  )
+                }
+              </View>
+            </KeyboardAvoidingView>
           </SafeLayout>
           
         </Route>

@@ -174,6 +174,9 @@ const mapping = {
               },
             },
           },
+          disabled: {
+            iconTintColor: "color-basic-500",
+          },
           error: {
             iconTintColor: "color-danger-600",
             state: {

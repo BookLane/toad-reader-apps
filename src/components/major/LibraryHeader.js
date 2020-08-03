@@ -1,28 +1,50 @@
-import React, { useState, useCallback } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
-import AppHeader from "../basic/AppHeader"
-import HeaderIcon from "../basic/HeaderIcon"
 import { OverflowMenu } from "@ui-kitten/components"
+import useToggle from 'react-use/lib/useToggle'
 
 import { getIdsFromAccountId } from "../../utils/toolbox"
+import useNetwork from "../../hooks/useNetwork"
+import useRouterState from '../../hooks/useRouterState'
 
-import { setSort, toggleView } from "../../redux/actions"
+import AppHeader from "../basic/AppHeader"
+import HeaderIcon from "../basic/HeaderIcon"
+import HeaderSearch from "../basic/HeaderSearch"
+import Dialog from "./Dialog"
+
+import { setSort, toggleView, pushToBookDownloadQueue } from "../../redux/actions"
+
+// const styles = StyleSheet.create({
+// })
 
 const LibraryHeader = ({
   idps,
   accounts,
+  books,
   library,
+  downloadProgressByBookId,
+
   setSort,
   toggleView,
+  pushToBookDownloadQueue,
 }) => {
 
-  const [ showOptions, setShowOptions ] = useState(false)
+  const [ showOptions, toggleShowOptions ] = useToggle(false)
+  const [ showSearch, toggleShowSearch ] = useToggle(false)
+  const [ bookIdToDownload, setBookIdToDownload ] = useState()
+  const [ goToInfo, setGoToInfo ] = useState()
 
   const onPressToggleView = useCallback(toggleView, [])
 
+  const { online } = useNetwork()
+
+  const { historyPush } = useRouterState()
+
   const scope = library.scope || "all"
+
+  const { idpId } = getIdsFromAccountId(scope)
 
   let title = i18n("Library")
   let subtitle = ""
@@ -32,9 +54,28 @@ const LibraryHeader = ({
   }
 
   if(accounts[scope]) {
-    title = idps[getIdsFromAccountId(scope).idpId].name
+    title = idps[idpId].name
     subtitle = accounts[scope].email
   }
+
+  const { downloadStatus, title: bookTitle } = books[bookIdToDownload] || {}
+  const hasGoToInfo = goToInfo && Object.keys(goToInfo).length > 0
+
+  useEffect(
+    () => {
+      if(downloadStatus === 2) {
+        historyPush(
+          `/book/${bookIdToDownload}`,
+          !hasGoToInfo
+            ? null
+            : {
+              goToInfo,
+            }
+          )
+      }
+    },
+    [ bookIdToDownload, downloadStatus ],
+  )
 
   const moreOptions = [
     {
@@ -53,11 +94,6 @@ const LibraryHeader = ({
 
   const moreKeys = moreOptions.map(({ key }) => key)
 
-  const toggleShowOptions = useCallback(
-    () => setShowOptions(!showOptions),
-    [ showOptions ],
-  )
-
   const selectSort = useCallback(
     selectedIndex => {
       setSort({ sort: moreKeys[selectedIndex] })
@@ -66,49 +102,110 @@ const LibraryHeader = ({
     [],
   )
 
+  const goTo = useCallback(
+    ({ bookId, ...goToInfo }) => {
+      setGoToInfo(goToInfo)
+      setBookIdToDownload(bookId)
+    },
+    [],
+  )
+
+  const onCancelDownload = useCallback(() => setBookIdToDownload(), [])
+
+  const onConfirmDownload = useCallback(
+    () => {
+      pushToBookDownloadQueue({
+        bookId: bookIdToDownload,
+        pushToFront: true,
+      })
+    },
+    [ bookIdToDownload ],
+  )
+
   return (
-    <AppHeader
-      title={title}
-      subtitle={subtitle}
-      leftControl={
-        <HeaderIcon
-          iconName="ios-menu"
-          path="/drawer"
-        />
-      }
-      rightControls={[
-        <HeaderIcon
-          iconName={library.view == "covers" ? "ios-list" : "md-apps"}
-          onPress={onPressToggleView}
-        />,
-        <OverflowMenu
-          data={moreOptions}
-          visible={showOptions}
-          selectedIndex={moreKeys.indexOf(library.sort)}
-          onSelect={selectSort}
-          onBackdropPress={toggleShowOptions}
-          placement='bottom end'
-        >
+    <>
+      <AppHeader
+        title={title}
+        subtitle={subtitle}
+        leftControl={
           <HeaderIcon
-            iconName="sort"
-            iconPack="materialCommunity"
-            onPress={toggleShowOptions}
+            iconName="ios-menu"
+            path="/drawer"
           />
-        </OverflowMenu>,
-      ]}
-    />
+        }
+        rightControls={[
+          <HeaderIcon
+            iconName="md-search"
+            onPress={toggleShowSearch}
+            disabled={!online}
+            uiStatus={!online ? "disabled" : null}
+          />,
+          <HeaderIcon
+            iconName={library.view == "covers" ? "ios-list" : "md-apps"}
+            onPress={onPressToggleView}
+          />,
+          <OverflowMenu
+            data={moreOptions}
+            visible={showOptions}
+            selectedIndex={moreKeys.indexOf(library.sort)}
+            onSelect={selectSort}
+            onBackdropPress={toggleShowOptions}
+            placement='bottom end'
+          >
+            <HeaderIcon
+              iconName="sort"
+              iconPack="materialCommunity"
+              onPress={toggleShowOptions}
+            />
+          </OverflowMenu>,
+        ]}
+      />
+      <HeaderSearch
+        showSearch={showSearch}
+        toggleShowSearch={toggleShowSearch}
+        idpId={idpId}
+        goTo={goTo}
+      />
+      <Dialog
+        open={!!bookIdToDownload}
+        type="confirm"
+        title={i18n("Download book")}
+        message={[
+          hasGoToInfo
+            ? (
+              i18n("Would you like to download “{{title}}” to view this search result?", {
+                title: bookTitle,
+              })
+            )
+            : (
+              i18n("Would you like to download “{{title}}”?", {
+                title: bookTitle,
+              })
+            )
+        ]}
+        confirmButtonText={i18n("Download")}
+        onCancel={onCancelDownload}
+        onConfirm={onConfirmDownload}
+        submitting={downloadStatus === 1}
+        submittingPercentage={downloadProgressByBookId[bookIdToDownload]}
+      />
+
+    </>
   )
 }
 
-const mapStateToProps = ({ idps, accounts, library }) => ({
+const mapStateToProps = ({ idps, accounts, books, library, downloadProgressByBookId }) => ({
   idps,
   accounts,
+  books,
   library,
+  downloadProgressByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   toggleView,
   setSort,
+  pushToBookDownloadQueue,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryHeader)

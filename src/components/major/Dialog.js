@@ -5,6 +5,16 @@ import { i18n } from "inline-i18n"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
 import useDimensions from "../../hooks/useDimensions"
+import useWideMode from "../../hooks/useWideMode"
+
+const container = {
+  minWidth: 280,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  paddingBottom: 10,
+  backgroundColor: "white",
+  elevation: 4,
+}
 
 const styles = StyleSheet.create({
   modalBackdrop: {
@@ -14,13 +24,12 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   container: {
-    minWidth: 280,
+    ...container,
     maxWidth: 500,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    paddingBottom: 10,
-    backgroundColor: "white",
-    elevation: 4,
+  },
+  containerWideMode: {
+    ...container,
+    maxWidth: '90%',
   },
   title: {
     fontSize: 18,
@@ -65,6 +74,7 @@ const Dialog = React.memo(({
   style,
   invisibleBackdrop,
   submitting,
+  submittingPercentage,
   noScroll,
 
   // specific to type="info"
@@ -87,7 +97,9 @@ const Dialog = React.memo(({
   buttons,
 
 }) => {
-  
+
+  const wideMode = useWideMode()
+
   // TODO: do fullscreen if small device size
   const { width, height } = useDimensions().window
   const maxHeight = height - 50
@@ -157,7 +169,7 @@ const Dialog = React.memo(({
     >
       <View style={{ width }}>
         <View style={[
-          styles.container,
+          wideMode ? styles.container : styles.containerWideMode,
           { maxHeight },
           style,
         ]}>
@@ -192,7 +204,11 @@ const Dialog = React.memo(({
               {buttons}
             </View>
           }
-          {!!submitting && <CoverAndSpin />}
+          {!!submitting && (
+            <CoverAndSpin
+              percentage={submittingPercentage}
+            />
+          )}
         </View>
       </View>
     </Modal>

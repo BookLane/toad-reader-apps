@@ -6,6 +6,7 @@ import { connect } from "react-redux"
 import { useParams } from "react-router-dom"
 import { i18n } from "inline-i18n"
 import useSetState from "react-use/lib/useSetState"
+import useToggle from "react-use/lib/useToggle"
 import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
 
 import { refreshUserData } from "../../utils/syncUserData"
@@ -46,6 +47,7 @@ import HighlightsWrapper from "../major/HighlightsWrapper"
 import Icon from "../basic/Icon"
 import Search from "../major/Search"
 import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
+import HeaderSearch from "../basic/HeaderSearch"
 
 
 const {
@@ -204,6 +206,10 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: bottomSpace,
+    paddingVertical: 0,
+  },
+  bottomNavigationTab: {
+    paddingVertical: 4,
   },
   backToReading: {
     position: 'absolute',
@@ -261,12 +267,14 @@ const Book = React.memo(({
     snapshotZoomed: true,
   })
 
+  const [ showSearch, toggleShowSearch ] = useToggle(false)
+
   const toolSpots = useRef({})
   const movingToolOffsets = useRef()
   const searchInputRef = useRef()
 
-  const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
-  const { widget } = routerState
+  const { historyPush, historyReplace, historyGoBack, routerState, clearKeyFromRouterState } = useRouterState()
+  const { widget, goToInfo } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
@@ -322,6 +330,7 @@ const Book = React.memo(({
         id: 'thumbnails',
         tab: (
           <BottomNavigationTab
+            style={styles.bottomNavigationTab}
             key="thumbnails"
             title={i18n("Thumbnails")}
             icon={ThumbnailsIcon}
@@ -332,16 +341,18 @@ const Book = React.memo(({
         id: 'contents',
         tab: (
           <BottomNavigationTab
+            style={styles.bottomNavigationTab}
             key="contents"
             title={i18n("Contents")}
             icon={ContentsIcon}
           />
         ),
       }]),
-      ...(!(Platform.OS !== 'web') ? [] : [{
+      ...(!(!wideMode) ? [] : [{
         id: 'search',
         tab: (
           <BottomNavigationTab
+            style={styles.bottomNavigationTab}
             key="search"
             title={i18n("Search")}
             icon={SearchIcon}
@@ -732,14 +743,19 @@ const Book = React.memo(({
       clearAwaitLoadTimeout()
 
       setState({
-        bookLoaded: true,
+        bookLoaded: !goToInfo,
         mode: zooming ? 'page' : mode,
         zoomToInfo: zooming ? null : zoomToInfo,
       })
 
       temporarilyPauseProcessing()
+
+      if(goToInfo) {
+        clearKeyFromRouterState('goToInfo')
+        goTo(goToInfo)
+      }
     },
-    [ mode, zoomToInfo ],
+    [ mode, zoomToInfo, goToInfo ],
   )
 
   const showDisplaySettings = useCallback(
@@ -993,9 +1009,17 @@ const Book = React.memo(({
                 width={width}  // By sending this as a prop, I force a rerender
                 onBackPress={historyGoBack}
                 setModeToPage={setModeToPage}
+                toggleShowSearch={toggleShowSearch}
               />
             </View>
           }
+          <HeaderSearch
+            bookId={bookId}
+            showSearch={showSearch}
+            toggleShowSearch={toggleShowSearch}
+            goTo={goTo}
+            idpId={idpId}
+          />
           {Platform.OS !== 'web' &&
             <View
               style={[

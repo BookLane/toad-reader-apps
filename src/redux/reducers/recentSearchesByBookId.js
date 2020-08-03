@@ -6,7 +6,9 @@ export default (state = initialState, action) => {
   switch (action.type) {
 
     case "ADD_RECENT_SEARCH": {
-      const { bookId, info } = action
+      let { bookId, info } = action
+
+      bookId = bookId || 'all'
 
       if(((state[bookId] || [])[0] || {}).str !== info.str) {
         newState[bookId] = (
