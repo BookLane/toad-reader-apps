@@ -40,10 +40,17 @@ const styles = StyleSheet.create({
   },
   resultText: {
   },
+  resultBook: {
+    opacity: .35,
+    fontWeight: '600',
+    fontSize: 12,
+  },
   resultSpine: {
     opacity: .35,
     fontSize: 12,
-    marginBottom: 5,
+  },
+  spacer: {
+    height: 5,
   },
   termNotFound: {
     textAlign: 'center',
@@ -115,7 +122,14 @@ const Search = ({
       setSearchTimeout(
         () => {
           if(showResults) {
-            setResults(searchBook(normalizedSearchStr))
+            setResults('fetching')
+            searchBook({
+              searchStr: normalizedSearchStr,
+              setResults,
+              idp: idps[idpId],
+              cookie,
+              bookId,
+            })
           } else if(normalizedSearchStr) {
             if(suggestions.length === 0) {
               setSuggestions('fetching')
@@ -198,9 +212,17 @@ const Search = ({
           }}
         >
           <View style={styles.result}>
-            <Text style={styles.resultSpine}>
-              {(spineLabelsByBookIdAndIdRef[book_id] || {})[spineIdRef] || spineIdRef}
-            </Text>
+            {!bookId &&
+              <Text style={styles.resultBook}>
+                {(books[book_id] || {}).title}
+              </Text>
+            }
+            {(bookId || !!spineIdRef) &&
+              <Text style={styles.resultSpine}>
+                {(spineLabelsByBookIdAndIdRef[book_id] || {})[spineIdRef] || spineIdRef}
+              </Text>
+            }
+            <View style={styles.spacer} />
             <Text style={styles.resultText}>
               {jsx}
             </Text>
@@ -208,7 +230,7 @@ const Search = ({
         </TouchableOpacity>
       )
     },
-    [ goTo ],
+    [ !bookId ? books : spineLabelsByBookIdAndIdRef, goTo ],
   )
 
   const clearSearchStr = useCallback(
@@ -300,12 +322,15 @@ const Search = ({
               {i18n("No results")}
             </Text>
           }
-          <FlatList
-            contentContainerStyle={styles.flatListContent}
-            data={results}
-            renderItem={renderResult}
-            keyExtractor={({ spineIdRef, id }) => `${spineIdRef}\n${id}`}
-          />
+          {results === 'fetching' && <CoverAndSpin />}
+          {results !== 'fetching' &&
+            <FlatList
+              contentContainerStyle={styles.flatListContent}
+              data={results}
+              renderItem={renderResult}
+              keyExtractor={({ spineIdRef, id }) => `${spineIdRef}\n${id}`}
+            />
+          }
         </>
       }
     </View>

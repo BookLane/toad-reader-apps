@@ -16,6 +16,14 @@ const SPACE_OR_PUNCTUATION = "[\\n\\r -#%-*,-/:;?@[-\\]_{}\\u00A0\\u00A1\\u00A7\
 const SEARCH_RESULT_ELLIPSISIZE_TEXT_CUT_OFF_LENGTH = 70
 const SEARCH_RESULT_ELLIPSISIZE_TEXT_MIN_WORDS_IN_PART = 3
 
+const formQueryStr = query => {
+  const params = []
+  for(let key in query) {
+    params.push(`${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`)
+  }
+  return `?${params.join('&')}`
+}
+
 export const loadIndex = async ({ idp, bookId, cookie }) => {
 
   if(Platform.OS === 'web') return
@@ -93,9 +101,11 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
 
       try {
 
-        const path = `${getDataOrigin(idp)}/searchtermsuggest${bookId ? `/${bookId}` : ``}?termPrefix=${encodeURIComponent(partialSearchStr)}`
+        const query = {
+          termPrefix: partialSearchStr,
+        }
+        const path = `${getDataOrigin(idp)}/searchtermsuggest${bookId ? `/${bookId}` : ``}${formQueryStr(query)}`
         const response = await safeFetch(path, getReqOptionsWithAdditions({
-        // const { suggestions } = await safeFetch(path, getReqOptionsWithAdditions({
           headers: {
             "x-cookie-override": cookie,
           },
@@ -147,17 +157,52 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
   }
 }
 
-export const searchBook = searchStr => {
+let currentSearchInfo = ``
 
-  if(!currentMiniSearch) return []  // TODO: get from the server
+export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie }) => {
 
-  return currentMiniSearch.search(
-    searchStr,
-    {
+  let results
+  const thisSearchInfo = currentSearchInfo = `${bookId} ${searchStr}`
 
-    },
-  )
+  if(!currentMiniSearch) {
+    // get from the server
 
+    try {
+
+      const query = {
+        searchStr,
+        limit: 10,
+        offset: 0,
+      }
+      const path = `${getDataOrigin(idp)}/search${bookId ? `/${bookId}` : ``}${formQueryStr(query)}`
+      const response = await safeFetch(path, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": cookie,
+        },
+      }))
+      results = (
+        await response.json()
+      ).results
+
+      const terms = searchStr.split(new RegExp(SPACE_OR_PUNCTUATION, 'u'))
+      results.forEach(result => {
+        result.terms = terms
+      })
+
+    } catch(err) {
+      console.log(`/search error`, err)
+    } finally {
+      if(!results) return
+    }
+
+  } else {
+    results = currentMiniSearch.search(searchStr, {})
+  }
+
+  // set the suggestions for the UI
+  if(thisSearchInfo === currentSearchInfo) {
+    try { setResults(results) } catch(e) {}
+  }
 }
 
 export const getResultLineInJSX = ({ text, context, terms, termStyle }) => {
