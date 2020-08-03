@@ -120,7 +120,7 @@ const Search = ({
 
   const [ setSearchTimeout ] = useSetTimeout()
 
-  const { historyPush } = useRouterState()
+  const { historyPush, pathname } = useRouterState()
 
   const { cookie } = Object.values(accounts)[0] || {}
 
@@ -241,8 +241,7 @@ const Search = ({
       return (
         <TouchableOpacity
           onPress={() => {
-            goTo({
-              bookId: book_id,
+            const info = {
               spineIdRef,
               textNodeInfo: {
                 content: text,
@@ -250,7 +249,14 @@ const Search = ({
                 startOffset: charsBeforeFirstHit,
                 endOffset: charsBeforeFirstHit + 1,
               },
-            })
+            }
+            if(pathname === '/') {
+              historyPush(`/book/${book_id}`, {
+                goToInfo: info
+              })
+            } else {
+              goTo(info)
+            }
           }}
         >
           <View style={styles.result}>
@@ -272,7 +278,7 @@ const Search = ({
         </TouchableOpacity>
       )
     },
-    [ !bookId ? books : spineLabelsByBookIdAndIdRef, goTo ],
+    [ !bookId ? books : spineLabelsByBookIdAndIdRef, goTo, pathname ],
   )
 
   const clearSearchStr = useCallback(

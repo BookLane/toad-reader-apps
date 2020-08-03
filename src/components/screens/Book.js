@@ -266,7 +266,7 @@ const Book = React.memo(({
   const searchInputRef = useRef()
 
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
-  const { widget } = routerState
+  const { widget, goToInfo } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
   const [ setAwaitLoadTimeout, clearAwaitLoadTimeout ] = useSetTimeout()
@@ -738,6 +738,10 @@ const Book = React.memo(({
       })
 
       temporarilyPauseProcessing()
+
+      if(goToInfo) {
+        goTo(goToInfo)
+      }
     },
     [ mode, zoomToInfo ],
   )
