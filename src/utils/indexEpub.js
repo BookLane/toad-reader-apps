@@ -91,8 +91,6 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
     if(!suggestions) {
       // get from the server
 
-      try { setSuggestions('fetching') } catch(e) {}
-      
       try {
 
         const path = `${getDataOrigin(idp)}/searchtermsuggest${bookId ? `/${bookId}` : ``}?termPrefix=${encodeURIComponent(partialSearchStr)}`

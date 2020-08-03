@@ -117,6 +117,9 @@ const Search = ({
           if(showResults) {
             setResults(searchBook(normalizedSearchStr))
           } else if(normalizedSearchStr) {
+            if(suggestions.length === 0) {
+              setSuggestions('fetching')
+            }
             getAutoSuggest({
               partialSearchStr: normalizedSearchStr,
               setSuggestions,
@@ -124,6 +127,8 @@ const Search = ({
               cookie,
               bookId,
             })
+          } else {
+            setSuggestions([])
           }
         }
       )
@@ -215,6 +220,15 @@ const Search = ({
     [],
   )
 
+  const checkForEscape = useCallback(
+    ({ nativeEvent: { key: keyValue } }) => {
+      if(keyValue === 'Escape') {
+        ;(searchStr ? clearSearchStr : requestClose)()
+      }
+    },
+    [ !searchStr ],
+  )
+
   if(bookId && !books[bookId]) return null
 
   return (
@@ -228,6 +242,7 @@ const Search = ({
           placeholder={bookId ? i18n("Search book") : i18n("Search all books")}
           value={searchStr}
           onChangeText={setSearchStr}
+          onKeyPress={checkForEscape}
           returnKeyType="search"
           returnKeyLabel={!normalizedSearchStr ? i18n("Search", "", "enhanced") : null}
           enablesReturnKeyAutomatically={true}
