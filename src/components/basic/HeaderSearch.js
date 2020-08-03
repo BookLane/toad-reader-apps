@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     ...searchContainer,
     width: 500,
     maxWidth: '90%',
-    minHeight: 300,
+    minHeight: 170,
     maxHeight: '90%',
     ...(Platform.OS === 'web' ? {} : {
       flex: 1,
