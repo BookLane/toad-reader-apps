@@ -36,6 +36,7 @@ import BookDownloader from "../major/BookDownloader"
 import Login from "../major/Login"
 import WebView from "../major/WebView"
 import Dialog from "../major/Dialog"
+import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks,
@@ -85,6 +86,12 @@ const styles = StyleSheet.create({
   section: {
     marginVertical: 5,
   },
+  keyboardAvoidingView: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  flex1View: {
+    flex: 1,
+  }
 })
 
 const Library = ({
@@ -566,29 +573,33 @@ const Library = ({
         <Route>
 
           <SafeLayout>
-            <LibraryHeader
-              scope={scope}
-            />
-            {doingInitialFetch
-              ? (
-                <View style={styles.spinnerContainer}>
-                  <Spin />
-                </View>
-              )
-              : (
-                bookList.length == 0
+            <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+              <View style={styles.flex1View}>
+                <LibraryHeader
+                  scope={scope}
+                />
+                {doingInitialFetch
                   ? (
-                    <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-                  )
-                  : (
-                    <View style={styles.content}>
-                      <LibraryViewer
-                        bookList={bookList}
-                      />
+                    <View style={styles.spinnerContainer}>
+                      <Spin />
                     </View>
                   )
-              )
-            }
+                  : (
+                    bookList.length == 0
+                      ? (
+                        <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                      )
+                      : (
+                        <View style={styles.content}>
+                          <LibraryViewer
+                            bookList={bookList}
+                          />
+                        </View>
+                      )
+                  )
+                }
+              </View>
+            </KeyboardAvoidingView>
           </SafeLayout>
           
         </Route>

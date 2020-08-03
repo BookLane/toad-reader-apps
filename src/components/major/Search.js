@@ -102,6 +102,7 @@ const Search = ({
   inputRef,
   idpId,
   requestClose,
+  headerStyle,
 
   idps,
   accounts,
@@ -315,7 +316,12 @@ const Search = ({
       style={styles.container}
     >
       {/* <BackFunction func={historyGoBack} /> */}
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          headerStyle,
+        ]}
+      >
         <Input
           placeholder={bookId ? i18n("Search book") : i18n("Search all books")}
           value={searchStr}
@@ -351,6 +357,7 @@ const Search = ({
           <ScrollView
             style={styles.suggestionScrollView}
             contentContainerStyle={styles.suggestionContentContainer}
+            keyboardShouldPersistTaps="handled"
           >
             {(normalizedSearchStr ? allSuggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => (
               <TouchableOpacity

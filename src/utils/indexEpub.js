@@ -202,7 +202,7 @@ export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie })
 
       const query = {
         searchStr,
-        limit: 10,
+        limit: 100,
         offset: 0,
       }
       const path = `${getDataOrigin(idp)}/search${bookId ? `/${bookId}` : ``}${formQueryStr(query)}`
