@@ -123,6 +123,7 @@ const Search = ({
   const [ showResults, toggleShowResults ] = useToggle(false)
   const [ searchStr, setSearchStr ] = useState("")
   const normalizedSearchStr = normalizeSearchStr(searchStr)
+  const normalizedSearchTerms = normalizedSearchStr.split(' ')
   const [ suggestions, setSuggestions ] = useState([])
   const [ bookSuggestions, setBookSuggestions ] = useState([])
   const [ results, setResults ] = useState([])
@@ -162,21 +163,26 @@ const Search = ({
   useEffect(
     () => {
       setSearchTimeout(
-        () => {
+        async () => {
           if(showResults) {
             setResults('fetching')
-            searchBook({
+            inputRef.current.blur()
+
+            const successful = await searchBook({
               searchStr: normalizedSearchStr,
               setResults,
               idp: idps[idpId],
               cookie,
               bookId,
             })
-            inputRef.current.blur()
+
+            if(!successful) {
+              toggleShowResults(false)
+              inputRef.current.focus()
+            }
 
           } else if(normalizedSearchStr) {
 
-            const normalizedSearchTerms = normalizedSearchStr.split(' ')
             const newBookSuggestions = (bookId ? [] : booksArray)
               .filter(({ searchTerms }) => (
                 normalizedSearchTerms.every(searchTerm => (

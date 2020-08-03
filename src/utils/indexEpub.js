@@ -194,6 +194,8 @@ export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie })
     ))
   searchStr = terms.join(' ')
 
+  if(!searchStr) return false
+
   let results
   const thisSearchInfo = currentSearchInfo = `${bookId} ${searchStr}`
 
@@ -224,7 +226,7 @@ export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie })
     } catch(err) {
       console.log(`/search error`, err)
     } finally {
-      if(!results) return
+      if(!results) return false
     }
 
   } else {
@@ -235,6 +237,8 @@ export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie })
   if(thisSearchInfo === currentSearchInfo) {
     try { setResults(results) } catch(e) {}
   }
+
+  return true
 }
 
 export const getResultLineInJSX = ({ text, context, terms, termStyle }) => {
