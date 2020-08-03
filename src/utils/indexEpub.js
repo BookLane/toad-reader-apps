@@ -6,6 +6,28 @@ import * as FileSystem from 'expo-file-system'
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 import downloadAsync from "./downloadAsync"
 
+const MYSQL_DEFAULT_STOP_WORDS_OVER_THREE_CHARS = [
+  'about',
+  'are',
+  'com',
+  'for',
+  'from',
+  'how',
+  'that',
+  'the',
+  'this',
+  'was',
+  'what',
+  'when',
+  'where',
+  'who',
+  'will',
+  'with',
+  'und',
+  'the',
+  'www',
+]
+
 let currentMiniSearch, currentIndexBookId
 
 // const STOP_WORDS = new Set(['and', 'or', 'to', 'in', 'a', 'the', /* ...and more */ ])
@@ -88,13 +110,14 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
   const thisAutoSuggestInfo = currentAutoSuggestInfo = `${bookId} ${partialSearchStr}`
 
   const partialSearchStrParts = partialSearchStr.split(new RegExp(`(${SPACE_OR_PUNCTUATION})`, 'u'))
+  const partialFinalTerm = partialSearchStrParts.slice(-1)[0]
 
   if(!currentMiniSearch) {
     if(!cachedSuggestionsByBookIdAndTerm[bookId || 'all']) {
       cachedSuggestionsByBookIdAndTerm[bookId || 'all'] = {}
     }
 
-    suggestions = cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialSearchStr]
+    suggestions = cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialFinalTerm]
 
     if(!suggestions) {
       // get from the server
@@ -102,7 +125,7 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
       try {
 
         const query = {
-          termPrefix: partialSearchStr,
+          termPrefix: partialFinalTerm,
         }
         const path = `${getDataOrigin(idp)}/searchtermsuggest${bookId ? `/${bookId}` : ``}${formQueryStr(query)}`
         const response = await safeFetch(path, getReqOptionsWithAdditions({
@@ -114,7 +137,7 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
           await response.json()
         ).suggestions.map(suggestion => ({ suggestion }))
 
-        cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialSearchStr] = suggestions
+        cachedSuggestionsByBookIdAndTerm[bookId || 'all'][partialFinalTerm] = suggestions
 
       } catch(err) {
         console.log(`/searchtermsuggest error`, err)
@@ -127,7 +150,7 @@ export const getAutoSuggest = async ({ partialSearchStr, setSuggestions, bookId,
   } else {
     suggestions = (
       currentMiniSearch.autoSuggest(
-        partialSearchStrParts.slice(-1)[0],
+        partialFinalTerm,
         {
           prefix: true,
           fuzzy: term => term.length > 3 ? 0.2 : null,
@@ -161,6 +184,14 @@ let currentSearchInfo = ``
 
 export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie }) => {
 
+  const terms = searchStr
+    .split(new RegExp(SPACE_OR_PUNCTUATION, 'u'))
+    .filter(term => (
+      term.length >= 3
+      && !MYSQL_DEFAULT_STOP_WORDS_OVER_THREE_CHARS.includes(term)
+    ))
+  searchStr = terms.join(' ')
+
   let results
   const thisSearchInfo = currentSearchInfo = `${bookId} ${searchStr}`
 
@@ -184,7 +215,6 @@ export const searchBook = async ({ searchStr, setResults, bookId, idp, cookie })
         await response.json()
       ).results
 
-      const terms = searchStr.split(new RegExp(SPACE_OR_PUNCTUATION, 'u'))
       results.forEach(result => {
         result.terms = terms
       })

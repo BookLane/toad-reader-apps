@@ -130,6 +130,7 @@ const Search = ({
               cookie,
               bookId,
             })
+            inputRef.current.blur()
           } else if(normalizedSearchStr) {
             if(suggestions.length === 0) {
               setSuggestions('fetching')
