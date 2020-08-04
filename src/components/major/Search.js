@@ -193,6 +193,8 @@ const Search = ({
               ))
             setBookSuggestions(newBookSuggestions)
 
+            if(!bookId) return  // TEMP
+
             if(suggestions.length === 0) {
               setSuggestions('fetching')
             }
@@ -338,7 +340,8 @@ const Search = ({
         ]}
       >
         <Input
-          placeholder={bookId ? i18n("Search book") : i18n("Search all books")}
+          // placeholder={bookId ? i18n("Search book") : i18n("Search all books")}
+          placeholder={bookId ? i18n("Search book") : i18n("Search for a book")}  // TEMP
           value={searchStr}
           onChangeText={setSearchStr}
           onKeyPress={checkForEscape}
@@ -346,7 +349,8 @@ const Search = ({
           returnKeyLabel={!normalizedSearchStr ? i18n("Search", "", "enhanced") : null}
           enablesReturnKeyAutomatically={true}
           blurOnSubmit={Platform.OS !== 'web'}
-          onSubmitEditing={toggleShowResults}
+          // onSubmitEditing={toggleShowResults}
+          onSubmitEditing={bookId ? toggleShowResults : null}  // TEMP
           autoFocus={true}
           onFocus={() => toggleShowResults(false)}
           forwardRef={inputRef}
@@ -370,7 +374,8 @@ const Search = ({
         <View style={styles.results}>
           {!!normalizedSearchStr && suggestions !== 'fetching' && allSuggestions.length === 0 &&
             <Text style={styles.termNotFound}>
-              {i18n("Term not found")}
+              {/* {i18n("Term not found")} */}
+              {bookId ? i18n("Term not found") : i18n("Book not found")}  {/* TEMP */}
             </Text>
           }
           {!!normalizedSearchStr && suggestions === 'fetching' && bookSuggestions.length === 0 && <CoverAndSpin />}
@@ -379,7 +384,8 @@ const Search = ({
             contentContainerStyle={styles.suggestionContentContainer}
             keyboardShouldPersistTaps="handled"
           >
-            {(normalizedSearchStr ? allSuggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => (
+            {/* {(normalizedSearchStr ? allSuggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => ( */}
+            {(normalizedSearchStr ? allSuggestions : (bookId ? (recentSearchesByBookId[bookId || 'all'] || []) : [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => (  // TEMP
               <TouchableOpacity
                 key={idx}
                 onPress={() => {
