@@ -285,7 +285,7 @@ const Search = ({
             }
             {(bookId || !!spineIdRef) &&
               <Text style={styles.resultSpine}>
-                {(spineLabelsByBookIdAndIdRef[book_id] || {})[spineIdRef] || spineIdRef}
+                {(spineLabelsByBookIdAndIdRef[bookId || book_id] || {})[spineIdRef] || spineIdRef}
               </Text>
             }
             <View style={styles.spacer} />
