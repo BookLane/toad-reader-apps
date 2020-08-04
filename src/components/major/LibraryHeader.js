@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
+import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -63,7 +64,13 @@ const LibraryHeader = ({
 
   useEffect(
     () => {
-      if(downloadStatus === 2) {
+      if(
+        (
+          Platform.OS === 'web'
+          && bookIdToDownload
+        )
+        || downloadStatus === 2
+      ) {
         historyPush(
           `/book/${bookIdToDownload}`,
           !hasGoToInfo
