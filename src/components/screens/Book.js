@@ -609,6 +609,8 @@ const Book = React.memo(({
     info => {
       pauseProcessing()
 
+      toggleShowSearch(false)
+
       // immediately clear the tools from BookPage
       reportSpots({ type: 'BookPage' })
 
