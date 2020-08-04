@@ -46,7 +46,7 @@ Sentry.setRelease(Constants.manifest.revisionId)
 
 if(Platform.OS === 'web') {
   window.productionLog = (...params) => {
-    eval(`console.log("PRODUCTION LOG: ", ${params.map(param => `"${String(param).replace(/"/g, '\"')}"`).join(',')})`)
+    eval(`console.log("PRODUCTION LOG: ", ${params.map(param => `"${String(param).replace(/"/g, '\\"')}"`).join(',')})`)
   }
 }
 

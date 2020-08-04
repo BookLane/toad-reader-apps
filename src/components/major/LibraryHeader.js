@@ -45,7 +45,7 @@ const LibraryHeader = ({
 
   const scope = library.scope || "all"
 
-  const { idpId } = getIdsFromAccountId(scope)
+  const idpId = getIdsFromAccountId(scope).idpId || Object.keys(idps)[0]
 
   let title = i18n("Library")
   let subtitle = ""
