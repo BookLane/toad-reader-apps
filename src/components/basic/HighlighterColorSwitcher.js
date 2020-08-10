@@ -74,6 +74,7 @@ const HighlighterColorSwitcher = React.memo(({
       <View style={styles.container}>
         {Array(NUM_COLOR_OPTIONS).fill().map((x, idx) => (
           <View
+            key={idx}
             style={[
               styles.colorOption,
               {
