@@ -2,19 +2,20 @@ import React, { useState, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
 import { i18n } from "inline-i18n"
-import { validLTIUrl, getDataOrigin, safeFetch, getReqOptionsWithAdditions, openURL } from "../../utils/toolbox"
 
+import { validLTIUrl, getDataOrigin, safeFetch, getReqOptionsWithAdditions, openURL } from "../../utils/toolbox"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
 
 import Button from "../basic/Button"
 import CoverAndSpin from "../basic/CoverAndSpin"
+import FlipEditorContent from '../basic/FlipEditorContent'
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    flex: 1,
+    paddingTop: 20,
     paddingHorizontal: 30,
   },
   buttonContainer: {
@@ -26,6 +27,12 @@ const styles = StyleSheet.create({
   noLTISetup: {
     marginTop: 20,
   },
+  instructionsContainer: {
+    flex: 1,
+  },
+  instructions: {
+    paddingTop: 0,
+  },
 })
 
 const LTITool = React.memo(({
@@ -33,6 +40,7 @@ const LTITool = React.memo(({
   toolUid,
 
   url,
+  instructions,
   fromDefaultClassroom,
 
   idps,
@@ -103,6 +111,14 @@ const LTITool = React.memo(({
         <Text style={styles.noLTISetup}>
           {i18n("There is not a LTI configuration with a domain matching this tool’s Launch URL.")}
         </Text>
+      }
+      {!invalidSetup && !!instructions &&
+        <View style={styles.instructionsContainer}>
+          <FlipEditorContent
+            content={instructions}
+            style={styles.instructions}
+          />
+        </View>
       }
     </View>
   )

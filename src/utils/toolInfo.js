@@ -120,6 +120,11 @@ export const getToolInfo = () => {
             )
           ),
         },
+        {
+          name: 'instructions',
+          type: 'text',
+          label: i18n("Instructions", "", "enhanced"),
+        },
       ],
       transformData: ({ data, isDefaultClassroom }) => {
         if(isDefaultClassroom) {

@@ -7,6 +7,8 @@ import { textToReactNative } from "../../utils/toolbox"
 
 const FlipEditorContent = React.memo(({
   content,
+  style,
+  wrapperStyle,
 }) => {
 
   try {
@@ -21,10 +23,12 @@ const FlipEditorContent = React.memo(({
         style={{
           // marginVertical: -20,
           marginHorizontal: -30,
+          ...(style || {}),
         }}
         wrapperStyle={{
           overflow: 'auto',
           padding: '20px 30px',
+          ...(wrapperStyle || {}),
         }}
       />
     )

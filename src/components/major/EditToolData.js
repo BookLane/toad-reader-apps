@@ -376,16 +376,23 @@ const EditToolData = React.memo(({
 
         case 'text': {
           return (
-            <FlipEditor
-              id={id}
-              key={`${id}:${keyAddOn}`}
-              mode="edit"
-              initialContent={dataSegment[name] || ""}
-              onChangeInfo={onChangeInfo}
-              fillHeight={true}
-              style={styles.textEditor}
-              // placeholder={placeholder}
-            />
+            <>
+              {!!label &&
+                <Text style={styles.label}>
+                  {label}
+                </Text>
+              }
+              <FlipEditor
+                id={id}
+                key={`${id}:${keyAddOn}`}
+                mode="edit"
+                initialContent={dataSegment[name] || ""}
+                onChangeInfo={onChangeInfo}
+                fillHeight={true}
+                style={styles.textEditor}
+                // placeholder={placeholder}
+              />
+            </>
           )
         }
         case 'file': {
