@@ -25,7 +25,12 @@ const styles = StyleSheet.create({
 const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) => {
   const highlights = ((userDataByBookId[bookId] || {}).highlights || [])
     .filter(({ _delete }) => !_delete)
-    .map(({ spineIdRef, cfi, note }) => ({ spineIdRef, cfi, hasNote: !!(note || "").trim(), type: "user" }))
+    .map(({ spineIdRef, cfi, note, color }) => ({
+      spineIdRef,
+      cfi,
+      hasNote: !!(note || "").trim(),
+      type: `user${color || 1}`,
+    }))
 
   const highlightsByKey = {}
   highlights.forEach(highlight => {
@@ -34,7 +39,7 @@ const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) 
 
   ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note }) => {
     if(highlightsByKey[`${spineIdRef}\n${cfi}`]) {
-      highlightsByKey[`${spineIdRef}\n${cfi}`].type = "user-instructor"
+      highlightsByKey[`${spineIdRef}\n${cfi}`].type = `${highlightsByKey[`${spineIdRef}\n${cfi}`].type}-instructor`
       highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote = highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote || !!(note || "").trim()
 
     } else {

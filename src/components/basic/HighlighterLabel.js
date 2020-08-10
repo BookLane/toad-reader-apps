@@ -1,4 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback } from "react"
+import Constants from 'expo-constants'
 import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,9 +8,14 @@ import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"
+import HighlighterColorSwitcher from "./HighlighterColorSwitcher"
 import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
 
 import { setHighlight, deleteHighlight } from "../../redux/actions"
+
+const {
+  NUM_COLOR_OPTIONS=3,
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   container: {
@@ -19,7 +25,7 @@ const styles = StyleSheet.create({
   },
   emptySpace: {
     flexGrow: 1,
-    minWidth: 30,
+    minWidth: 10,
   },
   iconAndText: {
     flexShrink: 1,
@@ -30,7 +36,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 4,
     fontSize: 18,
-    backgroundColor: '#bec8d6',
+    backgroundColor: 'rgba(0, 0, 0, .2)',
     height: 26,
     width: 26,
     lineHeight: 20,
@@ -41,7 +47,13 @@ const styles = StyleSheet.create({
     paddingRight: 7,
   },
   highlight1: {
-    backgroundColor: 'rgba(28,96,171,.2)',
+    backgroundColor: 'rgba(28, 96, 171, .2)',
+  },
+  highlight2: {
+    backgroundColor: 'rgba(179, 17, 45, .2)',
+  },
+  highlight3: {
+    backgroundColor: 'rgba(10, 138, 10, .2)',
   },
   highlightText: {
     lineHeight: 34,
@@ -86,10 +98,10 @@ const HighlighterLabel = React.memo(({
 
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
-  const [ showDeletedMsgAndUndo, setShowDeletedMsgAndUndo ] = useState(false)
+  const [ showDeletedMsgAndUndoColor, setShowDeletedMsgAndUndoColor ] = useState()
 
   useLayoutEffect(
-    () => setShowDeletedMsgAndUndo(false),
+    () => setShowDeletedMsgAndUndoColor(),
     [ JSON.stringify(selectionInfo) ],
   )
 
@@ -100,7 +112,7 @@ const HighlighterLabel = React.memo(({
       const { spineIdRef, cfi, text: share_quote } = selectionInfo || {}
       const note = (highlight || {}).note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
 
-      if(highlight && highlight.color === color) {
+      if(highlight) {
         // save for if they highlight this selection again in the near future (effectively an "undo")
         if(note) {
           notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
@@ -112,7 +124,7 @@ const HighlighterLabel = React.memo(({
           cfi,
         })
 
-        setShowDeletedMsgAndUndo(true)
+        setShowDeletedMsgAndUndoColor(highlight.color)
         
       } else {
 
@@ -125,21 +137,28 @@ const HighlighterLabel = React.memo(({
           share_quote,
         })
 
-        setShowDeletedMsgAndUndo(false)
+        setShowDeletedMsgAndUndoColor()
       }
     },
     toggleHighlightDependencies,
   )
 
-  const toggleHighlight1 = useCallback(() => toggleHighlight(1), toggleHighlightDependencies)
+  const toggleHighlightByColor = [
+    null,
+    useCallback(() => toggleHighlight(1), toggleHighlightDependencies),
+    useCallback(() => toggleHighlight(2), toggleHighlightDependencies),
+    useCallback(() => toggleHighlight(3), toggleHighlightDependencies),
+  ]
 
   const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity
+
+  const color = Math.max(1, Math.min(parseInt((highlight || {}).color, 10), NUM_COLOR_OPTIONS)) || 1
 
   let highlightButton = (
     <View
       style={[
         styles.iconAndText,
-        styles.highlight1,
+        styles[`highlight${color}`],
       ]}
     >
       <Text
@@ -150,7 +169,7 @@ const HighlighterLabel = React.memo(({
       </Text>
       {!!(highlight && !isEditingNote) &&
         <TouchableComponent
-          onPress={toggleHighlight1}
+          onPress={toggleHighlightByColor[color]}
         >
           <Ionicons
             name="md-trash"
@@ -161,7 +180,7 @@ const HighlighterLabel = React.memo(({
     </View>
   )
 
-  if(showDeletedMsgAndUndo) {
+  if(showDeletedMsgAndUndoColor) {
     highlightButton = (
       <View style={styles.deletedMessageCont}>
         <Text style={styles.deletedMessage}>
@@ -169,7 +188,7 @@ const HighlighterLabel = React.memo(({
         </Text>
         <Button
           // style={styles.undoButton}
-          onPress={toggleHighlight1}
+          onPress={toggleHighlightByColor[showDeletedMsgAndUndoColor]}
           size="small"
           status="basic"
         >
@@ -181,7 +200,7 @@ const HighlighterLabel = React.memo(({
   } else if(!highlight) {
     highlightButton = (
       <TouchableComponent
-        onPress={toggleHighlight1}
+        onPress={toggleHighlightByColor[1]}
       >
         {highlightButton}
       </TouchableComponent>
@@ -199,11 +218,18 @@ const HighlighterLabel = React.memo(({
         />
       }
       {!!(highlight && !isEditingNote) &&
-        <HighlighterShareIcon
-          bookId={bookId}
-          selectionInfo={selectionInfo}
-          highlight={highlight}
-        />
+        <>
+          <HighlighterColorSwitcher
+            bookId={bookId}
+            selectionInfo={selectionInfo}
+            highlight={highlight}
+          />
+          <HighlighterShareIcon
+            bookId={bookId}
+            selectionInfo={selectionInfo}
+            highlight={highlight}
+          />
+        </>
       }
       {!!isEditingNote &&
         <Button
