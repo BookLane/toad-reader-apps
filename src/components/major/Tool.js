@@ -190,6 +190,7 @@ const Tool = React.memo(({
         contentContainerStyle={styles.bottomSectionContent}
       >
         <ToolComponent
+          key={tool.uid}
           bookId={bookId}
           toolUid={tool.uid}
           toolName={tool.name}
