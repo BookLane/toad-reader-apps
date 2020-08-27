@@ -38,6 +38,7 @@ export const getToolInfo = () => {
         name: 'md-checkbox',
       },
       text: i18n("Quiz", "", "enhanced"),
+      warnOfUpdate: true,
       dataStructure: [
         {
           name: 'questions',
@@ -190,6 +191,7 @@ export const getToolInfo = () => {
         pack: isDiscussion ? 'material' : 'materialCommunity',
       }),
       text: i18n("Question", "", "enhanced"),
+      warnOfUpdate: true,
       dataStructure: [
         {
           name: 'question',
@@ -220,6 +222,7 @@ export const getToolInfo = () => {
         pack: 'materialCommunity',
       },
       text: i18n("Poll", "", "enhanced"),
+      warnOfUpdate: true,
       dataStructure: [
         {
           name: 'question',

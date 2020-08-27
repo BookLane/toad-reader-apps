@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -31,6 +31,8 @@ const styles = StyleSheet.create({
   },
   containerWideMode: {
     marginTop: 0,
+    marginLeft: 10,
+    maxWidth: '50%',
   },
   buttons: {
     ...buttons,
@@ -42,14 +44,25 @@ const styles = StyleSheet.create({
   button: {
     marginRight: 10,
   },
-  status: {
-    color: 'rgba(0,0,0,.5)',
-    textAlign: 'left',
+  statusAndWarning: {
     marginVertical: 15,
     flexGrow: 1,
   },
-  statusWideMode: {
+  statusAndWarningWideMode: {
     textAlign: 'right',
+  },
+  status: {
+    color: 'rgba(0,0,0,.5)',
+    textAlign: 'left',
+  },
+  warningMessage: {
+    marginTop: 4,
+    textAlign: 'left',
+    color: 'red',
+    fontSize: 12,
+  },
+  warning: {
+    fontWeight: 'bold',
   },
   previewContainer: {
     flexDirection: 'row',
@@ -93,11 +106,13 @@ const StatusAndActions = React.memo(({
 }) => {
 
   const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
-          viewingOptions, hasFrontMatterDraftData, hasOptionsDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
+          viewingOptions, hasFrontMatterDraftData, hasOptionsDraftData, myRole } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
   const getClassroomDraftData = useInstanceValue(classroom.draftData || {})
+
+  const { toolInfoByType } = useMemo(getToolInfo, [])
 
   const onPublish = useCallback(
     () => {
@@ -240,12 +255,18 @@ const StatusAndActions = React.memo(({
       : (
         viewingFrontMatter
           ? true
-          : getToolInfo().toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
+          : toolInfoByType[selectedTool.toolType].readyToPublish({ data: selectedTool.data, classroom })
       )
   )
 
   const isTool = !!selectedTool.spineIdRef
   const isInlineTool = !!selectedTool.cfi
+
+  const warnOfStudentDataLoss = (
+    !!toolInfoByType[selectedTool.toolType].warnOfUpdate
+    && publishedStatus !== 'new'
+    && myRole === 'INSTRUCTOR'
+  )
 
   return (
     <View
@@ -286,14 +307,30 @@ const StatusAndActions = React.memo(({
           />
         }
       </View>
-      <Text
-        style={[
-          styles.status,
-          wideMode ? styles.statusWideMode : null,
-        ]}
-      >
-        {publishedStatusMessages[publishedStatus]}
-      </Text>
+      <View style={styles.statusAndWarning}>
+        <Text
+          style={[
+            styles.status,
+            wideMode ? styles.statusAndWarningWideMode : null,
+          ]}
+        >
+          {publishedStatusMessages[publishedStatus]}
+        </Text>
+        {warnOfStudentDataLoss &&
+          <Text
+            style={[
+              styles.warningMessage,
+              wideMode ? styles.statusAndWarningWideMode : null,
+            ]}
+          >
+            <Text style={styles.warning}>
+              {i18n("Warning:")}
+            </Text>
+            {` `}
+            {i18n("Publishing an update will erase this tool’s student data.")}
+          </Text>
+        }
+      </View>
       {!viewingOptions &&
         <View
           style={[

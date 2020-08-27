@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   basicDetailLineWideMode: {
     ...basicDetailLine,
     width: 350,
+    maxWidth: '100%',
   },
   bottomSection: {
     borderTopWidth: 1,

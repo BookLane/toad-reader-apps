@@ -353,7 +353,7 @@ const EditToolData = React.memo(({
 
           if(hiddenMessage) {
             return (
-              <Text style={styles.hiddenMessage}>
+              <Text key={id} style={styles.hiddenMessage}>
                 {hiddenMessage}
               </Text>
             )
@@ -376,7 +376,7 @@ const EditToolData = React.memo(({
 
         case 'text': {
           return (
-            <>
+            <React.Fragment key={id}>
               {!!label &&
                 <Text style={styles.label}>
                   {label}
@@ -392,7 +392,7 @@ const EditToolData = React.memo(({
                 style={styles.textEditor}
                 // placeholder={placeholder}
               />
-            </>
+            </React.Fragment>
           )
         }
         case 'file': {
