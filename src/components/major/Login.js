@@ -70,7 +70,7 @@ const Login = ({
 
   const { authMethod, devAuthMethod } = idps[idpId]
 
-  const useEmailLogin = ['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod) || doEmailLogin
+  const usingEmailLogin = ['EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod) || doEmailLogin
 
   const logIn = useCallback(
     info => {
@@ -106,7 +106,7 @@ const Login = ({
 
   useEffect(
     () => {
-      if(Platform.OS !== 'web' || useEmailLogin || !redirectCheckComplete) return
+      if(Platform.OS !== 'web' || usingEmailLogin || !redirectCheckComplete) return
 
       const query = getQueryString()
 
@@ -188,7 +188,7 @@ const Login = ({
     [ logIn ],
   )
 
-  if(useEmailLogin) {
+  if(usingEmailLogin) {
     return (
       <EmailLogin
         idpId={idpId}
