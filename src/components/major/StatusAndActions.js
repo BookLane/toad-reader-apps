@@ -263,7 +263,7 @@ const StatusAndActions = React.memo(({
   const isInlineTool = !!selectedTool.cfi
 
   const warnOfStudentDataLoss = (
-    !!toolInfoByType[selectedTool.toolType].warnOfUpdate
+    !!(toolInfoByType[selectedTool.toolType] || {}).warnOfUpdate
     && publishedStatus !== 'new'
     && myRole === 'INSTRUCTOR'
   )
