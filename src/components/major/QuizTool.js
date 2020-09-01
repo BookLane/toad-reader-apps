@@ -79,6 +79,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
+  note: {
+    textAlign: 'center',
+    marginBottom: 20,
+    fontSize: 14,
+    fontWeight: '300',
+  },
 })
 
 const QuizTool = React.memo(({
@@ -98,7 +104,7 @@ const QuizTool = React.memo(({
   const [ selectedAnswers, setSelectedAnswers ] = useState([])
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
 
-  const { classroomUid } = useClassroomInfo({ books, bookId })
+  const { classroomUid, isDefaultClassroom } = useClassroomInfo({ books, bookId })
 
   const executeShuffles = returnResult => {
     let preppedQs = (questions || []).map((question, origQuestionIdx) => ({ question, origQuestionIdx }))
@@ -238,6 +244,11 @@ const QuizTool = React.memo(({
             },
           )}
         </Text>
+        {!isDefaultClassroom &&
+          <Text style={styles.note}>
+            {i18n("Your instructor(s) will see your latest score.")}
+          </Text>
+        }
         <View style={styles.buttonContainer}>
           <Button
             style={styles.button}
