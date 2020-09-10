@@ -10,15 +10,23 @@ import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch, norm
 const getXmlAsObj = async ({ url, account }) => {
   const urlWithoutHash = url.replace(/#.*$/, '')
 
-  const xml = /^https?:\/\//.test(urlWithoutHash)
-    ? (
-      await safeFetch(urlWithoutHash, getReqOptionsWithAdditions({
-        headers: {
-          "x-cookie-override": account.cookie,
-        },
-      })).then(response => response.text())
-    )
-    : await FileSystem.readAsStringAsync(urlWithoutHash)
+  let xml
+
+  if(/^https?:\/\//.test(urlWithoutHash)) {  // web on DEV
+    xml = await safeFetch(urlWithoutHash, getReqOptionsWithAdditions({
+      headers: {
+        "x-cookie-override": account.cookie,
+      },
+    })).then(response => response.text())
+
+  } else if(/^\/epub_content/.test(urlWithoutHash)) {  // web (not DEV)
+    xml = await safeFetch(urlWithoutHash, {
+      credentials: "same-origin",  // On web parseEpub is not called until bookCookiesReady is true
+    }).then(response => response.text())
+
+  } else {
+    xml = await FileSystem.readAsStringAsync(urlWithoutHash)  // native
+  }
 
   return await new Promise(
     (resolve, reject) => parseString(xml, (err, result) => {
@@ -66,8 +74,9 @@ const addDirToHref = ({ href, navRelativeUri, opfDir }) => {
 
 export default async ({ bookId, idp, account }) => {
 
+  const dataOriginForDev = __DEV__ ? getDataOrigin(idp) : ``
   const baseUri = Platform.OS === 'web'
-    ? `${getDataOrigin(idp)}/epub_content/book_${bookId}/`
+    ? `${dataOriginForDev}/epub_content/book_${bookId}/`
     : `${getBooksDir()}${bookId}/`
 
   let

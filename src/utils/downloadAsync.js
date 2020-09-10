@@ -1,5 +1,6 @@
 import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
+import { safeFetch } from "./toolbox"
 
 export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
 
@@ -20,8 +21,17 @@ export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
     await FileSystem.makeDirectoryAsync(localDir, { intermediates: true })
   } catch(e) {}
 
-  const { status } = await FileSystem.downloadAsync(remoteUri, localUri, { headers })
-  const success = status >= 200 && status < 300
+  let success
+  if((headers || {}).cookie) {
+    const response = await safeFetch(remoteUri, { headers, credentials: 'omit' })
+    if(response.status < 400) {
+      await FileSystem.writeAsStringAsync(localUri, await response.text())
+      success = true
+    }
+  } else {
+    const { status } = await FileSystem.downloadAsync(remoteUri, localUri, { headers })
+    success = status >= 200 && status < 300
+  }
 
   if(!success) {
     await FileSystem.deleteAsync(localUri, { idempotent: true })

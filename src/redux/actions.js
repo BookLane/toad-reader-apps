@@ -55,6 +55,13 @@ export const setDownloadStatus = ({ bookId, downloadStatus }) => ({
   downloadStatus,
 })
 
+export const setBookCookies = ({ bookId, cookies, expireAt }) => ({
+  type: "SET_BOOK_COOKIES",
+  bookId,
+  cookies,
+  expireAt,
+})
+
 export const setCurrentClassroom = ({ bookId, uid }) => ({
   type: "SET_CURRENT_CLASSROOM",
   bookId,

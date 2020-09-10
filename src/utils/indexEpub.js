@@ -3,8 +3,9 @@ import { Text, Platform } from "react-native"
 import MiniSearch from "minisearch"
 import * as FileSystem from 'expo-file-system'
 
-import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
+import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 import downloadAsync from "./downloadAsync"
+import { getBookCookie } from "../hooks/useBookCookies"
 
 const MYSQL_DEFAULT_STOP_WORDS_OVER_THREE_CHARS = [
   'about',
@@ -46,15 +47,32 @@ const formQueryStr = query => {
   return `?${params.join('&')}`
 }
 
-export const loadIndex = async ({ idp, bookId, cookie }) => {
+export const loadIndex = async ({ idp, bookId, cookie, books, accounts, setBookCookies }) => {
 
   if(Platform.OS === 'web') return true  // no need to download
   if(!bookId || currentIndexBookId === bookId) return true  // full library search or already loaded
 
   currentMiniSearch = currentIndexBookId = undefined
 
-  const searchIndexUri = `${getDataOrigin(idp)}/epub_content/book_${bookId}/search_index.json`
+  const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
+  const searchIndexUri = `${downloadOrigin}/epub_content/book_${bookId}/search_index.json`
   const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
+
+  const headers = (
+    __DEV__
+      ? {
+        "x-cookie-override": cookie,
+      }
+      : {
+        cookie: await getBookCookie({
+          books,
+          accounts,
+          idp,
+          setBookCookies,
+          bookId,
+        }),
+      }
+  )
 
   // download search file if not already done
   const success = await downloadAsync(
@@ -62,13 +80,7 @@ export const loadIndex = async ({ idp, bookId, cookie }) => {
     searchIndexLocalUri,
     {
       skipIfExists: true,
-      headers: (
-        getReqOptionsWithAdditions({
-          headers: {
-            "x-cookie-override": cookie,
-          },
-        }).headers
-      ),
+      headers,
     },
   )
 

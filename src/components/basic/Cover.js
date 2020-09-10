@@ -85,12 +85,13 @@ const Cover = ({
   const [ imageError, setImageError ] = useState(false)
   const imageOnError = useCallback(() => setImageError(true), [])
   
-  const { title, flags, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, coverHref } = bookInfo
+  const { title, flags, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts } = bookInfo
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
+  const dataOriginForDev = __DEV__ ? getDataOrigin(idps[idpId]) : ``
   const uri = Platform.OS === 'web'
-    ? (coverHref && `${getDataOrigin(idps[idpId])}/${coverHref}`)
+    ? `${dataOriginForDev}/epub_content/covers/book_${bookId}.png`
     : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
 
   const cover = (

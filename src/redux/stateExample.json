@@ -63,6 +63,14 @@
         }
       },
       "downloadStatus": 1,
+      "bookCookies": {
+        "cookies": [
+          "CloudFront-Key-Pair-Id", "-----",
+          "CloudFront-Policy", "-----",
+          "CloudFront-Signature", "-----"
+        ],
+        "expireAt": 1598904581065
+      },
       "currentClassroomUid": "1-65"
     },
     "66": {

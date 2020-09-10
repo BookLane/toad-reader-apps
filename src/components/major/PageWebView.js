@@ -4,13 +4,13 @@ import { connect } from "react-redux"
 import { StyleSheet, View, Platform } from "react-native"
 import WebView from "./WebView"
 import * as FileSystem from 'expo-file-system'
+import usePrevious from "react-use/lib/usePrevious"
 
 import { postMessage } from "../../utils/postMessage"
-import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions } from "../../utils/toolbox"
+import { getBooksDir, getDataOrigin, bookCookiesToCookieStr } from "../../utils/toolbox"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useRouterState from "../../hooks/useRouterState"
 import getReaderCode from '../../../getReaderCode'
-import usePrevious from "react-use/lib/usePrevious"
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -95,6 +95,7 @@ const PageWebView = ({
 
     idps,
     accounts,
+    books,
     // userDataByBookId,  // used in getHighlightsArray and getLatestLocation functions
   } = initialProps
 
@@ -195,10 +196,11 @@ const PageWebView = ({
     highlights: getHighlightsArray(initialProps),
   })
 
+  const dataOriginForDev = __DEV__ ? getDataOrigin(Object.values(idps)[0]) : ``
   const initialQueryStringParams = {
     epub: (
       Platform.OS === 'web'
-        ? `${getDataOrigin(Object.values(idps)[0])}/epub_content/book_${bookId}`
+        ? `${dataOriginForDev}/epub_content/book_${bookId}`
         : `${getBooksDir()}${bookId}`
     ),
   }
@@ -231,7 +233,7 @@ const PageWebView = ({
 
   if(Platform.OS === 'web') {
       // Put the following line before <script> if needed
-      // <base href="${getDataOrigin(Object.values(idps)[0])}">
+      // <base href="${getDataOrigin(idp)}">
       source.html = getReaderCode()
         .replace(/(<head>)/i, `
           $1
@@ -242,9 +244,15 @@ const PageWebView = ({
             window.initialHighlightsObjFromWebView = ${JSON.stringify(initialHighlightsInThisSpine)};
             window.initialQueryStringParamsFromWebView = ${JSON.stringify(initialQueryStringParams)};
             window.parentOriginForPostMessage = ${JSON.stringify(window.location.origin)};
-            window.epubFileFetchHeaders = ${JSON.stringify(getReqOptionsWithAdditions({
-              "x-cookie-override": Object.values(accounts)[0].cookie,
-            }))};
+            window.epubFileFetchHeaders = ${JSON.stringify(
+              __DEV__
+                ? {
+                  "x-cookie-override": Object.values(accounts)[0].cookie,
+                }
+                : {
+                  cookie: bookCookiesToCookieStr(books[bookId].bookCookies),
+                }
+            )};
           </script>
         `)
   }
@@ -296,9 +304,10 @@ const PageWebView = ({
   )
 }
 
-const mapStateToProps = ({ idps, accounts, userDataByBookId, sidePanelSettings }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId, sidePanelSettings }) => ({
   idps,
   accounts,
+  books,
   userDataByBookId,
   sidePanelSettings,
 })

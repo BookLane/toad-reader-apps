@@ -139,14 +139,11 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
     xhr.open('GET', url, true)
 
     // set headers
-    const reqHeaders = (getReqOptionsWithAdditions({
-      headers: {
-        "x-cookie-override": cookie,
-      },
-    }) || {}).headers
-
-    for(let reqHeaderKey in reqHeaders) {
-      xhr.setRequestHeader(reqHeaderKey, reqHeaders[reqHeaderKey])
+    if(__DEV__) {
+      xhr.setRequestHeader("x-cookie-override", cookie)
+    } else {
+      xhr.setRequestHeader("cookie", cookie)
+      xhr.withCredentials = false
     }
 
     // recent browsers
@@ -785,4 +782,14 @@ export const normalizePath = path => {
   }
 
   return path
+}
+
+export const bookCookiesToCookieStr = bookCookies => {
+  if(!bookCookies.cookies) return ``
+
+  const cookies = []
+  for(let key in bookCookies.cookies) {
+    cookies.push(`${window.escape(key)}=${window.escape(bookCookies.cookies[key])}`)
+  }
+  return cookies.join('; ')
 }

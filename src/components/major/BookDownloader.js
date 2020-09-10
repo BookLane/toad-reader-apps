@@ -2,15 +2,17 @@ import { useState } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from '../../hooks/useRouterState'
-
-import { getBooksDir, getDataOrigin, getIdsFromAccountId } from "../../utils/toolbox"
+import { getBookCookie } from '../../hooks/useBookCookies'
+import { getBooksDir, getDataOrigin, getIdsFromAccountId, getIDPOrigin } from "../../utils/toolbox"
 import { fetchZipAndAssets } from "../../utils/zipDownloader"
 import parseEpub from "../../utils/parseEpub"
 
-import { removeFromBookDownloadQueue, setDownloadProgress, setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions"
+import { setBookCookies, removeFromBookDownloadQueue, setDownloadProgress,
+         setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions"
 
 const BookDownloader = ({
   downloadPaused,
@@ -18,6 +20,8 @@ const BookDownloader = ({
   accounts,
   bookDownloadQueue,
   books,
+
+  setBookCookies,
   removeFromBookDownloadQueue,
   setDownloadProgress,
   setDownloadStatus,
@@ -71,10 +75,23 @@ const BookDownloader = ({
 
     let throttleLastRan = 0
     const { idpId } = getIdsFromAccountId(accountId)
+    const idp = idps[idpId]
+    const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
+    const cookie = (
+      __DEV__
+        ? accounts[accountId].cookie
+        : await getBookCookie({
+          books: getBooks(),
+          accounts,
+          idp,
+          setBookCookies,
+          bookId,
+        })
+    )
     const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl: `${getDataOrigin(idps[idpId])}/epub_content/book_${bookId}/book.epub`,
+      zipUrl: `${downloadOrigin}/epub_content/book_${bookId}/book.epub`,
       localBaseUri: `${getBooksDir()}${bookId}/`,
-      cookie: accounts[accountId].cookie,
+      cookie,
       progressCallback: progress => {
         const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
         setThrottleTimeout(() => {
@@ -146,6 +163,7 @@ const mapStateToProps = ({ idps, accounts, bookDownloadQueue, books }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setBookCookies,
   removeFromBookDownloadQueue,
   setDownloadProgress,
   setTocAndSpines,

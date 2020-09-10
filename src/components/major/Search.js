@@ -13,7 +13,7 @@ import Input from "../basic/Input"
 import Icon from "../basic/Icon"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
-import { addRecentSearch } from "../../redux/actions"
+import { setBookCookies, addRecentSearch } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   header: {
@@ -117,6 +117,7 @@ const Search = ({
   books,
   recentSearchesByBookId,
 
+  setBookCookies,
   addRecentSearch,
 }) => {
 
@@ -135,7 +136,7 @@ const Search = ({
 
   useEffect(
     () => {
-      loadIndex({ idp: idps[idpId], bookId, cookie }).then(success => {
+      loadIndex({ idp: idps[idpId], bookId, cookie, books, accounts, setBookCookies }).then(success => {
         if(!success) {
           setOfflineSearchFailed(true)
         }
@@ -448,6 +449,7 @@ const mapStateToProps = ({ idps, accounts, books, recentSearchesByBookId }) => (
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setBookCookies,
   addRecentSearch,
 }, dispatch)
 

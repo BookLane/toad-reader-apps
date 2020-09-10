@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system'
 import JSZip from "jszip"
-import { fetchWithProgress, encodeBase64 } from './toolbox'
+import { fetchWithProgress, encodeBase64, sentry } from './toolbox'
 import { i18n } from "inline-i18n"
 
 export const binaryExtensionToMimeTypeMap = {
@@ -81,10 +81,10 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     console.log(`Downloading zip from ${zipUrl}...`)
 
     const progressPortions = {
-      download: .7,
-      unzip: .05,
-      dirs: .05,
-      save: .2,
+      download: .4,
+      unzip: .1,
+      dirs: .1,
+      save: .4,
     }
 
     // get the zip file
@@ -99,6 +99,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
     } catch(err) {
       if(err === 0) {
         console.log(`Could not download zip from ${zipUrl} due to no internet connection.`)
+        sentry(`Could not download zip from ${zipUrl} due to no internet connection.`)
         return {
           success: false,
           errorTitle: i18n("Connection error"),
@@ -107,6 +108,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
       } else if(err === 403) {
         console.log(`Could not download zip from ${zipUrl} due to no auth.`)
+        sentry(`Could not download zip from ${zipUrl} due to no auth.`)
         return {
           success: false,
           noAuth: true,
@@ -239,6 +241,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
 
     if(await isCanceled()) return { success: false, errorMessage }
 
+    sentry({ error: err })
     console.log(`ERROR: Failed to download zip from ${zipUrl}`, err && err.message)
     errorMessage = errorMessage || i18n("The book entitled \"{{title}}\" failed to download.", { title })
 

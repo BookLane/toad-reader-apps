@@ -23,9 +23,10 @@ import useScroll from '../../hooks/useScroll'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
+import useBookCookies from "../../hooks/useBookCookies"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
-         setTocAndSpines, updateTool, setSelectedToolUid } from "../../redux/actions"
+         setTocAndSpines, updateTool, setSelectedToolUid, setBookCookies } from "../../redux/actions"
 
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
@@ -238,6 +239,7 @@ const Book = React.memo(({
   setTocAndSpines,
   updateTool,
   setSelectedToolUid,
+  setBookCookies,
 
 }) => {
 
@@ -282,6 +284,7 @@ const Book = React.memo(({
   const [ setTemporarilyPauseProcessingTimeout, clearTemporarilyPauseProcessingTimeout ] = useSetTimeout()
 
   const { bookId } = useParams()
+  const book = (books || {})[bookId]
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const { spineIdRef, cfi } = useSpineIdRefAndCfi(latest_location)
 
@@ -296,11 +299,12 @@ const Book = React.memo(({
   const { pageIndexInSpine, pageCfisKnown } = usePageInfo({
     spineIdRef,
     cfi,
-    book: books[bookId],
+    book,
     displaySettings,
     sidePanelSettings,
     spineInlineToolsHash,
   })
+  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
@@ -427,10 +431,10 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      if(!books[bookId]) return
+      if(!book) return
 
       // get fresh user data
-      Object.keys(books[bookId].accounts).forEach(accountId => {
+      Object.keys(book.accounts).forEach(accountId => {
         refreshUserData({
           accountId,
           bookId,
@@ -491,12 +495,12 @@ const Book = React.memo(({
 
   useEffect(
     () => {
-      if(!books[bookId]) return
+      if(!book || !bookCookiesReady) return
 
       const getTocForWeb = async waitSecsOnFail => {
         // get toc for web
-        if(Platform.OS === 'web' && books[bookId].toc === undefined) {
-    
+        if(Platform.OS === 'web' && book.toc === undefined) {
+
           const accountId = Object.keys(books[bookId].accounts)[0]
           const account = accounts[accountId]
           const { idpId } = getIdsFromAccountId(accountId)
@@ -514,12 +518,12 @@ const Book = React.memo(({
       }
       getTocForWeb(5000)
     },
-    [ books, bookId, accounts, idps ],
+    [ bookId, bookCookiesReady ],
   )
 
   useEffect(
     () => {
-      if(!books[bookId]) {
+      if(!book) {
         // direct load to invalid book
         const message = i18n("Either this book does not exist, or you do not have access to it.")
 
@@ -943,9 +947,9 @@ const Book = React.memo(({
     spineInlineToolsHash: zoomToInfo ? zoomToInfoSpineInlineToolsHash : spineInlineToolsHash,
   })
 
-  const { title } = (books && books[bookId]) || {}
+  const { title } = book || {}
 
-  if(!books[bookId]) {
+  if(!book) {
     // direct load to invalid book
     return null
   }
@@ -956,6 +960,14 @@ const Book = React.memo(({
         <CoverAndSpin
           text={i18n("Updating reader...")}
         />
+      </SafeLayout>
+    )
+  }
+
+  if(Platform.OS === 'web' && !bookCookiesReady) {
+    return (
+      <SafeLayout>
+        <CoverAndSpin />
       </SafeLayout>
     )
   }
@@ -1033,7 +1045,7 @@ const Book = React.memo(({
                 bookId={bookId}
                 spineIdRef={spineIdRef}
                 pageIndexInSpine={pageIndexInSpine}
-                spines={bookLoaded && books[bookId].spines}
+                spines={bookLoaded && book.spines}
                 zoomToPage={zoomToPage}
                 updateSnapshotCoords={setSnapshotCoords}
                 capturingSnapshots={capturingSnapshots}
@@ -1229,6 +1241,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setTocAndSpines,
   updateTool,
   setSelectedToolUid,
+  setBookCookies,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

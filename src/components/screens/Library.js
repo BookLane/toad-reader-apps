@@ -11,7 +11,7 @@ import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
-         isStaging, isBeta, dashifyDomain, getQueryString } from "../../utils/toolbox"
+         isStaging, isBeta, dashifyDomain, getQueryString, getIDPOrigin } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -120,7 +120,6 @@ const Library = ({
   const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
 
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
-  const [ doSetCookie, setDoSetCookie ] = useState(false)
   const [ importingBooks, setImportingBooks ] = useState(false)
   const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
@@ -148,15 +147,6 @@ const Library = ({
       }
     },
     [],
-  )
-
-  useEffect(
-    () => {
-      if(Platform.OS === 'web' && !showLogin) {
-        setDoSetCookie(true)
-      }
-    },
-    [ accounts, showLogin ],
   )
 
   useEffect(
@@ -222,8 +212,9 @@ const Library = ({
           if(idp) {
             const coverFilename = book.coverHref.split('/').pop()
 
+            const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
             downloadAsync(
-              `${getDataOrigin(idp)}/${book.coverHref}`,
+              `${downloadOrigin}/epub_content/covers/book_${bookId}.png`,
               `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
             ).then(successful => {
               if(successful) {
@@ -355,8 +346,13 @@ const Library = ({
 
   const logOutOnLoad = useCallback(
     async () => {
+
+      const { idpId } = getIdsFromAccountId(logOutAccountId)
+      const idp = idps[idpId]
+      const dataOrigin = getDataOrigin(idp)
+
       // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
-      const logOutCallbackUrl = `${getDataOrigin(idps[logOutAccountId.split(':')[0]])}/logout/callback?noredirect=1`
+      const logOutCallbackUrl = `${dataOrigin}/logout/callback?noredirect=1`
       await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
         headers: {
           "x-cookie-override": accounts[logOutAccountId].cookie,
@@ -479,6 +475,37 @@ const Library = ({
     [ notifications ],
   )
 
+  useEffect(
+    () => {
+      (async () => {
+
+        if(Platform.OS !== 'web' || !logOutAccountId || !redirectCheckComplete) return
+
+        const { idpId } = getIdsFromAccountId(logOutAccountId)
+        const idp = idps[idpId]
+        const { authMethod, devAuthMethod } = idp
+        const dataOrigin = getDataOrigin(idp)
+
+        const usingShibbolethLogin = ['SHIBBOLETH'].includes((__DEV__ && devAuthMethod) || authMethod) || doEmailLogin
+
+        if(usingShibbolethLogin) {
+
+          removeAccount({ accountId: logOutAccountId })
+
+          const logOutUrl = `${dataOrigin}/logout`
+          window.location.href = logOutUrl
+
+        } else {
+
+          logOutOnLoad()
+
+        }
+        
+      })()
+    },
+    [ logOutAccountId, redirectCheckComplete ],
+  )
+
   const scope = library.scope || "all"
 
   const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
@@ -495,13 +522,13 @@ const Library = ({
 
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
 
-  if(showLoading) {
+  if(showLoading || (logOutAccountId && Platform.OS === 'web')) {
     return (
       <CoverAndSpin />
     )
   }
 
-  if(logOutAccountId) {
+  if(logOutAccountId) {  // native logout
     return (
       <SafeLayout>
         <WebView
@@ -668,23 +695,6 @@ const Library = ({
           </>
         }
       />
-
-      {doSetCookie &&
-        (Object.keys(accounts).map(accountId => {
-          const { idpId } = getIdsFromAccountId(accountId)
-
-          return (
-            <WebView
-              key={accountId}
-              containerStyle={styles.hiddenWebview}
-              source={getReqOptionsWithAdditions({
-                uri: `${getDataOrigin(idps[idpId])}/setcookie?cookie=${(accounts[accountId].cookie)}`,
-              })}
-              onLoad={() => setDoSetCookie(false)}
-            />
-          )
-        }))
-      }
 
     </SideMenu>
   )

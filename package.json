@@ -28,7 +28,7 @@
     "push-web-beta-to-production": "(node ./scripts/echoActionToPerform.js --action push-web-beta-to-production && npm run confirm -s && node ./scripts/pushWebBetaToProduction.js) || true",
     "remind": "read -p 'Did you update the version number and rerun change-tenant? (y/N) ' -n 1 -r && echo '\n' && [[ $REPLY =~ ^[Yy]$ ]]",
     "rollback-web": "node ./scripts/rollBackWeb.js",
-    "rollback-apps": "echo 'See the expo documentation:\nhttps://docs.expo.io/versions/latest/distribution/advanced-release-channels/\n'",
+    "rollback-apps": "expo publish:history && echo '\n\nINSTRUCTIONS: Run `expo publish:set --release-channel production --publish-id [publicationId]` for both iOS and Android.\n'",
     "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json' && npm run translate-convert-json-to-csv",
     "translate-convert-csv-to-json": "node node_modules/inline-i18n/scripts/convertTranslationCSVtoJSON.js --translations-dir='./src/utils/translations'",
     "translate-convert-json-to-csv": "node node_modules/inline-i18n/scripts/convertTranslationJSONtoCSV.js --translations-dir='./src/utils/translations'",

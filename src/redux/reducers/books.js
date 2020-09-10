@@ -127,6 +127,24 @@ export default function(state = initialState, action) {
       }
       return state
 
+    case "SET_BOOK_COOKIES": {
+
+      const { bookId, cookies, expireAt } = action
+
+      if(newState[bookId]) {
+        newState[bookId] = {
+          ...newState[bookId],
+          bookCookies: {
+            cookies,
+            expireAt,
+          },
+        }
+        return newState
+      }
+
+      return state
+    }
+
     case "SET_CURRENT_CLASSROOM":
       if(newState[action.bookId]) {
         newState[action.bookId] = {
