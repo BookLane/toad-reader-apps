@@ -5,7 +5,7 @@ import { bottomSpace, statusBarHeight } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   view: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
 })
 
@@ -41,7 +41,7 @@ const KeyboardAvoidingView = ({
         styles.view,
         style,
       ]}
-      behavior="padding"
+      behavior={Platform.select({ android: 'height', ios: 'padding' })}
       keyboardVerticalOffset={yOffset}
       enabled={!(Platform.OS === 'android' && __DEV__)}
       {...otherProps}

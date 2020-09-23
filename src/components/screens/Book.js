@@ -47,7 +47,6 @@ import ToolChip from "../basic/ToolChip"
 import HighlightsWrapper from "../major/HighlightsWrapper"
 import Icon from "../basic/Icon"
 import Search from "../major/Search"
-import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 import HeaderSearch from "../basic/HeaderSearch"
 
 
@@ -1006,7 +1005,7 @@ const Book = React.memo(({
         />
       }
 
-      <KeyboardAvoidingView style={styles.panels}>
+      <View style={styles.panels}>
         <View
           style={[
             styles.mainPanel,
@@ -1202,7 +1201,7 @@ const Book = React.memo(({
           </View>
         }
         <View />
-      </KeyboardAvoidingView>
+      </View>
 
       {!!toolMoveInfo &&
         <>

@@ -86,9 +86,6 @@ const styles = StyleSheet.create({
   section: {
     marginVertical: 5,
   },
-  keyboardAvoidingView: {
-    ...StyleSheet.absoluteFillObject,
-  },
   flex1View: {
     flex: 1,
   }
@@ -593,14 +590,14 @@ const Library = ({
       }
     >
 
-      <Switch>
-        <Route path="/error" component={ErrorMessage} />
-        {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
-        {!doingInitialFetch && <Route path="/reports" component={Reports} />}
-        <Route>
+      <KeyboardAvoidingView>
+        <Switch>
+          <Route path="/error" component={ErrorMessage} />
+          {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
+          {!doingInitialFetch && <Route path="/reports" component={Reports} />}
+          <Route>
 
-          <SafeLayout>
-            <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+            <SafeLayout>
               <View style={styles.flex1View}>
                 <LibraryHeader
                   scope={scope}
@@ -626,11 +623,11 @@ const Library = ({
                   )
                 }
               </View>
-            </KeyboardAvoidingView>
-          </SafeLayout>
-          
-        </Route>
-      </Switch>
+            </SafeLayout>
+
+          </Route>
+        </Switch>
+      </KeyboardAvoidingView>
 
       <BookDownloader
         downloadPaused={/^\/book\//.test(pathname)}
