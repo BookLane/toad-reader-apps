@@ -176,8 +176,9 @@ const Library = ({
       removeSnapshotsIfANewUpdateRequiresIt({ books, clearAllSpinePageCfis })
       autoUpdateCoreIdps()
 
-      if(Platform.OS !== 'web' && !wideModeWithEitherOrientation) {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+      if(Platform.OS === 'ios' && wideModeWithEitherOrientation) {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
+        // Switching the orientation in android causes a bug related to the KeyboardAvoidingView
       }
     },
     [],
