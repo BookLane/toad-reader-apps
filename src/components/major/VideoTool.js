@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import { ScreenOrientation } from "expo"
 import { getLocale } from "inline-i18n"
@@ -39,6 +39,9 @@ const VideoTool = React.memo(({
 
   const wideModeWithEitherOrientation = useWideMode(true)
 
+  const videoRef = useRef()
+  const prevIsPlaying = useRef(false)
+
   useEffect(
     () => async () => {
       if(Platform.OS === 'ios' && !wideModeWithEitherOrientation) {
@@ -58,7 +61,15 @@ const VideoTool = React.memo(({
 
   const onFullscreenUpdate = useCallback(
     ({ fullscreenUpdate }) => {
-      if(Platform.OS === 'android' && !wideModeWithEitherOrientation) {
+      if(wideModeWithEitherOrientation) return
+
+      if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
+        try {
+          videoRef.current.pauseAsync()
+        } catch(err) {}  // ignore as it just means the state is already what I am setting it to be
+      }
+
+      if(Platform.OS === 'android') {
 
         if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT) {
           ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
@@ -67,6 +78,26 @@ const VideoTool = React.memo(({
         }
 
       }
+    },
+    [ wideModeWithEitherOrientation ],
+  )
+
+  const onPlaybackStatusUpdate = useCallback(
+    ({ isPlaying, didJustFinish }) => {
+      (async () => {
+        if(wideModeWithEitherOrientation) return
+
+        try {
+          if(!prevIsPlaying.current && isPlaying) {
+            await videoRef.current.presentFullscreenPlayer()
+          } else if(didJustFinish) {
+            await videoRef.current.dismissFullscreenPlayer()
+          }
+        } catch(err) {}  // ignore as it just means the state is already what I am setting it to be
+
+        prevIsPlaying.current = isPlaying
+
+      })()
     },
     [ wideModeWithEitherOrientation ],
   )
@@ -200,11 +231,13 @@ const VideoTool = React.memo(({
       } else {
         return (
           <Video
+            ref={videoRef}
             source={{ uri: videoLink }}
             resizeMode={Video.RESIZE_MODE_CONTAIN}
             useNativeControls
             style={styles.webViewContainer}
             onFullscreenUpdate={onFullscreenUpdate}
+            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
           />
         )
       }
