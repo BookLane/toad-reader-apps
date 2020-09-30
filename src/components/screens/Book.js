@@ -54,6 +54,7 @@ const {
   PAGE_ZOOM_MILLISECONDS,
   BOTTOM_NAVIGATION_HEIGHT=58,
   RETURN_TO_READING_WIDTH=60,
+  MAX_TOOLS_PER_SPOT=10
 } = Constants.manifest.extra
 
 const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
@@ -308,6 +309,7 @@ const Book = React.memo(({
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
   const getSelectedToolUid = useInstanceValue(selectedToolUid)
+  const getVisibleTools = useInstanceValue(visibleTools)
 
   const toolCfiCounts = useMemo(
     () => getToolCfiCounts({ visibleTools, spineIdRef }),
@@ -923,14 +925,25 @@ const Book = React.memo(({
       const { spineIdRef, cfi, ordering, uid } = getToolMoveInfo() || {}
 
       if(spineIdRef) {
-        updateTool({
-          bookId,
-          classroomUid,
-          uid,
+        const toolCfiCounts = getToolCfiCounts({
+          visibleTools: getVisibleTools(),
           spineIdRef,
-          cfi,
-          ordering,
         })
+
+        if(toolCfiCounts[cfi] >= MAX_TOOLS_PER_SPOT) {
+          alert(i18n("You cannot move a tool to this spot as it already contains the limit of {{num}} tools per location.", { num: MAX_TOOLS_PER_SPOT }))
+          
+        } else {
+          updateTool({
+            bookId,
+            classroomUid,
+            uid,
+            spineIdRef,
+            cfi,
+            ordering,
+          })
+        }
+
       }
 
       setToolMoveInfo()
