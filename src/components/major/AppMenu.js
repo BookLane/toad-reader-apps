@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,11 +7,13 @@ import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
+
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 import useHasNoAuth from "../../hooks/useHasNoAuth"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
 
@@ -77,6 +79,7 @@ const AppMenu = ({
 
   const { online } = useNetwork()
   const { historyPush, historyReplace, historyGoBack, pathname } = useRouterState()
+  const [ loading, setLoading ] = useState(false)
 
   const hasNoAuth = useHasNoAuth(accounts)
   const { authMethod, devAuthMethod } = Object.values(idps)[0] || {}
@@ -129,18 +132,26 @@ const AppMenu = ({
           },
           {
             text: i18n("Log out"),
-            onPress: async () => {
-              await removeAccountEPubs(
-                {
-                  books,
-                  removeFromBookDownloadQueue,
-                  setDownloadStatus,
-                  clearTocAndSpines,
-                  clearUserDataExceptProgress,
-                },
-              )
+            onPress: () => {
+              
+              setLoading(true)  // timeout needed after this to allow it to show
 
-              doLogOut()
+              setTimeout(async () => {
+                await removeAccountEPubs(
+                  {
+                    books,
+                    removeFromBookDownloadQueue,
+                    setDownloadStatus,
+                    clearTocAndSpines,
+                    clearUserDataExceptProgress,
+                  },
+                )
+
+                setLoading(false)
+
+                doLogOut()
+              })
+
             },
             // style: 'destructive',
           },
@@ -176,15 +187,23 @@ const AppMenu = ({
           {
             text: i18n("Remove all books"),
             onPress: async () => {
-              await removeAllEPubs({
-                books,
-                removeFromBookDownloadQueue,
-                setDownloadStatus,
-                clearTocAndSpines,
-                clearUserDataExceptProgress,
+
+              setLoading(true)  // timeout needed after this to allow it to show
+
+              setTimeout(async () => {
+                await removeAllEPubs({
+                  books,
+                  removeFromBookDownloadQueue,
+                  setDownloadStatus,
+                  clearTocAndSpines,
+                  clearUserDataExceptProgress,
+                })
+  
+                setLoading(false)
+
+                Alert.alert(i18n("All books have been removed."))
               })
 
-              Alert.alert(i18n("All books have been removed."))
             },
             // style: 'destructive',
           },
@@ -368,6 +387,11 @@ const AppMenu = ({
         header={renderHeader}
         footer={renderFooter}
       />
+      {loading &&
+        <CoverAndSpin
+          text={i18n("Removing books...")}
+        />
+      }
       {pathname === '/drawer' && <BackFunction func={historyGoBack} />}
     </Layout>
   )

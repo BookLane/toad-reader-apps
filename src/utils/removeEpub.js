@@ -26,14 +26,20 @@ export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, s
   setDownloadStatus({ bookId, downloadStatus: 0 })
   clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
-  AsyncStorage.removeItem(`assetDownloads:${localBaseUri}`)
-  await FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true })
-  await FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true })
-  await FileSystem.deleteAsync(searchIndexLocalUri, { idempotent: true })
+
+  const asyncTasks = [
+    FileSystem.deleteAsync(localBaseUri.replace(/\/$/, ''), { idempotent: true }),
+    FileSystem.deleteAsync(`${getSnapshotsDir()}${bookId}`, { idempotent: true }),
+    FileSystem.deleteAsync(searchIndexLocalUri, { idempotent: true }),
+  ]
   
   if(removeCover) {
-    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}`, { idempotent: true })
+    asyncTasks.push(
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}`, { idempotent: true })
+    )
   }
+
+  await Promise.all(asyncTasks)
 
   console.log(`Done removing snapshots and contents for book ${bookId}.`)
 }
@@ -67,12 +73,16 @@ export const clearPageCfiInfoAndSnapshots = async ({ bookId, clearAllSpinePageCf
 
 export const removeAllEPubs = async ({ books, ...otherParams }) => {
   await Promise.all(Object.keys(books).map(bookId => (
-    removeEpub({ bookId, ...otherParams })
+    books[bookId].downloadStatus > 0
+      ? removeEpub({ bookId, ...otherParams })
+      : null
   )))
 }
 
 export const removeAccountEPubs = async ({ books, ...otherParams }) => {
   await Promise.all(Object.keys(books).map(bookId => (
-    removeEpub({ books, bookId, ...otherParams, removeCover: true })
+    books[bookId].downloadStatus > 0
+      ? removeEpub({ books, bookId, ...otherParams, removeCover: true })
+      : null
   )))
 }
