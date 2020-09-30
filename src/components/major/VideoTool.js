@@ -62,6 +62,7 @@ const VideoTool = React.memo(({
   const onFullscreenUpdate = useCallback(
     ({ fullscreenUpdate }) => {
       if(wideModeWithEitherOrientation) return
+      if(Platform.OS === 'web') return
 
       if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
         try {
@@ -86,6 +87,7 @@ const VideoTool = React.memo(({
     ({ isPlaying, didJustFinish }) => {
       (async () => {
         if(wideModeWithEitherOrientation) return
+        if(Platform.OS === 'web') return
 
         try {
           if(!prevIsPlaying.current && isPlaying) {
