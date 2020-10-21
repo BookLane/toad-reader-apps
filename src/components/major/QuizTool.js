@@ -164,6 +164,11 @@ const QuizTool = React.memo(({
           key={origQuestionIdx}
           contentContainerStyle={styles.page}
         >
+          {isDefaultClassroom && pageIdx === 0 &&
+            <Text style={styles.note}>
+              {i18n("Note: No one will see your score since you are not within a classroom.")}
+            </Text>
+          }
           <View style={styles.questionContainer}>
             <View style={styles.question}>
               <Text style={styles.questionText}>{question}</Text>

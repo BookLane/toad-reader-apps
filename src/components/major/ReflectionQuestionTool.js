@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: bottomSpace,
   },
+  visibilityWarning: {
+    fontWeight: '300',
+  },
   answer: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     paddingHorizontal: 30,
@@ -97,10 +100,14 @@ const ReflectionQuestionTool = React.memo(({
         style={styles.answer}
       />
       <Text style={styles.info}>
-        {isDefaultClassroom
-          ? i18n("This is a reflection question. Your answer is private.", "", "enhanced")
-          : i18n("This is a reflection question. Your answer may be seen by you and your instructor(s).", "", "enhanced")
-        }
+        {i18n("This is a reflection question.", "", "enhanced")}
+        {` `}
+        <Text style={styles.visibilityWarning}>
+          {isDefaultClassroom
+            ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
+            : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
+          }
+        </Text>
       </Text>
     </View>
   )

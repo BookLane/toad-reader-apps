@@ -46,6 +46,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 30,
   },
+  visibilityWarning: {
+    fontWeight: '300',
+  },
 })
 
 const PollTool = React.memo(({
@@ -118,10 +121,14 @@ const PollTool = React.memo(({
         </View>
       </ScrollView>
       <Text style={styles.info}>
-        {isDefaultClassroom
-          ? i18n("This is a poll.", "", "enhanced")
-          : i18n("This is a poll. Your answer may be seen by you and your instructor(s).", "", "enhanced")
-        }
+        {i18n("This is a poll.", "", "enhanced")}
+        {` `}
+        <Text style={styles.visibilityWarning}>
+          {isDefaultClassroom
+            ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
+            : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
+          }
+        </Text>
       </Text>
     </View>
   )
