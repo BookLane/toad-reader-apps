@@ -75,7 +75,7 @@
             + '.erasereader-new-tab-icon {'
             + 'display: none;'
             + '}'
-            + '.erasereader-widget-reference-a:hover .erasereader-new-tab-icon {'
+            + '.erasereader-widget-reference-a:hover .erasereader-new-tab-icon, .erasereader-new-tab-icon-big {'
             + 'background-image: url(\'data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title></title><g id="icomoon-ignore"></g><path d="M96 32v384h384v-384h-384zM448 384h-320v-320h320v320zM64 448v-336l-32-32v400h400l-32-32h-336z"></path><path d="M176 128l80 80-96 96 48 48 96-96 80 80v-208z"></path></svg>\');'
             + 'display: block;'
             + 'position: absolute;'
@@ -88,6 +88,12 @@
             + 'background-repeat: no-repeat;'
             + 'background-position: center;'
             + 'background-color: white;'
+            + '}'
+            + '.erasereader-new-tab-icon-big {'
+            + 'top: -30px;'
+            + '}'
+            + '.erasereader-new-tab-icon-big:hover {'
+            + 'opacity: .5;'
             + '}'
             + '.erasereader-spinner {'
             + 'width: 100px;'
@@ -207,6 +213,16 @@
                 });
                 iframeEl.setAttribute('data-nowidgetsrc', nonWidgetSrc);
 
+                var initialRefElA = newEl('a', {
+                    className: "erasereader-widget-reference-a",
+                    target: '_blank',
+                    href: nonWidgetSrc.replace(/&widget=1.*$/, '&flash=1'),
+                });
+
+                var bigNewTabIconEl = newEl('div', {
+                    className: "erasereader-new-tab-icon-big",
+                });
+
                 var spinnerEl = newEl('div', {
                     className: 'erasereader-spinner',
                 });
@@ -219,7 +235,9 @@
                 });
 
                 divEl.appendChild(iframeEl);
+                initialRefElA.appendChild(bigNewTabIconEl);
                 divEl.appendChild(spinnerEl);
+                divEl.appendChild(initialRefElA);
                 el.parentNode.replaceChild(divEl, el);
 
                 setTimeout(function() {
@@ -240,6 +258,7 @@
 
                 if (iframeEl) {
                     var spinnerEl = iframeEl.nextSibling;
+                    var initialRefElA = spinnerEl.nextSibling;
                     switch (data.action) {
                         case 'setHeight':
                             var height = parseInt(data.payload, 10);
@@ -290,6 +309,7 @@
                                 className: "erasereader-new-tab-icon",
                             });
 
+                            initialRefElA.parentNode.removeChild(initialRefElA);
                             refElA.appendChild(spineLblEl);
                             refElA.appendChild(titleEl);
                             refElA.appendChild(authorEl);
