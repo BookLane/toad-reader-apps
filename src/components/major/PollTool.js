@@ -42,12 +42,12 @@ const styles = StyleSheet.create({
   },
   info: {
     fontSize: 14,
-    fontWeight: '100',
+    fontWeight: '200',
     paddingVertical: 20,
     paddingHorizontal: 30,
   },
   visibilityWarning: {
-    fontWeight: '300',
+    fontWeight: '600',
   },
 })
 

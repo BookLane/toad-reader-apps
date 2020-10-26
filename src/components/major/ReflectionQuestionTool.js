@@ -24,12 +24,12 @@ const styles = StyleSheet.create({
   },
   info: {
     fontSize: 14,
-    fontWeight: '100',
+    fontWeight: '200',
     marginTop: 20,
     paddingBottom: bottomSpace,
   },
   visibilityWarning: {
-    fontWeight: '300',
+    fontWeight: '600',
   },
   answer: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
