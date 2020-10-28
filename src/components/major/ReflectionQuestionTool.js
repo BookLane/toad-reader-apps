@@ -11,9 +11,17 @@ import useSetTimeout from '../../hooks/useSetTimeout'
 
 import TextInput from "../basic/TextInput"
 
+const info = {
+  fontSize: 14,
+  fontWeight: '200',
+  fontStyle: 'italic',
+  marginBottom: 20,
+}
+
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 0,
     marginHorizontal: 30,
     flex: 1,
   },
@@ -23,18 +31,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   info: {
-    fontSize: 14,
-    fontWeight: '200',
-    marginTop: 20,
-    paddingBottom: bottomSpace,
+    ...info,
   },
-  visibilityWarning: {
-    fontWeight: '600',
+  emphasizedInfo: {
+    ...info,
+    fontWeight: '400',
+    color: 'red',
   },
   answer: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
     paddingHorizontal: 30,
     marginHorizontal: -30,
+    paddingBottom: 30 + bottomSpace,
     textAlignVertical: 'top',
     flex: 1,
   },
@@ -89,6 +97,14 @@ const ReflectionQuestionTool = React.memo(({
 
   return (
     <View style={styles.container}>
+      <Text style={isDefaultClassroom ? styles.emphasizedInfo : styles.info}>
+        {i18n("This is a reflection question.", "", "enhanced")}
+        {` `}
+        {isDefaultClassroom
+          ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
+          : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
+        }
+      </Text>
       <Text style={styles.question}>
         {question}
       </Text>
@@ -99,16 +115,6 @@ const ReflectionQuestionTool = React.memo(({
         onChangeText={onChangeText}
         style={styles.answer}
       />
-      <Text style={styles.info}>
-        {i18n("This is a reflection question.", "", "enhanced")}
-        {` `}
-        <Text style={styles.visibilityWarning}>
-          {isDefaultClassroom
-            ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
-            : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
-          }
-        </Text>
-      </Text>
     </View>
   )
 })

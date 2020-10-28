@@ -8,6 +8,15 @@ import { RadioGroup, Radio } from "@ui-kitten/components"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { updateToolEngagement } from "../../redux/actions"
 
+const info = {
+  marginVertical: 20,
+  marginHorizontal: 30,
+  textAlign: 'center',
+  fontSize: 14,
+  fontWeight: '200',
+  fontStyle: 'italic',
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -17,6 +26,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     padding: 30,
+    paddingTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -41,13 +51,12 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   info: {
-    fontSize: 14,
-    fontWeight: '200',
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    ...info,
   },
-  visibilityWarning: {
-    fontWeight: '600',
+  emphasizedInfo: {
+    ...info,
+    fontWeight: '400',
+    color: 'red',
   },
 })
 
@@ -98,6 +107,14 @@ const PollTool = React.memo(({
 
   return (
     <View style={styles.container}>
+      <Text style={isDefaultClassroom ? styles.emphasizedInfo : styles.info}>
+        {i18n("This is a poll.", "", "enhanced")}
+        {` `}
+        {isDefaultClassroom
+          ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
+          : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
+        }
+      </Text>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -120,16 +137,6 @@ const PollTool = React.memo(({
           </RadioGroup>
         </View>
       </ScrollView>
-      <Text style={styles.info}>
-        {i18n("This is a poll.", "", "enhanced")}
-        {` `}
-        <Text style={styles.visibilityWarning}>
-          {isDefaultClassroom
-            ? i18n("No one will see your answer since you are not within a classroom.", "", "enhanced")
-            : i18n("Your answer may be seen by you and your instructor(s).", "", "enhanced")
-          }
-        </Text>
-      </Text>
     </View>
   )
 })

@@ -83,7 +83,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     fontSize: 14,
-    fontWeight: '300',
+    fontWeight: '400',
+    color: 'red',
+    fontStyle: 'italic',
   },
 })
 
