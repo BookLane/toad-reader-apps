@@ -196,11 +196,16 @@ const PageWebView = ({
     highlights: getHighlightsArray(initialProps),
   })
 
-  const dataOriginForDev = __DEV__ ? getDataOrigin(Object.values(idps)[0]) : ``
+  const initialCookiePathForWidget = widget ? `/c/${Object.values(accounts)[0].cookie}` : ``
+  const baseUrlForDevOrWidget = (
+    (__DEV__ || widget)
+      ? `${getDataOrigin(Object.values(idps)[0])}${initialCookiePathForWidget}`
+      : ``
+  )
   const initialQueryStringParams = {
     epub: (
       Platform.OS === 'web'
-        ? `${dataOriginForDev}/epub_content/book_${bookId}`
+        ? `${baseUrlForDevOrWidget}/epub_content/book_${bookId}`
         : `${getBooksDir()}${bookId}`
     ),
   }
