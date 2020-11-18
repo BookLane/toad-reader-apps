@@ -7,6 +7,7 @@ import useToggle from "react-use/lib/useToggle"
 
 import { searchBook, getAutoSuggest, getResultLineInJSX, SPACE_OR_PUNCTUATION } from "../../utils/indexEpub"
 import useSetTimeout from '../../hooks/useSetTimeout'
+import useNetwork from '../../hooks/useNetwork'
 import { loadIndex } from "../../utils/indexEpub"
 
 import Input from "../basic/Input"
@@ -130,19 +131,20 @@ const Search = ({
   const [ results, setResults ] = useState([])
   const [ offlineSearchFailed, setOfflineSearchFailed ] = useState(false)
 
+  const { online } = useNetwork()
   const [ setSearchTimeout ] = useSetTimeout()
 
   const { cookie } = Object.values(accounts)[0] || {}
 
   useEffect(
     () => {
-      loadIndex({ idp: idps[idpId], bookId, cookie, books, accounts, setBookCookies }).then(success => {
+      loadIndex({ idp: idps[idpId], bookId, cookie, books, accounts, setBookCookies, online }).then(success => {
         if(!success) {
           setOfflineSearchFailed(true)
         }
       })
     },
-    [ idps[idpId], bookId, cookie ],
+    [ idps[idpId], bookId, cookie, online ],
   )
 
   const booksArray = useMemo(
@@ -367,9 +369,14 @@ const Search = ({
         </TouchableOpacity>
       </View>
       {offlineSearchFailed &&
-        <Text style={styles.termNotFound}>
-          {i18n("Internet connection required the first time you search a book. Check your connection and try again.")}
-        </Text>
+        <>
+          <Text style={styles.termNotFound}>
+            {i18n("Internet connection required the first time you search a book. Check your connection and try again.")}
+          </Text>
+          <Text style={styles.termNotFound}>
+            {i18n("Additionally, depending on the book size and your device’s capacity, some books are only available to search while online.")}
+          </Text>
+        </>
       }
       {!offlineSearchFailed && !showResults &&
         <View style={styles.results}>

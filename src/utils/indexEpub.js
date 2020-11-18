@@ -47,10 +47,11 @@ const formQueryStr = query => {
   return `?${params.join('&')}`
 }
 
-export const loadIndex = async ({ idp, bookId, cookie, books, accounts, setBookCookies }) => {
+export const loadIndex = async ({ idp, bookId, cookie, books, accounts, setBookCookies, online }) => {
 
   if(Platform.OS === 'web') return true  // no need to download
   if(!bookId || currentIndexBookId === bookId) return true  // full library search or already loaded
+  if(!online) return false  // not connected to the internet
 
   currentMiniSearch = currentIndexBookId = undefined
 
@@ -84,7 +85,7 @@ export const loadIndex = async ({ idp, bookId, cookie, books, accounts, setBookC
     },
   )
 
-  if(success === false) return false  // download failed
+  if(success === false) return true  // download failed, presumedly because the search index is too large for offline usage and so unavailable.
 
   console.log(`Load MiniSearch for book id ${bookId}...`)
 
