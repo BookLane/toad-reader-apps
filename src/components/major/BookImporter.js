@@ -59,6 +59,12 @@ const BookImporter = ({
                     : i18n("Imported successfully.")
                 )
               )}
+              {!!result.noOfflineSearch &&
+                <>
+                  {` `}
+                  {i18n("However, due to size, offline search will not be available in the apps. (Online search will still be available.)")}
+                </>
+              }
             </Text>
           }
           {!!(result || {}).success &&
