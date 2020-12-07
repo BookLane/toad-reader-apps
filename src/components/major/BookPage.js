@@ -443,7 +443,7 @@ const BookPage = React.memo(props => {
           requestHide={requestHideSettings}
           reportSpots={reportSpots}
         />
-        {!!bookLinkInfo &&
+        {!!bookLinkInfo && !widget &&
           <BookPageMessage
             text={bookLinkInfo.label}
             externalHref={bookLinkInfo.href}
