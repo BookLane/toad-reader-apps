@@ -44,6 +44,7 @@ const Document = React.memo(({
   name,
   filename,
   uri,
+  uriWithCookieInPath,
   accountId,
 
   accounts,
@@ -113,7 +114,7 @@ const Document = React.memo(({
         <WebView
           containerStyle={styles.hiddenWebViewContainer}
           source={{
-            uri: `${uri}?filename=${encodeURIComponent(`${name || i18n("Document", "", "enhanced")}.${filename.split('.').slice(-1)[0]}`)}`,
+            uri: `${uriWithCookieInPath}?filename=${encodeURIComponent(`${name || i18n("Document", "", "enhanced")}.${filename.split('.').slice(-1)[0]}`)}`,
           }}
           mixedContentMode="always"
           bounces={false}

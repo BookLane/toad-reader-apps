@@ -42,10 +42,9 @@ export const getBookCookie = async ({ books, accounts, idp, setBookCookies, book
         cookies,
         expireAt,
       }
-      needsFreshCookies = false
     }
 
-    if(!needsFreshCookies && Platform.OS === 'web' && bookCookies) {
+    if(Platform.OS === 'web' && bookCookies) {
       const expires = new Date(bookCookies.expireAt)
       for(let key in bookCookies.cookies) {
         document.cookie = `${window.escape(key)}=${window.escape(bookCookies.cookies[key])}; expires=${expires.toUTCString()}; path=/`

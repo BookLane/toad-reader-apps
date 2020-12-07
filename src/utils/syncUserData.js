@@ -134,6 +134,7 @@ export const patch = () => setTimeout(() => {
           }
           delete classroomToPush.created_at
           delete classroomToPush.isNew
+          delete classroomToPush.classroomQueryString
           classroomHasUpdate = true
         }
 

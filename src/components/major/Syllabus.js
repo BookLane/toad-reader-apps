@@ -4,9 +4,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { getDataOrigin } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useChangeIndex from '../../hooks/useChangeIndex'
+import useAssetBaseUri from "../../hooks/useAssetBaseUri"
 
 import EditToolData from './EditToolData'
 import Document from './Document'
@@ -22,8 +22,10 @@ const Syllabus = React.memo(({
   inEditMode,
   viewingPreview,
   goUpdateClassroom,
+  classroomQueryString,
 
   idps,
+  accounts,
   books,
   userDataByBookId,
 }) => {
@@ -32,6 +34,9 @@ const Syllabus = React.memo(({
   const { uid, syllabus, draftData } = classroom || {}
 
   const changeIndex = useChangeIndex(hasFrontMatterDraftData, (prev, current) => (prev && !current))
+
+  const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
+  const baseUriWithCookieInPath = useAssetBaseUri({ idps, accounts, forceCookieInUri: true })
 
   const data = {}
   const hasDraft = (draftData || {}).syllabus !== undefined
@@ -42,7 +47,8 @@ const Syllabus = React.memo(({
     data.syllabus = syllabus
   }
 
-  const uri = data.syllabus && `${getDataOrigin(idps[idpId])}/enhanced_assets/${uid}/${data.syllabus.filename}`
+  const uri = data.syllabus && `${baseUri}/enhanced_assets/${uid}/${data.syllabus.filename}${classroomQueryString}`
+  const uriWithCookieInPath = data.syllabus && `${baseUriWithCookieInPath}/enhanced_assets/${uid}/${data.syllabus.filename}`
 
   if(!classroom) return null
 
@@ -79,13 +85,15 @@ const Syllabus = React.memo(({
       name={i18n("Syllabus")}
       filename={data.syllabus.filename}
       uri={uri}
+      uriWithCookieInPath={uriWithCookieInPath}
       accountId={accountId}
     />
   )
 })
 
-const mapStateToProps = ({ idps, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
   idps,
+  accounts,
   books,
   userDataByBookId,
 })

@@ -4,7 +4,8 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import useAssetBaseUri from "../../hooks/useAssetBaseUri"
+import { getReqOptionsWithAdditions } from '../../utils/toolbox'
 
 const styles = StyleSheet.create({
   container: {
@@ -18,6 +19,7 @@ const styles = StyleSheet.create({
 
 const ImagesTool = React.memo(({
   bookId,
+  classroomQueryString,
 
   images=[],
 
@@ -27,8 +29,9 @@ const ImagesTool = React.memo(({
 }) => {
 
   const { accountId, idpId, classroomUid } = useClassroomInfo({ books, bookId })
+  const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
 
-  const uriDir = `${getDataOrigin(idps[idpId])}/enhanced_assets/${classroomUid}/`
+  const uriDir = `${baseUri}/enhanced_assets/${classroomUid}/`
 
   return (
     <View style={styles.container}>
@@ -44,7 +47,7 @@ const ImagesTool = React.memo(({
                   "x-cookie-override": accounts[accountId].cookie,
                 },
               }),
-              uri: `${uriDir}${filename}`,
+              uri: `${uriDir}${filename}${classroomQueryString}`,
             }}
             style={styles.image}
             resizeMode='contain'

@@ -3,23 +3,28 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-import { getDataOrigin } from '../../utils/toolbox'
+import useAssetBaseUri from "../../hooks/useAssetBaseUri"
 
 import Document from './Document'
 
 const DocumentTool = React.memo(({
   bookId,
   toolName,
+  classroomQueryString,
 
   document={},
 
   idps,
+  accounts,
   books,
 }) => {
 
   const { accountId, idpId, classroomUid } = useClassroomInfo({ books, bookId })
+  const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
+  const baseUriWithCookieInPath = useAssetBaseUri({ idps, accounts, forceCookieInUri: true })
 
-  const uri = `${getDataOrigin(idps[idpId])}/enhanced_assets/${classroomUid}/${document.filename}`
+  const uri = `${baseUri}/enhanced_assets/${classroomUid}/${document.filename}${classroomQueryString}`
+  const uriWithCookieInPath = `${baseUriWithCookieInPath}/enhanced_assets/${classroomUid}/${document.filename}`
 
   if(!document.filename) return null
 
@@ -28,13 +33,15 @@ const DocumentTool = React.memo(({
       name={toolName}
       filename={document.filename}
       uri={uri}
+      uriWithCookieInPath={uriWithCookieInPath}
       accountId={accountId}
     />
   )
 })
 
-const mapStateToProps = ({ idps, books }) => ({
+const mapStateToProps = ({ idps, accounts, books }) => ({
   idps,
+  accounts,
   books,
 })
 

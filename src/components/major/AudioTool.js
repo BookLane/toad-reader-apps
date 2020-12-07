@@ -4,7 +4,8 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
-import { getDataOrigin, getReqOptionsWithAdditions } from '../../utils/toolbox'
+import useAssetBaseUri from "../../hooks/useAssetBaseUri"
+import { getReqOptionsWithAdditions } from '../../utils/toolbox'
 
 import AudioPlayer from "./AudioPlayer"
 
@@ -18,6 +19,7 @@ const styles = StyleSheet.create({
 
 const AudioTool = React.memo(({
   bookId,
+  classroomQueryString,
 
   audioFile={},
 
@@ -26,9 +28,10 @@ const AudioTool = React.memo(({
   books,
 }) => {
 
-  const { accountId, idpId, classroomUid } = useClassroomInfo({ books, bookId })
+  const { accountId, classroomUid } = useClassroomInfo({ books, bookId })
+  const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
 
-  const uri = `${getDataOrigin(idps[idpId])}/enhanced_assets/${classroomUid}/${audioFile.filename}`
+  const uri = `${baseUri}/enhanced_assets/${classroomUid}/${audioFile.filename}${classroomQueryString}`
 
   if(!audioFile.filename) return null
 

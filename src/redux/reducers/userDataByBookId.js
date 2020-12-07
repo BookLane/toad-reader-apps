@@ -115,7 +115,7 @@ export default function(state = initialState, action) {
       retainFilter(classrooms).forEach(classroom => {
         let foundClassroom = false
         newClassrooms = newClassrooms.map(newClassroom => {
-          if(classroom.uid === newClassrooms.uid) {
+          if(classroom.uid === newClassroom.uid) {
             foundClassroom = true
             return {
               ...classroom,
@@ -130,15 +130,17 @@ export default function(state = initialState, action) {
         }
       })
 
-      // insert in members and tools
-      classrooms.forEach(({ uid, members=[], tools=[] }) => {
+      // insert in members and tools, and restore classroomQueryString
+      classrooms.forEach(({ uid, classroomQueryString, members=[], tools=[] }) => {
         const membersToRetain = retainFilter(members)
         const toolsToRetain = retainFilter(tools)
 
-        if(membersToRetain.length + toolsToRetain.length === 0) return
-
         newClassrooms = newClassrooms.map(newClassroom => {
-          if(uid === newClassrooms.uid) {
+          if(uid === newClassroom.uid) {
+
+            if(classroomQueryString) {
+              newClassroom.classroomQueryString = classroomQueryString
+            }
 
             let newMembers = [ ...(newClassroom.members || []) ]
             let newTools = [ ...(newClassroom.tools || []) ]
@@ -944,6 +946,33 @@ export default function(state = initialState, action) {
       }
 
       return hasHighlightsToUpdate ? newState : state
+    }
+
+    case "SET_CLASSROOM_QUERY_STRING": {
+
+      const { bookId, classroomUid, queryString, expireAt } = action
+
+      if(queryString && expireAt && classrooms.some((classroom, idx) => {
+        if(classroom.uid === classroomUid) {
+          classroom = classrooms[idx] = { ...classroom }
+          classroom.classroomQueryString = {
+            queryString,
+            expireAt,
+          }
+          return true
+        }
+      })) {
+
+        newState[bookId] = {
+          ...userDataForThisBook,
+          classrooms,
+        }
+  
+        return newState
+
+      }
+
+      return state
     }
 
   }

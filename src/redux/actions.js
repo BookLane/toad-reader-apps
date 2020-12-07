@@ -62,6 +62,14 @@ export const setBookCookies = ({ bookId, cookies, expireAt }) => ({
   expireAt,
 })
 
+export const setClassroomQueryString = ({ bookId, classroomUid, queryString, expireAt }) => ({
+  type: "SET_CLASSROOM_QUERY_STRING",
+  bookId,
+  classroomUid,
+  queryString,
+  expireAt,
+})
+
 export const setCurrentClassroom = ({ bookId, uid }) => ({
   type: "SET_CURRENT_CLASSROOM",
   bookId,

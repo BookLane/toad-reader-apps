@@ -18,6 +18,7 @@ const EnhancedFrontMatter = React.memo(({
   inEditMode,
   closeToolAndExitReading,
   goTo,
+  classroomQueryString,
 
   books,
   userDataByBookId,
@@ -113,6 +114,7 @@ const EnhancedFrontMatter = React.memo(({
           inEditMode={inEditMode}
           viewingPreview={viewingPreview}
           goUpdateClassroom={goUpdateClassroom}
+          classroomQueryString={classroomQueryString}
         />
       ),
     }]),

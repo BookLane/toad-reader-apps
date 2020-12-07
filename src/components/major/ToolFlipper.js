@@ -69,6 +69,7 @@ const ToolFlipper = React.memo(({
   inEditMode,
   goTo,
   closeToolAndExitReading,
+  classroomQueryString,
 
   books,
   userDataByBookId,
@@ -162,6 +163,7 @@ const ToolFlipper = React.memo(({
           inEditMode={inEditMode}
           tool={selectedTool}
           xOutOfTool={closeTool}
+          classroomQueryString={classroomQueryString}
         />
       </View>
     )  
@@ -192,6 +194,7 @@ const ToolFlipper = React.memo(({
               inEditMode={inEditMode}
               tool={tool}
               xOutOfTool={closeToolAndExitReading}
+              classroomQueryString={classroomQueryString}
             />
           </View>
         ))}

@@ -24,9 +24,10 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
 import usePageInfo from "../../hooks/usePageInfo"
 import useBookCookies from "../../hooks/useBookCookies"
+import useClassroomQueryString from "../../hooks/useClassroomQueryString"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
-         setTocAndSpines, updateTool, setSelectedToolUid, setBookCookies } from "../../redux/actions"
+         setTocAndSpines, updateTool, setSelectedToolUid, setBookCookies, setClassroomQueryString } from "../../redux/actions"
 
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
@@ -240,6 +241,7 @@ const Book = React.memo(({
   updateTool,
   setSelectedToolUid,
   setBookCookies,
+  setClassroomQueryString,
 
 }) => {
 
@@ -305,6 +307,7 @@ const Book = React.memo(({
     spineInlineToolsHash,
   })
   const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
+  const classroomQueryString = useClassroomQueryString({ userDataByBookId, accounts, idp: idps[idpId], setClassroomQueryString, bookId, classroomUid })
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)
   const getInEditMode = useInstanceValue(inEditMode)
@@ -1175,6 +1178,7 @@ const Book = React.memo(({
             inEditMode={inEditMode}
             goTo={goTo}
             closeToolAndExitReading={closeToolAndExitReading}
+            classroomQueryString={classroomQueryString}
           />
           {viewingHighlights &&
             <HighlightsWrapper
@@ -1198,6 +1202,7 @@ const Book = React.memo(({
             inEditMode={inEditMode}
             closeToolAndExitReading={closeToolAndExitReading}
             goTo={goTo}
+            classroomQueryString={classroomQueryString}
           />
         </View>
         {!widget && wideMode &&
@@ -1254,6 +1259,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   updateTool,
   setSelectedToolUid,
   setBookCookies,
+  setClassroomQueryString,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Book)

@@ -204,7 +204,11 @@
           "name": "",
           "tools": [],
           "uid": "1-135",
-          "updated_at": 1573659531000
+          "updated_at": 1573659531000,
+          "classroomQueryString": {
+            "queryString": "?Policy=xxxxxxx&Key-Pair-Id==xxxxxx&Signature=xxxxxxx",
+            "expireAt": 1598904581065
+          }
         }
       ]
     },

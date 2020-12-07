@@ -87,6 +87,7 @@ const Tool = React.memo(({
   inEditMode,
   tool,
   xOutOfTool,
+  classroomQueryString,
 }) => {
 
   const [ viewingPreview, setViewingPreview ] = useState(false)
@@ -196,6 +197,7 @@ const Tool = React.memo(({
           toolName={tool.name}
           viewingPreview={viewingPreview}
           priorEngagement={engagement}
+          classroomQueryString={classroomQueryString}
           {...data}
         />
       </ScrollView>
