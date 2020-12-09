@@ -54,6 +54,7 @@ const useClassroomInfo = ({ books, bookId, userDataByBookId={}, inEditMode, rawI
     [ classrooms, defaultClassroomUid ]
   )
 
+  if(widget) classroomUid = null
   if(classroomUid === undefined) classroomUid = defaultClassroomUid
   let classroom = classrooms.filter(({ uid }) => uid === classroomUid)[0]
 
