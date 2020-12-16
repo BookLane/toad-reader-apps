@@ -171,6 +171,12 @@
                 queryParamPassAlongObj.widget = 1;
                 queryParamPassAlongObj.parent_domain = window.location.host;
 
+                // pass along auth cookie
+                var ereaderJWT = (('; ' + document.cookie).match(/; ereaderJWT=([^;]+)/) || [])[1];
+                if(ereaderJWT) {
+                    queryParamPassAlongObj.embedAuthJWT = ereaderJWT;
+                }
+
                 var src = el.href
                     .replace(/\/#(\/book\/[0-9]+)#(.*)$/, function (x, bookString, extraInfo) {
                         try {
@@ -273,13 +279,17 @@
                                 className: 'erasereader-widget-forbidden',
                                 innerText: data.payload,
                             });
-                            iframeEl.parentNode.replaceChild(forbiddenEl, iframeEl);
-                            spinnerEl.parentNode.removeChild(spinnerEl);
+                            try {
+                                iframeEl.parentNode.replaceChild(forbiddenEl, iframeEl);
+                                spinnerEl.parentNode.removeChild(spinnerEl);
+                            } catch(e) {}
                             break;
 
                         case 'loading':
-                            iframeEl.style.opacity = "";
-                            spinnerEl.parentNode.removeChild(spinnerEl);
+                            try {
+                                iframeEl.style.opacity = "";
+                                spinnerEl.parentNode.removeChild(spinnerEl);
+                            } catch(e) {}
                             break;
 
                         case 'setReference':
@@ -309,7 +319,9 @@
                                 className: "erasereader-new-tab-icon",
                             });
 
-                            initialRefElA.parentNode.removeChild(initialRefElA);
+                            try {
+                                initialRefElA.parentNode.removeChild(initialRefElA);
+                            } catch(e) {}
                             refElA.appendChild(spineLblEl);
                             refElA.appendChild(titleEl);
                             refElA.appendChild(authorEl);

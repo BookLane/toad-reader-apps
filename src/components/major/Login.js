@@ -59,13 +59,14 @@ const Login = ({
   const askedForLoginInfoAtLeastOnce = useRef()
 
   const { online } = useNetwork()
-  const { historyPush } = useRouterState()
+  const { historyPush, routerState } = useRouterState()
+  const { embedAuthJWT } = routerState
   const hasNoAuth = useHasNoAuth(accounts)
 
   const [ setReloadTimeout ] = useSetTimeout()
 
   const confirmLoginUrl = Platform.OS === 'web'
-    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web?hash=${encodeURIComponent(window.location.hash)}${isBeta() ? `&isBeta=1` : ``}`
+    ? `${getDataOrigin(idps[idpId])}/confirmlogin-web?hash=${encodeURIComponent(window.location.hash)}${isBeta() ? `&isBeta=1` : ``}${embedAuthJWT ? `&embedAuthJWT=${encodeURIComponent(embedAuthJWT)}` : ``}`
     : `${getDataOrigin(idps[idpId])}/confirmlogin`
 
   const { authMethod, devAuthMethod } = idps[idpId]
