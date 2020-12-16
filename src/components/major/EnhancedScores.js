@@ -314,6 +314,7 @@ const EnhancedScores = React.memo(({
             )
             + " - "
             + new Date().toDateString()
+            + ".csv"
           }
           target="_blank"
         >
