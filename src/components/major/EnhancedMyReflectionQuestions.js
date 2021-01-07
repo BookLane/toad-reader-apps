@@ -200,6 +200,7 @@ const EnhancedMyReflectionQuestions = React.memo(({
               ? i18n("Enhanced book", "", "enhanced")
               : (classroom || "").name
             )
+            + ".csv"
           }
           target="_blank"
         >

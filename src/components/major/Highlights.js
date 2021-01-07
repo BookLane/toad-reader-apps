@@ -499,6 +499,7 @@ const Highlights = React.memo(({
             i18n("Highlights")
             + " - "
             + book.title
+            + ".csv"
           }
           target="_blank"
         >
