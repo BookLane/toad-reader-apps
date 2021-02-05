@@ -149,8 +149,10 @@ const Library = ({
   useEffect(
     () => {
       if(widget && parent_domain) {
+        const idps = getIdps()
+
         // check to see if we should redirect to a different domain
-        safeFetch(`${getDataOrigin({ domain: window.location.host })}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
+        safeFetch(`${getDataOrigin(Object.values(idps)[0])}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
           .then(result => result.json())
           .then(({ redirectToDomain }) => {
             if(redirectToDomain && redirectToDomain !== window.location.host) {
