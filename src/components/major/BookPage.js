@@ -81,6 +81,7 @@ const BookPage = React.memo(props => {
   const prevPageIndexInSpine = usePrevious(pageIndexInSpine)
 
   const [ noteInEdit, setNoteInEdit ] = useState(null)
+  const getNoteInEdit = useInstanceValue(noteInEdit)
 
   const wideMode = useWideMode()
 
@@ -351,6 +352,7 @@ const BookPage = React.memo(props => {
         }
 
         case 'textUnselected':
+          if(getNoteInEdit() != null) break
         case 'textSelected': {
           setSelectionInfo(data.payload)
           return true
