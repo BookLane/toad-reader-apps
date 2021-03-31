@@ -34,6 +34,7 @@ import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
 import GuideToTurningPages from "../major/GuideToTurningPages"
 import GuideToMiddleTap from "../major/GuideToMiddleTap"
+import GuideToBookBrowser from "../major/GuideToBookBrowser"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
@@ -1247,6 +1248,7 @@ const Book = React.memo(({
 
       <GuideToTurningPages bookLoaded={bookLoaded} />
       <GuideToMiddleTap pageWasTurned={pageWasTurned} />
+      <GuideToBookBrowser inInfoMode={mode === 'info'} />
 
     </SafeLayout>
   )

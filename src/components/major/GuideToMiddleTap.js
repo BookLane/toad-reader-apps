@@ -6,6 +6,7 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
 import { statusBarHeight } from '../../utils/toolbox'
+import useWideMode from "../../hooks/useWideMode"
 
 import Icon from '../basic/Icon'
 import Guide from './Guide'
@@ -64,6 +65,8 @@ const GuideToTurningPages = React.memo(({
   addCompletedGuide,
 }) => {
 
+  const wideMode = useWideMode()
+
   const markComplete = useCallback(() => addCompletedGuide({ guideId: 'middle-tap' }), [])
 
   if(Platform.OS === 'web') return null
@@ -82,7 +85,7 @@ const GuideToTurningPages = React.memo(({
       <View
         style={[
           styles.content,
-          ...(!sidePanelSettings.open ? [] : [{
+          ...(!(sidePanelSettings.open && wideMode) ? [] : [{
             marginRight: sidePanelSettings.width,
           }]),
         ]}
