@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
   },
 })
 
-const GuideToTurningPages = ({
+const Guide = ({
+  blockUntilReady,
   ready,
   markComplete,
   children,
@@ -63,6 +64,7 @@ const GuideToTurningPages = ({
   )
 
   if(Platform.OS === 'web') return null
+  if(!ready && !blockUntilReady) return null
 
   return (
     <AnimatedBlurView
@@ -89,4 +91,4 @@ const GuideToTurningPages = ({
   )
 }
 
-export default GuideToTurningPages
+export default Guide

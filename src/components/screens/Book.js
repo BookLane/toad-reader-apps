@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom"
 import { i18n } from "inline-i18n"
 import useSetState from "react-use/lib/useSetState"
 import useToggle from "react-use/lib/useToggle"
+import usePrevious from "react-use/lib/usePrevious"
 import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
 
 import { refreshUserData } from "../../utils/syncUserData"
@@ -32,6 +33,7 @@ import { setLatestLocation, startRecordReading, endRecordReading, setConsentShow
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
 import GuideToTurningPages from "../major/GuideToTurningPages"
+import GuideToMiddleTap from "../major/GuideToMiddleTap"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
@@ -326,6 +328,12 @@ const Book = React.memo(({
       y: height - bottomSpace,
     }),
     [ height ],
+  )
+
+  const prevLatestLocation = usePrevious(latest_location)
+  const pageWasTurned = useMemo(
+    () => !!prevLatestLocation,
+    [ latest_location ]
   )
 
   const BackToReadingIcon = useCallback(style => <Icon name='book-open-variant' pack="materialCommunity" style={styles.tabsIcon} />, [])
@@ -1238,6 +1246,7 @@ const Book = React.memo(({
       }
 
       <GuideToTurningPages bookLoaded={bookLoaded} />
+      <GuideToMiddleTap pageWasTurned={pageWasTurned} />
 
     </SafeLayout>
   )

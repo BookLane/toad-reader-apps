@@ -32,19 +32,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
   },
-  tapLeftRight: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  tapLeft: {
-    alignSelf: 'flex-start',
-    width: 120,
-  },
-  tapRight: {
-    alignSelf: 'flex-end',
-    width: 120,
-  },
-  tapLeftRightContent: {
+  middleTapContent: {
     marginHorizontal: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -56,36 +44,19 @@ const styles = StyleSheet.create({
   instructionText: {
     textAlign: 'center',
   },
-  tapLeftRightIcon: {
+  middleTapIcon: {
     alignSelf: 'center',
     height: 60,
     marginBottom: 10,
   },
-  orContainer: {
-    width: 30,
-    height: 30,
-    backgroundColor: 'white',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 15,
-    alignSelf: 'center',
-    marginBottom: -10,
-    top: -20,
-  },
-  or: {
-    textAlign: 'center',
-    fontWeight: "bold",
-    fontSize: 11,
-    lineHeight: 28,
-  },
-  swipe: {
+  middleTap: {
     marginTop: 50,
     alignSelf: 'center',
   },
 })
 
 const GuideToTurningPages = React.memo(({
-  bookLoaded,
+  pageWasTurned,
 
   sidePanelSettings,
   completedGuides,
@@ -93,20 +64,19 @@ const GuideToTurningPages = React.memo(({
   addCompletedGuide,
 }) => {
 
-  const markComplete = useCallback(() => addCompletedGuide({ guideId: 'turning-pages' }), [])
+  const markComplete = useCallback(() => addCompletedGuide({ guideId: 'middle-tap' }), [])
 
   if(Platform.OS === 'web') return null
-  if(completedGuides.includes('turning-pages')) return null
+  if(completedGuides.includes('middle-tap')) return null
 
   return (
     <Guide
       markComplete={markComplete}
-      ready={bookLoaded}
-      blockUntilReady={true}
+      ready={pageWasTurned}
     >
       <View style={styles.titleContainer}>
         <Text style={styles.title}>
-          {i18n("Guide: Turning the page")}
+          {i18n("Guide: Zoom out to book browser")}
         </Text>
       </View>
       <View
@@ -117,46 +87,15 @@ const GuideToTurningPages = React.memo(({
           }]),
         ]}
       >
-        <View style={styles.tapLeftRight}>
-          <View style={styles.tapLeft}>
-            <View style={styles.tapLeftRightContent}>
-              <Icon
-                style={styles.tapLeftRightIcon}
-                name="gesture-tap"
-                pack="materialCommunity"
-              />
-              <Text style={styles.instructionText}>
-                {i18n("Tap on the left edge")}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.tapRight}>
-            <View style={styles.tapLeftRightContent}>
-              <Icon
-                style={styles.tapLeftRightIcon}
-                name="gesture-tap"
-                pack="materialCommunity"
-              />
-              <Text style={styles.instructionText}>
-                {i18n("Tap on the right edge")}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.swipe}>
-          <View style={styles.tapLeftRightContent}>
-            <View style={styles.orContainer}>
-              <Text style={styles.or}>
-                {i18n("OR")}
-              </Text>
-            </View>
+        <View style={styles.middleTap}>
+          <View style={styles.middleTapContent}>
             <Icon
-              style={styles.tapLeftRightIcon}
-              name="gesture-swipe"
+              style={styles.middleTapIcon}
+              name="gesture-tap"
               pack="materialCommunity"
             />
             <Text style={styles.instructionText}>
-              {i18n("Swipe left or right")}
+              {i18n("Tap in the middle")}
             </Text>
           </View>
         </View>
