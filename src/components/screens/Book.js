@@ -31,6 +31,7 @@ import { setLatestLocation, startRecordReading, endRecordReading, setConsentShow
 
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
+import GuideToTurningPages from "../major/GuideToTurningPages"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
@@ -1235,6 +1236,8 @@ const Book = React.memo(({
           </View>
         </>
       }
+
+      <GuideToTurningPages bookLoaded={bookLoaded} />
 
     </SafeLayout>
   )

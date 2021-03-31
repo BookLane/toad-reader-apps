@@ -278,6 +278,10 @@
   "highlights": {
     "onlyShowColor": null
   },
+  "completedGuides": [
+    "turning-pages",
+    "middle-tap"
+  ],
   "readerStatus": "ready",
   "syncStatus": "synced"
 }

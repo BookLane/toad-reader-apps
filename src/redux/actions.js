@@ -361,6 +361,11 @@ export const setReaderStatus = ({ readerStatus }) => ({
   readerStatus,
 })
 
+export const addCompletedGuide = ({ guideId }) => ({
+  type: "ADD_COMPLETED_GUIDE",
+  guideId,
+})
+
 export const setSyncStatus = syncStatus => ({
   type: "SET_SYNC_STATUS",
   syncStatus,
