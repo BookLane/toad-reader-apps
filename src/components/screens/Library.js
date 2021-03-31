@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
-import { ScreenOrientation } from "expo"
+import * as ScreenOrientation from 'expo-screen-orientation'
 import * as FileSystem from 'expo-file-system'
 import { Platform, StyleSheet, View, Text, Alert } from "react-native"
 import { bindActionCreators } from "redux"

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
-import { SplashScreen, Updates, AppLoading } from "expo"
-import { AsyncStorage, Platform } from "react-native"
+import AppLoading from 'expo-app-loading'
+import * as SplashScreen from 'expo-splash-screen'
+import * as Updates from 'expo-updates'
+import { Platform, StatusBar } from "react-native"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
 import { persistStore, persistReducer } from "redux-persist"
@@ -75,7 +78,8 @@ const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
 setStore(store)
 
-SplashScreen.preventAutoHide()
+if(Platform.OS === 'android') StatusBar.setTranslucent(false)  // This line shouldn't be needed after I push new apps out to the app stores for all clients
+SplashScreen.preventAutoHideAsync()
 
 const App = () => {
 
@@ -126,24 +130,24 @@ const App = () => {
 
         if(Platform.OS !== 'web' && !__DEV__) {
           // listen for a new version
-          Updates.fetchUpdateAsync({
-            eventListener: ({ type }) => {
-              if(type === Updates.EventType.DOWNLOAD_FINISHED) {
+          Updates.addListener(
+            ({ type }) => {
+              if(type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
                 setUpdateExists(true)
               }
 
               if(
                 [
-                  Updates.EventType.NO_UPDATE_AVAILABLE,
-                  Updates.EventType.ERROR,
-                  Updates.EventType.DOWNLOAD_FINISHED,
+                  Updates.UpdateEventType.NO_UPDATE_AVAILABLE,
+                  Updates.UpdateEventType.ERROR,
+                  Updates.UpdateEventType.UPDATE_AVAILABLE,
                 ].includes(type)
               ) {
                 newVersionCheckComplete = true
                 setIsReadyIfReady()
               }
-            },
-          })
+            }
+          )
         }
 
         const query = getQueryString()

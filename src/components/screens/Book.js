@@ -328,9 +328,9 @@ const Book = React.memo(({
   )
 
   const BackToReadingIcon = useCallback(style => <Icon name='book-open-variant' pack="materialCommunity" style={styles.tabsIcon} />, [])
-  const ThumbnailsIcon = useCallback(style => <Icon name='md-apps' style={styles.tabsIcon} />, [])
-  const ContentsIcon = useCallback(style => <Icon name='md-list' style={styles.tabsIcon} />, [])
-  const SearchIcon = useCallback(style => <Icon name='md-search' style={styles.tabsIcon} />, [])
+  const ThumbnailsIcon = useCallback(style => <Icon name='apps' pack='materialCommunity' style={styles.tabsIcon} />, [])
+  const ContentsIcon = useCallback(style => <Icon name='md-reader-sharp' style={styles.tabsIcon} />, [])
+  const SearchIcon = useCallback(style => <Icon name='md-search-sharp' style={styles.tabsIcon} />, [])
 
   const tabs = useMemo(
     () => [

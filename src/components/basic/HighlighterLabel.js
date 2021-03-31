@@ -7,6 +7,8 @@ import { Ionicons } from "@expo/vector-icons"
 import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
+import useRouterState from "../../hooks/useRouterState"
+
 import HighlighterShareIcon from "./HighlighterShareIcon"
 import HighlighterColorSwitcher from "./HighlighterColorSwitcher"
 import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
@@ -35,16 +37,16 @@ const styles = StyleSheet.create({
     marginRight: 4,
     marginTop: 4,
     marginBottom: 4,
-    fontSize: 18,
+    fontSize: 16,
     backgroundColor: 'rgba(0, 0, 0, .2)',
     height: 26,
     width: 26,
-    lineHeight: 20,
+    lineHeight: 26,
     textAlign: 'center',
     display: 'flex',
-    paddingTop: 2,
-    paddingLeft: 7,
-    paddingRight: 7,
+    paddingTop: 0,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   highlight1: {
     backgroundColor: 'rgba(28, 96, 171, .2)',
@@ -89,6 +91,7 @@ const HighlighterLabel = React.memo(({
   selectionInfo,
   endEditingNote,
   bookId,
+  idpId,
   highlight,
   isEditingNote,
 
@@ -104,6 +107,9 @@ const HighlighterLabel = React.memo(({
     () => setShowDeletedMsgAndUndoColor(),
     [ JSON.stringify(selectionInfo) ],
   )
+
+  const { routerState } = useRouterState()
+  const { widget } = routerState
 
   const toggleHighlightDependencies = [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight ]
 
@@ -207,11 +213,13 @@ const HighlighterLabel = React.memo(({
     )
   }
 
+  const idpThatAllowsEmbed = [ 2, 4 ].includes(idpId)
+
   return (
     <View style={styles.container}>
       {highlightButton}
       <View style={styles.emptySpace} />
-      {!highlight &&
+      {!highlight && !widget && idpThatAllowsEmbed &&
         <HighlighterEmbedIcon
           bookId={bookId}
           selectionInfo={selectionInfo}

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Animated, StyleSheet, Dimensions } from 'react-native'
-import { SplashScreen, Updates } from 'expo'
+import * as SplashScreen from 'expo-splash-screen'
+import * as Updates from 'expo-updates'
 import Constants from 'expo-constants'
 
 import useInstanceValue from '../../hooks/useInstanceValue'
@@ -74,7 +75,7 @@ const Splash = ({
       if(isReady && (!showDelayText || textAnimationComplete)) {
 
         if(updateExists) {
-          Updates.reloadFromCache()
+          Updates.reloadAsync()
         } else {
           Animated.timing(splashAnimation, {
             toValue: 1,
@@ -90,7 +91,7 @@ const Splash = ({
 
   const onImageLoad = useCallback(
     () => {
-      SplashScreen.hide()
+      SplashScreen.hideAsync()
 
       if(getShowDelayText()) {
         // show first line

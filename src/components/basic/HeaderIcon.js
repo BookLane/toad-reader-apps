@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     padding: 8,
-    paddingHorizontal: 12,
     justifyContent: 'center',
   },
   icon: {

@@ -1,4 +1,4 @@
-import { AsyncStorage } from "react-native"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
 import { PUSH_TOKEN_KEY } from '../../hooks/usePushToken'

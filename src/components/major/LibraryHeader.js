@@ -136,19 +136,20 @@ const LibraryHeader = ({
         subtitle={subtitle}
         leftControl={
           <HeaderIcon
-            iconName="ios-menu"
+            iconName="menu-sharp"
             path="/drawer"
           />
         }
         rightControls={[
           <HeaderIcon
-            iconName="md-search"
+            iconName="md-search-sharp"
             onPress={toggleShowSearch}
             disabled={!online}
             uiStatus={!online ? "disabled" : null}
           />,
           <HeaderIcon
-            iconName={library.view == "covers" ? "ios-list" : "md-apps"}
+            iconName={library.view == "covers" ? "format-list-bulleted-square" : "apps"}
+            iconPack="materialCommunity"
             onPress={onPressToggleView}
           />,
           <OverflowMenu

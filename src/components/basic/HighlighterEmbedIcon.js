@@ -1,5 +1,6 @@
 import React, { useCallback } from "react"
-import { StyleSheet, TouchableOpacity, Clipboard } from "react-native"
+import { StyleSheet, TouchableOpacity } from "react-native"
+import Clipboard from 'expo-clipboard'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"

@@ -2,18 +2,19 @@ import React, { useRef, useCallback, useState, useEffect } from "react"
 import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import useUnmount from "react-use/lib/useUnmount"
+
 import { setStatusBarHidden, isIPhoneX, statusBarHeight, statusBarHeightSafe } from '../../utils/toolbox'
+
+import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
+import useDimensions from "../../hooks/useDimensions"
+import { setHighlight } from "../../redux/actions"
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
 import BackFunction from '../basic/BackFunction'
 import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighlightSection"
-
-import useWideMode from "../../hooks/useWideMode"
-import useRouterState from "../../hooks/useRouterState"
-import useUnmount from "react-use/lib/useUnmount"
-
-import { setHighlight } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   clearCover: {
@@ -59,6 +60,7 @@ const Highlighter = React.memo(({
   noteInEdit,
   selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
   bookId,
+  idpId,
   setSelectionText,
   updateNoteInEdit,
   
@@ -161,7 +163,9 @@ const Highlighter = React.memo(({
   const endEditingNote = Keyboard.dismiss
 
   useUnmount(() => setEditingNote(false, true))
-  
+
+  const windowTooShortToShowNotes = useDimensions().window.height < 350
+
   return [
     ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
     <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
@@ -179,6 +183,7 @@ const Highlighter = React.memo(({
         selectionInfo={selectionInfo}
       />
       <HighlighterLabel
+        idpId={idpId}
         selectionInfo={selectionInfo}
         bookId={bookId}
         highlight={highlight.current}
@@ -186,7 +191,7 @@ const Highlighter = React.memo(({
         endEditingNote={endEditingNote}
         isEditingNote={isEditingNote}
       />
-      {!!highlight.current && 
+      {!!highlight.current && !windowTooShortToShowNotes &&
         <HighlighterNotes
           note={isEditingNote ? noteInEdit : highlight.current.note}
           updateNoteInEdit={updateNoteInEdit}

@@ -76,6 +76,7 @@ const ZoomPage = ({
               // easing: Easing.linear,
               easing: Easing.inOut(Easing.cubic),
               duration: zoomingEnabled ? PAGE_ZOOM_MILLISECONDS : 0,
+              useNativeDriver: true,
             }
           ).start(onZoomCompletion)
       
@@ -87,6 +88,7 @@ const ZoomPage = ({
                 toValue: zoomScale,
                 easing: Easing.inOut(Easing.cubic),
                 duration: PAGE_ZOOM_MILLISECONDS,
+                useNativeDriver: true,
               }
             ),
             Animated.timing(
@@ -95,6 +97,7 @@ const ZoomPage = ({
                 toValue: 0,
                 easing: Easing.linear,
                 duration: PAGE_ZOOM_MILLISECONDS / 4,
+                useNativeDriver: true,
               }
             )
           ]).start(onZoomCompletion)

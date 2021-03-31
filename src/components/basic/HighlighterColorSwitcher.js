@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     color: 'black',
     height: 17,
     marginVertical: 5,
-    marginHorizontal: 9,
+    marginHorizontal: 7,
   },
 })
 

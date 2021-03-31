@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Platform, StyleSheet, KeyboardAvoidingView as RNKeyboardAvoidingView } from "react-native"
-import { ScreenOrientation } from "expo"
+import * as ScreenOrientation from 'expo-screen-orientation'
 import useCounter from 'react-use/lib/useCounter'
 
 import { bottomSpace, statusBarHeight } from '../../utils/toolbox'

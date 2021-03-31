@@ -1,7 +1,8 @@
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 // import { i18n } from "inline-i18n"
-import { AsyncStorage, Platform } from "react-native"
+import { Platform } from "react-native"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox"
 import { cancelFetch } from "./zipDownloader"
@@ -12,7 +13,7 @@ const {
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
-const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2020-09-30"
+const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2021-03-31"
 // The exact value of this constant does not so much matter. It just needs to uniquely
 // change each time there is a modification to the apps that may change the layout
 // flow of the epubs.

@@ -1,4 +1,4 @@
-import { AsyncStorage } from "react-native"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // When a data structure change requires conversion to existing data, add on the update function here.
 // IMPORTANT: Never remove an update function which has been made live. If it turns out to be buggy,

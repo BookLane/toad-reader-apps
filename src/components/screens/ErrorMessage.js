@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Updates } from "expo"
+import * as Updates from 'expo-updates'
 import { StyleSheet, View, Text } from "react-native"
 import SafeLayout from "../basic/SafeLayout"
 import { i18n } from "inline-i18n"
@@ -27,7 +27,7 @@ const ErrorMessage = () => {
   useEffect(
     () => {
       if(critical) {
-        setReloadTimeout(Updates.reload, 5000)
+        setReloadTimeout(Updates.reloadAsync, 5000)
       }
     },
     [],

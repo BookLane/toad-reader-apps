@@ -240,7 +240,7 @@ const EnhancedHeader = React.memo(({
             <OverflowMenu
               data={moreOptions}
               visible={showOptions}
-              selectedIndex={sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid)}
+              selectedIndex={sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid || null)}
               onSelect={selectOption}
               onBackdropPress={toggleShowOptions}
               placement='bottom start'

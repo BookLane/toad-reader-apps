@@ -95,7 +95,7 @@ const BookPage = React.memo(props => {
   const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
-  const { visibleTools, spines, toc, instructorHighlights, bookVersion } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { visibleTools, spines, toc, instructorHighlights, bookVersion, idpId } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
   const getVisibleTools = useInstanceValue(visibleTools)
 
   // const { onLayout, width, y: offsetY } = useLayout()
@@ -456,6 +456,7 @@ const BookPage = React.memo(props => {
       {!!selectionInfo &&
         <Highlighter
           bookId={bookId}
+          idpId={idpId}
           selectionInfo={selectionInfo}
           noteInEdit={noteInEdit}
           updateNoteInEdit={setNoteInEdit}

@@ -157,10 +157,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   quoteIcon: {
-    height: 20,
-    marginTop: 7,
-    marginLeft: 10,
-    marginRight: 10,
+    height: 28,
+    marginTop: 5,
+    marginHorizontal: 5,
     tintColor: 'rgba(0, 0, 0, 1)',
   },
   buttons: {
@@ -440,7 +439,8 @@ const Highlights = React.memo(({
                   </View>
                   <View style={styles.quote}>
                     <Icon
-                      name="md-quote"
+                      name="format-quote-open"
+                      pack="materialCommunity"
                       style={styles.quoteIcon}
                     />
                     <Text style={text ? styles.text : styles.missingText}>

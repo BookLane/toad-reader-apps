@@ -1,5 +1,6 @@
 import React from "react"
-import { Platform, StatusBar, Linking, Text } from "react-native"
+import { Platform, StatusBar, Text } from "react-native"
+import * as Linking from 'expo-linking'
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n, getLocale } from "inline-i18n"
@@ -438,19 +439,28 @@ export const getIdsFromAccountId = accountId => {
 
 const identicalFetchDelayFactor = 100
 const identicalFetchMaxDelay = 1000 * 60 * 5
-const fetchRequests = {}
+const numConsecutiveRequestsByUri = {}
 export const safeFetch = async (uri, options={}) => {
-  const delayTime = fetchRequests[uri] || 0
+  const numConsecutiveRequests = numConsecutiveRequestsByUri[uri] = (numConsecutiveRequestsByUri[uri] || 0) + 1
 
-  fetchRequests[uri] = Math.min((delayTime * 2) || identicalFetchDelayFactor, identicalFetchMaxDelay)
+  // Do not really delay for the first five
+  if(numConsecutiveRequestsByUri[uri] > 5) {
+    await new Promise(resolve => setTimeout(
+      resolve,
+      Math.min(
+        Math.pow(2, numConsecutiveRequestsByUri[uri]) * identicalFetchDelayFactor,
+        identicalFetchMaxDelay
+      ),
+    ))
+  }
 
-  const addedTime = fetchRequests[uri] - delayTime
+  const response = await fetch(uri, options)
 
-  setTimeout(() => fetchRequests[uri] -= addedTime, addedTime)
+  if(numConsecutiveRequests === numConsecutiveRequestsByUri[uri]) {
+    numConsecutiveRequestsByUri[uri] = 0
+  }
 
-  await new Promise(resolve => setTimeout(resolve, delayTime))
-
-  return fetch(uri, options)
+  return response
 }
 
 
