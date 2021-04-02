@@ -1,7 +1,8 @@
 import React from "react"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Platform } from "react-native"
 import * as Font from "expo-font"
 import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons"
+const FONT_VERSION = '12.0.4'
 
 const packs = {
   ion: Ionicons,
@@ -11,6 +12,15 @@ const packs = {
 }
 
 const iconFonts = Object.values(packs).map(({ font }) => font)
+
+// Make sure cache busted on fonts when there are updates to font packs
+if(Platform.OS === 'web') {
+  iconFonts.forEach(font => {
+    Object.keys(font).forEach(key => {
+      font[key] += `?cacheBuster=${FONT_VERSION}`
+    })
+  })
+}
 
 // Firefox was not loading the icons when attempting to do more than one at a time.
 // If this turns out to be slower than desired for other environments, then
