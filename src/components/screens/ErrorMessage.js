@@ -22,12 +22,25 @@ const ErrorMessage = () => {
 
   const [ setReloadTimeout ] = useSetTimeout()
   const { routerState } = useRouterState()
-  const { message, critical } = routerState
+  const { message, critical, widget } = routerState
 
   useEffect(
     () => {
       if(critical) {
         setReloadTimeout(Updates.reloadAsync, 5000)
+      }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      if(widget) {
+        parent.postMessage({
+          action: 'forbidden',
+          iframeid: window.name,
+          payload: message,
+        }, '*')
       }
     },
     [],

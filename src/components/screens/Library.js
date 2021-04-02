@@ -564,7 +564,7 @@ const Library = ({
 
   const query = getQueryString()
 
-  if(showLogin || doEmailLogin || query.loginInfo) {
+  if((showLogin || doEmailLogin || query.loginInfo) && ![ '/error' ].includes(pathname)) {
     return (
       <Login
         idpId={Object.keys(idps)[0]}
