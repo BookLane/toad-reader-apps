@@ -67,11 +67,11 @@ const FileImporter = ({
 
       const checkForCancel = () => {
         // There is no straight forward way to detect the file selection was
-        // cancelled. So I do it this way, with a 300 ms delay to allow 
+        // cancelled. So I do it this way, with a 1000 ms delay to allow 
         // fileInput.onchange to first fire.
         setTimeout(() => {
           if(!filesSelected.current) onClose()
-        }, 300)
+        }, 1000)
       }
 
       window.addEventListener('focus', checkForCancel)
