@@ -367,14 +367,14 @@ export const isBeta = () => (
   )
 )
 
-export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
+export const getDataOrigin = ({ domain, protocol=`https`, env }={}) => {
 
-  if(__DEV__) {
+  if(env ? env === 'dev' : __DEV__) {
     // dev environment
     return `${protocol.replace(/s$/, '')}://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
   }
 
-  if(isStaging()) {
+  if(env ? env === 'staging' : isStaging()) {
     // staging environment
     return `${protocol}://${encodeDomain(domain)}.data.staging.toadreader.com`
   }
@@ -384,19 +384,19 @@ export const getDataOrigin = ({ domain, protocol=`https` }={}) => {
 
 }
 
-export const getIDPOrigin = ({ domain, protocol=`https`, noBeta }) => {
+export const getIDPOrigin = ({ domain, protocol=`https`, noBeta, env }) => {
 
-  if(__DEV__) {
+  if(env ? env === 'dev' : __DEV__) {
     // dev environment
     return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:19006`
   }
 
-  if(isStaging()) {
+  if(env ? env === 'staging' : isStaging()) {
     // staging environment
     return `${protocol}://${dashifyDomain(domain)}.staging.toadreader.com`
   }
 
-  if(isBeta() && !noBeta) {
+  if(env ? env === 'beta' : (isBeta() && !noBeta)) {
     // beta environment
     return `${protocol}://${dashifyDomain(domain)}.beta.toadreader.com`
   }

@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
 const AppMenu = ({
   onImportBooks,
   onReplaceExisting,
+  onShowEnvironmentUrls,
 
   accounts,
   idps,
@@ -333,6 +334,13 @@ const AppMenu = ({
         title: i18n("Replace an existing EPUB"),
         // icon: onDeviceIcon,
         onSelect: onReplaceExisting,
+        disabled: !online,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+      {
+        title: i18n("Show environment URLs"),
+        onSelect: onShowEnvironmentUrls,
         disabled: !online,
       },
     ]),

@@ -11,7 +11,7 @@ import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
-         isStaging, isBeta, dashifyDomain, getQueryString, getIDPOrigin } from "../../utils/toolbox"
+         isStaging, isBeta, dashifyDomain, getQueryString, getIDPOrigin, openURL } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
@@ -70,6 +70,9 @@ const styles = StyleSheet.create({
     color: 'rgba(0,0,0,.4)',
     marginBottom: 10,
   },
+  a: {
+    color: 'rgb(6,69,173)',
+  },
   exampleP: {
     color: 'rgba(0,0,0,.7)',
     fontSize: 12,
@@ -119,6 +122,7 @@ const Library = ({
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ importingBooks, setImportingBooks ] = useState(false)
   const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
+  const [ showEnvironmentUrls, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
@@ -380,6 +384,20 @@ const Library = ({
     [],
   )
 
+  const openEnvironmentUrlsDialog = useCallback(
+    () => {
+      setShowEnvironmentUrlsDialog(true)
+    },
+    [],
+  )
+
+  const closeEnvironmentUrlsDialog = useCallback(
+    () => {
+      setShowEnvironmentUrlsDialog(false)
+    },
+    [],
+  )
+
   const closeImportingBooks = useCallback(
     () => {
       setImportingBooks(false)
@@ -588,6 +606,7 @@ const Library = ({
             <AppMenu
               onImportBooks={openImportBooks}
               onReplaceExisting={openConfirmReplaceExisting}
+              onShowEnvironmentUrls={openEnvironmentUrlsDialog}
             />
           )
       }
@@ -693,6 +712,46 @@ const Library = ({
               {i18n("If you still wish to replace an EPUB, click confirm below and then upload an EPUB file whose ISBN, Title and Author match those of the existing book to be replaced.")}
             </Text>
           </>
+        }
+      />
+
+      <Dialog
+        open={!!showEnvironmentUrls}
+        title={i18n("Environment URLs")}
+        onClose={closeEnvironmentUrlsDialog}
+        message={
+          [
+            "staging",
+            "beta",
+            "production",
+          ].map(env => {
+            const { domain } = Object.values(idps)[0]
+            const url = getIDPOrigin({ domain, env })
+            const dataUrl = getDataOrigin({ domain, env })
+            return (
+              <View>
+                <View style={styles.p}>
+                  <Text style={styles.heading}>
+                    {env.toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.exampleP}>
+                  {i18n("Frontend")}
+                  {`\n`}
+                  <Text style={styles.a} onPress={() => openURL({ url, historyPush })}>
+                    {url}
+                  </Text>
+                </View>
+                <View style={styles.exampleP}>
+                  {i18n("Backend")}
+                  {`\n`}
+                  <Text style={styles.a} onPress={() => openURL({ url: dataUrl, historyPush })}>
+                    {dataUrl}
+                  </Text>
+                </View>
+              </View>
+            )
+          })
         }
       />
 
