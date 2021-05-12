@@ -1,23 +1,31 @@
 import { useEffect } from "react"
-// import { Notifications } from "expo"
+import * as Notifications from "expo-notifications"
 import useForceUpdate from "./useForceUpdate"
 
 // defined outside of the hook so that there is one universal listener and stack
 let notificationsStack = []
 let notificationsIndex = 0
-// Notifications.addListener(notification => {
-//   const index = notificationsIndex++
-//   notificationsStack = [
-//     ...notificationsStack,
-//     {
-//       ...notification,
-//       clear: () => {
-//         notificationsStack = notificationsStack.filter(n => n.index !== index)
-//       },
-//       index,
-//     },
-//   ]
-// })
+Notifications.addNotificationResponseReceivedListener(response => {
+  const index = notificationsIndex++
+  notificationsStack = [
+    ...notificationsStack,
+    {
+      ...response,
+      clear: () => {
+        notificationsStack = notificationsStack.filter(n => n.index !== index)
+      },
+      index,
+    },
+  ]
+})
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+})
 
 const usePushNotifications = () => {
 
@@ -25,8 +33,7 @@ const usePushNotifications = () => {
 
   useEffect(
     () => {
-      // const subscription = Notifications.addListener(forceUpdate)
-      // return subscription.remove
+      Notifications.addNotificationResponseReceivedListener(forceUpdate)
     },
     [],
   )

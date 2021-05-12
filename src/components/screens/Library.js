@@ -434,13 +434,10 @@ const Library = ({
     () => {
       if(notifications.length === 0) return
 
-      const { origin, clear, data } = notifications.slice(-1)[0] || {}
+      const { clear, notification } = notifications.slice(-1)[0] || {}
+      const { data } = notification.request.content
 
       clear()
-
-      if(origin !== 'selected') {
-        return
-      }
 
       const { bookId, classroomUid } = data || {}
 
