@@ -1,15 +1,10 @@
 import * as FileSystem from 'expo-file-system'
-import Constants from 'expo-constants'
 // import { i18n } from "inline-i18n"
 import { Platform } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox"
 import { cancelFetch } from "./zipDownloader"
-
-const {
-  REMOVE_ICON_COLOR,
-} = Constants.manifest.extra
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
