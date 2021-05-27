@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -36,121 +36,125 @@ const BookDownloader = ({
   const getBooks = useInstanceValue(books)
   const { historyPush } = useRouterState()
 
-  if(currentDownloadBookId) return null
-  if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return null
-  if(getDownloadPaused()) return null
+  useEffect(
+    () => {
+      ;(async () => {
 
-  const downloadWasCanceled = bookId => {
-    const { downloadStatus } = (getBooks() || {})[bookId] || {}
+        if(currentDownloadBookId) return
+        if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return
+        if(getDownloadPaused()) return
 
-    if(downloadStatus === 0) {
-      setCurrentDownloadBookId(null)
-      return true
-    }
+        const downloadWasCanceled = bookId => {
+          const { downloadStatus } = (getBooks() || {})[bookId] || {}
+      
+          if(downloadStatus === 0) {
+            setCurrentDownloadBookId(null)
+            return true
+          }
 
-    return false
-  }
+          return false
+        }
 
-  ;(async () => {
+        const bookId = bookDownloadQueue[0]
+        const { downloadStatus, title } = getBooks()[bookId] || {}
+        const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
 
-    const bookId = bookDownloadQueue[0]
-    const { downloadStatus, title } = getBooks()[bookId] || {}
-    const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
+        if(downloadStatus === 2 || !accountId) {
+          removeFromBookDownloadQueue({ bookId })
+          return
+        }
 
-    if(downloadStatus === 2 || !accountId) {
-      removeFromBookDownloadQueue({ bookId })
-      return
-    }
+        setCurrentDownloadBookId(bookId)
+        console.log(`Download book with bookId ${bookId}...`)
 
-    setCurrentDownloadBookId(bookId)
-    console.log(`Download book with bookId ${bookId}...`)
+        setDownloadStatus({ bookId, downloadStatus: 1 })
 
-    setDownloadStatus({ bookId, downloadStatus: 1 })
+        const markDownloadComplete = downloadStatus => {
+          setDownloadStatus({ bookId, downloadStatus })
+          removeFromBookDownloadQueue({ bookId })
+          setCurrentDownloadBookId(null)
+        }
 
-    const markDownloadComplete = downloadStatus => {
-      setDownloadStatus({ bookId, downloadStatus })
-      removeFromBookDownloadQueue({ bookId })
-      setCurrentDownloadBookId(null)
-    }
-
-    let throttleLastRan = 0
-    const { idpId } = getIdsFromAccountId(accountId)
-    const idp = idps[idpId]
-    const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
-    const cookie = (
-      __DEV__
-        ? accounts[accountId].cookie
-        : await getBookCookie({
-          books: getBooks(),
-          accounts,
-          idp,
-          setBookCookies,
-          bookId,
+        let throttleLastRan = 0
+        const { idpId } = getIdsFromAccountId(accountId)
+        const idp = idps[idpId]
+        const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
+        const cookie = (
+          __DEV__
+            ? accounts[accountId].cookie
+            : await getBookCookie({
+              books: getBooks(),
+              accounts,
+              idp,
+              setBookCookies,
+              bookId,
+            })
+        )
+        const zipFetchInfo = await fetchZipAndAssets({
+          zipUrl: `${downloadOrigin}/epub_content/book_${bookId}/book.epub`,
+          localBaseUri: `${getBooksDir()}${bookId}/`,
+          cookie,
+          progressCallback: progress => {
+            const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
+            setThrottleTimeout(() => {
+              setDownloadProgress({
+                bookId,
+                downloadProgress: parseInt(progress * 100, 10),
+              })
+            }, throttleWaitTime)
+          },
+          getDownloadPaused,
+          title,
+          requiresAuth: true,
         })
-    )
-    const zipFetchInfo = await fetchZipAndAssets({
-      zipUrl: `${downloadOrigin}/epub_content/book_${bookId}/book.epub`,
-      localBaseUri: `${getBooksDir()}${bookId}/`,
-      cookie,
-      progressCallback: progress => {
-        const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
-        setThrottleTimeout(() => {
+        if(getDownloadPaused()) {
+          console.log(`Download of book with bookId ${bookId} was deferred due to a book open.`)
           setDownloadProgress({
             bookId,
-            downloadProgress: parseInt(progress * 100, 10),
+            downloadProgress: 0,
           })
-        }, throttleWaitTime)
-      },
-      getDownloadPaused,
-      title,
-      requiresAuth: true,
-    })
-    if(getDownloadPaused()) {
-      console.log(`Download of book with bookId ${bookId} was deferred due to a book open.`)
-      setDownloadProgress({
-        bookId,
-        downloadProgress: 0,
-      })
-      setCurrentDownloadBookId(null)
-      return
-    }
-    if(downloadWasCanceled(bookId)) return  // check this after each await
-    if(zipFetchInfo.errorMessage) {
-      console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
-      historyPush("/error", {
-        title: zipFetchInfo.errorTitle,
-        message: zipFetchInfo.errorMessage,
-      })
-    }
-    if(zipFetchInfo.noAuth) {
-      // have them login again
-      updateAccount({
-        accountId,
-        accountInfo: {
-          needToLogInAgain: true
-        },
-      })
-    }
-    if(!zipFetchInfo.success) {
-      markDownloadComplete(0)
-      return
-    }
-    const { toc, spines, success } = await parseEpub({ bookId })
-    if(downloadWasCanceled(bookId)) return
-    if(!success) {
-      historyPush("/error", {
-        message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
-      })
-      markDownloadComplete(0)
-      return
-    }
+          setCurrentDownloadBookId(null)
+          return
+        }
+        if(downloadWasCanceled(bookId)) return  // check this after each await
+        if(zipFetchInfo.errorMessage) {
+          console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
+          historyPush("/error", {
+            title: zipFetchInfo.errorTitle,
+            message: zipFetchInfo.errorMessage,
+          })
+        }
+        if(zipFetchInfo.noAuth) {
+          // have them login again
+          updateAccount({
+            accountId,
+            accountInfo: {
+              needToLogInAgain: true
+            },
+          })
+        }
+        if(!zipFetchInfo.success) {
+          markDownloadComplete(0)
+          return
+        }
+        const { toc, spines, success } = await parseEpub({ bookId })
+        if(downloadWasCanceled(bookId)) return
+        if(!success) {
+          historyPush("/error", {
+            message: i18n("The EPUB for the book entitled \"{{title}}\" appears to be invalid.", { title }),
+          })
+          markDownloadComplete(0)
+          return
+        }
 
-    // If we get to this point, the download and parsing was successful
-    setTocAndSpines({ bookId, toc, spines })
-    markDownloadComplete(2)
-    console.log(`Done downloading book with bookId ${bookId}`)
+        // If we get to this point, the download and parsing was successful
+        setTocAndSpines({ bookId, toc, spines })
+        markDownloadComplete(2)
+        console.log(`Done downloading book with bookId ${bookId}`)
 
-  })()
+      })()
+    },
+  )
 
   return null
 }
