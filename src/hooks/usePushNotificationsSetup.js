@@ -3,7 +3,6 @@ import { Platform } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Notifications from "expo-notifications"
 import Constants from 'expo-constants'
-import * as Permissions from 'expo-permissions'
 
 import usePushToken, { PUSH_TOKEN_KEY } from './usePushToken'
 
@@ -18,11 +17,11 @@ const usePushNotificationsSetup = () => {
 
           if(pushToken === "none") {
 
-            const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+            const { status: existingStatus } = await Notifications.getPermissionsAsync()
             let finalStatus = existingStatus
 
             if(existingStatus !== 'granted') {
-              const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+              const { status } = await Notifications.requestPermissionsAsync()
               finalStatus = status
             }
 
