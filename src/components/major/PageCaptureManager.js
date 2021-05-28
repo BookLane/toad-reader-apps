@@ -66,11 +66,11 @@ const PageCaptureManager = ({
     [ books ],
   )
 
+  let spineToCaptureInfo
   pageCaptureProps.current = null
   if(bookId && books && books[bookId] && displaySettings && sidePanelSettings) {
 
     const { spines, downloadStatus} = books[bookId]
-    let spineToCaptureInfo
 
     if(downloadStatus === 2 && spines) {
 
@@ -104,8 +104,6 @@ const PageCaptureManager = ({
         }
       })
 
-      setCapturingSnapshots(!!spineToCaptureInfo)
-
       if(spineToCaptureInfo) {
         pageCaptureProps.current = {
           bookId,
@@ -123,6 +121,13 @@ const PageCaptureManager = ({
     }
 
   }
+
+  useEffect(
+    () => {
+      setCapturingSnapshots(!!spineToCaptureInfo)
+    },
+    [ !spineToCaptureInfo ],
+  )
 
   const setUpCaptureTimeout = () => {
     const uriAsKey = getSnapshotURI(pageCaptureProps.current)
