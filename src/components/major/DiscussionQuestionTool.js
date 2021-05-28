@@ -334,7 +334,7 @@ const DiscussionQuestionTool = React.memo(({
     [ viewingPreview ],
   )
 
-  const SendIcon = useCallback(style => <Icon name='md-send' style={styles.sendIcon} />, [])
+  const SendIcon = useCallback(({ style }) => <Icon name='md-send' style={styles.sendIcon} />, [])
 
   if(error) {
     return (

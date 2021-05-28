@@ -213,7 +213,7 @@ const EditToolData = React.memo(({
   const returnFalse = useCallback(() => false, [])
 
   const TrashButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         name="md-trash"
         style={styles.trashIcon}

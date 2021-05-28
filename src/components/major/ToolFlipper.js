@@ -122,7 +122,7 @@ const ToolFlipper = React.memo(({
   )
 
   const LeftButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         style={styles.icon}
         pack="fontAwesome"
@@ -133,7 +133,7 @@ const ToolFlipper = React.memo(({
   )
 
   const RightButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         style={styles.icon}
         pack="fontAwesome"

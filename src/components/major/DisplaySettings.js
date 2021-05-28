@@ -40,11 +40,6 @@ const styles = StyleSheet.create({
   addRemoveButton: {
     marginRight: 7,
   },
-  icon: {
-    height: 22,
-    marginHorizontal: 10,
-    tintColor: 'white',
-  },
 
   // radioLine: {
   //   flexDirection: 'row',
@@ -108,8 +103,8 @@ const DisplaySettings = React.memo(({
 
   // const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
-  const LessIcon = useCallback(style => <Icon name='md-remove' style={[ styles.icon, style ]} />, [])
-  const MoreIcon = useCallback(style => <Icon name='md-add' style={[ styles.icon, style ]} />, [])
+  const LessIcon = useCallback(({ style }) => <Icon name='md-remove' style={[ styles.icon, style ]} />, [])
+  const MoreIcon = useCallback(({ style }) => <Icon name='md-add' style={[ styles.icon, style ]} />, [])
   
   return (
     <>

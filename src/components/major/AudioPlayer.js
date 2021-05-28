@@ -183,10 +183,10 @@ const AudioPlayer = ({
 
   const percentage = Math.ceil(Math.min(positionMS / (durationMS || 1), 1) * 100)
 
-  const BackFiveIcon = useCallback(style => <Icon name='replay-5' pack="material" style={styles.icon} />, [])
-  const ForwardFiveIcon = useCallback(style => <Icon name='forward-5' pack="material" style={styles.icon} />, [])
-  const PlayIcon = useCallback(style => <Icon name='md-play' style={styles.bigIcon} />, [])
-  const PauseIcon = useCallback(style => <Icon name='md-pause' style={styles.bigIcon} />, [])
+  const BackFiveIcon = useCallback(({ style }) => <Icon name='replay-5' pack="material" style={styles.icon} />, [])
+  const ForwardFiveIcon = useCallback(({ style }) => <Icon name='forward-5' pack="material" style={styles.icon} />, [])
+  const PlayIcon = useCallback(({ style }) => <Icon name='md-play' style={styles.bigIcon} />, [])
+  const PauseIcon = useCallback(({ style }) => <Icon name='md-pause' style={styles.bigIcon} />, [])
 
   return (
     <View style={styles.container}>

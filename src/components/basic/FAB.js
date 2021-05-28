@@ -8,7 +8,6 @@ import Icon from "./Icon"
 
 const styles = StyleSheet.create({
   icon: {
-    tintColor: 'white',
     height: 28,
   },
   button: {
@@ -44,11 +43,12 @@ const FAB = ({
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
 
   const ButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         name={iconName}
         pack={iconPack}
         style={[
+          style,
           styles.icon,
           iconThemedStyle,
           iconStyle,

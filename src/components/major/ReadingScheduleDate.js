@@ -45,6 +45,9 @@ const styles = StyleSheet.create({
     width: 160,
     marginRight: 10,
   },
+  calendarIcon: {
+    height: 18,
+  },
   buttonContainer: {
     flexDirection: 'row',
     marginTop: 20,
@@ -271,7 +274,7 @@ const ReadingScheduleDate = React.memo(({
   )
 
   const EditButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         name="pencil"
         pack="materialCommunity"
@@ -282,7 +285,7 @@ const ReadingScheduleDate = React.memo(({
   )
 
   const TrashButtonIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         name="md-trash"
         style={styles.icon}
@@ -292,10 +295,13 @@ const ReadingScheduleDate = React.memo(({
   )
 
   const CalendarIcon = useCallback(
-    style => (
+    ({ style }) => (
       <Icon
         name="md-calendar"
-        style={style}
+        style={[
+          style,
+          styles.calendarIcon,
+        ]}
       />
     ),
     [],

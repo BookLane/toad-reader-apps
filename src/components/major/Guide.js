@@ -41,7 +41,7 @@ const Guide = ({
 
   const opacity = useRef(new Animated.Value(0)).current
 
-  const CheckIcon = useCallback(style => <Icon name="check" pack="materialCommunity" style={{ }} />, [])
+  const CheckIcon = useCallback(({ style }) => <Icon name="check" pack="materialCommunity" style={{ }} />, [])
 
   const [ setShowTimeout ] = useSetTimeout()
 
