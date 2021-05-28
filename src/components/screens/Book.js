@@ -217,6 +217,9 @@ const styles = StyleSheet.create({
   bottomNavigationTab: {
     paddingVertical: 4,
   },
+  tabsIcon: {
+    height: 24,
+  },
   backToReading: {
     position: 'absolute',
     left: 0,
@@ -337,10 +340,10 @@ const Book = React.memo(({
     [ latest_location ]
   )
 
-  const BackToReadingIcon = useCallback(style => <Icon name='book-open-variant' pack="materialCommunity" style={styles.tabsIcon} />, [])
-  const ThumbnailsIcon = useCallback(style => <Icon name='apps' pack='materialCommunity' style={styles.tabsIcon} />, [])
-  const ContentsIcon = useCallback(style => <Icon name='md-reader-sharp' style={styles.tabsIcon} />, [])
-  const SearchIcon = useCallback(style => <Icon name='md-search-sharp' style={styles.tabsIcon} />, [])
+  const BackToReadingIcon = useCallback(({ style }) => <Icon name='book-open-variant' pack="materialCommunity" style={[ styles.tabsIcon, style ]} />, [])
+  const ThumbnailsIcon = useCallback(({ style }) => <Icon name='apps' pack='materialCommunity' style={[ styles.tabsIcon, style ]} />, [])
+  const ContentsIcon = useCallback(({ style }) => <Icon name='md-reader-sharp' style={[ styles.tabsIcon, style ]} />, [])
+  const SearchIcon = useCallback(({ style }) => <Icon name='md-search-sharp' style={[ styles.tabsIcon, style ]} />, [])
 
   const tabs = useMemo(
     () => [
@@ -351,7 +354,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="thumbnails"
             title={i18n("Thumbnails")}
-            accessoryLeft={ThumbnailsIcon}
+            icon={ThumbnailsIcon}
           />
         ),
       }]),
@@ -362,7 +365,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="contents"
             title={i18n("Contents")}
-            accessoryLeft={ContentsIcon}
+            icon={ContentsIcon}
           />
         ),
       }]),
@@ -373,7 +376,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="search"
             title={i18n("Search")}
-            accessoryLeft={SearchIcon}
+            icon={SearchIcon}
           />
         ),
       }]),
@@ -1106,7 +1109,7 @@ const Book = React.memo(({
             <View style={styles.bottomNavigationContainer}>
               <BottomNavigationTab
                 key="backToReading"
-                accessoryLeft={BackToReadingIcon}
+                icon={BackToReadingIcon}
                 style={styles.backToReading}
                 onSelect={backToReading}
               />
