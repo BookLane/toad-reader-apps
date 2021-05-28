@@ -438,7 +438,7 @@ const DiscussionQuestionTool = React.memo(({
           <Button
             style={styles.sendButton}
             appearance="ghost"
-            icon={SendIcon}
+            accessoryLeft={SendIcon}
             onPress={sendNewResponse}
             disabled={!newResponseValue.trim()}
           />

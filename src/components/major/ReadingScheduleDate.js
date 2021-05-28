@@ -332,14 +332,14 @@ const ReadingScheduleDate = React.memo(({
                 style={styles.button}
                 appearance="ghost"
                 status="basic"
-                icon={EditButtonIcon}
+                accessoryLeft={EditButtonIcon}
                 onPress={goEdit}
               />
               <Button
                 style={styles.button}
                 appearance="ghost"
                 status="basic"
-                icon={TrashButtonIcon}
+                accessoryLeft={TrashButtonIcon}
                 onPress={goDelete}
               />
             </View>
@@ -376,7 +376,7 @@ const ReadingScheduleDate = React.memo(({
                 min={today}
                 max={new Date(Date.now() + (1000*60*60*24*265*10))}
                 onSelect={goSetDate}
-                icon={CalendarIcon}
+                accessoryLeft={CalendarIcon}
                 style={styles.datePickerItem}
               />
               <Input
@@ -399,12 +399,13 @@ const ReadingScheduleDate = React.memo(({
                   >
                     <CheckBox
                       id={idref}
-                      text={label}
                       checked={checkedSpines[idref]}
                       disabled={spineIdRefsAssignedToOtherDueDates.includes(idref)}
                       onChangeInfo={onCheckBoxChangeInfo}
                       style={styles.checkBox}
-                    />
+                    >
+                      {label}
+                    </CheckBox>
                   </View>
                 ))}
               </ScrollView>

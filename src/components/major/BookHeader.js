@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu, MenuItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
 
@@ -142,7 +142,7 @@ const BookHeader = React.memo(({
   ]
 
   const selectOption = useCallback(
-    selectedIndex => {
+    ({ row: selectedIndex }) => {
       const { onPress } = moreOptions[selectedIndex]
       if(onPress) {
         onPress()
@@ -175,19 +175,26 @@ const BookHeader = React.memo(({
     />,
     ...(moreOptions.length === 0 ? [] : [
       <OverflowMenu
-        data={moreOptions}
         visible={showOptions}
         onSelect={selectOption}
         onBackdropPress={toggleShowOptions}
         placement='bottom end'
         style={styles.optionsMenu}
+        anchor={() => (
+          <HeaderIcon
+            iconName="dots-vertical"
+            iconPack="materialCommunity"
+            onPress={toggleShowOptions}
+            uiStatus={wideMode ? "faded" : null}
+          />
+        )}
       >
-        <HeaderIcon
-          iconName="dots-vertical"
-          iconPack="materialCommunity"
-          onPress={toggleShowOptions}
-          uiStatus={wideMode ? "faded" : null}
-        />
+        {moreOptions.map(({ title }, idx) => (
+          <MenuItem
+            key={idx}
+            title={title}
+          />
+        ))}
       </OverflowMenu>,
     ]),
     // ...(!(wideMode && Platform.OS !== 'web') ? [] : [

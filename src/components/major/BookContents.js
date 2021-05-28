@@ -235,7 +235,7 @@ const BookContents = React.memo(({
   )
 
   const renderItem = useCallback(
-    ({ item }, index) => {
+    ({ item, index }) => {
 
       const selected = item.toolType
         ? (item.uid === selectedToolUid)

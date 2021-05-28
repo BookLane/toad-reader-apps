@@ -351,7 +351,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="thumbnails"
             title={i18n("Thumbnails")}
-            icon={ThumbnailsIcon}
+            accessoryLeft={ThumbnailsIcon}
           />
         ),
       }]),
@@ -362,7 +362,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="contents"
             title={i18n("Contents")}
-            icon={ContentsIcon}
+            accessoryLeft={ContentsIcon}
           />
         ),
       }]),
@@ -373,7 +373,7 @@ const Book = React.memo(({
             style={styles.bottomNavigationTab}
             key="search"
             title={i18n("Search")}
-            icon={SearchIcon}
+            accessoryLeft={SearchIcon}
           />
         ),
       }]),
@@ -1106,7 +1106,7 @@ const Book = React.memo(({
             <View style={styles.bottomNavigationContainer}>
               <BottomNavigationTab
                 key="backToReading"
-                icon={BackToReadingIcon}
+                accessoryLeft={BackToReadingIcon}
                 style={styles.backToReading}
                 onSelect={backToReading}
               />

@@ -190,10 +190,20 @@ const QuizTool = React.memo(({
                     <Radio
                       key={`${origQuestionIdx}-${origAnswerIdx}`}
                       style={submittedAndCorrect ? styles.correctRadio : styles.radio}
-                      textStyle={styles.choice}
-                      text={answer}
                       disabled={currentQuestionSubmitted && answersSelection !== origAnswerIdx}
-                    />
+                    >
+                      {eva => (
+                        <Text
+                          {...eva}
+                          style={[
+                            eva.style,
+                            styles.choice,
+                          ]}
+                        >
+                          {answer}
+                        </Text>
+                      )}
+                    </Radio>
                   )
               })}
               </RadioGroup>

@@ -67,8 +67,10 @@ const GroupedToolsChip = ({
 
   setSelectedToolUid,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 }) => {
 
   const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
@@ -130,32 +132,34 @@ const GroupedToolsChip = ({
     <Popover
       visible={showTools}
       placement="left"
-      content={content}
       onBackdropPress={toggleShowTools}
       style={styles.popover}
-    >
-      <TouchableWithoutFeedback onPress={toggleShowTools}>
-        <View
-          {...themedStateEvents}
-          style={[
-            styles.numWithinContainer,
-            baseThemedStyle,
-            (showTools ? selectedThemedStyle : null),
-            style,
-          ]}
-        >
-          <Text
+      anchor={() => (
+        <TouchableWithoutFeedback onPress={toggleShowTools}>
+          <View
+            {...themedStateEvents}
             style={[
-              styles.numWithin,
-              labelThemedStyle,
-              (showTools ? selectedLabelThemedStyle : null),
+              styles.numWithinContainer,
+              baseThemedStyle,
+              (showTools ? selectedThemedStyle : null),
               style,
             ]}
           >
-            {numToolsWithin}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
+            <Text
+              style={[
+                styles.numWithin,
+                labelThemedStyle,
+                (showTools ? selectedLabelThemedStyle : null),
+                style,
+              ]}
+            >
+              {numToolsWithin}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
+    >
+      {content}
     </Popover>
   )
 }
@@ -169,6 +173,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
 }, dispatch)
 
-GroupedToolsChip.styledComponentName = 'GroupedToolsChip'
-
-export default connect(mapStateToProps, matchDispatchToProps)(styled(GroupedToolsChip))
+export default connect(mapStateToProps, matchDispatchToProps)(styled('GroupedToolsChip')(GroupedToolsChip))

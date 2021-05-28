@@ -12,7 +12,9 @@ const BookInfoAuthor = ({
   children,
   style,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => (
   <Text
     style={[
@@ -25,6 +27,4 @@ const BookInfoAuthor = ({
   </Text>
 )
 
-BookInfoAuthor.styledComponentName = 'BookInfoAuthor'
-
-export default styled(BookInfoAuthor)
+export default styled('BookInfoAuthor')(BookInfoAuthor)

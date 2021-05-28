@@ -81,7 +81,7 @@ const Guide = ({
         <Button
           style={styles.button}
           status="primary"
-          icon={CheckIcon}
+          accessoryLeft={CheckIcon}
           onPress={markComplete}
         >
           {i18n("Okay")}

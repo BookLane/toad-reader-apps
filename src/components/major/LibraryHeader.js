@@ -3,7 +3,7 @@ import { Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
-import { OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu, MenuItem, IndexPath } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
 
 import { getIdsFromAccountId } from "../../utils/toolbox"
@@ -102,7 +102,7 @@ const LibraryHeader = ({
   const moreKeys = moreOptions.map(({ key }) => key)
 
   const selectSort = useCallback(
-    selectedIndex => {
+    ({ row: selectedIndex }) => {
       setSort({ sort: moreKeys[selectedIndex] })
       // setShowOptions(false)
     },
@@ -153,18 +153,25 @@ const LibraryHeader = ({
             onPress={onPressToggleView}
           />,
           <OverflowMenu
-            data={moreOptions}
             visible={showOptions}
-            selectedIndex={moreKeys.indexOf(library.sort)}
+            selectedIndex={new IndexPath(moreKeys.indexOf(library.sort))}
             onSelect={selectSort}
             onBackdropPress={toggleShowOptions}
             placement='bottom end'
+            anchor={() => (
+              <HeaderIcon
+                iconName="sort"
+                iconPack="materialCommunity"
+                onPress={toggleShowOptions}
+              />
+            )}
           >
-            <HeaderIcon
-              iconName="sort"
-              iconPack="materialCommunity"
-              onPress={toggleShowOptions}
-            />
+            {moreOptions.map(({ title }, idx) => (
+              <MenuItem
+                key={idx}
+                title={title}
+              />
+            ))}
           </OverflowMenu>,
         ]}
       />

@@ -16,8 +16,10 @@ const ActionText = React.memo(({
   style,
   onPress,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 
   ...otherProps
 }) => {
@@ -49,6 +51,4 @@ const ActionText = React.memo(({
   )
 })
 
-ActionText.styledComponentName = 'ActionText'
-
-export default styled(ActionText)
+export default styled('ActionText')(ActionText)

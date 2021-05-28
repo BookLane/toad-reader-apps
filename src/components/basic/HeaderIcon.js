@@ -27,8 +27,10 @@ const HeaderIcon = React.forwardRef(({
   style,
   iconStyle,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 
   ...otherProps
 }, ref) => {
@@ -68,6 +70,4 @@ const HeaderIcon = React.forwardRef(({
   )
 })
 
-HeaderIcon.styledComponentName = 'HeaderIcon'
-
-export default styled(HeaderIcon)
+export default styled('HeaderIcon')(HeaderIcon)

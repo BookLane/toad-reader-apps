@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, View, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Select } from "@ui-kitten/components"
+import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
 import { i18n } from "inline-i18n"
 
@@ -132,9 +132,16 @@ const EditTool = React.memo(({
   )
 
   const onSelectToolType = useCallback(
-    ({ toolType }) => goUpdateTool({ toolType, data: {} }),
-    [ goUpdateTool ],
+    ({ row: index }) => (
+      goUpdateTool({
+        toolType: toolTypes[index].toolType,
+        data: {},
+      })
+    ),
+    [ goUpdateTool, toolTypes ],
   )
+
+  const selectedOption = toolTypes.filter(({ toolType }) => toolType === tool.toolType)[0]
 
   return (
     <>
@@ -167,11 +174,18 @@ const EditTool = React.memo(({
             <Select
               key={tool.uid}
               label={i18n("Tool type", "", "enhanced")}
-              data={toolTypes}
-              selectedOption={toolTypes.filter(({ toolType }) => toolType === tool.toolType)[0]}
+              value={selectedOption.text}
+              selectedIndex={new IndexPath(toolTypes.indexOf(selectedOption))}
               onSelect={onSelectToolType}
               disabled={Object.keys(tool.data || {}).length > 0}
-            />
+            >
+              {toolTypes.map(({ text }, idx) => (
+                <SelectItem
+                  key={idx}
+                  title={text}
+                />
+              ))}
+            </Select>
           </View>
         </View>
         <StatusAndActions

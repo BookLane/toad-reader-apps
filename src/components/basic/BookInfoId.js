@@ -14,7 +14,9 @@ const BookInfoId = ({
   id,
   style,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => (
   <Text
     style={[
@@ -27,6 +29,4 @@ const BookInfoId = ({
   </Text>
 )
 
-BookInfoId.styledComponentName = 'BookInfoId'
-
-export default styled(BookInfoId)
+export default styled('BookInfoId')(BookInfoId)

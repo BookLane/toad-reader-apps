@@ -54,34 +54,36 @@ const SaveStateHeaderIcon = React.memo(({
   return (
     <Tooltip
       visible={showSyncStatus}
-      text={syncStatusMessages[syncStatus]}
       onBackdropPress={toggleShowSyncStatus}
       style={styles.tooltip}
-    >
-      <TouchableOpacity
-        onPress={toggleShowSyncStatus}
-        style={style}
-      >
-        <HeaderIcon
-          iconName={syncStatusIconName[syncStatus] || "check"}
-          iconPack="materialCommunity"
+      anchor={() => (
+        <TouchableOpacity
           onPress={toggleShowSyncStatus}
-          uiStatus={
-            syncStatusUIStatus[syncStatus]
-            || (
-              wideMode
-                ? "faded"
-                : null
-            )
-          }
-        />
-        {[ 'patching', 'refreshing' ].includes(syncStatus) &&
-          <CoverAndSpin
-            size="small"
-            style={styles.spin}
+          style={style}
+        >
+          <HeaderIcon
+            iconName={syncStatusIconName[syncStatus] || "check"}
+            iconPack="materialCommunity"
+            onPress={toggleShowSyncStatus}
+            uiStatus={
+              syncStatusUIStatus[syncStatus]
+              || (
+                wideMode
+                  ? "faded"
+                  : null
+              )
+            }
           />
-        }
-      </TouchableOpacity>
+          {[ 'patching', 'refreshing' ].includes(syncStatus) &&
+            <CoverAndSpin
+              size="small"
+              style={styles.spin}
+            />
+          }
+        </TouchableOpacity>
+      )}
+    >
+      {syncStatusMessages[syncStatus]}
     </Tooltip>
   )
 })

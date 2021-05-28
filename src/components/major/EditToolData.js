@@ -295,7 +295,7 @@ const EditToolData = React.memo(({
                     style={styles.trashButton}
                     appearance="ghost"
                     status="basic"
-                    icon={TrashButtonIcon}
+                    accessoryLeft={TrashButtonIcon}
                     onPress={onDeleteArrayItem}
                   />
                 }
@@ -339,7 +339,7 @@ const EditToolData = React.memo(({
                   style={disabled ? styles.disabledTrashButton : styles.trashButton}
                   appearance="ghost"
                   status="basic"
-                  icon={TrashButtonIcon}
+                  accessoryLeft={TrashButtonIcon}
                   disabled={disabled}
                   onPress={onDeleteArrayItem}
                 />
@@ -365,10 +365,11 @@ const EditToolData = React.memo(({
                 <CheckBox
                   id={id}
                   // style={styles.checkbox}
-                  text={label}
                   checked={!!dataSegment[name]}
                   onChangeInfo={onChangeInfo}
-                />
+                >
+                  {label}
+                </CheckBox>
               </View>
             </View>
           )

@@ -25,7 +25,9 @@ const InstructorsHighlightLabel = ({
   style,
   iconStyle,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => {
 
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
@@ -55,6 +57,4 @@ const InstructorsHighlightLabel = ({
 
 }
 
-InstructorsHighlightLabel.styledComponentName = 'InstructorsHighlightLabel'
-
-export default styled(InstructorsHighlightLabel)
+export default styled('InstructorsHighlightLabel')(InstructorsHighlightLabel)

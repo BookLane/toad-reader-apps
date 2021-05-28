@@ -219,10 +219,11 @@ const BookInfo = ({
               <>
                 <View style={styles.checkBoxContainer}>
                   <CheckBox
-                    text={i18n("Accessible to all users")}
                     checked={!!(adminInfo && (adminInfo.subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1))}
                     onChange={setDefaultSubscription}
-                  />
+                  >
+                    {i18n("Accessible to all users")}
+                  </CheckBox>
                 </View>
                 <View style={styles.buttonContainer}>
                   <Button

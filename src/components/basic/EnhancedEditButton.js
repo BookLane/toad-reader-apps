@@ -28,8 +28,10 @@ const EnhancedEditButton = React.memo(({
   style,
   iconStyle,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 }) => {
 
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
@@ -72,6 +74,4 @@ const EnhancedEditButton = React.memo(({
 
 })
 
-EnhancedEditButton.styledComponentName = 'EnhancedEditButton'
-
-export default styled(EnhancedEditButton)
+export default styled('EnhancedEditButton')(EnhancedEditButton)

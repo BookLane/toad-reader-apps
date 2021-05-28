@@ -61,8 +61,10 @@ const ToolChip = React.memo(({
   labelStyle,
   type,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 }) => {
 
   const [ hideTool, setHideTool ] = useState(false)
@@ -143,6 +145,4 @@ const ToolChip = React.memo(({
   )
 })
 
-ToolChip.styledComponentName = 'ToolChip'
-
-export default styled(ToolChip)
+export default styled('ToolChip')(ToolChip)

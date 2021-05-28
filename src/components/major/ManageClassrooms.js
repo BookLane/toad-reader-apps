@@ -181,7 +181,7 @@ const ManageClassrooms = React.memo(({
                   {!iAmTheLoneInstructor &&
                     <Button
                       id={uid}
-                      icon={ExitIcon}
+                      accessoryLeft={ExitIcon}
                       size="small"
                       status="basic"
                       appearance="ghost"
@@ -192,7 +192,7 @@ const ManageClassrooms = React.memo(({
                   {myRole === 'INSTRUCTOR' &&
                     <Button
                       id={uid}
-                      icon={TrashIcon}
+                      accessoryLeft={TrashIcon}
                       size="small"
                       status="basic"
                       appearance="ghost"

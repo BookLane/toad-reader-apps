@@ -1,8 +1,11 @@
 import React, { useCallback } from "react"
-import { StyleSheet, Platform } from "react-native"
+import { StyleSheet, Platform, Text } from "react-native"
 import { Input as UIKittenInput } from "@ui-kitten/components"
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 4,
+  },
   inputText: {
     ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
   },
@@ -19,6 +22,7 @@ const Input = React.memo(({
   style,
   textStyle,
   labelStyle,
+  label,
   forwardRef,
   ...otherProps
  }) => {
@@ -44,10 +48,20 @@ const Input = React.memo(({
         styles.inputText,
         textStyle,
       ]}
-      labelStyle={[
-        styles.inputLabel,
-        labelStyle,
-      ]}
+      {...(!label ? {} : {
+        label: eva => (
+          <Text
+            {...eva}
+            style={[
+              eva.style,
+              styles.inputLabel,
+              labelStyle,
+            ]}
+          >
+            {label}
+          </Text>
+        )
+      })}
       onChangeText={customOnChangeText}
       ref={forwardRef}
     />

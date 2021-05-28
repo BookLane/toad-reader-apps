@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
-import { Select } from "@ui-kitten/components"
+import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -145,7 +145,7 @@ const EnhancedReflectionQuestions = React.memo(({
             questions.forEach(question => {
               orderedQuestions.push({
                 ...question,
-                text: question.name || i18n("Question", "", "enhanced"),
+                title: question.name || i18n("Question", "", "enhanced"),
               })
             })
           })
@@ -164,7 +164,7 @@ const EnhancedReflectionQuestions = React.memo(({
           [
             i18n("Student", "", "enhanced"),
             i18n("Email", "", "enhanced"),
-            ...orderedQuestions.map(({ text, question }) => `${text}\n${question}`),
+            ...orderedQuestions.map(({ title, question }) => `${title}\n${question}`),
           ],
           ...students.map(({ user_id, fullname, email }, idx) => ([
             fullname,
@@ -180,7 +180,10 @@ const EnhancedReflectionQuestions = React.memo(({
     [ students, data, spines ],
   )
 
-  const onSelect = useCallback(({ uid }) => setCurrentQuestionUid(uid), [])
+  const onSelect = useCallback(
+    ({ row: index }) => setCurrentQuestionUid(orderedQuestions[index].uid),
+    [ orderedQuestions ],
+  )
 
   if(!classroomUid) return null
 
@@ -228,10 +231,17 @@ const EnhancedReflectionQuestions = React.memo(({
         <Select
           label={i18n("Question name", "", "enhanced")}
           style={styles.select}
-          data={orderedQuestions}
-          selectedOption={currentQuestion}
+          value={currentQuestion.title}
+          selectedIndex={new IndexPath(orderedQuestions.indexOf(currentQuestion))}
           onSelect={onSelect}
-        />
+        >
+          {orderedQuestions.map(({ title }, idx) => (
+            <SelectItem
+              key={idx}
+              title={title}
+            />
+          ))}
+        </Select>
       </View>
       <Text style={wideMode ? styles.questionWideMode : styles.question}>
         {currentQuestion.question}

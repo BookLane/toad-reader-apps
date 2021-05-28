@@ -62,7 +62,9 @@ const AppHeader = ({
   style,
   labelStyle,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => {
 
   const { baseThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
@@ -124,6 +126,4 @@ const AppHeader = ({
   )
 }
 
-AppHeader.styledComponentName = 'AppHeader'
-
-export default styled(AppHeader)
+export default styled('AppHeader')(AppHeader)

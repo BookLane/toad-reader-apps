@@ -75,8 +75,10 @@ const BookContentsLine = ({
 
   setSelectedToolUid,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 }) => {
 
   const { scheduleDatesToDisplay } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
@@ -214,6 +216,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setSelectedToolUid,
 }, dispatch)
 
-BookContentsLine.styledComponentName = 'BookContentsLine'
-
-export default connect(mapStateToProps, matchDispatchToProps)(styled(BookContentsLine))
+export default connect(mapStateToProps, matchDispatchToProps)(styled('BookContentsLine')(BookContentsLine))

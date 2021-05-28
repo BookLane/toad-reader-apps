@@ -3,9 +3,9 @@ import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
-import { Select } from "@ui-kitten/components"
+import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
-import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
 
@@ -100,7 +100,7 @@ const EnhancedDiscussionQuestions = React.memo(({
           questions.forEach(question => {
             orderedQuestions.push({
               ...question,
-              text: question.name || i18n("Question", "", "enhanced"),
+              title: question.name || i18n("Question", "", "enhanced"),
             })
           })
         })
@@ -112,14 +112,14 @@ const EnhancedDiscussionQuestions = React.memo(({
   )
 
   const onSelect = useCallback(
-    questionOrQuestions => (
+    selectionInfo => (
       setCurrentQuestionUids(
         wideMode
-          ? questionOrQuestions.map(({ uid }) => uid).slice(-3)
-          : [ questionOrQuestions.uid ]
+          ? selectionInfo.map(({ row }) => orderedQuestions[row].uid).slice(-3)
+          : [ orderedQuestions[selectionInfo.row].uid ]
       )
     ),
-    [ wideMode ],
+    [ wideMode, orderedQuestions ],
   )
 
   const currentQuestions = useMemo(
@@ -141,18 +141,31 @@ const EnhancedDiscussionQuestions = React.memo(({
     )
   }
 
+  const selectedOptions = wideMode ? currentQuestions : currentQuestions[0]
+
   return (
     <View style={styles.container}>
       <View style={wideMode ? styles.selectContainerWideMode : styles.selectContainer}>
         <Select
           label={wideMode ? i18n("Questions to display", "", "enhanced") : i18n("Question", "", "enhanced")}
-          placeholder={wideMode ? i18n("Select up to three", "", "enhanced") : ""}
+          placeholder={wideMode ? i18n("Select up to three", "", "enhanced") : i18n("Select a question", "", "enhanced") }
           style={styles.select}
-          data={orderedQuestions}
           multiSelect={wideMode}
-          selectedOption={wideMode ? currentQuestions : currentQuestions[0]}
+          value={wideMode ? combineItems(...selectedOptions.map(({ title }) => title)) : (selectedOptions || {}).title}
+          selectedIndex={
+            wideMode
+              ? selectedOptions.map(selectedOption => new IndexPath(orderedQuestions.indexOf(selectedOption)))
+              : (selectedOptions ? new IndexPath(orderedQuestions.indexOf(selectedOptions)) : undefined)
+          }
           onSelect={onSelect}
-        />
+        >
+          {orderedQuestions.map(({ title }, idx) => (
+            <SelectItem
+              key={idx}
+              title={title}
+            />
+          ))}
+        </Select>
       </View>
       <View style={styles.discussionsContainer}>
         {(wideMode ? currentQuestions : currentQuestions.slice(0, 1)).map(({ uid, question }, idx) => (

@@ -8,6 +8,7 @@ import Icon from "./Icon"
 
 const styles = StyleSheet.create({
   icon: {
+    tintColor: 'white',
     height: 28,
   },
   button: {
@@ -35,7 +36,9 @@ const FAB = ({
   status,
   onPress,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => {
 
   const { baseThemedStyle, iconThemedStyle } = useThemedStyleSets(themedStyle)
@@ -62,13 +65,11 @@ const FAB = ({
         baseThemedStyle,
         style,
       ]}
-      icon={ButtonIcon}
+      accessoryLeft={ButtonIcon}
       status={status}
       onPress={onPress}
     />
   )
 }
 
-FAB.styledComponentName = 'FAB'
-
-export default styled(FAB)
+export default styled('FAB')(FAB)

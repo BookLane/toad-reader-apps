@@ -207,7 +207,7 @@ const ToolFlipper = React.memo(({
               onPress={() => onPageChange(pageIndex - 1)}
               appearance="ghost"
               style={styles.leftButton}
-              icon={LeftButtonIcon}
+              accessoryLeft={LeftButtonIcon}
             />
           </View>
           <View style={styles.rightButtonContainer}>
@@ -215,7 +215,7 @@ const ToolFlipper = React.memo(({
               onPress={() => onPageChange(pageIndex + 1)}
               appearance="ghost"
               style={styles.rightButton}
-              icon={RightButtonIcon}
+              accessoryLeft={RightButtonIcon}
             />
           </View>
         </>

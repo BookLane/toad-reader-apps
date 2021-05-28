@@ -41,7 +41,9 @@ const styles = StyleSheet.create({
     marginRight: 7,
   },
   icon: {
-    fontSize: 22,
+    height: 22,
+    marginHorizontal: 10,
+    tintColor: 'white',
   },
 
   // radioLine: {
@@ -106,8 +108,8 @@ const DisplaySettings = React.memo(({
 
   // const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
-  const LessIcon = useCallback(style => <Icon name='md-remove' style={style} />, [])
-  const MoreIcon = useCallback(style => <Icon name='md-add' style={style} />, [])
+  const LessIcon = useCallback(style => <Icon name='md-remove' style={[ styles.icon, style ]} />, [])
+  const MoreIcon = useCallback(style => <Icon name='md-add' style={[ styles.icon, style ]} />, [])
   
   return (
     <>
@@ -124,12 +126,12 @@ const DisplaySettings = React.memo(({
                 <Button
                   status='primary'
                   style={styles.addRemoveButton}
-                  icon={LessIcon}
+                  accessoryLeft={LessIcon}
                   onPress={decreaseTextSize}
                 />
                 <Button
                   style={styles.addRemoveButton}
-                  icon={MoreIcon}
+                  accessoryLeft={MoreIcon}
                   onPress={increaseTextSize}
                 />
               </View>
@@ -167,7 +169,7 @@ const DisplaySettings = React.memo(({
                       <Radio
                         style={styles.radio}
                         selected={theme === themeOption.id}
-                      />
+                      />  See other Radio's for syntax
                       <Text>{themeOption.label}</Text>
                     </View>
                   </TouchableComponent>

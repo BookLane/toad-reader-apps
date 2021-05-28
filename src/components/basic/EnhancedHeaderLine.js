@@ -45,8 +45,10 @@ const EnhancedHeaderLine = React.memo(({
   iconStyle,
   labelStyle,
 
-  themedStyle,
-  dispatch,
+  eva: {
+    style: themedStyle,
+    dispatch,
+  }={},
 }) => {
 
   const { baseThemedStyle, iconThemedStyle, labelThemedStyle } = useThemedStyleSets(themedStyle)
@@ -108,6 +110,4 @@ const EnhancedHeaderLine = React.memo(({
 
 })
 
-EnhancedHeaderLine.styledComponentName = 'EnhancedHeaderLine'
-
-export default styled(EnhancedHeaderLine)
+export default styled('EnhancedHeaderLine')(EnhancedHeaderLine)

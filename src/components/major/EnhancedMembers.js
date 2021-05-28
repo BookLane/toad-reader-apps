@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -69,36 +69,40 @@ const EnhancedMembers = React.memo(({
 
   const RemoveIcon = useCallback(style => <Icon name='md-remove-circle' style={styles.removeIcon} />, [])
   
-  const renderIcon = useCallback(
-    (style, index) => (
-      <Button
-        id={index}
-        style={style}
-        size="small"
-        status="basic"
-        icon={RemoveIcon}
-        appearance="ghost"
-        onPress={onDelete}
-      />
-    ),
-    [ onDelete ],
-  )
-
   const renderItem = useCallback(
-    ({ item }) => (
+    ({ item, index }) => (
       <ListItem
         style={wideMode ? styles.listItemWideMode : styles.listItem}
         title={i18n("{{fullname}} ({{email}})", "", "enhanced", item)}
-        description={
-          item.role === 'INSTRUCTOR'
-            ? i18n("Instructor", "", "enhanced")
-            : i18n("Student", "", "enhanced")
-        }
-        descriptionStyle={item.role === 'INSTRUCTOR' ? styles.instructor : null}
-        icon={renderIcon}
+        description={eva => (
+          <Text
+            {...eva}
+            style={[
+              eva.style,
+              item.role === 'INSTRUCTOR' ? styles.instructor : null,
+            ]}
+          >
+            {
+              item.role === 'INSTRUCTOR'
+                ? i18n("Instructor", "", "enhanced")
+                : i18n("Student", "", "enhanced")
+            }
+          </Text>
+        )}
+        accessoryLeft={({ style }) => (
+          <Button
+            id={index}
+            style={style}
+            size="small"
+            status="basic"
+            accessoryLeft={RemoveIcon}
+            appearance="ghost"
+            onPress={onDelete}
+          />
+        )}
       />
     ),
-    [ renderIcon ],
+    [ onDelete ],
   )
 
   return (

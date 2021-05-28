@@ -130,9 +130,19 @@ const PollTool = React.memo(({
               <Radio
                 key={idx}
                 style={styles.radio}
-                textStyle={styles.choice}
-                text={choice}
-              />
+              >
+                {eva => (
+                  <Text
+                    {...eva}
+                    style={[
+                      eva.style,
+                      styles.choice,
+                    ]}
+                  >
+                    {choice}
+                  </Text>
+                )}
+              </Radio>
             ))}
           </RadioGroup>
         </View>

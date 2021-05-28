@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
-import { Select } from "@ui-kitten/components"
+import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems, getIDPOrigin } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -199,21 +199,23 @@ const Highlights = React.memo(({
     () => ([
       {
         id: "user",
-        text: i18n("My highlights", "", "enhanced"),
+        title: i18n("My highlights", "", "enhanced"),
       },
       ...(!(!enhancedIsOff && !isDefaultClassroom) ? [] : [{
         id: "instructor",
-        text: i18n("Instructor’s highlights", "", "enhanced"),
+        title: i18n("Instructor’s highlights", "", "enhanced"),
       }]),
       // {
       //   id: "classroom",
-      //   text: i18n("Classroom highlights", "", "enhanced"),
+      //   title: i18n("Classroom highlights", "", "enhanced"),
       // },
     ]),
     [ enhancedIsOff, isDefaultClassroom ],
   )
   
-  const [ selectedOptions, setSelectedOptions ] = useState(selectOptions)
+  const [ selectedIndexes, setSelectedIndexes ] = useState(
+    selectOptions.map((x, idx) => new IndexPath(idx))
+  )
 
   const spineLabelsByIdRef = useMemo(
     () => {
@@ -262,7 +264,7 @@ const Highlights = React.memo(({
         return highlightsByLoc[spineIdRef].highlightsByCfi[cfi]
       }
 
-      if(selectedOptions.some(({ id }) => id === 'user')) {
+      if(selectedIndexes.some(({ row }) => selectOptions[row].id === 'user')) {
         // put in user
         ;((userDataByBookId[bookId] || {}).highlights || [])
           .filter(({ _delete }) => !_delete)
@@ -278,7 +280,7 @@ const Highlights = React.memo(({
           })
       }
 
-      if(selectedOptions.some(({ id }) => id === 'instructor')) {
+      if(selectedIndexes.some(({ row }) => selectOptions[row].id === 'instructor')) {
         // put in instructor
         ;(instructorHighlights || [])
           .forEach(({ spineIdRef, cfi, share_quote, note, author_fullname }) => {
@@ -338,7 +340,7 @@ const Highlights = React.memo(({
 
       return { highlightGroupsToShow, csvData }
     },
-    [ bookId, (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedOptions, spines, idps[idpId], spineLabelsByIdRef ],
+    [ bookId, (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedIndexes, spines, idps[idpId], spineLabelsByIdRef ],
   )
 
   const typeStrings = useMemo(
@@ -372,11 +374,18 @@ const Highlights = React.memo(({
       {selectOptions.length > 1 &&
         <Select
           style={wideMode ? styles.selectWideMode : styles.select}
-          data={selectOptions}
           multiSelect={true}
-          selectedOption={selectedOptions}
-          onSelect={setSelectedOptions}
-        />
+          selectedIndex={selectedIndexes}
+          value={combineItems(...selectedIndexes.map(({ row }) => selectOptions[row].title))}
+          onSelect={setSelectedIndexes}
+        >
+          {selectOptions.map(({ title }, idx) => (
+            <SelectItem
+              key={idx}
+              title={title}
+            />
+          ))}
+        </Select>
       }
       {highlightGroupsToShow.length === 0 &&
         <Text style={styles.none}>
@@ -415,7 +424,7 @@ const Highlights = React.memo(({
                         style={styles.button}
                         size="small"
                         status="basic"
-                        icon={ReadIcon}
+                        accessoryLeft={ReadIcon}
                         appearance="ghost"
                         onPress={goRead}
                         info={{
@@ -427,7 +436,7 @@ const Highlights = React.memo(({
                         style={styles.button}
                         size="small"
                         status="basic"
-                        icon={ShareIcon}
+                        accessoryLeft={ShareIcon}
                         appearance="ghost"
                         onPress={goShare}
                         info={{

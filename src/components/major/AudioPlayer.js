@@ -155,8 +155,6 @@ const AudioPlayer = ({
 
           soundObj.current = sound
 
-          console.log('status', status)
-
         } catch (error) {
           setError(error.message)
         }
@@ -205,14 +203,14 @@ const AudioPlayer = ({
               style={styles.forwardBackButton}
               status="basic"
               appearance="ghost"
-              icon={BackFiveIcon}
+              accessoryLeft={BackFiveIcon}
               onPress={backFive}
               disabled={loading}
             />
             <Button
               style={styles.playPauseButton}
               appearance="ghost"
-              icon={playing ? PauseIcon : PlayIcon}
+              accessoryLeft={playing ? PauseIcon : PlayIcon}
               onPress={playing ? pause : play}
               disabled={loading}
             />
@@ -220,7 +218,7 @@ const AudioPlayer = ({
               style={styles.forwardBackButton}
               status="basic"
               appearance="ghost"
-              icon={ForwardFiveIcon}
+              accessoryLeft={ForwardFiveIcon}
               onPress={forwardFive}
               disabled={loading}
             />

@@ -2,10 +2,9 @@ import React, { useCallback } from "react"
 import { StyleSheet, Platform, View, Text, TouchableOpacity, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { OverflowMenu } from "@ui-kitten/components"
+import { OverflowMenu, MenuItem, IndexPath, styled } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
-import { styled } from "@ui-kitten/components"
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
@@ -80,7 +79,9 @@ const EnhancedHeader = React.memo(({
   setSelectedToolUid,
   setCurrentClassroom,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => {
 
   const { classrooms, classroom, enhancedIsOff, isDefaultClassroom, defaultClassroomUid, sortedClassrooms,
@@ -133,7 +134,7 @@ const EnhancedHeader = React.memo(({
   )
 
   const selectOption = useCallback(
-    selectedIndex => {
+    ({ row: selectedIndex }) => {
       const { onPress } = moreOptions[selectedIndex]
       if(onPress) {
         onPress()
@@ -238,9 +239,8 @@ const EnhancedHeader = React.memo(({
         <EnhancedHeaderLine
           label={
             <OverflowMenu
-              data={moreOptions}
               visible={showOptions}
-              selectedIndex={sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid || null)}
+              selectedIndex={new IndexPath(sortedClassrooms.map(({ uid }) => uid).indexOf((classroom || {}).uid || null))}
               onSelect={selectOption}
               onBackdropPress={toggleShowOptions}
               placement='bottom start'
@@ -248,19 +248,27 @@ const EnhancedHeader = React.memo(({
                 width: 230,
                 maxHeight: height - 80,
               }}
+              anchor={() => (
+                <TouchableOpacity
+                  onPress={toggleShowOptions}
+                >
+                  <View>
+                    <Text
+                      style={styles.classroom}
+                      numberOfLines={2}
+                    >
+                      {`${classroomName} ▾`}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
             >
-              <TouchableOpacity
-                onPress={toggleShowOptions}
-              >
-                <View>
-                  <Text
-                    style={styles.classroom}
-                    numberOfLines={2}
-                  >
-                    {`${classroomName} ▾`}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              {moreOptions.map(({ title }, idx) => (
+                <MenuItem
+                  key={idx}
+                  title={title}
+                />
+              ))}
             </OverflowMenu>
           }
           uiStatus={"disabled"}
@@ -339,6 +347,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCurrentClassroom,
 }, dispatch)
 
-EnhancedHeader.styledComponentName = 'EnhancedHeader'
-
-export default connect(mapStateToProps, matchDispatchToProps)(styled(EnhancedHeader))
+export default connect(mapStateToProps, matchDispatchToProps)(styled('EnhancedHeader')(EnhancedHeader))

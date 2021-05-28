@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View } from "react-native"
-import { Select } from "@ui-kitten/components"
+import { IndexPath, Select, SelectItem } from "@ui-kitten/components"
 import uuidv4 from 'uuid/v4'
 import { i18n } from "inline-i18n"
 
@@ -86,7 +86,7 @@ const CreateClassroom = React.memo(({
         )
       })
       .map(({ uid, name }) => ({
-        text: (
+        title: (
           uid === defaultClassroomUid
             ? i18n("Enhanced book", "", "enhanced")
             : (
@@ -100,7 +100,12 @@ const CreateClassroom = React.memo(({
     [ sortedClassrooms, defaultClassroomUid, userId ]
   )
 
-  const onSelect = useCallback(({ uid }) => setBasedOffUid(uid), [])
+  const onSelect = useCallback(
+    ({ row: index }) => setBasedOffUid(basedOffOptions[index].uid),
+    [ basedOffOptions ],
+  )
+
+  const selectedOption = basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0]
 
   return (
     <>
@@ -120,10 +125,17 @@ const CreateClassroom = React.memo(({
             <Select
               label={i18n("Based off...", "", "enhanced")}
               style={styles.select}
-              data={basedOffOptions}
-              selectedOption={basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0]}
+              value={selectedOption.title}
+              selectedIndex={new IndexPath(basedOffOptions.indexOf(selectedOption))}
               onSelect={onSelect}
-            />
+            >
+              {basedOffOptions.map(({ title }, idx) => (
+                <SelectItem
+                  key={idx}
+                  title={title}
+                />
+              ))}
+            </Select>
           </View>
         )}
         confirmButtonText={i18n("Create", "", "enhanced")}

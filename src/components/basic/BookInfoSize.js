@@ -14,7 +14,9 @@ const BookInfoSize = ({
   epubSizeInMB,
   style,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => (
   <Text
     style={[
@@ -27,6 +29,4 @@ const BookInfoSize = ({
   </Text>
 )
 
-BookInfoSize.styledComponentName = 'BookInfoSize'
-
-export default styled(BookInfoSize)
+export default styled('BookInfoSize')(BookInfoSize)

@@ -132,7 +132,10 @@ const EnhancedScreen = React.memo(({
 
   if(tabs.length === 0 && !viewingPreview) return null
 
-  const tabIndex = viewingPreview ? previewSelectedTabIndex : selectedTabIndex
+  let tabIndex = viewingPreview ? previewSelectedTabIndex : selectedTabIndex
+  if(tabIndex !== undefined && tabIndex > tabs.length - 1) {
+    tabIndex = undefined
+  }
   const setTabIndex = viewingPreview ? setPreviewSelectedTabIndex : setSelectedTabIndex
   const resetTabIndex = useCallback(() => setTabIndex(), [ setTabIndex ])
 

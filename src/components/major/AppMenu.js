@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 // import { Route, Link } from "../routers/react-router"
 import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
-import { Layout, Drawer } from "@ui-kitten/components"
+import { Layout, Drawer, DrawerItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
@@ -354,9 +354,7 @@ const AppMenu = ({
     ]),
   ]
 
-  drawerData.forEach(drawerItem => drawerItem.titleStyle = styles.title)
-
-  const onRouteSelect = index => {
+  const onRouteSelect = ({ row: index }) => {
     const { [index]: route } = drawerData
 
     if(route.onSelect) {
@@ -390,11 +388,20 @@ const AppMenu = ({
   return (
     <Layout>
       <Drawer
-        data={drawerData}
         onSelect={onRouteSelect}
         header={renderHeader}
         footer={renderFooter}
-      />
+      >
+        {drawerData.map(({ title, disabled, style }, idx) => (
+          <DrawerItem
+            key={idx}
+            title={title}
+            titleStyle={title}
+            disabled={disabled}
+            style={style}
+          />
+        ))}
+      </Drawer>
       {loading &&
         <CoverAndSpin
           text={i18n("Removing books...")}

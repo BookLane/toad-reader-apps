@@ -14,7 +14,9 @@ const styles = StyleSheet.create({
 const BookInfoTrial = ({
   style,
 
-  themedStyle,
+  eva: {
+    style: themedStyle,
+  }={},
 }) => (
   <Text
     style={[
@@ -27,6 +29,4 @@ const BookInfoTrial = ({
   </Text>
 )
 
-BookInfoTrial.styledComponentName = 'BookInfoTrial'
-
-export default styled(BookInfoTrial)
+export default styled('BookInfoTrial')(BookInfoTrial)

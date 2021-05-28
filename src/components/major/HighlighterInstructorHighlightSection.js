@@ -105,15 +105,15 @@ const HighlighterInstructorHighlightSection = React.memo(({
       <View style={styles.heading}>
         {myRole === 'INSTRUCTOR' &&
           <Toggle
-            text={
-              hasInstructorHighlight
-                ? i18n("Shared with this classroom")
-                : i18n("Click to share with this classroom")
-            }
             checked={!!hasInstructorHighlight}
             onChange={toggleAsInstructorHighlight}
             disabled={othersInstructorHighlights.length !== 0}
-          />
+          >
+            {hasInstructorHighlight
+              ? i18n("Shared with this classroom")
+              : i18n("Click to share with this classroom")
+            }
+          </Toggle>
         }
         {myRole !== 'INSTRUCTOR' &&
           <InstructorsHighlightLabel />
@@ -176,10 +176,11 @@ const HighlighterInstructorHighlightSection = React.memo(({
                   key={id}
                   id={id}
                   // style={styles.checkbox}
-                  text={label}
                   checked={!!dataSegment[name]}
                   onChangeInfo={onChangeInfo}
-                />
+                >
+                  {label}
+                </CheckBox>
               ))}
             </View>
           </View>
