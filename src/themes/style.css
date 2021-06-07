@@ -1,5 +1,9 @@
 /* ONLY place styles here which are just relevant for web. (There will not be many.) */
 
+body {
+  overscroll-behavior-x: none;
+}
+
 a {
   text-decoration: none;
 }

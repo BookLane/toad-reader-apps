@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useMemo, useCallback, useState, useEffect } from "react"
 import { Platform, StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -78,6 +78,8 @@ const ToolFlipper = React.memo(({
 }) => {
 
   const { selectedTool, visibleTools, spines } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const [ fullscreenInfo, setFullscreenInfo ] = useState()
+  const [ viewingPreview, setViewingPreview ] = useState(false)
 
   const wideMode = useWideMode()
 
@@ -148,6 +150,14 @@ const ToolFlipper = React.memo(({
     [ bookId ],
   )
 
+  useEffect(
+    () => {
+      // exit fullscreen mode on tool change
+      setFullscreenInfo()
+    },
+    [ (selectedTool || {}).uid ],
+  )
+
   if(!selectedTool) return null
 
   if(selectedTool.cfi) {  // no pager needed
@@ -164,6 +174,10 @@ const ToolFlipper = React.memo(({
           tool={selectedTool}
           xOutOfTool={closeTool}
           classroomQueryString={classroomQueryString}
+          fullscreenInfo={fullscreenInfo}
+          setFullscreenInfo={setFullscreenInfo}
+          viewingPreview={viewingPreview}
+          setViewingPreview={setViewingPreview}
         />
       </View>
     )  
@@ -173,51 +187,82 @@ const ToolFlipper = React.memo(({
 
   return (
     <>
-      <ViewPager
-        // The key prevents a bad onSelect call when creating a tool while another was selected.
-        key={toolSet.length}
-        style={[
-          styles.container,
-          wideMode ? styles.constainerWideMode : null,
-        ]}
-        selectedIndex={pageIndex}
-        onSelect={onPageChange}
-      >
-        <View style={styles.toolContainer} />
-        {toolSet.map(tool => (
+      {!!fullscreenInfo && 
+        <View
+          style={[
+            styles.container,
+            wideMode ? styles.constainerWideMode : null,
+          ]}
+        >
           <View
-            key={tool.currently_published_tool_uid || tool.uid}
             style={styles.toolContainer}
           >
             <Tool
               bookId={bookId}
               inEditMode={inEditMode}
-              tool={tool}
+              tool={toolSet[pageIndex - 1]}
               xOutOfTool={closeToolAndExitReading}
               classroomQueryString={classroomQueryString}
+              fullscreenInfo={fullscreenInfo}
+              setFullscreenInfo={setFullscreenInfo}
+              viewingPreview={viewingPreview}
+              setViewingPreview={setViewingPreview}
             />
           </View>
-        ))}
-        <View style={styles.toolContainer} />
-      </ViewPager>
-      {Platform.OS === 'web' && !inEditMode &&
+        </View>
+      }
+      {!fullscreenInfo &&
         <>
-          <View style={styles.leftButtonContainer}>
-            <Button
-              onPress={() => onPageChange(pageIndex - 1)}
-              appearance="ghost"
-              style={styles.leftButton}
-              accessoryLeft={LeftButtonIcon}
-            />
-          </View>
-          <View style={styles.rightButtonContainer}>
-            <Button
-              onPress={() => onPageChange(pageIndex + 1)}
-              appearance="ghost"
-              style={styles.rightButton}
-              accessoryLeft={RightButtonIcon}
-            />
-          </View>
+          <ViewPager
+            // The key prevents a bad onSelect call when creating a tool while another was selected.
+            key={toolSet.length}
+            style={[
+              styles.container,
+              wideMode ? styles.constainerWideMode : null,
+            ]}
+            selectedIndex={pageIndex}
+            onSelect={onPageChange}
+          >
+            <View style={styles.toolContainer} />
+            {toolSet.map(tool => (
+              <View
+                key={tool.currently_published_tool_uid || tool.uid}
+                style={styles.toolContainer}
+              >
+                <Tool
+                  bookId={bookId}
+                  inEditMode={inEditMode}
+                  tool={tool}
+                  xOutOfTool={closeToolAndExitReading}
+                  classroomQueryString={classroomQueryString}
+                  setFullscreenInfo={setFullscreenInfo}
+                  viewingPreview={viewingPreview}
+                  setViewingPreview={setViewingPreview}
+                />
+              </View>
+            ))}
+            <View style={styles.toolContainer} />
+          </ViewPager>
+          {Platform.OS === 'web' && !inEditMode &&
+            <>
+              <View style={styles.leftButtonContainer}>
+                <Button
+                  onPress={() => onPageChange(pageIndex - 1)}
+                  appearance="ghost"
+                  style={styles.leftButton}
+                  accessoryLeft={LeftButtonIcon}
+                />
+              </View>
+              <View style={styles.rightButtonContainer}>
+                <Button
+                  onPress={() => onPageChange(pageIndex + 1)}
+                  appearance="ghost"
+                  style={styles.rightButton}
+                  accessoryLeft={RightButtonIcon}
+                />
+              </View>
+            </>
+          }
         </>
       }
     </>

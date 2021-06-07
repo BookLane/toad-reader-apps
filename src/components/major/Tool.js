@@ -35,12 +35,18 @@ const close = {
 }
 
 const styles = StyleSheet.create({
+  topSectionHide: {
+    display: 'none',
+  },
   topSection: {
     ...topSection,
   },
   topSectionWideMode: {
     ...topSection,
     paddingTop: 20,
+  },
+  bottomSectionFullscreenModeNoWideMode: {
+    flex: 1,
   },
   bottomSection: {
     borderTopWidth: 1,
@@ -88,9 +94,11 @@ const Tool = React.memo(({
   tool,
   xOutOfTool,
   classroomQueryString,
+  fullscreenInfo,
+  setFullscreenInfo,
+  viewingPreview,
+  setViewingPreview,
 }) => {
-
-  const [ viewingPreview, setViewingPreview ] = useState(false)
 
   const wideMode = useWideMode()
 
@@ -159,7 +167,17 @@ const Tool = React.memo(({
 
   return (
     <>
-      <View style={wideMode ? styles.topSectionWideMode : styles.topSection}>
+      <View
+        style={
+          wideMode
+            ? styles.topSectionWideMode
+            : (
+              fullscreenInfo
+                ? styles.topSectionHide
+                : styles.topSection
+            )
+        }
+      >
         <Text style={styles.name}>
           {name || (toolInfoByType[toolType] || {}).text || ""}
         </Text>
@@ -187,7 +205,7 @@ const Tool = React.memo(({
         }
       </View>
       <ScrollView
-        style={styles.bottomSection}
+        style={(!wideMode && fullscreenInfo) ? styles.bottomSectionFullscreenModeNoWideMode : styles.bottomSection}
         contentContainerStyle={styles.bottomSectionContent}
       >
         <ToolComponent
@@ -198,6 +216,8 @@ const Tool = React.memo(({
           viewingPreview={viewingPreview}
           priorEngagement={engagement}
           classroomQueryString={classroomQueryString}
+          fullscreenInfo={fullscreenInfo}
+          setFullscreenInfo={setFullscreenInfo}
           {...data}
         />
       </ScrollView>
