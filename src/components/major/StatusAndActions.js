@@ -267,7 +267,7 @@ const StatusAndActions = React.memo(({
     && publishedStatus !== 'new'
     && myRole === 'INSTRUCTOR'
     && ![ 'published' ].includes(publishedStatus)
-    && students.length > 0
+    && (students || []).length > 0
   )
 
   return (
