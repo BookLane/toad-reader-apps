@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { Platform } from "react-native"
 
 import { getIdsFromAccountId, getDraftToolByCurrentlyPublishedToolUid, splitDraftDataToOptionsAndFrontMatter } from "../utils/toolbox"
 import useRouterState from "./useRouterState"

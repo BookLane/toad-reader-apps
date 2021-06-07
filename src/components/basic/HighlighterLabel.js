@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
+import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"
@@ -95,6 +96,9 @@ const HighlighterLabel = React.memo(({
   highlight,
   isEditingNote,
 
+  books,
+  accounts,
+
   setHighlight,
   deleteHighlight,
 }) => {
@@ -102,6 +106,8 @@ const HighlighterLabel = React.memo(({
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
   const [ showDeletedMsgAndUndoColor, setShowDeletedMsgAndUndoColor ] = useState()
+  const { bookVersion } = useClassroomInfo({ books, bookId })
+  const isAdmin = Object.values(accounts).some(({ isAdmin }) => isAdmin)
 
   useLayoutEffect(
     () => setShowDeletedMsgAndUndoColor(),
@@ -214,12 +220,16 @@ const HighlighterLabel = React.memo(({
   }
 
   const idpThatAllowsEmbed = [ 2, 4 ].includes(idpId)
+  const roleThatAllowsEmbed = (
+    bookVersion === 'PUBLISHER'
+    || isAdmin
+  )
 
   return (
     <View style={styles.container}>
       {highlightButton}
       <View style={styles.emptySpace} />
-      {!highlight && !widget && idpThatAllowsEmbed &&
+      {!highlight && !widget && idpThatAllowsEmbed && roleThatAllowsEmbed &&
         <HighlighterEmbedIcon
           bookId={bookId}
           selectionInfo={selectionInfo}
@@ -262,7 +272,9 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = ({ x }) => ({
+const mapStateToProps = ({ books, accounts }) => ({
+  books,
+  accounts,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
