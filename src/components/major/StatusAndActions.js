@@ -105,7 +105,7 @@ const StatusAndActions = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter,
+  const { classroom, classroomUid, selectedToolUid, selectedTool, viewingFrontMatter, students,
           viewingOptions, hasFrontMatterDraftData, hasOptionsDraftData, myRole } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode: true })
 
   const wideMode = useWideMode()
@@ -266,6 +266,8 @@ const StatusAndActions = React.memo(({
     !!(toolInfoByType[selectedTool.toolType] || {}).warnOfUpdate
     && publishedStatus !== 'new'
     && myRole === 'INSTRUCTOR'
+    && ![ 'published' ].includes(publishedStatus)
+    && students.length > 0
   )
 
   return (
