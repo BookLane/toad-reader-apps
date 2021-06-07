@@ -198,7 +198,7 @@ const BookPages = React.memo(({
         return true
       })
 
-      flatList.current.getNode().scrollToIndex({
+      flatList.current.scrollToIndex({
         index,
         viewOffset: (
           (
@@ -293,7 +293,7 @@ const BookPages = React.memo(({
 
   const scrollToPercentage = useCallback(
     percent => {
-      flatList.current && flatList.current.getNode().scrollToOffset({ offset: (percent/100) * maxScroll, animated: false })
+      flatList.current && flatList.current.scrollToOffset({ offset: (percent/100) * maxScroll, animated: false })
     },
     [ maxScroll ],
   )
