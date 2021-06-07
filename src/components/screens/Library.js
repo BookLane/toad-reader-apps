@@ -524,16 +524,17 @@ const Library = ({
   const scope = library.scope || "all"
 
   const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
+  const validLibraryBookList = library.bookList.filter(bookId => books[bookId])  // just in case: to prevent error which crashes the app
   const bookList = (
     scope == 'all'
-      ? library.bookList
+      ? validLibraryBookList
       : (scope == 'device'
-        ? library.bookList.filter(bookId => books[bookId].downloadStatus == 2)
-        : library.bookList.filter(bookId => (
+        ? validLibraryBookList.filter(bookId => books[bookId].downloadStatus == 2)
+        : validLibraryBookList.filter(bookId => (
           Object.keys(books[bookId].accounts).some(accountId => getIdsFromAccountId(accountId).idpId === getIdsFromAccountId(scope).idpId)
         ))
       )
-  ).filter(bookId => books[bookId])  // just in case: to prevent error which crashes the app
+  )
 
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
 
