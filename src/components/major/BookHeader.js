@@ -20,8 +20,7 @@ import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 
 const styles = StyleSheet.create({
   optionsMenu: {
-    width: 'auto',
-    maxWidth: 300,
+    width: 225,
   },
 })
 
