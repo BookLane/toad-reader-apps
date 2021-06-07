@@ -227,15 +227,22 @@ const BookPages = React.memo(({
       return true
   })
 
-  if(
+  const doScrollToLatestLocation = (
     spineIdRef !== prevSpineIdRef
     || pageIndexInSpine !== prevPageIndexInSpine
     || height !== prevHeight
     || scrollToLatestLocationNextTimeReceivingProps.current
-  ) {
-    scrollToLatestLocationNextTimeReceivingProps.current = false
-    getScrollToLatestLocation()()
-  }
+  )
+
+  useEffect(
+    () => {
+      if(doScrollToLatestLocation) {
+        scrollToLatestLocationNextTimeReceivingProps.current = false
+        getScrollToLatestLocation()()
+      }
+    },
+    [ doScrollToLatestLocation ],
+  )
 
   const [ setScrollToLatestTimeout ] = useSetTimeout()
 
