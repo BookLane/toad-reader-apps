@@ -93,7 +93,6 @@ const ImagesTool = React.memo(({
   books,
 }) => {
 
-  // Swiping left/right messed up on iOS due to vertical scrollability
   // On web, give ability to arrow back and forth + make dots clickable
 
   const [ scaleByImageIndex, setScaleByImageIndex ] = useState([])
@@ -106,7 +105,7 @@ const ImagesTool = React.memo(({
 
   const { width: windowWidth, height: windowHeight } = useDimensions().window
 
-  const setImageIndex = useCallback(imageIndex => setFullscreenInfo({ imageIndex }), [])
+  const setImageIndex = useCallback(imageIndex => setFullscreenInfo({ imageIndex, noScroll: true }), [])
   const exitFullscreen = useCallback(() => setFullscreenInfo(), [])
 
   useEffect(

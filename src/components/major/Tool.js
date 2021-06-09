@@ -165,6 +165,8 @@ const Tool = React.memo(({
     }
   }
 
+  const ToolComponentContainer = (!wideMode && (fullscreenInfo || {}).noScroll) ? View : ScrollView
+
   return (
     <>
       <View
@@ -204,7 +206,7 @@ const Tool = React.memo(({
           </View>
         }
       </View>
-      <ScrollView
+      <ToolComponentContainer
         style={(!wideMode && fullscreenInfo) ? styles.bottomSectionFullscreenModeNoWideMode : styles.bottomSection}
         contentContainerStyle={styles.bottomSectionContent}
       >
@@ -220,7 +222,7 @@ const Tool = React.memo(({
           setFullscreenInfo={setFullscreenInfo}
           {...data}
         />
-      </ScrollView>
+      </ToolComponentContainer>
     </>
   )
 })
