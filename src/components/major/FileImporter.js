@@ -183,10 +183,10 @@ const FileImporter = ({
               {status === 'done' && !result.success &&
                 <Text style={styles.failed}>
                   {{
-                    biblemesh_file_too_large: i18n("File size exceeds {{maxMB}} mb max.", result),
+                    file_too_large: i18n("File size exceeds {{maxMB}} mb max.", result),
                     search_indexing_failed: i18n("Failed. There was an unknown error while creating a search index."),
                     'does-not-exist': i18n("Failed. We did not find a matching book to replace. ISBN, Title and Author must match."),
-                    biblemesh_unable_to_process: i18n("Failed. Invalid EPUB file."),
+                    unable_to_process: i18n("Failed. Invalid EPUB file."),
                     search_indexing_too_slow: i18n("Failed. Something about this EPUB is overwhelming the indexing process. Please contact support."),
                     text_content_too_massive_for_search_indexing: i18n("Failed. The text content of this EPUB is too massive to create a search index."),
                     search_indexing_memory_overload: i18n("Failed. This EPUB is causing a memory overload during the indexing process. Please contact support."),
