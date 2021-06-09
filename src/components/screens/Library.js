@@ -243,22 +243,8 @@ const Library = ({
     [],
   )
 
-  const updateBooks = useCallback(
-    async ({ accountId }) => {
-
-      console.log(`Fetch books (accountId: ${accountId})...`)
-
-      const { idpId } = getIdsFromAccountId(accountId)
-      const { cookie, libraryHash } = accounts[accountId]
-
-      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json?hash=${libraryHash}`
-      let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
-        headers: {
-          "x-cookie-override": cookie,
-        },
-      }))
-      // I do not catch the no internet connection error because I only get here immediately after logging in,
-      // which requires the internet.
+  const handleNewLibrary = useCallback(
+    async ({ response, idpId, accountId }) => {
 
       if(response.status != 200) {
         // they need to login again
@@ -291,7 +277,36 @@ const Library = ({
       console.log(`...done fetching books (accountId: ${accountId}).`)
 
     },
-    [ idps, accounts, books ],
+    [],
+  )
+
+  const updateBooks = useCallback(
+    async ({ accountId }) => {
+
+      console.log(`Fetch books (accountId: ${accountId})...`)
+
+      const { idpId } = getIdsFromAccountId(accountId)
+      const { cookie, libraryHash } = accounts[accountId]
+
+      const libraryUrl = `${getDataOrigin(idps[idpId])}/epub_content/epub_library.json?hash=${libraryHash}`
+      let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": cookie,
+        },
+      }))
+      // I do not catch the no internet connection error because I only get here immediately after logging in,
+      // which requires the internet.
+
+      await handleNewLibrary({
+        response,
+        idpId,
+        accountId,
+      })
+
+      console.log(`...done fetching books (accountId: ${accountId}).`)
+
+    },
+    [ idps, accounts, handleNewLibrary ],
   )
 
   useEffect(  // fetch books
@@ -794,6 +809,7 @@ const Library = ({
           open={!!showAccessCodeDialog}
           onClose={closeAccessCodeDialog}
           accessCodeInfo={accessCodeInfo}
+          handleNewLibrary={handleNewLibrary}
         />
       }
 
