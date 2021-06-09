@@ -93,8 +93,6 @@ const ImagesTool = React.memo(({
   books,
 }) => {
 
-  // On web, give ability to arrow back and forth + make dots clickable
-
   const [ scaleByImageIndex, setScaleByImageIndex ] = useState([])
   const getScaleByImageIndex = useInstanceValue(scaleByImageIndex)
 
