@@ -264,7 +264,7 @@ const Library = ({
 
       if(noChange) {
         console.log(`...done fetching books (accountId: ${accountId}) - no change.`)
-        return
+        return { noChange }
       }
 
       addBooks({
@@ -277,6 +277,8 @@ const Library = ({
       requestAnimationFrame(() => getCovers({ idpId }))
 
       console.log(`...done fetching books (accountId: ${accountId}).`)
+
+      return {}
 
     },
     [],

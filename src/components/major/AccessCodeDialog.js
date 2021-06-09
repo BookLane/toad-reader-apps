@@ -14,6 +14,10 @@ const styles = StyleSheet.create({
   expl:  {
     marginBottom: 15,
   },
+  error:  {
+    marginBottom: 15,
+    color: 'red',
+  },
 })
 
 const AccessCodeDialog = ({
@@ -28,53 +32,71 @@ const AccessCodeDialog = ({
 
   const [ accessCode, setAccessCode ] = useState("")
   const [ submitting, setSubmitting ] = useState(false)
+  const [ errorMessage, setErrorMessage ] = useState()
+  const [ hadChange, setHadChange ] = useState()
 
   const getAccessCode = useInstanceValue(accessCode)
 
   const accountId = Object.keys(accounts)[0]
 
   // I AM HERE
-  // - Show success/failure message
-    // No internet
-    // Access code invalid (pass along error message)
-    // code valid, but did not change anything
-    // code valid, library updated
   // - Remove accessCodeInfo from BibleMesh's app.json
+  // update web apps for Orca, let them know
   // - After server is live, get rid of useReaderTxt from db
 
 
   const onConfirm = useCallback(
     async () => {
+      try {
 
-      console.log(`Submit access code and update books (accountId: ${accountId})...`)
+        console.log(`Submit access code and update books (accountId: ${accountId})...`)
 
-      setSubmitting(true)
+        setSubmitting(true)
 
-      const { idpId } = getIdsFromAccountId(accountId)
-      const { cookie, libraryHash } = accounts[accountId]
+        const { idpId } = getIdsFromAccountId(accountId)
+        const { cookie, libraryHash } = accounts[accountId]
 
-      const libraryUrl = `${getDataOrigin(idps[idpId])}/submitaccesscode?hash=${libraryHash}`
-      let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
-        method: 'POST',
-        headers: {
-          "Content-Type": 'application/json',
-          "x-cookie-override": cookie,
-        },
-        body: JSON.stringify({ accessCode: getAccessCode() }),
-      }))
+        const libraryUrl = `${getDataOrigin(idps[idpId])}/submitaccesscode?hash=${libraryHash}`
+        let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+            "x-cookie-override": cookie,
+          },
+          body: JSON.stringify({ accessCode: getAccessCode() }),
+        }))
 
-      await handleNewLibrary({
-        response,
-        idpId,
-        accountId,
-      })
+        setSubmitting(false)
 
-      setSubmitting(false)
+        if(response.status == 400) {
+          let errorMessage = i18n("Configuration error")
 
-      console.log(`...done submitting access code and updating books (accountId: ${accountId}).`)
+          try {
+            const json = await response.json()
+            errorMessage = json.errorMessage
+          } catch(err) {}
 
-      onClose()
+          setErrorMessage(errorMessage)
+          return
 
+        }
+
+        const { noChange } = await handleNewLibrary({
+          response,
+          idpId,
+          accountId,
+        })
+
+        setHadChange(!noChange)
+
+        console.log(`...done submitting access code and updating books (accountId: ${accountId}).`)
+
+      } catch(err) {
+
+        setSubmitting(false)
+        setErrorMessage(i18n("Internet connection error"))
+
+      }
     },
     [ idps, accounts, accountId, handleNewLibrary, onClose ],
   )
@@ -83,27 +105,55 @@ const AccessCodeDialog = ({
 
     <Dialog
       open={open}
-      title={accessCodeInfo.title || accessCodeInfo.buttonText || i18n("Enter access code")}
+      title={
+        hadChange === undefined
+          ? (
+            accessCodeInfo.title
+            || accessCodeInfo.buttonText
+            || i18n("Enter access code")
+          )
+          : i18n("Success")
+      }
+      onClose={onClose}
       onCancel={onClose}
       onConfirm={onConfirm}
       confirmButtonDisabled={!accessCode.replace(/\s/g, '')}
-      type="confirm"
+      type={hadChange === undefined ? "confirm" : "info"}
       submitting={submitting}
       message={
-        <View>
-          {!!accessCodeInfo.text &&
-            <Text style={styles.expl}>
-              {accessCodeInfo.text}
-            </Text>
-          }
-          <Input
-            label={accessCodeInfo.inputLabel || i18n("Access code")}
-            placeholder={accessCodeInfo.inputPlaceholder}
-            value={accessCode}
-            onChangeText={setAccessCode}
-            style={styles.input}
-          />
-        </View>
+        hadChange === undefined
+          ? (
+            <View>
+              {!!accessCodeInfo.text &&
+                <Text style={styles.expl}>
+                  {accessCodeInfo.text}
+                </Text>
+              }
+              {!!errorMessage &&
+                <Text style={styles.error}>
+                  {errorMessage}
+                </Text>
+              }
+              <Input
+                label={accessCodeInfo.inputLabel || i18n("Access code")}
+                placeholder={accessCodeInfo.inputPlaceholder}
+                value={accessCode}
+                onChangeText={setAccessCode}
+                style={styles.input}
+              />
+            </View>
+          )
+          : (
+            <View>
+              <Text style={styles.expl}>
+                {hadChange
+                  ? i18n("Access code accepted. Your library has been updated.")
+                  : i18n("Access code accepted. However, there was no change to your library.")
+                }
+              </Text>
+            </View>
+          )
+
       }
     />
   )
