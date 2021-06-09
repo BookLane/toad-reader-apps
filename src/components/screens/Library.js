@@ -21,6 +21,7 @@ import usePushNotifications from "../../hooks/usePushNotifications"
 
 import { Switch, Route } from "../routers/react-router"
 import SafeLayout from "../basic/SafeLayout"
+import Button from "../basic/Button"
 import BookImporter from "../major/BookImporter"
 import AccessCodeDialog from "../major/AccessCodeDialog"
 import Book from "./Book"
@@ -51,6 +52,10 @@ const styles = StyleSheet.create({
   noBooks: {
     marginTop: 50,
     textAlign: 'center',
+  },
+  enterAccessCodeButtonContainer: {
+    marginTop: 30,
+    alignItems: 'center',
   },
   spinnerContainer: {
     paddingTop: 70,
@@ -608,6 +613,7 @@ const Library = ({
   }
 
   const doingInitialFetch = fetchingBooks && bookList.length == 0
+  const { accessCodeInfo } = Object.values(idps)[0] || {}
 
   return (
     <SideMenu
@@ -648,7 +654,20 @@ const Library = ({
                   : (
                     bookList.length == 0
                       ? (
-                        <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                        <>
+                          <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
+                          {!!accessCodeInfo &&
+                            <View style={styles.enterAccessCodeButtonContainer}>
+                              <Button
+                                onPress={openAccessCodeDialog}
+                                size="small"
+                                status="basic"
+                              >
+                                {accessCodeInfo.buttonText || i18n("Enter access code")}
+                              </Button>
+                            </View>
+                          }
+                        </>
                       )
                       : (
                         <View style={styles.content}>
@@ -770,11 +789,13 @@ const Library = ({
         }
       />
 
-      <AccessCodeDialog
-        open={!!showAccessCodeDialog}
-        onClose={closeAccessCodeDialog}
-        accessCodeInfo={(Object.values(idps)[0] || {}).accessCodeInfo}
-      />
+      {!!accessCodeInfo &&
+        <AccessCodeDialog
+          open={!!showAccessCodeDialog}
+          onClose={closeAccessCodeDialog}
+          accessCodeInfo={accessCodeInfo}
+        />
+      }
 
     </SideMenu>
   )
