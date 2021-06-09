@@ -296,7 +296,7 @@ const AppMenu = ({
     //   icon: accountsIcon,
     //   path: `${match.url}/accounts`,
     // },
-    ...(!accessCodeInfo ? [] : [
+    ...(!(accessCodeInfo && !hasNoAuth) ? [] : [
       {
         title: accessCodeInfo.buttonText || i18n("Enter access code"),
         // icon: removeIcon,

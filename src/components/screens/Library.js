@@ -671,7 +671,7 @@ const Library = ({
                       ? (
                         <>
                           <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
-                          {!!accessCodeInfo &&
+                          {!!accessCodeInfo && !hasNoAuth &&
                             <View style={styles.enterAccessCodeButtonContainer}>
                               <Button
                                 onPress={openAccessCodeDialog}

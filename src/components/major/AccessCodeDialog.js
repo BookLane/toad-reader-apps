@@ -34,11 +34,9 @@ const AccessCodeDialog = ({
   const accountId = Object.keys(accounts)[0]
 
   // I AM HERE
-  // refresh library properly (hash)
-  // - If no login, do not show this option
   // - If no internet, disable button
-  // - Test no internet
   // - Show success/failure message
+    // No internet
     // Access code invalid (pass along error message)
     // code valid, but did not change anything
     // code valid, library updated
