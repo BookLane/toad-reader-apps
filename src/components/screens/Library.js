@@ -22,6 +22,7 @@ import usePushNotifications from "../../hooks/usePushNotifications"
 import { Switch, Route } from "../routers/react-router"
 import SafeLayout from "../basic/SafeLayout"
 import BookImporter from "../major/BookImporter"
+import AccessCodeDialog from "../major/AccessCodeDialog"
 import Book from "./Book"
 import Reports from "./Reports"
 import ErrorMessage from "./ErrorMessage"
@@ -122,7 +123,8 @@ const Library = ({
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
   const [ importingBooks, setImportingBooks ] = useState(false)
   const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
-  const [ showEnvironmentUrls, setShowEnvironmentUrlsDialog ] = useState(false)
+  const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
+  const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
@@ -391,9 +393,23 @@ const Library = ({
     [],
   )
 
+  const openAccessCodeDialog = useCallback(
+    () => {
+      setShowAccessCodeDialog(true)
+    },
+    [],
+  )
+
   const closeEnvironmentUrlsDialog = useCallback(
     () => {
       setShowEnvironmentUrlsDialog(false)
+    },
+    [],
+  )
+
+  const closeAccessCodeDialog = useCallback(
+    () => {
+      setShowAccessCodeDialog(false)
     },
     [],
   )
@@ -605,6 +621,7 @@ const Library = ({
               onImportBooks={openImportBooks}
               onReplaceExisting={openConfirmReplaceExisting}
               onShowEnvironmentUrls={openEnvironmentUrlsDialog}
+              onOpenAccessCodeDialog={openAccessCodeDialog}
             />
           )
       }
@@ -714,7 +731,7 @@ const Library = ({
       />
 
       <Dialog
-        open={!!showEnvironmentUrls}
+        open={!!showEnvironmentUrlsDialog}
         title={i18n("Environment URLs")}
         onClose={closeEnvironmentUrlsDialog}
         message={
@@ -751,6 +768,12 @@ const Library = ({
             )
           })
         }
+      />
+
+      <AccessCodeDialog
+        open={!!showAccessCodeDialog}
+        onClose={closeAccessCodeDialog}
+        accessCodeInfo={(Object.values(idps)[0] || {}).accessCodeInfo}
       />
 
     </SideMenu>

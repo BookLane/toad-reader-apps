@@ -66,6 +66,7 @@ const AppMenu = ({
   onImportBooks,
   onReplaceExisting,
   onShowEnvironmentUrls,
+  onOpenAccessCodeDialog,
 
   accounts,
   idps,
@@ -83,7 +84,7 @@ const AppMenu = ({
   const [ loading, setLoading ] = useState(false)
 
   const hasNoAuth = useHasNoAuth(accounts)
-  const { authMethod, devAuthMethod } = Object.values(idps)[0] || {}
+  const { authMethod, devAuthMethod, accessCodeInfo } = Object.values(idps)[0] || {}
   const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
   const showAll = useCallback(
@@ -295,6 +296,13 @@ const AppMenu = ({
     //   icon: accountsIcon,
     //   path: `${match.url}/accounts`,
     // },
+    ...(!accessCodeInfo ? [] : [
+      {
+        title: accessCodeInfo.buttonText || i18n("Enter access code"),
+        // icon: removeIcon,
+        onSelect: onOpenAccessCodeDialog,
+      },
+    ]),
     ...(Platform.OS === 'web' ? [] : [
       {
         title: i18n("Remove all books"),
