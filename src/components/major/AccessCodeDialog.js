@@ -39,12 +39,6 @@ const AccessCodeDialog = ({
 
   const accountId = Object.keys(accounts)[0]
 
-  // I AM HERE
-  // - Remove accessCodeInfo from BibleMesh's app.json
-  // update web apps for Orca, let them know
-  // - After server is live, get rid of useReaderTxt from db
-
-
   const onConfirm = useCallback(
     async () => {
       try {
