@@ -34,7 +34,6 @@ const AccessCodeDialog = ({
   const accountId = Object.keys(accounts)[0]
 
   // I AM HERE
-  // - If no internet, disable button
   // - Show success/failure message
     // No internet
     // Access code invalid (pass along error message)

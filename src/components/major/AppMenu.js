@@ -301,6 +301,7 @@ const AppMenu = ({
         title: accessCodeInfo.buttonText || i18n("Enter access code"),
         // icon: removeIcon,
         onSelect: onOpenAccessCodeDialog,
+        disabled: !online,
       },
     ]),
     ...(Platform.OS === 'web' ? [] : [

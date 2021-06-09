@@ -14,6 +14,7 @@ import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFet
          isStaging, isBeta, dashifyDomain, getQueryString, getIDPOrigin, openURL } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useNetwork from "../../hooks/useNetwork"
 import useHasNoAuth from "../../hooks/useHasNoAuth"
 import useWideMode from "../../hooks/useWideMode"
 import usePushToken from "../../hooks/usePushToken"
@@ -136,6 +137,7 @@ const Library = ({
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
+  const { online } = useNetwork()
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
@@ -677,6 +679,7 @@ const Library = ({
                                 onPress={openAccessCodeDialog}
                                 size="small"
                                 status="basic"
+                                disabled={!online}
                               >
                                 {accessCodeInfo.buttonText || i18n("Enter access code")}
                               </Button>
