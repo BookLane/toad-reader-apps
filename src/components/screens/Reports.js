@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react"
 import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-
+import { IndexPath, Select, SelectItem } from '@ui-kitten/components'
 import { i18n } from "inline-i18n"
-import { safeFetch, getDataOrigin, getIdsFromAccountId, getReqOptionsWithAdditions } from "../../utils/toolbox"
+import { Table, Row, Rows } from 'react-native-table-component'
 
+import { safeFetch, getDataOrigin, getIdsFromAccountId, getReqOptionsWithAdditions } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
 
-import { Table, Row, Rows } from 'react-native-table-component'
 import AppHeader from "../basic/AppHeader"
 import SafeLayout from "../basic/SafeLayout"
 import HeaderIcon from "../basic/HeaderIcon"
@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginVertical: 10,
   },
+  select: {
+    marginHorizontal: 30,
+    marginBottom: 10,
+    width: 300,
+  },
 })
 
 const Reports = ({
@@ -74,6 +79,7 @@ const Reports = ({
   const [ info, setInfo ] = useState([])
   const [ loading, setLoading ] = useState(false)
   const [ error, setError ] = useState()
+  const [ selectedTabIndex, setSelectedTabIndex ] = useState(new IndexPath(0))
 
   const accountId = Object.keys(accounts)[0]
   const { idpId } = getIdsFromAccountId(accountId)
@@ -131,13 +137,28 @@ const Reports = ({
           {error}
         </Text>
       }
-      {!error && info.map(({ tab, data }, idx) => (
-        <View key={idx} style={styles.container}>
-          <Text style={styles.tab}>
-            {tab}
-          </Text>
+      {!error &&
+        <View style={styles.container}>
+          {info.length === 1 &&
+            <Text style={styles.tab}>
+              {info[0].tab}
+            </Text>
+          }
+          {info.length > 1 &&
+            <Select
+              selectedIndex={selectedTabIndex}
+              onSelect={setSelectedTabIndex}
+              value={(info[selectedTabIndex.row] || {}).tab || 'Loading...'}
+              style={styles.select}
+            >
+              {info.map(({ tab }) => (
+                <SelectItem title={tab} />
+              ))}
+            </Select>
+          }
+
           <ScrollView style={styles.tabContent}>
-            {data.map(({ heading, rows, summary }, idx) => {
+            {((info[selectedTabIndex.row] || {}).data || []).map(({ heading, rows, summary }, idx) => {
               const flexArr = rows.length > 0 && Object.values(rows[0]).map(val => /^[-0-9\.$]*$/.test(val) ? 1 : 2)
 
               return (
@@ -174,7 +195,7 @@ const Reports = ({
             })}
           </ScrollView>
         </View>
-      ))}
+      }
       {loading &&
         <CoverAndSpin
           style={{ backgroundColor: 'white' }}
