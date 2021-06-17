@@ -41,11 +41,10 @@ const {
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  // enableInExpoDevelopment: true,
+  enableInExpoDevelopment: true,
+  release: Constants.manifest.revisionId,
   debug: true,
 })
-
-Sentry.setRelease(Constants.manifest.revisionId)
 
 if(Platform.OS === 'web') {
   window.productionLog = (...params) => {
