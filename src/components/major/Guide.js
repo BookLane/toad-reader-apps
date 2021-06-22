@@ -30,6 +30,11 @@ const styles = StyleSheet.create({
   },
   button: {
   },
+  checkIcon: {
+    paddingHorizontal: 0,
+    color: 'white',
+    height: 20,
+  },
 })
 
 const Guide = ({
@@ -41,7 +46,7 @@ const Guide = ({
 
   const opacity = useRef(new Animated.Value(0)).current
 
-  const CheckIcon = useCallback(({ style }) => <Icon name="check" pack="materialCommunity" style={{ }} />, [])
+  const CheckIcon = useCallback(({ style }) => <Icon name="check" pack="materialCommunity" style={styles.checkIcon} />, [])
 
   const [ setShowTimeout ] = useSetTimeout()
 

@@ -334,10 +334,10 @@ const Book = React.memo(({
     [ height ],
   )
 
-  const prevLatestLocation = usePrevious(latest_location)
+  const prevInPageTurn = usePrevious(inPageTurn)
   const pageWasTurned = useMemo(
-    () => !!prevLatestLocation,
-    [ latest_location ]
+    () => !!prevInPageTurn,
+    [ inPageTurn ]
   )
 
   const BackToReadingIcon = useCallback(({ style }) => <Icon name='book-open-variant' pack="materialCommunity" style={[ styles.tabsIcon, style ]} />, [])
