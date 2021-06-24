@@ -9,6 +9,7 @@ import { Layout, Drawer, DrawerItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
+import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
@@ -111,6 +112,7 @@ const AppMenu = ({
       if(!idpId || !idps[idpId]) return
 
       const doLogOut = () => {
+        logEvent({ eventName: `Log out` })
         historyGoBack()
         setTimeout(() => {
           historyReplace("/", {
@@ -189,6 +191,8 @@ const AppMenu = ({
           {
             text: i18n("Remove all books"),
             onPress: async () => {
+
+              logEvent({ eventName: `Remove all books from device` })
 
               setLoading(true)  // timeout needed after this to allow it to show
 

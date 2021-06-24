@@ -7,6 +7,7 @@ import useRouterState from "../../hooks/useRouterState"
 
 // import { debounce, getBooksDir } from "../../utils/toolbox"
 import { removeEpub } from "../../utils/removeEpub"
+import { logEvent } from "../../utils/analytics"
 import { i18n } from "inline-i18n"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, pushToBookDownloadQueue, clearTocAndSpines, clearUserDataExceptProgress } from "../../redux/actions"
@@ -42,6 +43,13 @@ const LibraryBook = ({
       } else if(downloadStatus == 0) {
         setDownloadStatus({ bookId, downloadStatus: 1 })
         pushToBookDownloadQueue({ bookId })
+
+        logEvent({
+          eventName: `Download book`,
+          properties: {
+            title: books[bookId].title || `Book id: ${bookId}`,
+          },
+        })  
       }
     },
     [ bookId, setDownloadStatus, pushToBookDownloadQueue, books ],
@@ -71,6 +79,13 @@ const LibraryBook = ({
                   setDownloadStatus,
                   clearTocAndSpines,
                   clearUserDataExceptProgress,
+                })
+
+                logEvent({
+                  eventName: `Remove book`,
+                  properties: {
+                    title: books[bookId].title || `Book id: ${bookId}`,
+                  },
                 })
               },
               // style: 'destructive',

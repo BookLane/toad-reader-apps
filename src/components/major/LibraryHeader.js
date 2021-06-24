@@ -7,6 +7,7 @@ import { OverflowMenu, MenuItem, IndexPath } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
 
 import { getIdsFromAccountId } from "../../utils/toolbox"
+import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from '../../hooks/useRouterState'
 
@@ -103,8 +104,17 @@ const LibraryHeader = ({
 
   const selectSort = useCallback(
     ({ row: selectedIndex }) => {
-      setSort({ sort: moreKeys[selectedIndex] })
+      const sort = moreKeys[selectedIndex]
+
+      setSort({ sort })
       // setShowOptions(false)
+
+      logEvent({
+        eventName: `Library: Set sort`,
+        properties: {
+          sort,
+        },
+      })
     },
     [],
   )
@@ -124,6 +134,13 @@ const LibraryHeader = ({
       pushToBookDownloadQueue({
         bookId: bookIdToDownload,
         pushToFront: true,
+      })
+
+      logEvent({
+        eventName: `Download book`,
+        properties: {
+          title: bookTitle || `Book id: ${bookIdToDownload}`,
+        },
       })
     },
     [ bookIdToDownload ],

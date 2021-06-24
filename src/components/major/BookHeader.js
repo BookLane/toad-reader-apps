@@ -13,6 +13,7 @@ import useRouterState from "../../hooks/useRouterState"
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, toggleSidePanelOpen, setSelectedToolUid } from "../../redux/actions"
 import { removeEpub } from "../../utils/removeEpub"
 import { getFirstBookLinkInfo, openURL } from "../../utils/toolbox"
+import { logEvent } from "../../utils/analytics"
 
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
@@ -90,6 +91,13 @@ const BookHeader = React.memo(({
               })
 
               historyGo(-2)
+
+              logEvent({
+                eventName: `Remove book`,
+                properties: {
+                  title: books[bookId].title || `Book id: ${bookId}`,
+                },
+              })
             },
             // style: 'destructive',
           },

@@ -28,6 +28,7 @@ import { loadIconFonts } from "./src/components/basic/Icon"
 import useSetTimeout from './src/hooks/useSetTimeout'
 import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
 import * as Sentry from "./src/utils/sentry"
+import { logEvent } from "./src/utils/analytics"
 
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
@@ -94,6 +95,8 @@ const App = () => {
   const [ setInitialOpenTimeout ] = useSetTimeout()
 
   usePushNotificationsSetup()
+
+  useEffect(() => { logEvent({ eventName: `OpenApp` }) }, [])
 
   useEffect(() => { setIsFirstRender(false) }, [])
 
