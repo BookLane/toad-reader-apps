@@ -29,6 +29,7 @@ const actionStrings = {
   'push-web-staging-to-production': `About to push web staging to production for ${domain}.`,
   'push-web-beta-to-production': `About to push web beta to production for ${domain}.`,
   'push-web-to-production-all-tenants': `About to push web to staging and production for ALL TENANTS.`,
+  'push-all-to-production': `About to push web to staging and production AND apps to production for ${domain}.`,
   'build-android-staging': `About to build Android STAGING app (connects to staging backend) for ${domain}.`,
   'build-android-beta': `About to build Android BETA app (connects to production backend) for ${domain}.`,
   'build-android-production': `About to build Android PRODUCTION app for ${domain}.`,

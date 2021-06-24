@@ -30,6 +30,7 @@
     "push-web-staging-to-production": "(node ./scripts/echoActionToPerform.js --action push-web-staging-to-production && npm run confirm -s && node ./scripts/pushWebStagingToProduction.js) || true",
     "push-web-beta-to-production": "(node ./scripts/echoActionToPerform.js --action push-web-beta-to-production && npm run confirm -s && node ./scripts/pushWebBetaToProduction.js) || true",
     "push-web-to-production-all-tenants": "(node ./scripts/echoActionToPerform.js --action push-web-to-production-all-tenants && npm run confirm -s && ./scripts/pushWebToProductionAllTenants.sh) || true",
+    "push-all-to-production": "(node ./scripts/echoActionToPerform.js --action push-all-to-production && npm run confirm -s && npm run go-push-web-to-staging && node ./scripts/pushwebstagingtoproduction.js && npm run go-push-apps-to-production) || true",
     "remind": "read -p 'Did you update the version number and rerun change-tenant? (y/N) ' -n 1 -r && echo '\n' && [[ $REPLY =~ ^[Yy]$ ]]",
     "rollback-web": "node ./scripts/rollBackWeb.js",
     "rollback-apps": "expo publish:history && echo '\n\nINSTRUCTIONS: Run `expo publish:set --release-channel production --publish-id [publicationId]` for both iOS and Android.\n'",
