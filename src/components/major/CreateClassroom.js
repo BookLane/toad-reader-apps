@@ -105,7 +105,7 @@ const CreateClassroom = React.memo(({
     [ basedOffOptions ],
   )
 
-  const selectedOption = basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0]
+  const selectedOption = basedOffOptions.filter(({ uid }) => uid === basedOffUid)[0] || { title: "" }
 
   return (
     <>
