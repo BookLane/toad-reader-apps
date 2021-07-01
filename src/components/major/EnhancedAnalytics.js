@@ -5,12 +5,15 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
 import { getDateLine, getTimeLine, orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import dummyStudents from '../../utils/dummyStudents'
+import dummyAnalytics from '../../utils/dummyAnalytics'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useDashboardData from "../../hooks/useDashboardData"
 
 import CoverAndSpin from '../basic/CoverAndSpin'
+import NoStudentsBox from '../basic/NoStudentsBox'
 import EnhancedAnalyticsTotalReading from './EnhancedAnalyticsTotalReading'
 import EnhancedAnalyticsReadingBySpine from './EnhancedAnalyticsReadingBySpine'
 import EnhancedAnalyticsReadingOverTime from './EnhancedAnalyticsReadingOverTime'
@@ -29,12 +32,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     color: 'red',
     fontSize: 17,
-  },
-  none: {
-    textAlign: 'center',
-    paddingTop: 50,
-    fontSize: 16,
-    fontWeight: '100',
   },
   genericContainer: {
     marginVertical: 20,
@@ -78,7 +75,7 @@ const EnhancedAnalytics = React.memo(({
   sidePanelSettings,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const { fullPageWidth } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
@@ -93,7 +90,7 @@ const EnhancedAnalytics = React.memo(({
 
   const orderedData = useMemo(
     () => {
-      if(!data) return {}
+      if(!data || students.length === 0) return dummyAnalytics
 
       const spineLabels = {}
       spines.forEach(({ idref, label }) => {
@@ -145,7 +142,7 @@ const EnhancedAnalytics = React.memo(({
       }
       
     },
-    [ data ],
+    [ data, students ],
   )
 
   if(!classroomUid) return null
@@ -166,21 +163,13 @@ const EnhancedAnalytics = React.memo(({
     )
   }
 
-  if(students.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not yet have any students.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
+
+      {students.length === 0 && <NoStudentsBox />}
 
       <View style={wideMode ? styles.chartWideMode : styles.chart}>
         <Text style={styles.chartName}>
@@ -188,7 +177,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsTotalReading
           readingBySpine={orderedData.readingBySpine}
-          numStudents={students.length}
+          numStudents={students.length || dummyStudents.length}
         />
       </View>
 
@@ -222,7 +211,7 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsStatusesByDueDate
           readingScheduleStatuses={orderedData.readingScheduleStatuses}
           width={chartWidth}
-          numStudents={students.length}
+          numStudents={students.length || dummyStudents.length}
         />
       </View>
 
@@ -233,7 +222,7 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsQuizCompletions
           completionsByQuiz={orderedData.completionsByQuiz}
           width={chartWidth}
-          numStudents={students.length}
+          numStudents={students.length || dummyStudents.length}
         />
       </View>
 
