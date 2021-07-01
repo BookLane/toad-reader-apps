@@ -1,19 +1,26 @@
 import React, { useCallback, useMemo } from "react"
+import Constants from 'expo-constants'
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Button } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 
-import { validDomain, splitDraftDataToOptionsAndFrontMatter } from '../../utils/toolbox'
+import { validDomain, splitDraftDataToOptionsAndFrontMatter, openURL } from '../../utils/toolbox'
 import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useNetwork from "../../hooks/useNetwork"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useRouterState from "../../hooks/useRouterState"
 import { publishTool, updateClassroom, deleteTool, setSelectedToolUid } from "../../redux/actions"
+// import { youtubeRegex } from "./VideoTool"
 
 import HeaderIcon from "../basic/HeaderIcon"
+
+const {
+  ENHANCED_EDITOR_HOW_TO_LINKS={},
+} = Constants.manifest.extra
 
 const buttons = {
   flexDirection: 'row',
@@ -47,9 +54,10 @@ const styles = StyleSheet.create({
   statusAndWarning: {
     marginVertical: 15,
     flexGrow: 1,
+    alignItems: 'flex-start',
   },
   statusAndWarningWideMode: {
-    textAlign: 'right',
+    alignItems: 'flex-end',
   },
   status: {
     color: 'rgba(0,0,0,.5)',
@@ -57,12 +65,17 @@ const styles = StyleSheet.create({
   },
   warningMessage: {
     marginTop: 4,
-    textAlign: 'left',
     color: 'red',
     fontSize: 12,
   },
   warning: {
     fontWeight: 'bold',
+  },
+  hotToLink: {
+    fontSize: 12,    
+    marginTop: 4,
+    color: 'rgb(51, 102, 255)',
+    textDecorationLine: 'underline',
   },
   previewContainer: {
     flexDirection: 'row',
@@ -111,6 +124,7 @@ const StatusAndActions = React.memo(({
   const wideMode = useWideMode()
   const { online } = useNetwork()
   const getClassroomDraftData = useInstanceValue(classroom.draftData || {})
+  const { historyPush } = useRouterState()
 
   const { toolInfoByType } = useMemo(getToolInfo, [])
 
@@ -200,6 +214,18 @@ const StatusAndActions = React.memo(({
   )
 
   const onPreview = useCallback(() => setViewingPreview(true), [])
+
+  const openHowToLink = useCallback(
+    linkText => {
+      const url = (ENHANCED_EDITOR_HOW_TO_LINKS[selectedTool.toolType] || {})[linkText]
+
+      // if(youtubeRegex.test(url)) {
+      // }
+
+      openURL({ url, historyPush })
+    },
+    [ selectedTool.toolType ],
+  )
 
   const publishedStatusMessages = {
     published: i18n("No changes since last publish.", "", "enhanced"),
@@ -309,22 +335,17 @@ const StatusAndActions = React.memo(({
           />
         }
       </View>
-      <View style={styles.statusAndWarning}>
-        <Text
-          style={[
-            styles.status,
-            wideMode ? styles.statusAndWarningWideMode : null,
-          ]}
-        >
+      <View
+        style={[
+          styles.statusAndWarning,
+          wideMode ? styles.statusAndWarningWideMode : null,
+        ]}
+      >
+        <Text style={styles.status} >
           {publishedStatusMessages[publishedStatus]}
         </Text>
         {warnOfStudentDataLoss &&
-          <Text
-            style={[
-              styles.warningMessage,
-              wideMode ? styles.statusAndWarningWideMode : null,
-            ]}
-          >
+          <Text style={styles.warningMessage} >
             <Text style={styles.warning}>
               {i18n("Warning:")}
             </Text>
@@ -332,6 +353,19 @@ const StatusAndActions = React.memo(({
             {i18n("Publishing an update will erase this tool’s student data.")}
           </Text>
         }
+        {Object.keys(ENHANCED_EDITOR_HOW_TO_LINKS[selectedTool.toolType] || {}).map(linkText => (
+          <TouchableOpacity
+            key={linkText}
+            onPress={() => openHowToLink(linkText)}
+          >
+            <Text
+              style={styles.hotToLink}
+              accessibilityRole="link"
+            >
+              {linkText}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
       {!viewingOptions &&
         <View

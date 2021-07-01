@@ -8,6 +8,10 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  opacity: .7;
+}
+
 input {
   outline: none !important;
 }
