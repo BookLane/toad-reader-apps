@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from "react"
+import Constants from 'expo-constants'
 import { StyleSheet, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -8,6 +9,11 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
 
 import ReadingScheduleDate from './ReadingScheduleDate'
+import VideoTool from './VideoTool'
+
+const {
+  ENHANCED_EDITOR_HOW_TO_LINKS={},
+} = Constants.manifest.extra
 
 const container = {
   flexGrow: 1,
@@ -28,6 +34,11 @@ const styles = StyleSheet.create({
   instructions: {
     marginBottom: 20,
     fontWeight: '200',
+  },
+  videoContainer: {
+    width: '100%',
+    maxWidth: 900,
+    marginTop: 40,
   },
 })
 
@@ -170,6 +181,12 @@ const ReadingSchedule = React.memo(({
           goUpdate={goUpdate}
           scheduleDatesToDisplay={scheduleDatesToDisplay}
           goTo={goTo}
+        />
+      ))}
+      {Object.values(ENHANCED_EDITOR_HOW_TO_LINKS.READING_SCHEDULE || {}).map(videoLink => (
+        <VideoTool
+          videoLink={videoLink}
+          containerStyle={styles.videoContainer}
         />
       ))}
     </ScrollView>

@@ -35,6 +35,7 @@ const VideoTool = React.memo(({
   startTime,
   endTime,
   subtitlesOn,
+  containerStyle,
 }) => {
 
   const wideModeWithEitherOrientation = useWideMode(true)
@@ -248,7 +249,7 @@ const VideoTool = React.memo(({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={containerStyle || styles.container}>
       <View style={styles.videoSizer}>
         {getVideoComponent()}
       </View>
