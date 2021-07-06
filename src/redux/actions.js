@@ -401,3 +401,8 @@ export const addRecentSearch = ({ bookId, info }) => ({
   bookId,
   info,
 })
+
+export const updateMetadataKeys = metadataKeys => ({
+  type: "UPDATE_METADATA_KEYS",
+  metadataKeys,
+})

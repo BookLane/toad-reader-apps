@@ -2,6 +2,7 @@ import { combineReducers } from "redux"
 import reduceReducers from "reduce-reducers"
 
 import accounts from "./reducers/accounts"
+import metadataKeys from "./reducers/metadataKeys"
 import bookDownloadQueue from "./reducers/bookDownloadQueue"
 import books from "./reducers/books"
 import currentBookId from "./reducers/currentBookId"
@@ -25,6 +26,7 @@ import endRecordReading from "./reducers/endRecordReading"
 
 const slicedReducers = combineReducers({
   accounts,
+  metadataKeys,
   bookDownloadQueue,
   books,
   currentBookId,

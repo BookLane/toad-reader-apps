@@ -25,6 +25,7 @@ import SafeLayout from "../basic/SafeLayout"
 import Button from "../basic/Button"
 import BookImporter from "../major/BookImporter"
 import AccessCodeDialog from "../major/AccessCodeDialog"
+import MetadataDialog from "../major/MetadataDialog"
 import Book from "./Book"
 import Reports from "./Reports"
 import ErrorMessage from "./ErrorMessage"
@@ -42,7 +43,7 @@ import Dialog from "../major/Dialog"
 import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 
-import { addBooks, setCoverFilename, reSort, setFetchingBooks,
+import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
          autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid } from "../../redux/actions"
 
@@ -113,6 +114,7 @@ const Library = ({
   setCoverFilename,
   reSort,
   setFetchingBooks,
+  updateMetadataKeys,
   removeAccount,
   updateAccount,
   setReaderStatus,
@@ -131,6 +133,7 @@ const Library = ({
   const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
   const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
+  const [ showMetadataDialog, setShowMetadataDialog ] = useState(true)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
@@ -195,6 +198,37 @@ const Library = ({
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
         // Switching the orientation in android causes a bug related to the KeyboardAvoidingView
       }
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      (async () => {
+
+        // update metadataKeys
+
+        const idpId = Object.keys(idps)[0]
+
+        console.log(`Getting updated metadata keys (idpId: ${idpId})...`)
+
+        const metadataKeysUrl = `${getDataOrigin(idps[idpId])}/metadatakeys`
+        const response = await safeFetch(metadataKeysUrl, getReqOptionsWithAdditions({
+          headers: {
+            "Content-Type": 'application/json',
+          },
+        }))
+
+        try {
+          const { metadataKeys } = await response.json()
+          updateMetadataKeys(metadataKeys)
+        } catch(err) {
+          console.log(`/metadatakeys GET had an error.`, err.message, response.status)
+        }
+
+        console.log(`Updated metadata keys (idpId: ${idpId})...`)
+
+      })()
     },
     [],
   )
@@ -420,6 +454,15 @@ const Library = ({
   const openAccessCodeDialog = useCallback(
     () => {
       setShowAccessCodeDialog(true)
+      historyGoBack()
+    },
+    [],
+  )
+
+  const openMetadataDialog = useCallback(
+    () => {
+      setShowMetadataDialog(true)
+      historyGoBack()
     },
     [],
   )
@@ -434,6 +477,13 @@ const Library = ({
   const closeAccessCodeDialog = useCallback(
     () => {
       setShowAccessCodeDialog(false)
+    },
+    [],
+  )
+
+  const closeMetadataDialog = useCallback(
+    () => {
+      setShowMetadataDialog(false)
     },
     [],
   )
@@ -647,6 +697,7 @@ const Library = ({
               onReplaceExisting={openConfirmReplaceExisting}
               onShowEnvironmentUrls={openEnvironmentUrlsDialog}
               onOpenAccessCodeDialog={openAccessCodeDialog}
+              onOpenMetadataDialog={openMetadataDialog}
             />
           )
       }
@@ -818,6 +869,12 @@ const Library = ({
         />
       }
 
+      <MetadataDialog
+        open={!!showMetadataDialog}
+        onClose={closeMetadataDialog}
+        handleNewLibrary={handleNewLibrary}
+      />
+
     </SideMenu>
   )
 }
@@ -835,6 +892,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCoverFilename,
   reSort,
   setFetchingBooks,
+  updateMetadataKeys,
   removeAccount,
   updateAccount,
   setReaderStatus,

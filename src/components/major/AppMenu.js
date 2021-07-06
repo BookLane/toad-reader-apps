@@ -68,6 +68,7 @@ const AppMenu = ({
   onReplaceExisting,
   onShowEnvironmentUrls,
   onOpenAccessCodeDialog,
+  onOpenMetadataDialog,
 
   accounts,
   idps,
@@ -347,6 +348,14 @@ const AppMenu = ({
         title: i18n("Replace an existing EPUB"),
         // icon: onDeviceIcon,
         onSelect: onReplaceExisting,
+        disabled: !online,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+      {
+        title: i18n("Manage book metadata categories"),
+        // icon: removeIcon,
+        onSelect: onOpenMetadataDialog,
         disabled: !online,
       },
     ]),

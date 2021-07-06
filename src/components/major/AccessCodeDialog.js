@@ -50,8 +50,8 @@ const AccessCodeDialog = ({
         const { idpId } = getIdsFromAccountId(accountId)
         const { cookie, libraryHash } = accounts[accountId]
 
-        const libraryUrl = `${getDataOrigin(idps[idpId])}/submitaccesscode?hash=${libraryHash}`
-        let response = await safeFetch(libraryUrl, getReqOptionsWithAdditions({
+        const submitAccessCodeUrl = `${getDataOrigin(idps[idpId])}/submitaccesscode?hash=${libraryHash}`
+        let response = await safeFetch(submitAccessCodeUrl, getReqOptionsWithAdditions({
           method: 'POST',
           headers: {
             "Content-Type": 'application/json',

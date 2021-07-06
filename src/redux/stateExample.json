@@ -38,6 +38,19 @@
       "libraryHash": "340b778fd50ed642c9a63b38e731027d"
     }
   },
+  "metadataKeys": [
+    {
+      "name": "Description"
+    },
+    {
+      "name": "Genre",
+      "options": [
+        "Non-fiction",
+        "Fiction",
+        "Reference"
+      ]
+    }
+  ],
   "fetchingBooks": false,
   "bookDownloadQueue": [65, 66],
   "downloadProgressByBookId": {
