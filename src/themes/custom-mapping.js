@@ -378,6 +378,17 @@ const mapping = {
       component: 'BookInfoId',
     },
     {
+      component: 'MetadataFilterChip',
+      parameters: {
+        backgroundColor: 'color-primary-500',
+        state: {
+          hover: {
+            backgroundColor: 'color-primary-300',
+          },
+        },
+      },
+    },
+    {
       component: 'LinkLikeText',
       parameters: {
         color: 'color-primary-500',  // linkThemedStyle

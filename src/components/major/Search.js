@@ -13,6 +13,7 @@ import { loadIndex } from "../../utils/indexEpub"
 import Input from "../basic/Input"
 import Icon from "../basic/Icon"
 import CoverAndSpin from "../basic/CoverAndSpin"
+import MetadataFilterChips from "../basic/MetadataFilterChips"
 
 import { setBookCookies, addRecentSearch } from "../../redux/actions"
 
@@ -387,6 +388,7 @@ const Search = ({
             </Text>
           }
           {!!normalizedSearchStr && suggestions === 'fetching' && bookSuggestions.length === 0 && <CoverAndSpin />}
+          {!bookId && !normalizedSearchStr && <MetadataFilterChips requestClose={requestClose} />}
           <ScrollView
             style={styles.suggestionScrollView}
             contentContainerStyle={styles.suggestionContentContainer}
