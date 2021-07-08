@@ -10,6 +10,7 @@ import useWebSocket from '../../hooks/useWebSocket'
 import useScroll from '../../hooks/useScroll'
 import useKeyboardSize from '../../hooks/useKeyboardSize'
 import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
+import getDummyDiscussionQuestions from "../../utils/getDummyDiscussionQuestions"
 
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
@@ -150,10 +151,12 @@ const DiscussionQuestionTool = React.memo(({
   books,
 }) => {
 
+  const isDummy = /^dummy/.test(toolUid)
+
   const { classroomUid, idpId, userId } = useClassroomInfo({ books, bookId })
 
   const [ inputHeight, setInputHeight ] = useState(0)
-  const [ responses, setResponses ] = useState([])
+  const [ responses, setResponses ] = useState((isDummy && getDummyDiscussionQuestions().responses[toolUid]) || [])
   const [ newResponseValue, setNewResponseValue ] = useState("")
   const [ gettingResponses, setGettingResponses ] = useState(false)
 
@@ -200,6 +203,7 @@ const DiscussionQuestionTool = React.memo(({
       classroomUid,
       toolUid,
     ],
+    off: isDummy,
     onOpen: () => {
       setGettingResponses(true)
       wsSend.current({
@@ -300,7 +304,7 @@ const DiscussionQuestionTool = React.memo(({
 
       if(text) {
 
-        if(viewingPreview) {
+        if(viewingPreview || isDummy) {
           const message = i18n("In the live discussion, this would add your response to the bottom of the feed.")
 
           if(Platform.OS === 'web') {
@@ -331,7 +335,7 @@ const DiscussionQuestionTool = React.memo(({
       setInputHeight(0)
 
     },
-    [ viewingPreview ],
+    [ viewingPreview, isDummy, toolUid ],
   )
 
   const SendIcon = useCallback(({ style }) => <Icon name='md-send' style={styles.sendIcon} />, [])

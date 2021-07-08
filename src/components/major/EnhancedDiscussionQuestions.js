@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
+import getDummyDiscussionQuestions from '../../utils/getDummyDiscussionQuestions'
 
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -106,6 +107,8 @@ const EnhancedDiscussionQuestions = React.memo(({
         })
       })
 
+      if(orderedQuestions.length === 0) return getDummyDiscussionQuestions()
+
       return { orderedQuestions }
     },
     [ visibleTools, spines ],
@@ -130,16 +133,6 @@ const EnhancedDiscussionQuestions = React.memo(({
   )
 
   if(!classroomUid) return null
-
-  if(orderedQuestions.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any discussion questions.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
 
   const selectedOptions = wideMode ? currentQuestions : currentQuestions[0]
 

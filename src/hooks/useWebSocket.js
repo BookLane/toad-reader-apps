@@ -6,7 +6,7 @@ import useSetTimeout from './useSetTimeout'
 
 const noop = () => {}
 
-const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen, onMessage }) => {
+const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen, onMessage, off }) => {
 
   const wsSend = useRef(noop)
   const wsClose = useRef(noop)
@@ -25,6 +25,8 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
 
   useEffect(
     () => {
+      if(off) return
+
       let ws
 
       const initWebSocket = () => {
@@ -100,7 +102,7 @@ const useWebSocket = ({ idp, accounts, socketName, appendToPathItems=[], onOpen,
         }
       }
     },
-    [ path, cookie ],
+    [ path, cookie, off ],
   )
 
   return {

@@ -45,8 +45,8 @@ const orderedPolls = [
   },
 ]
 
-const polls = {
+const reflectionQuestions = {
   orderedPolls,
 }
 
-export default polls
+export default reflectionQuestions

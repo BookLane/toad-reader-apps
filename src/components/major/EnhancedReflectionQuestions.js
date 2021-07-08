@@ -10,9 +10,12 @@ import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
+import dummyReflectionQuestions from '../../utils/dummyReflectionQuestions'
+import dummyStudents from '../../utils/dummyStudents'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
 import FAB from '../basic/FAB'
+import NoStudentsBox from '../basic/NoStudentsBox'
 
 const width = 130
 
@@ -175,6 +178,8 @@ const EnhancedReflectionQuestions = React.memo(({
 
       }
 
+      if(students.length === 0 || orderedQuestions.length === 0) return dummyReflectionQuestions
+
       return { orderedQuestions, answers, csvData }
     },
     [ students, data, spines ],
@@ -203,30 +208,20 @@ const EnhancedReflectionQuestions = React.memo(({
     )
   }
 
-  if(students.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not yet have any students.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
-  if(orderedQuestions.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any reflection questions.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
   const currentQuestion = orderedQuestions.filter(({ uid }) => uid === currentQuestionUid)[0] || orderedQuestions[0]
 
   return (
     <View style={wideMode ? styles.containerWideMode : styles.container}>
+
+      {(students.length === 0 || orderedQuestions.length === 0) &&
+        <NoStudentsBox
+          message={
+            students.length !== 0
+            && i18n("This classroom does not contain any reflection questions.", "", "enhanced")
+          }
+        />
+      }
+
       <View style={wideMode ? styles.selectContainerWideMode : styles.selectContainer}>
         <Select
           label={i18n("Question name", "", "enhanced")}
@@ -250,7 +245,7 @@ const EnhancedReflectionQuestions = React.memo(({
         style={styles.scrollView}
         contentContainerStyle={wideMode ? styles.scrollViewContentWideMode : styles.scrollViewContent}
       >
-        {students.map(({ user_id, fullname, email }) => (
+        {(students.length > 0 ? students : dummyStudents).map(({ user_id, fullname, email }) => (
           <View style={styles.row} key={user_id}>
             <Text style={styles.student}>
               {fullname || email}
@@ -261,7 +256,7 @@ const EnhancedReflectionQuestions = React.memo(({
           </View>
         ))}
       </ScrollView>
-      {Platform.OS === 'web' &&
+      {Platform.OS === 'web' && !!csvData &&
         <CSVLink
           data={csvData}
           filename={
