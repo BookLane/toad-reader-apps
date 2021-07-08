@@ -119,6 +119,7 @@ const MetadataDetailDialog = ({
             value={name}
             onChangeText={updateName}
             style={styles.nameInput}
+            maxLength={100}
           />
 
           <Text style={styles.typeLabel}>

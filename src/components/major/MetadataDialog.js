@@ -227,7 +227,10 @@ const MetadataDialog = ({
               return (
                 <View key={idx} style={styles.line}>
                   <View style={styles.keyLine}>
-                    <Text style={styles.key}>
+                    <Text
+                      style={styles.key}
+                      numberOfLines={1}
+                    >
                       {name}
                     </Text>
                     <Button
