@@ -377,6 +377,17 @@ const mapping = {
     {
       component: 'BookInfoId',
     },
+    {
+      component: 'LinkLikeText',
+      parameters: {
+        color: 'color-primary-500',  // linkThemedStyle
+        state: {
+          hover: {
+            color: 'color-primary-300',
+          },
+        },
+      },
+    },
     ...MAPPING_CUSTOMIZATION,
   ]),
   

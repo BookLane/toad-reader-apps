@@ -1,25 +1,30 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { Platform } from "react-native"
+import { Platform, Text, StyleSheet } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { OverflowMenu, MenuItem, IndexPath } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
 
-import { getIdsFromAccountId } from "../../utils/toolbox"
+import { getIdsFromAccountId, textToReactNative } from "../../utils/toolbox"
 import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from '../../hooks/useRouterState'
 
+import LinkLikeText from "../basic/LinkLikeText"
 import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import HeaderSearch from "../basic/HeaderSearch"
 import Dialog from "./Dialog"
 
-import { setSort, toggleView, pushToBookDownloadQueue } from "../../redux/actions"
+import { setSort, toggleView, pushToBookDownloadQueue, changeLibraryFilter } from "../../redux/actions"
 
-// const styles = StyleSheet.create({
-// })
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 19,
+    fontWeight: '400',
+  },
+})
 
 const LibraryHeader = ({
   idps,
@@ -31,6 +36,7 @@ const LibraryHeader = ({
   setSort,
   toggleView,
   pushToBookDownloadQueue,
+  changeLibraryFilter,
 }) => {
 
   const [ showOptions, toggleShowOptions ] = useToggle(false)
@@ -44,6 +50,8 @@ const LibraryHeader = ({
 
   const { historyPush } = useRouterState()
 
+  const removeFilter = useCallback(() => changeLibraryFilter(), [])
+
   const scope = library.scope || "all"
 
   const idpId = getIdsFromAccountId(scope).idpId || Object.keys(idps)[0]
@@ -53,6 +61,26 @@ const LibraryHeader = ({
 
   if(scope == 'device') {
     title = i18n("On device")
+  }
+
+  if(library.filter) {
+    title = (
+      <Text
+        numberOfLines={1}
+        style={styles.title}
+      >
+        <LinkLikeText
+          onPress={removeFilter}
+          style={styles.title}
+        >
+          {title}
+        </LinkLikeText>
+        {` › `}
+        <Text>
+          {textToReactNative(library.filter.value)}
+        </Text>
+      </Text>
+    )
   }
 
   if(accounts[scope]) {
@@ -238,6 +266,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   toggleView,
   setSort,
   pushToBookDownloadQueue,
+  changeLibraryFilter,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(LibraryHeader)

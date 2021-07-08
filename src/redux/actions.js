@@ -322,6 +322,11 @@ export const changeLibraryScope = ({ scope }) => ({
   scope,
 })
 
+export const changeLibraryFilter = filter => ({
+  type: "CHANGE_LIBRARY_FILTER",
+  filter,
+})
+
 export const setLatestLocation = ({ bookId, latestLocation }) => ({
   type: "SET_LATEST_LOCATION",
   bookId,

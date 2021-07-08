@@ -2,6 +2,7 @@ import { logEvent } from "../../utils/analytics"
 
 const initialState = {
   sort: "recent",
+  filter: null,
   view: "covers",
   bookList: [],
 }
@@ -32,9 +33,22 @@ export default function(state = initialState, action) {
         eventName: `Library: Change which books are shown`,
         properties: {
           scope: newState.scope,
+          filter: (newState.filter || {}).value || 'none',
         },
       })
       return newState
+
+    case "CHANGE_LIBRARY_FILTER": {
+      newState.filter = action.filter || null
+      logEvent({
+        eventName: `Library: Change which books are shown`,
+        properties: {
+          scope: newState.scope,
+          filter: (newState.filter || {}).value || 'none',
+        },
+      })
+      return newState
+    }
 
     case "REMOVE_ACCOUNT":
       newState.bookList = []

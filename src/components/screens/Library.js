@@ -615,7 +615,7 @@ const Library = ({
 
   const LibraryViewer = library.view == "covers" ? LibraryCovers : LibraryList
   const validLibraryBookList = library.bookList.filter(bookId => books[bookId])  // just in case: to prevent error which crashes the app
-  const bookList = (
+  let bookList = (
     scope == 'all'
       ? validLibraryBookList
       : (scope == 'device'
@@ -625,6 +625,15 @@ const Library = ({
         ))
       )
   )
+
+  if((library.filter || {}).type === 'metadata') {
+    bookList = bookList.filter(bookId => (
+      (books[bookId].metadataValues || []).some(({ metadata_key_id, value }) => (
+        metadata_key_id === library.filter.metadataKeyId
+        && value === library.filter.value
+      ))
+    ))
+  }
 
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
 

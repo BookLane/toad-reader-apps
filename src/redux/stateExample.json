@@ -249,7 +249,12 @@
       65
     ],
     "view": "covers",
-    "scope": "device"
+    "scope": "device",
+    "filter": {
+      "type": "metadata",
+      "metadataKeyId": 1,
+      "value": "Fiction"
+    }
   },
   "currentReadingRecord": {
     "bookId": 66,
