@@ -100,7 +100,7 @@ const EnhancedPolls = React.memo(({
     query: "getpolls",
   })
 
-  const { orderedPolls } = useMemo(
+  const { orderedPolls, isDummy=false } = useMemo(
     () => {
       let orderedPolls = []
 
@@ -145,7 +145,7 @@ const EnhancedPolls = React.memo(({
       style={styles.container}
     >
 
-      {(students.length === 0 || orderedPolls.length === 0) &&
+      {isDummy &&
         <NoStudentsBox
           message={
             students.length !== 0
@@ -223,7 +223,7 @@ const EnhancedPolls = React.memo(({
                   />
                   <Text style={styles.numAnswered}>
                     {i18n("{{percent}}% of students have answered.", "", "enhanced", {
-                      percent: parseInt((numResponses / (students.length || dummyStudents.length)) * 100),
+                      percent: parseInt((numResponses / (isDummy ? dummyStudents : students).length) * 100),
                     })}
                   </Text>
                 </View>

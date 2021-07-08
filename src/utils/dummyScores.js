@@ -58,6 +58,7 @@ const dataColumns = [
 
 const scores = {
   dataColumns,
+  isDummy: true,
 }
 
 export default scores

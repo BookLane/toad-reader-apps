@@ -88,7 +88,7 @@ const EnhancedAnalytics = React.memo(({
     query: "getanalytics",
   })
 
-  const orderedData = useMemo(
+  const { isDummy=false, ...orderedData } = useMemo(
     () => {
       if(!data || students.length === 0) return dummyAnalytics
 
@@ -169,7 +169,7 @@ const EnhancedAnalytics = React.memo(({
       contentContainerStyle={styles.contentContainer}
     >
 
-      {students.length === 0 && <NoStudentsBox />}
+      {isDummy && <NoStudentsBox />}
 
       <View style={wideMode ? styles.chartWideMode : styles.chart}>
         <Text style={styles.chartName}>
@@ -177,7 +177,7 @@ const EnhancedAnalytics = React.memo(({
         </Text>
         <EnhancedAnalyticsTotalReading
           readingBySpine={orderedData.readingBySpine}
-          numStudents={students.length || dummyStudents.length}
+          numStudents={(isDummy ? dummyStudents : students).length}
         />
       </View>
 
@@ -211,7 +211,7 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsStatusesByDueDate
           readingScheduleStatuses={orderedData.readingScheduleStatuses}
           width={chartWidth}
-          numStudents={students.length || dummyStudents.length}
+          numStudents={(isDummy ? dummyStudents : students).length}
         />
       </View>
 
@@ -222,7 +222,7 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsQuizCompletions
           completionsByQuiz={orderedData.completionsByQuiz}
           width={chartWidth}
-          numStudents={students.length || dummyStudents.length}
+          numStudents={(isDummy ? dummyStudents : students).length}
         />
       </View>
 

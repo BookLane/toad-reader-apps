@@ -40,6 +40,7 @@ const getDummyDiscussionQuestions = () => ({
       },
     ],
   },
+  isDummy: true,
 })
 
 export default getDummyDiscussionQuestions

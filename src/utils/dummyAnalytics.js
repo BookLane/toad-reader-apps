@@ -157,6 +157,7 @@ const analytics = {
   readingScheduleStatuses,
   completionsByQuiz,
   averageScoresByQuiz,
+  isDummy: true,
 }
 
 export default analytics

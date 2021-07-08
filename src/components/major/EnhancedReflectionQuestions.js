@@ -132,7 +132,7 @@ const EnhancedReflectionQuestions = React.memo(({
 
   const [ currentQuestionUid, setCurrentQuestionUid ] = useState()
 
-  const { orderedQuestions, answers, csvData } = useMemo(
+  const { orderedQuestions, answers, csvData, isDummy=false } = useMemo(
     () => {
       const orderedQuestions = []
       const studentIndexes = {}
@@ -213,7 +213,7 @@ const EnhancedReflectionQuestions = React.memo(({
   return (
     <View style={wideMode ? styles.containerWideMode : styles.container}>
 
-      {(students.length === 0 || orderedQuestions.length === 0) &&
+      {isDummy &&
         <NoStudentsBox
           message={
             students.length !== 0
@@ -245,7 +245,7 @@ const EnhancedReflectionQuestions = React.memo(({
         style={styles.scrollView}
         contentContainerStyle={wideMode ? styles.scrollViewContentWideMode : styles.scrollViewContent}
       >
-        {(students.length > 0 ? students : dummyStudents).map(({ user_id, fullname, email }) => (
+        {(isDummy ? dummyStudents : students).map(({ user_id, fullname, email }) => (
           <View style={styles.row} key={user_id}>
             <Text style={styles.student}>
               {fullname || email}

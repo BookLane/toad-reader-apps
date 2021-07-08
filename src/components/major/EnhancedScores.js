@@ -138,7 +138,7 @@ const EnhancedScores = React.memo(({
     query: "getscores",
   })
 
-  const { dataColumns, csvData } = useMemo(
+  const { dataColumns, csvData, isDummy=false } = useMemo(
     () => {
       const orderedQuizzes = []
       const studentIndexes = {}
@@ -215,7 +215,7 @@ const EnhancedScores = React.memo(({
   }
 
   const columnHeightStyle = {
-    height: (height + margin*2) * ((students.length || dummyStudents.length) + 1) + paddingVertical*2,
+    height: (height + margin*2) * ((isDummy ? dummyStudents : students).length + 1) + paddingVertical*2,
   }
 
   return (
@@ -225,10 +225,10 @@ const EnhancedScores = React.memo(({
         contentContainerStyle={styles.containerScrollViewContent}
       >
 
-        {(students.length === 0 || !csvData) &&
+        {isDummy &&
           <NoStudentsBox
             message={
-              students.length === 0
+              students.length !== 0
               && i18n("This classroom does not contain any quizzes.", "", "enhanced")
             }
           />
@@ -250,7 +250,7 @@ const EnhancedScores = React.memo(({
                 {i18n("Student", "", "enhanced")}
               </Text>
             </View>
-            {(students.length > 0 ? students : dummyStudents).map(({ fullname, email }) => (
+            {(isDummy ? dummyStudents : students).map(({ fullname, email }) => (
               <Text
                 key={email}
                 style={styles.studentNameCell}

@@ -49,6 +49,7 @@ const answers = {
 const reflectionQuestions = {
   orderedQuestions,
   answers,
+  isDummy: true,
 }
 
 export default reflectionQuestions
