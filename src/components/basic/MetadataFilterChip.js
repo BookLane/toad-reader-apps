@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native"
 import { styled } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
@@ -6,7 +6,6 @@ import { connect } from "react-redux"
 
 import useThemedStyleSets from '../../hooks/useThemedStyleSets'
 import useThemedStates from '../../hooks/useThemedStates'
-import { useCallback } from "react/cjs/react.development"
 import { textToReactNative } from "../../utils/toolbox"
 
 import { changeLibraryFilter } from "../../redux/actions"

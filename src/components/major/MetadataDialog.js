@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
@@ -13,7 +13,6 @@ import Icon from "../basic/Icon"
 import MetadataDetailDialog from "./MetadataDetailDialog"
 
 import { updateMetadataKeys } from "../../redux/actions"
-import { useEffect } from "react/cjs/react.development"
 
 const keyOptionButton = {
   paddingHorizontal: 0,
