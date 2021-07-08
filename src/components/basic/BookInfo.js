@@ -9,6 +9,7 @@ import BookInfoCover from "./BookInfoCover"
 import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
 import BookInfoTrial from "./BookInfoTrial"
+import BookInfoMetadata from "./BookInfoMetadata"
 import BookInfoIsbn from "./BookInfoIsbn"
 import BookInfoId from "./BookInfoId"
 import BookInfoSize from "./BookInfoSize"
@@ -17,6 +18,8 @@ import { i18n } from "inline-i18n"
 import Dialog from "../major/Dialog"
 import CheckBox from "./CheckBox"
 import CoverAndSpin from "./CoverAndSpin"
+import BookMetadataDialog from "../major/BookMetadataDialog"
+import useToggle from "react-use/lib/useToggle"
 
 import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 import useRouterState from "../../hooks/useRouterState"
@@ -32,6 +35,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginBottom: LIBRARY_LIST_MARGIN,
+    maxWidth: 700,
   },
   containerFirstRow: {
     marginTop: LIBRARY_LIST_MARGIN,
@@ -47,6 +51,9 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flexGrow: 1,
+  },
+  buttonSpacer: {
+    width: 7,
   },
   checkBoxContainer: {
     flexDirection: 'row',
@@ -73,6 +80,7 @@ const BookInfo = ({
   bookId,
   bookInfo,
   isFirstRow,
+  handleNewLibrary,
 
   accounts,
   idps,
@@ -81,12 +89,13 @@ const BookInfo = ({
   setSubscriptions,
 }) => {
 
-  const { title, author, flags, isbn, epubSizeInMB } = bookInfo
+  const { title, author, flags, metadataValues, isbn, epubSizeInMB } = bookInfo
 
   const { historyPush } = useRouterState()
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
   const [ updatingSubscriptions, setUpdatingSubscriptions ] = useState(false)
+  const [ editingMetadata, toggleEditingMetadata ] = useToggle(false)
 
   let adminInfo = false
   Object.keys(bookInfo.accounts).some(accountId => {
@@ -201,13 +210,19 @@ const BookInfo = ({
       styles.container,
       isFirstRow ? styles.containerFirstRow : {},
     ]}>
+
       <View style={styles.cover}>
         <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
       </View>
+
       <View style={styles.info}>
         <BookInfoTitle to={`/book/${bookId}`}>{title}</BookInfoTitle>
         <BookInfoAuthor>{author}</BookInfoAuthor>
         {(flags || []).includes('trial') && <BookInfoTrial/>}
+        <BookInfoMetadata
+          metadataValues={metadataValues}
+          bookId={bookId}
+        />
         <BookInfoSize epubSizeInMB={epubSizeInMB} />
         <BookInfoIsbn isbn={isbn} />
         {!!adminInfo &&
@@ -227,9 +242,18 @@ const BookInfo = ({
                 </View>
                 <View style={styles.buttonContainer}>
                   <Button
+                    onPress={toggleEditingMetadata}
+                    size="tiny"
+                    status="primary"
+                    appearance="filled"
+                  >
+                    {i18n("Edit metadata")}
+                  </Button>
+                  <View style={styles.buttonSpacer} />
+                  <Button
                     onPress={confirmDelete}
                     size="tiny"
-                    status="basic"
+                    status="primary"
                     appearance="outline"
                   >
                     {i18n("Delete")}
@@ -246,6 +270,7 @@ const BookInfo = ({
           )
         }
       </View>
+
       <Dialog
         open={[ 'confirming', 'deleting', 'done' ].includes(deleteStatus)}
         type={[ 'done' ].includes(deleteStatus) ? "info" : "confirm"}
@@ -268,11 +293,22 @@ const BookInfo = ({
         onClose={updateLibrary}
         submitting={[ 'deleting' ].includes(deleteStatus)}
       />
+
+      <BookMetadataDialog
+        open={editingMetadata}
+        metadataValues={metadataValues}
+        bookId={bookId}
+        bookTitle={title}
+        onClose={toggleEditingMetadata}
+        handleNewLibrary={handleNewLibrary}
+      />
+
       {updatingSubscriptions &&
         <CoverAndSpin
           style={styles.spin}
         />
       }
+
     </View>
   )
 }

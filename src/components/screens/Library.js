@@ -133,7 +133,7 @@ const Library = ({
   const [ confirmReplaceExisting, setConfirmReplaceExisting ] = useState(false)
   const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
-  const [ showMetadataDialog, setShowMetadataDialog ] = useState(true)
+  const [ showMetadataDialog, setShowMetadataDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
@@ -744,6 +744,7 @@ const Library = ({
                         <View style={styles.content}>
                           <LibraryViewer
                             bookList={bookList}
+                            handleNewLibrary={handleNewLibrary}
                           />
                         </View>
                       )

@@ -81,6 +81,7 @@ const MetadataDialog = ({
 
   const [ submitting, setSubmitting ] = useState(false)
   const [ errorMessage, setErrorMessage ] = useState()
+// TODO: use errorMessage
   const [ editedMetadataKeys, setEditedMetadataKeys ] = useState([])
   const [ editIndex, setEditIndex ] = useState(null)
 

@@ -55,7 +55,7 @@ const MetadataDetailDialog = ({
     ({ idx, text }) => {
       const editedMetadataKeyData = getEditedMetadataKeyData()
       const options = [ ...(editedMetadataKeyData.options || []) ]
-      options[idx] = text
+      options[idx] = text.replace(/\r/g, '')
       setEditedMetadataKeyData({
         ...editedMetadataKeyData,
         options,
@@ -66,8 +66,6 @@ const MetadataDetailDialog = ({
 
   const onConfirm = useCallback(
     async () => {
-      // TODO: name cannot be blank
-      // TODO: options cannot be blank
       const metadataKeyData = getEditedMetadataKeyData()
       if(getTypeIndex() === 0) {
         delete metadataKeyData.options

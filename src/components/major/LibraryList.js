@@ -25,6 +25,7 @@ const LibraryList = React.memo(({
   books,
   bookList=[],
   library={},
+  handleNewLibrary,
 }) => {
 
   const flatListRef = useRef()
@@ -66,10 +67,11 @@ const LibraryList = React.memo(({
           bookId={bookId}
           bookInfo={books[bookId]}
           isFirstRow={index === 0}
+          handleNewLibrary={handleNewLibrary}
         />
       </LibraryBook>
     ),
-    [ books ],
+    [ books, handleNewLibrary ],
   )
 
   return (

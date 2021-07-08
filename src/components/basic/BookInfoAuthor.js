@@ -5,6 +5,7 @@ import { styled } from '@ui-kitten/components'
 const styles = StyleSheet.create({
   author: {
     fontSize: 14,
+    marginBottom: 3,
   },
 })
 

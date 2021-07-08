@@ -41,6 +41,7 @@ export default function(state = initialState, action) {
           title: book.title,
           author: book.author,
           flags: book.flags,
+          metadataValues: book.metadataValues,
           epubSizeInMB: book.epubSizeInMB,
           isbn: book.isbn,
           version: book.version,

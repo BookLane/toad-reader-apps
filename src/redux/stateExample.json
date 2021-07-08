@@ -40,9 +40,11 @@
   },
   "metadataKeys": [
     {
+      "id": 1,
       "name": "Description"
     },
     {
+      "id": 2,
       "name": "Genre",
       "options": [
         "Non-fiction",
@@ -61,6 +63,16 @@
       "title": "Alive to Wonder Celebrating the Influence of C.S. Lewis",
       "author": "John Piper",
       "flags": ["trial"],
+      "metadataValues": [
+        {
+          "metadata_key_id": 1,
+          "value": "A great book."
+        },
+        {
+          "metadata_key_id": 2,
+          "value": "Fiction"
+        }
+      ],
       "epubSizeInMB": 3,
       "isbn": "978-0-310-49218-3",
       "version": "PUBLISHER",
