@@ -15,3 +15,7 @@ a:hover {
 input {
   outline: none !important;
 }
+
+.VictoryContainer > svg {
+  overflow: visible;
+}

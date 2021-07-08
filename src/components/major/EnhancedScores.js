@@ -229,8 +229,7 @@ const EnhancedScores = React.memo(({
           <NoStudentsBox
             message={
               students.length === 0
-                ? i18n("This classroom does not yet have any students.", "", "enhanced")
-                : i18n("This classroom does not contain any quizzes.", "", "enhanced")
+              && i18n("This classroom does not contain any quizzes.", "", "enhanced")
             }
           />
         }

@@ -1,5 +1,3 @@
-// import dummyStudents from "./dummyStudents"
-
 const dataColumns = [
   [
     "Quiz 1",

@@ -8,9 +8,12 @@ import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, concatText } from '../../uti
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
+import dummyPolls from '../../utils/dummyPolls'
+import dummyStudents from '../../utils/dummyStudents'
 
 import { VictoryPie } from "./Victory"
 import CoverAndSpin from '../basic/CoverAndSpin'
+import NoStudentsBox from '../basic/NoStudentsBox'
 
 const numAnswered=  {
   fontWeight: '200',
@@ -86,7 +89,7 @@ const EnhancedPolls = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { classroomUid, idpId, isDefaultClassroom, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { classroomUid, idpId, classroom, students, spines } = useClassroomInfo({ books, bookId, userDataByBookId })
 
   const wideMode = useWideMode()
 
@@ -112,6 +115,8 @@ const EnhancedPolls = React.memo(({
         })
       }
 
+      if(students.length === 0 || orderedPolls.length === 0) return dummyPolls
+
       return { orderedPolls }
     },
     [ data, spines ],
@@ -135,111 +140,103 @@ const EnhancedPolls = React.memo(({
     )
   }
 
-  if(students.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not yet have any students.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
-  if(orderedPolls.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any polls.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.contentContainer}
     >
-      {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }, idx) => {
-        const numResponses = userIdsByChoiceIndex.reduce((total, userIds) => total + (userIds || []).length, 0)
 
-        return (
-          <View
-            key={idx}
-            style={wideMode ? styles.pollWideMode : styles.poll}
-          >
-            <Text style={styles.toolName}>
-              {name || i18n("Poll", "", "enhanced")}
-            </Text>
-            <Text style={styles.question}>
-              {question}
-            </Text>
-            {numResponses > 0 &&
-              <View style={styles.pieContainer}>
-                <VictoryPie
-                  width={300}
-                  height={300}
-                  data={userIdsByChoiceIndex
-                    .map((userIds, idx) => {
-                      if((userIds || []).length === 0) return null
-                      const y = userIds.length
-                      let x = (y > 0 && choices[idx]) || ""
+      {(students.length === 0 || orderedPolls.length === 0) &&
+        <NoStudentsBox
+          message={
+            students.length !== 0
+            && i18n("This classroom does not contain any polls.", "", "enhanced")
+          }
+        />
+      }
 
-                      const maxLen = 40
-                      const maxLineLen = 15
+      <View style={styles.contentContainer}>
 
-                      x = concatText({ text: x, maxLen })
+        {orderedPolls.map(({ name, question, choices, userIdsByChoiceIndex }, idx) => {
+          const numResponses = userIdsByChoiceIndex.reduce((total, userIds) => total + (userIds || []).length, 0)
 
-                      x = x.split(" ").reduce((text, word) => (
-                        `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen
-                          ? `${text}\n${word}`
-                          : `${text} ${word}`
-                      ), "")
-
-                      const numStudents = i18n("{{num}} student(s)", "", "enhanced", {
-                        num: y,
-                      })
-                      const percent = i18n("{{percent}}%", "", "enhanced", {
-                        percent: parseInt((y / numResponses) * 100),
-                      })
-                      const tooltip = `${numStudents}\n${percent}`
-
-                      return { x, y, tooltip }
-                    })
-                    .filter(Boolean)
-                }
-                  events={[{
-                    target: "data",
-                    eventHandlers: {
-                      [Platform.OS === 'web' ? 'onClick' : 'onPress']: () => {
-                        return [
-                          {
-                            target: "labels",
-                            mutation: ({ text, datum: { tooltip } }) => {
-                              return text === tooltip ? null : { text: tooltip }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }]}              
-                  colorScale={[ "blue", "red", "green" ][idx % 3]}
-                />
-                <Text style={styles.numAnswered}>
-                  {i18n("{{percent}}% of students have answered.", "", "enhanced", {
-                    percent: parseInt((numResponses / students.length) * 100),
-                  })}
-                </Text>
-              </View>
-            }
-            {numResponses === 0 &&
-              <Text style={styles.numAnsweredLeft}>
-                {i18n("No students have answered yet.", "", "enhanced")}
+          return (
+            <View
+              key={idx}
+              style={wideMode ? styles.pollWideMode : styles.poll}
+            >
+              <Text style={styles.toolName}>
+                {name || i18n("Poll", "", "enhanced")}
               </Text>
-            }
-          </View>
-        )
-      })}
+              <Text style={styles.question}>
+                {question}
+              </Text>
+              {numResponses > 0 &&
+                <View style={styles.pieContainer}>
+                  <VictoryPie
+                    width={300}
+                    height={300}
+                    data={userIdsByChoiceIndex
+                      .map((userIds, idx) => {
+                        if((userIds || []).length === 0) return null
+                        const y = userIds.length
+                        let x = (y > 0 && choices[idx]) || ""
+
+                        const maxLen = 40
+                        const maxLineLen = 15
+
+                        x = concatText({ text: x, maxLen })
+
+                        x = x.split(" ").reduce((text, word) => (
+                          `${text.split("\n").slice(-1)[0]} ${word}`.length > maxLineLen
+                            ? `${text}\n${word}`
+                            : `${text} ${word}`
+                        ), "")
+
+                        const numStudents = i18n("{{num}} student(s)", "", "enhanced", {
+                          num: y,
+                        })
+                        const percent = i18n("{{percent}}%", "", "enhanced", {
+                          percent: parseInt((y / numResponses) * 100),
+                        })
+                        const tooltip = `${numStudents}\n${percent}`
+
+                        return { x, y, tooltip }
+                      })
+                      .filter(Boolean)
+                  }
+                    events={[{
+                      target: "data",
+                      eventHandlers: {
+                        [Platform.OS === 'web' ? 'onClick' : 'onPress']: () => {
+                          return [
+                            {
+                              target: "labels",
+                              mutation: ({ text, datum: { tooltip } }) => {
+                                return text === tooltip ? null : { text: tooltip }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }]}              
+                    colorScale={[ "blue", "red", "green" ][idx % 3]}
+                  />
+                  <Text style={styles.numAnswered}>
+                    {i18n("{{percent}}% of students have answered.", "", "enhanced", {
+                      percent: parseInt((numResponses / (students.length || dummyStudents.length)) * 100),
+                    })}
+                  </Text>
+                </View>
+              }
+              {numResponses === 0 &&
+                <Text style={styles.numAnsweredLeft}>
+                  {i18n("No students have answered yet.", "", "enhanced")}
+                </Text>
+              }
+            </View>
+          )
+        })}
+      </View>
     </ScrollView>
   )
 })
