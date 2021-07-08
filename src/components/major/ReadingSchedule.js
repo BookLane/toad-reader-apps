@@ -183,8 +183,9 @@ const ReadingSchedule = React.memo(({
           goTo={goTo}
         />
       ))}
-      {Object.values(ENHANCED_EDITOR_HOW_TO_LINKS.READING_SCHEDULE || {}).map(videoLink => (
+      {Object.values(ENHANCED_EDITOR_HOW_TO_LINKS.READING_SCHEDULE || {}).map((videoLink, idx) => (
         <VideoTool
+          key={idx}
           videoLink={videoLink}
           containerStyle={styles.videoContainer}
         />
