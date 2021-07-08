@@ -250,7 +250,7 @@ const EnhancedScores = React.memo(({
                 {i18n("Student", "", "enhanced")}
               </Text>
             </View>
-            {(students.length > 0 ? student : dummyStudents).map(({ fullname, email }) => (
+            {(students.length > 0 ? students : dummyStudents).map(({ fullname, email }) => (
               <Text
                 key={email}
                 style={styles.studentNameCell}
