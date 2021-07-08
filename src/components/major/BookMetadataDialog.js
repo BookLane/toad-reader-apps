@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: 'rgba(0, 0, 0, .5)',
   },
+  error:  {
+    marginBottom: 15,
+    color: 'red',
+  },
 })
 
 const BookMetadataDialog = ({
@@ -47,7 +51,6 @@ const BookMetadataDialog = ({
 
   const [ submitting, setSubmitting ] = useState(false)
   const [ errorMessage, setErrorMessage ] = useState()
-// TODO: use errorMessage
   const [ editedMetadataValuesByKeyId, setEditedMetadataValuesByKeyId ] = useState(metadataValuesByKeyId)
 
   const getEditedMetadataValuesByKeyId = useInstanceValue(editedMetadataValuesByKeyId)
@@ -183,6 +186,12 @@ const BookMetadataDialog = ({
       submitting={submitting}
       message={
         <View style={styles.container}>
+
+        {!!errorMessage &&
+          <Text style={styles.error}>
+            {errorMessage}
+          </Text>
+        }
 
           {metadataKeys.map(({ id, name, options }) => (
             options

@@ -21,13 +21,13 @@ const keyOptionButton = {
 }
 
 const styles = StyleSheet.create({
+  error:  {
+    marginBottom: 15,
+    color: 'red',
+  },
   dialog:  {
     width: 350,
     maxWidth: 'calc(100vw - 20px)',
-  },
-  error:  {
-    marginTop: 15,
-    color: 'red',
   },
   none: {
     color: 'rgba(0,0,0,.6)',
@@ -81,7 +81,6 @@ const MetadataDialog = ({
 
   const [ submitting, setSubmitting ] = useState(false)
   const [ errorMessage, setErrorMessage ] = useState()
-// TODO: use errorMessage
   const [ editedMetadataKeys, setEditedMetadataKeys ] = useState([])
   const [ editIndex, setEditIndex ] = useState(null)
 
@@ -203,6 +202,13 @@ const MetadataDialog = ({
         submitting={submitting}
         message={
           <View style={styles.container}>
+
+            {!!errorMessage &&
+              <Text style={styles.error}>
+                {errorMessage}
+              </Text>
+            }
+
             {editedMetadataKeys.length === 0 &&
               <>
                 <Text style={styles.none}>
@@ -213,6 +219,7 @@ const MetadataDialog = ({
                 </Text>
               </>
             }
+
             {editedMetadataKeys.map(({ id, name, options }, idx) => {
               const upDisabled = idx === 0 || submitting
               const downDisabled = idx === editedMetadataKeys.length - 1 || submitting
@@ -282,6 +289,7 @@ const MetadataDialog = ({
                 </View>
               )
             })}
+
             <View style={styles.addNewLine}>
               <Button
                 onPress={addNew}
@@ -292,11 +300,13 @@ const MetadataDialog = ({
                 {i18n("Add a new metadata key")}
               </Button>
             </View>
+
             {hasDuplicateNames &&
               <Text style={styles.error}>
                 {i18n("Two metadata categories cannot share the same name.")}
               </Text>
             }
+
           </View>
         }
       />
