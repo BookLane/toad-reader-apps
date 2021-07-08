@@ -23,3 +23,7 @@ node ./scripts/pushwebstagingtoproduction.js
 npm run change-tenant -- homeschool
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
+
+npm run change-tenant -- orca
+npm run go-push-web-to-staging
+node ./scripts/pushwebstagingtoproduction.js
