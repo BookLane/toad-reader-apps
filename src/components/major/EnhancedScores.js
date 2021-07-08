@@ -9,8 +9,11 @@ import { orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useDashboardData from '../../hooks/useDashboardData'
 import useWideMode from "../../hooks/useWideMode"
+import dummyStudents from '../../utils/dummyStudents'
+import dummyScores from '../../utils/dummyScores'
 
 import CoverAndSpin from '../basic/CoverAndSpin'
+import NoStudentsBox from '../basic/NoStudentsBox'
 import FAB from '../basic/FAB'
 
 const height = 35
@@ -63,6 +66,9 @@ const styles = StyleSheet.create({
   containerScrollViewContent: {
     flex: 1,
     minHeight: '100%',
+  },
+  content: {
+    flex: 1,
     flexDirection: 'row',
   },
   students: {
@@ -183,6 +189,8 @@ const EnhancedScores = React.memo(({
         ]
       }
 
+      if(students.length === 0 || dataColumns.length === 0) return dummyScores
+
       return { dataColumns, csvData }
     },
     [ students, data, spines ],
@@ -206,28 +214,8 @@ const EnhancedScores = React.memo(({
     )
   }
 
-  if(students.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not yet have any students.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
-  if(dataColumns.length === 0) {
-    return (
-      <View style={styles.genericContainer}>
-        <Text style={styles.none}>
-          {i18n("This classroom does not contain any quizzes.", "", "enhanced")}
-        </Text>
-      </View>
-    )
-  }
-
   const columnHeightStyle = {
-    height: (height + margin*2) * (students.length + 1) + paddingVertical*2,
+    height: (height + margin*2) * ((students.length || dummyStudents.length) + 1) + paddingVertical*2,
   }
 
   return (
@@ -236,73 +224,87 @@ const EnhancedScores = React.memo(({
         style={styles.containerScrollView}
         contentContainerStyle={styles.containerScrollViewContent}
       >
-        <View
-          style={[
-            styles.students,
-            columnHeightStyle,
-          ]}
-        >
-          <View style={styles.headerCellContainer}>
-            <Text
-              style={styles.headerCell}
-              numberOfLines={2}
-            >
-              {i18n("Student", "", "enhanced")}
-            </Text>
+
+        {(students.length === 0 || !csvData) &&
+          <NoStudentsBox
+            message={
+              students.length === 0
+                ? i18n("This classroom does not yet have any students.", "", "enhanced")
+                : i18n("This classroom does not contain any quizzes.", "", "enhanced")
+            }
+          />
+        }
+
+        <View style={styles.content}>
+
+          <View
+            style={[
+              styles.students,
+              columnHeightStyle,
+            ]}
+          >
+            <View style={styles.headerCellContainer}>
+              <Text
+                style={styles.headerCell}
+                numberOfLines={2}
+              >
+                {i18n("Student", "", "enhanced")}
+              </Text>
+            </View>
+            {(students.length > 0 ? student : dummyStudents).map(({ fullname, email }) => (
+              <Text
+                key={email}
+                style={styles.studentNameCell}
+                numberOfLines={2}
+              >
+                {fullname || email}
+              </Text>
+            ))}
           </View>
-          {students.map(({ fullname, email }) => (
-            <Text
-              key={email}
-              style={styles.studentNameCell}
-              numberOfLines={2}
-            >
-              {fullname || email}
-            </Text>
-          ))}
-        </View>
-        <ScrollView
-          style={[
-            styles.scrollView,
-            columnHeightStyle,
-          ]}
-          contentContainerStyle={styles.scrollViewContent}
-          horizontal={true}
-        >
-          {dataColumns.map((column, idx) => (
-            <View
-              key={idx}
-              style={styles.column}
-            >
-              {column.map((cell, idx) => (
-                idx === 0
-                  ? (
-                    <View
-                      key={idx}
-                      style={styles.headerCellContainer}
-                    >
+          <ScrollView
+            style={[
+              styles.scrollView,
+              columnHeightStyle,
+            ]}
+            contentContainerStyle={styles.scrollViewContent}
+            horizontal={true}
+          >
+            {dataColumns.map((column, idx) => (
+              <View
+                key={idx}
+                style={styles.column}
+              >
+                {column.map((cell, idx) => (
+                  idx === 0
+                    ? (
+                      <View
+                        key={idx}
+                        style={styles.headerCellContainer}
+                      >
+                        <Text
+                          style={styles.headerCell}
+                          numberOfLines={2}
+                        >
+                          {cell}
+                        </Text>
+                      </View>
+                    )
+                    : (
                       <Text
-                        style={styles.headerCell}
+                        key={idx}
+                        style={styles.cell}
                         numberOfLines={2}
                       >
                         {cell}
                       </Text>
-                    </View>
-                  )
-                  : (
-                    <Text
-                      key={idx}
-                      style={styles.cell}
-                      numberOfLines={2}
-                    >
-                      {cell}
-                    </Text>
-                  )
-              ))}
-            </View>
-          ))}
-        </ScrollView>
+                    )
+                ))}
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </ScrollView>
-      {Platform.OS === 'web' &&
+      {Platform.OS === 'web' && !!csvData &&
         <CSVLink
           data={csvData}
           filename={

@@ -26,12 +26,13 @@ const styles = StyleSheet.create({
 })
 
 const NoStudentsBox = React.memo(({
+  message,
 }) => {
 
   return (
     <View style={styles.noneBox}>
       <Text style={styles.none}>
-        {i18n("This classroom does not yet have any students.", "", "enhanced")}
+        {message || i18n("This classroom does not yet have any students.", "", "enhanced")}
       </Text>
       <Text style={styles.sample}>
         {i18n("Displaying sample data below.", "", "enhanced")}
