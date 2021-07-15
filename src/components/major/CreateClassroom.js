@@ -14,7 +14,7 @@ import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 
-import { createClassroom, setCurrentClassroom } from "../../redux/actions"
+import { createClassroom, setCurrentClassroom, setSelectedToolUid } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +30,7 @@ const CreateClassroom = React.memo(({
   open,
   requestHide,
   bookId,
+  toggleInEditMode,
 
   accounts,
   books,
@@ -37,6 +38,7 @@ const CreateClassroom = React.memo(({
 
   createClassroom,
   setCurrentClassroom,
+  setSelectedToolUid,
 }) => {
 
   const { defaultClassroomUid, sortedClassrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
@@ -67,6 +69,13 @@ const CreateClassroom = React.memo(({
         bookId,
         uid,
       })
+
+      setSelectedToolUid({
+        bookId,
+        uid: 'FRONT MATTER',
+      })
+
+      toggleInEditMode()
 
       requestHide({ hideAll: true })
     },
@@ -156,6 +165,7 @@ const mapStateToProps = ({ accounts, books, userDataByBookId }) => ({
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   createClassroom,
   setCurrentClassroom,
+  setSelectedToolUid,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(CreateClassroom)

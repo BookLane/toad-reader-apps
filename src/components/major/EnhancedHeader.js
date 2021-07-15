@@ -318,11 +318,13 @@ const EnhancedHeader = React.memo(({
           open={showManageClassrooms}
           requestHide={hideManageClassroom}
           bookId={bookId}
+          toggleInEditMode={toggleInEditMode}
         />
         <CreateClassroom
           open={showCreateClassroom}
           requestHide={hideCreateClassroom}
           bookId={bookId}
+          toggleInEditMode={toggleInEditMode}
         />
         <ConnectToAClassroom
           open={showConnectToAClassroom}
