@@ -33,6 +33,7 @@ import { setLatestLocation, startRecordReading, endRecordReading, setConsentShow
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
 import GuideToTurningPages from "../major/GuideToTurningPages"
+import GuideToCreateAClassroom from "../major/GuideToCreateAClassroom"
 import GuideToMiddleTap from "../major/GuideToMiddleTap"
 import GuideToBookBrowser from "../major/GuideToBookBrowser"
 import BookHeader from "../major/BookHeader"
@@ -301,7 +302,7 @@ const Book = React.memo(({
   const wideMode = useWideMode()
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
-          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode, idpId } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode, idpId, isDefaultClassroom, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
   const zoomToInfoSpineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef: (zoomToInfo || {}).spineIdRef })
@@ -1252,6 +1253,13 @@ const Book = React.memo(({
       <GuideToTurningPages bookLoaded={bookLoaded} />
       <GuideToMiddleTap pageWasTurned={pageWasTurned} />
       <GuideToBookBrowser inInfoMode={mode === 'info'} />
+      <GuideToCreateAClassroom
+        bookId={bookId}
+        bookLoaded={bookLoaded}
+        classrooms={classrooms}
+        isDefaultClassroom={isDefaultClassroom}
+        bookVersion={bookVersion}
+      />
 
     </SafeLayout>
   )

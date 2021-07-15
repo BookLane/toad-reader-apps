@@ -42,6 +42,7 @@ const Guide = ({
   ready,
   markComplete,
   children,
+  componentsAfterOkay=[],
 }) => {
 
   const opacity = useRef(new Animated.Value(0)).current
@@ -68,7 +69,6 @@ const Guide = ({
     [ !!ready ],
   )
 
-  if(Platform.OS === 'web') return null
   if(!ready && !blockUntilReady) return null
 
   return (
@@ -92,6 +92,7 @@ const Guide = ({
           {i18n("Okay")}
         </Button>
       </View>
+      {componentsAfterOkay}
     </AnimatedBlurView>
   )
 }

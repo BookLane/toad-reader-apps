@@ -72,6 +72,7 @@ const EnhancedHeader = React.memo(({
   inEditMode,
   toggleInEditMode,
   setModeToPage,
+  markGuideComplete,
 
   books,
   userDataByBookId,
@@ -97,6 +98,11 @@ const EnhancedHeader = React.memo(({
   const [ showCreateClassroom, toggleShowCreateClassroom ] = useToggle(false)
   const [ showConnectToAClassroom, toggleShowConnectToAClassroom ] = useToggle(false)
 
+  const goMarkGuideComplete = useCallback(() => (markGuideComplete && markGuideComplete()), [])
+  const hideManageClassroom = useCallback(() => { toggleShowManageClassrooms(false); goMarkGuideComplete() }, [])
+  const hideCreateClassroom = useCallback(() => { toggleShowCreateClassroom(false); goMarkGuideComplete() }, [])
+  const hideConnectToAClassroom = useCallback(() => { toggleShowConnectToAClassroom(false); goMarkGuideComplete() }, [])
+
   const wideMode = useWideMode()
   const { height } = useDimensions().window
 
@@ -107,6 +113,7 @@ const EnhancedHeader = React.memo(({
         uid: 'DASHBOARD',
       })
       setModeToPage && setTimeout(setModeToPage)
+      goMarkGuideComplete()
     },
     [ bookId ],
   )
@@ -118,6 +125,7 @@ const EnhancedHeader = React.memo(({
         uid: 'OPTIONS OR SETTINGS',
       })
       setModeToPage && setTimeout(setModeToPage)
+      goMarkGuideComplete()
     },
     [ bookId ],
   )
@@ -129,6 +137,7 @@ const EnhancedHeader = React.memo(({
         uid: 'FRONT MATTER',
       })
       setModeToPage && setTimeout(setModeToPage)
+      goMarkGuideComplete()
     },
     [ bookId ],
   )
@@ -179,6 +188,7 @@ const EnhancedHeader = React.memo(({
           uid,
         })
         toggleShowOptions(false)
+        goMarkGuideComplete()
       },
     })),
     ...(![ 'ENHANCED', 'INSTRUCTOR' ].includes(bookVersion) ? [] : [{
@@ -306,17 +316,17 @@ const EnhancedHeader = React.memo(({
         }
         <ManageClassrooms
           open={showManageClassrooms}
-          requestHide={toggleShowManageClassrooms}
+          requestHide={hideManageClassroom}
           bookId={bookId}
         />
         <CreateClassroom
           open={showCreateClassroom}
-          requestHide={toggleShowCreateClassroom}
+          requestHide={hideCreateClassroom}
           bookId={bookId}
         />
         <ConnectToAClassroom
           open={showConnectToAClassroom}
-          requestHide={toggleShowConnectToAClassroom}
+          requestHide={hideConnectToAClassroom}
           bookId={bookId}
         />
       </View>

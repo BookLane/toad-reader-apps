@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const GuideToTurningPages = React.memo(({
+const GuideToMiddleTap = React.memo(({
   pageWasTurned,
 
   sidePanelSettings,
@@ -116,4 +116,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addCompletedGuide,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(GuideToTurningPages)
+export default connect(mapStateToProps, matchDispatchToProps)(GuideToMiddleTap)

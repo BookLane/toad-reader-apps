@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const GuideToTurningPages = React.memo(({
+const GuideToBookBrowser = React.memo(({
   inInfoMode,
 
   completedGuides,
@@ -170,4 +170,4 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addCompletedGuide,
 }, dispatch)
 
-export default connect(mapStateToProps, matchDispatchToProps)(GuideToTurningPages)
+export default connect(mapStateToProps, matchDispatchToProps)(GuideToBookBrowser)
