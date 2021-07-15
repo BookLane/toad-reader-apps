@@ -30,10 +30,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 20,
   },
-  enhancedBoxCover: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-  },
   titleContainer: {
     marginTop: statusBarHeight + 26,
     marginBottom: 10,
@@ -81,6 +77,7 @@ const GuideToCreateAClassroom = React.memo(({
   isDefaultClassroom,
   classrooms,
   bookVersion,
+  toggleInEditMode,
 
   sidePanelSettings,
   completedGuides,
@@ -112,7 +109,7 @@ const GuideToCreateAClassroom = React.memo(({
       <View style={styles.spacer} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>
-          {i18n("Guide: Create a classroom")}
+          {i18n("Guide: Create a classroom", "", "enhanced")}
         </Text>
       </View>
 
@@ -127,6 +124,7 @@ const GuideToCreateAClassroom = React.memo(({
         <EnhancedHeader
           bookId={bookId}
           inEditMode={false}
+          toggleInEditMode={toggleInEditMode}
           markGuideComplete={markComplete}
         />
       </View>
@@ -140,10 +138,10 @@ const GuideToCreateAClassroom = React.memo(({
         ]}
       >
         <Text style={styles.instructionText}>
-          {i18n("Open the “Enhanced book” pulldown and then choose “Create a classroom.”")}
+          {i18n("Open the “Enhanced book” pulldown and then choose “Create a classroom.”", "", "enhanced")}
         </Text>
         <Text style={styles.videoInstructionText}>
-          {i18n("Video Instructions")}
+          {i18n("Video Instructions", "", "enhanced")}
         </Text>
         {Object.keys(ENHANCED_EDITOR_HOW_TO_LINKS.CREATE_A_CLASSROOM || {}).map(linkText => (
           <LinkLikeText

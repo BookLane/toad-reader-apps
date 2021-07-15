@@ -36,6 +36,7 @@ import GuideToTurningPages from "../major/GuideToTurningPages"
 import GuideToCreateAClassroom from "../major/GuideToCreateAClassroom"
 import GuideToMiddleTap from "../major/GuideToMiddleTap"
 import GuideToBookBrowser from "../major/GuideToBookBrowser"
+import GuideToFrontMatterAndEdit from "../major/GuideToFrontMatterAndEdit"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
@@ -301,8 +302,9 @@ const Book = React.memo(({
   const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
 
-  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter, viewingOptions, viewingDashboard,
-          bookVersion, draftToolByCurrentlyPublishedToolUid, inEditMode, idpId, isDefaultClassroom, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
+  const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter,
+          viewingOptions, viewingDashboard, myRole, hasFrontMatterDraftData, bookVersion,
+          draftToolByCurrentlyPublishedToolUid, inEditMode, idpId, isDefaultClassroom, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
   const zoomToInfoSpineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef: (zoomToInfo || {}).spineIdRef })
@@ -1259,6 +1261,13 @@ const Book = React.memo(({
         classrooms={classrooms}
         isDefaultClassroom={isDefaultClassroom}
         bookVersion={bookVersion}
+        toggleInEditMode={toggleInEditMode}
+      />
+      <GuideToFrontMatterAndEdit
+        bookLoaded={bookLoaded}
+        myRole={myRole}
+        viewingFrontMatter={viewingFrontMatter}
+        hasFrontMatterDraftData={hasFrontMatterDraftData}
       />
 
     </SafeLayout>
