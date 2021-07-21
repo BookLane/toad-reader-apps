@@ -38,6 +38,7 @@ import GuideToMiddleTap from "../major/GuideToMiddleTap"
 import GuideToBookBrowser from "../major/GuideToBookBrowser"
 import GuideToFrontMatterAndEdit from "../major/GuideToFrontMatterAndEdit"
 import GuideToDashboardAndAddTool from "../major/GuideToDashboardAndAddTool"
+import GuideToChangeToolTypeAndPlacement from "../major/GuideToChangeToolTypeAndPlacement"
 import BookHeader from "../major/BookHeader"
 import BookPages from "../major/BookPages"
 import ZoomPage from "../major/ZoomPage"
@@ -1278,6 +1279,16 @@ const Book = React.memo(({
         viewingOptions={viewingOptions}
         viewingFrontMatter={viewingFrontMatter}
         inEditMode={inEditMode}
+      />
+      <GuideToChangeToolTypeAndPlacement
+        bookLoaded={bookLoaded}
+        myRole={myRole}
+        viewingHighlights={viewingHighlights}
+        viewingDashboard={viewingDashboard}
+        viewingOptions={viewingOptions}
+        viewingFrontMatter={viewingFrontMatter}
+        inEditMode={inEditMode}
+        selectedTool={selectedTool}
       />
 
     </SafeLayout>
