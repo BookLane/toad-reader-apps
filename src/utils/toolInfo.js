@@ -70,7 +70,22 @@ export const getToolInfo = () => {
           type: 'boolean',
           label: i18n("Shuffle questions on each attempt", "", "enhanced"),
         },
+        {
+          name: 'limitAttempts',
+          type: 'boolean',
+          label: i18n("Limit number of attempts", "", "enhanced"),
+        },
+        {
+          name: 'maxAttempts',
+          type: 'string',
+          label: i18n("Maximum number of attempts", "", "enhanced"),
+          placeholder: '3',
+          isHidden: ({ dataSegment: { limitAttempts } }) => !limitAttempts,
+        },
       ],
+      transformData: ({ data }) => {
+        data.maxAttempts = parseInt(data.maxAttempts, 10)
+      },
       readyToPublish: ({ data: { questions=[] } }) => (
         questions.length > 0
         && questions.every(({ question, answers=[], answersSelection }) => (

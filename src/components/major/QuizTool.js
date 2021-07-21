@@ -87,22 +87,35 @@ const styles = StyleSheet.create({
     color: 'red',
     fontStyle: 'italic',
   },
+  attemptsMessage: {
+    textAlign: 'center',
+    marginBottom: 20,
+    fontSize: 14,
+    fontWeight: '400',
+  },
 })
 
 const QuizTool = React.memo(({
   bookId,
   toolUid,
   viewingPreview,
+  priorEngagements,
 
   questions,
   shuffle,
+  limitAttempts,
+  maxAttempts,
 
   books,
 
   submitToolEngagement,
 }) => {
 
-  const [ pageIndex, setPageIndex ] = useState(0)
+  const { score } = (priorEngagements || []).slice(-1)[0] || {}
+  const numMaxAttempts = parseInt(maxAttempts, 10) || 3
+  const numPriorAttempts = (priorEngagements || []).length
+
+  const [ pageIndex, setPageIndex ] = useState(score !== undefined ? questions.length : 0)
   const [ selectedAnswers, setSelectedAnswers ] = useState([])
   const [ currentQuestionSubmitted, setCurrentQuestionSubmitted ] = useState(false)
 
@@ -154,6 +167,8 @@ const QuizTool = React.memo(({
     },
     [ currentQuestionSubmitted, pageIndex, viewingPreview, questions, selectedAnswers, numAnsweredCorrectly, bookId, classroomUid, toolUid ],
   )
+
+  const furtherAttemptsAllowed = !(limitAttempts && (priorEngagements || []).length >= numMaxAttempts)
 
   return (
     <ViewPager
@@ -257,10 +272,17 @@ const QuizTool = React.memo(({
             "",
             "enhanced",
             {
-              percent: Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
+              percent: score !== undefined ? Math.round(score * 100) : Math.round((numAnsweredCorrectly / preppedQuestions.length) * 100),
             },
           )}
         </Text>
+        {!!limitAttempts &&
+          <Text style={styles.attemptsMessage}>
+            {i18n("You have taken this quiz {{num}} time(s).", "", "enhanced", {
+              num: numPriorAttempts,
+            })}
+          </Text>
+        }
         {!isDefaultClassroom &&
           <Text style={styles.note}>
             {i18n("Your instructor(s) will see your latest score.")}
@@ -274,10 +296,23 @@ const QuizTool = React.memo(({
               setPageIndex(0)
               executeShuffles()
             }}
+            disabled={!furtherAttemptsAllowed}
           >
             {i18n("Retake this quiz", "", "enhanced")}
           </Button>
         </View>
+        {furtherAttemptsAllowed && !!limitAttempts &&
+          <Text style={styles.attemptsMessage}>
+            {i18n("{{num}} more attempt(s) allowed.", "", "enhanced", {
+              num: numMaxAttempts - numPriorAttempts,
+            })}
+          </Text>
+        }
+        {!furtherAttemptsAllowed &&
+          <Text style={styles.attemptsMessage}>
+            {i18n("You have use all of your available attempts.", "", "enhanced")}
+          </Text>
+        }
       </View>
     </ViewPager>
   )

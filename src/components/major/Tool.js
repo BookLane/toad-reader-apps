@@ -117,7 +117,7 @@ const Tool = React.memo(({
     )
   }
 
-  const { toolType, name, data, cfi, engagement } = tool
+  const { toolType, name, data, cfi, engagement, engagements } = tool
   const isInlineTool = !!cfi
 
   let ToolComponent = View
@@ -217,6 +217,7 @@ const Tool = React.memo(({
           toolName={tool.name}
           viewingPreview={viewingPreview}
           priorEngagement={engagement}
+          priorEngagements={engagements}
           classroomQueryString={classroomQueryString}
           fullscreenInfo={fullscreenInfo}
           setFullscreenInfo={setFullscreenInfo}
