@@ -20,17 +20,29 @@ export default function(state, action) {
       const getInfo = bookId => {
         const updatedAtTime = ((newState.userDataByBookId[bookId] || {}).updated_at || -0) * -1
 
-        return (
-          newState.library.sort == "recent"
-            ? (
+        const titleStringForSort = ((newState.books[bookId] || {}).title || "").toUpperCase().replace(/^(?:A|AN|THE) /, '')
+
+        switch(newState.library.sort) {
+
+          case 'recent': {
+            return (
               updatedAtTime  // First group == books which have been opened, ordered by most recent update time
               || (
                 (3 - ((newState.books[bookId] || {}).downloadStatus || 0))  // Then order by download status
-                + ((newState.books[bookId] || {}).title || "").toUpperCase()  // Then by title
+                + titleStringForSort  // Then by title
               )
             )
-            : ((newState.books[bookId] || {})[newState.library.sort] || "").toUpperCase()
-        )
+          }
+
+          case 'title': {
+            return titleStringForSort
+          }
+
+          case 'author': {
+            return ((newState.books[bookId] || {}).author || "").toUpperCase()
+          }
+
+        }
       }
 
       newState.library.bookList.sort((bookId1, bookId2) => {
