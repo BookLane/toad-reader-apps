@@ -194,16 +194,20 @@ const BookContentsLine = ({
     </View>
   )
 
-  if(uiStatus === 'unselected' || /#/.test(href) || !wideMode) {
-    return (
-      <TouchableOpacity onPress={onPress}>
-        {line}
-      </TouchableOpacity>
-    )
+  const disabled = !(
+    uiStatus === 'unselected'
+    || /#/.test(href)
+    || !wideMode
+  )
 
-  } else {
-    return line
-  }
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+    >
+      {line}
+    </TouchableOpacity>
+  )
 
 }
 
