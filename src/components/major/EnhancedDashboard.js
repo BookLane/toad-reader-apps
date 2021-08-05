@@ -28,7 +28,7 @@ const EnhancedDashboard = React.memo(({
   userDataByBookId,
 }) => {
 
-  const { viewingDashboard, myRole } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { viewingDashboard, myRole, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { historyReplace, routerState } = useRouterState()
   const { initialSelectedTabId } = routerState || {}
@@ -86,14 +86,14 @@ const EnhancedDashboard = React.memo(({
         />
       ),
     }]),
-    {
+    ...(!(!isDefaultClassroom) ? [] : [{
       title: i18n("Discussions", "", "enhanced"),
       content: (
         <EnhancedDiscussionQuestions
           bookId={bookId}
         />
       ),
-    },
+    }]),
     {
       title: i18n("Reflection questions", "", "enhanced"),
       content: (
