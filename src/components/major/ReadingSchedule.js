@@ -162,6 +162,8 @@ const ReadingSchedule = React.memo(({
 
   if(!classroom) return null
 
+  const showVideos = scheduleDatesToDisplayWithAddNew.filter(Boolean).length === 0
+
   return (
     <ScrollView
       style={styles.container}
@@ -183,7 +185,7 @@ const ReadingSchedule = React.memo(({
           goTo={goTo}
         />
       ))}
-      {Object.values(ENHANCED_EDITOR_HOW_TO_LINKS.READING_SCHEDULE || {}).map((videoLink, idx) => (
+      {showVideos && Object.values(ENHANCED_EDITOR_HOW_TO_LINKS.READING_SCHEDULE || {}).map((videoLink, idx) => (
         <VideoTool
           key={idx}
           videoLink={videoLink}

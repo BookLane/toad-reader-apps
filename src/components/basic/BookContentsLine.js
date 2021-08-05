@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderLeftColor: 'rgba(0, 0, 0, .15)',
     paddingLeft: 4,
-    width: 45,
+    width: 47,
   },
   date: {
     fontWeight: '300',
