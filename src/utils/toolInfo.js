@@ -288,6 +288,7 @@ export const getToolInfo = () => {
       dataStructure: [
         {
           name: 'images',
+          label: i18n("Add images to slideshow", "", "enhanced"),
           type: 'files',
           fileTypes: [
             'image/png',

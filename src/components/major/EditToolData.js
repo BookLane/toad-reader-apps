@@ -510,7 +510,7 @@ const EditToolData = React.memo(({
                     })
                   }}
                 >
-                  {i18n("Upload files", "", "enhanced")}
+                  {label || i18n("Upload files", "", "enhanced")}
                 </Button>
               </View>
             </View>
