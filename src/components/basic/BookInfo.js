@@ -28,6 +28,7 @@ import { deleteBook, setSubscriptions } from "../../redux/actions"
 
 const {
   LIBRARY_LIST_MARGIN,
+  HIDE_ISBN_FOR_NON_ADMINS,
 } = Constants.manifest.extra
 
 const styles = StyleSheet.create({
@@ -205,6 +206,8 @@ const BookInfo = ({
     [ bookId, JSON.stringify(adminInfo) ],
   )
 
+  const showIsbn = !!adminInfo || !HIDE_ISBN_FOR_NON_ADMINS
+
   return (
     <View style={[
       styles.container,
@@ -224,7 +227,7 @@ const BookInfo = ({
           bookId={bookId}
         />
         <BookInfoSize epubSizeInMB={epubSizeInMB} />
-        <BookInfoIsbn isbn={isbn} />
+        {showIsbn && <BookInfoIsbn isbn={isbn} />}
         {!!adminInfo &&
           <BookInfoId id={bookId} />
         }
