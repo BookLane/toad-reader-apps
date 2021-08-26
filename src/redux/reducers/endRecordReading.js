@@ -1,4 +1,4 @@
-import { getIdsFromAccountId } from "../../utils/toolbox"
+import { getIdsFromAccountId, getQueryString } from "../../utils/toolbox"
 import { logEvent } from "../../utils/analytics"
 
 const initialState = {}
@@ -54,19 +54,42 @@ export default function(state, action) {
         ;(book.spines || []).some(({ idref, label }) => {
           if(idref === spineIdRef) {
             spineLabel = label
+            return true
           }
         })
 
+        const properties = {
+          'book title': book.title || `Book id: ${bookId}`,
+          'book author': book.author || ``,
+          'book version': book.version,
+          'book id': bookId,
+          'spine label': spineLabel,
+          'spine id ref': spineIdRef,
+          'duration in seconds': parseInt((endTime - startTime) / 1000, 10),
+        }
+
+        if(book.version !== 'BASE') {
+          try {  // this block accords with logic in useClassroomInfo
+            let classroomUid = book.currentClassroomUid
+            const query = getQueryString()
+            if(query.widget) classroomUid = null
+            const isDefaultClassroom = (classroomUid === undefined || classroomUid.split('-')[1] === bookId)
+            let classroom = state.userDataByBookId[bookId].classrooms.filter(({ uid }) => uid === classroomUid)[0]
+            if(classroom || isDefaultClassroom) {
+              if(isDefaultClassroom) {
+                properties['classroom name'] = 'Enhanced book (default)'
+                properties['classroom id'] = `publisher default for book id ${bookId}`
+              } else {
+                properties['classroom name'] = classroom.name
+                properties['classroom id'] = classroom.uid
+              }
+            }
+          } catch(e) {}
+        }
+
         logEvent({
           eventName: `Read book`,
-          properties: {
-            'book title': book.title || `Book id: ${bookId}`,
-            'book author': book.author || ``,
-            'book id': bookId,
-            'spine label': spineLabel,
-            'spine id ref': spineIdRef,
-            "duration in seconds": parseInt((endTime - startTime) / 1000, 10),
-          },
+          properties,
         })
       }
 
