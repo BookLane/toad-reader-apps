@@ -664,6 +664,7 @@ const Book = React.memo(({
 
       setStatusBarTimeout(() => setStatusBarHidden(!wideMode || Platform.OS === 'ios'), PAGE_ZOOM_MILLISECONDS - 100)
 
+      endRecordReading()  // may or may not be needed
       startRecordReading({
         bookId,
         spineIdRef: info.spineIdRef || spineIdRef,
