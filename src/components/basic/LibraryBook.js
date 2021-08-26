@@ -49,7 +49,7 @@ const LibraryBook = ({
           properties: {
             title: books[bookId].title || `Book id: ${bookId}`,
           },
-        })  
+        })
       }
     },
     [ bookId, setDownloadStatus, pushToBookDownloadQueue, books ],
