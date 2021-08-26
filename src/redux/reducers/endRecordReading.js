@@ -1,4 +1,5 @@
 import { getIdsFromAccountId } from "../../utils/toolbox"
+import { logEvent } from "../../utils/analytics"
 
 const initialState = {}
 
@@ -17,10 +18,12 @@ export default function(state, action) {
         return state
       }
 
+      const { bookId, spineIdRef, startTime } = state.currentReadingRecord
+
       if(
-        !state.currentReadingRecord.bookId
-        || !state.currentReadingRecord.spineIdRef
-        || !state.currentReadingRecord.startTime
+        !bookId
+        || !spineIdRef
+        || !startTime
       ) {
         console.log('ERROR: Tried ending invalid reading record.', state.currentReadingRecord)
         
@@ -28,10 +31,10 @@ export default function(state, action) {
         return newState
       }
 
-      const book = state.books[state.currentReadingRecord.bookId]
+      const book = state.books[bookId]
       const endTime = Date.now()
 
-      if(book && endTime - state.currentReadingRecord.startTime > 5*1000) {
+      if(book && endTime - startTime > 5*1000) {
         Object.keys(book.accounts || {}).forEach(accountId => {
           const { idpId } = getIdsFromAccountId(accountId)
           const idp = state.idps[idpId]
@@ -45,6 +48,25 @@ export default function(state, action) {
               endTime,
             },
           ]
+        })
+
+        let spineLabel = ``
+        ;(book.spines || []).some(({ idref, label }) => {
+          if(idref === spineIdRef) {
+            spineLabel = label
+          }
+        })
+
+        logEvent({
+          eventName: `Read book`,
+          properties: {
+            'book title': book.title || `Book id: ${bookId}`,
+            'book author': book.author || ``,
+            'book id': bookId,
+            'spine label': spineLabel,
+            'spine id ref': spineIdRef,
+            "duration in seconds": parseInt((endTime - startTime) / 1000, 10),
+          },
         })
       }
 
