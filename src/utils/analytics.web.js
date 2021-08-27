@@ -36,3 +36,23 @@ export const logEvent = async ({ eventName, properties }) => {
   }
 
 }
+
+export const setUser = async ({ userId=null, properties={} }={}) => {
+
+  if(on) {
+
+    Amplitude.getInstance().setUserId(userId && `${userId}`)
+
+    if(userId) {
+      Amplitude.getInstance().setUserProperties(properties)
+    } else {
+      Amplitude.getInstance().regenerateDeviceId()
+    }
+
+  } else if(__DEV__) {
+
+    console.log('setUser', userId, properties)
+
+  }
+
+}

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { setUser } from "../../utils/analytics"
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../../utils/toolbox'
 import { PUSH_TOKEN_KEY } from '../../hooks/usePushToken'
 
@@ -45,6 +46,17 @@ export default function(state = initialState, action) {
         }
       })()
 
+      if(action.userId > 0) {
+        setUser({
+          userId: action.userId,
+          properties: {
+            name: action.accountInfo.fullname,
+            email: action.accountInfo.email,
+            admin: !!action.accountInfo.isAdmin,
+          },
+        })
+      }
+
       return newState
     }
 
@@ -58,6 +70,7 @@ export default function(state = initialState, action) {
 
     case "REMOVE_ACCOUNT": {
       delete newState[action.accountId]
+      setUser()
       return newState
     }
 

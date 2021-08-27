@@ -96,7 +96,7 @@ const App = () => {
 
   usePushNotificationsSetup()
 
-  useEffect(() => { logEvent({ eventName: `OpenApp` }) }, [])
+  useEffect(() => { logEvent({ eventName: `Open app` }) }, [])
 
   useEffect(() => { setIsFirstRender(false) }, [])
 
