@@ -202,6 +202,7 @@ const StatusAndActions = React.memo(({
           bookId,
           classroomUid,
           uid: selectedToolUid,
+          bookInfoForAnalytics: books[bookId],
         })
 
         setSelectedToolUid({
@@ -211,7 +212,7 @@ const StatusAndActions = React.memo(({
 
       }
     },
-    [ deleteTool, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid, viewingOptions, viewingFrontMatter ],
+    [ deleteTool, books, bookId, classroomUid, selectedToolUid, selectedTool.currently_published_tool_uid, viewingOptions, viewingFrontMatter ],
   )
 
   const onPreview = useCallback(() => setViewingPreview(true), [])

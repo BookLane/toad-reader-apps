@@ -81,6 +81,41 @@ const fixToolOrdering = ({
 
 }
 
+const logPublishDeleteToolEvents = ({
+  eventName,
+  tool,
+  tools,
+  classroom,
+  bookInfoForAnalytics,
+  bookId,
+}) => {
+  const allPublishedTools = tools.filter(({ published_at, _delete }) => published_at && !_delete)
+  const isDefaultClassroom = classroom.uid.split('-')[1] === bookId
+
+  const properties = {
+    type: tool.toolType,
+    'current total instructor-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'INSTRUCTOR').length,
+    'current total publisher-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'PUBLISHER').length,
+    'current total publisher-created/instructor-modified tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'BOTH').length,
+    'book title': bookInfoForAnalytics.title || `Book id: ${bookId}`,
+    'book author': bookInfoForAnalytics.author || ``,
+    'book id': bookId,
+  }
+
+  if(isDefaultClassroom) {
+    properties['classroom name'] = 'Enhanced book (default)'
+    properties['classroom id'] = `publisher default for book id ${bookId}`
+  } else {
+    properties['classroom name'] = classroom.name
+    properties['classroom id'] = classroom.uid
+  }
+
+  logEvent({
+    eventName,
+    properties,
+  })
+}
+
 export default function(state = initialState, action) {
     
   const newState = {...state}
@@ -620,6 +655,17 @@ export default function(state = initialState, action) {
                 tools,
               }
   
+              if(tool.published_at && action._delete) {
+                logPublishDeleteToolEvents({
+                  eventName: `Delete published tool`,
+                  tool,
+                  tools,
+                  classroom,
+                  bookInfoForAnalytics: action.bookInfoForAnalytics,
+                  bookId: action.bookId,
+                })
+              }
+
               return true
             }
           })
@@ -650,6 +696,7 @@ export default function(state = initialState, action) {
               tools[idx2] = tool = { ...tool }
 
               const oldPublishedToolUid = tool.currently_published_tool_uid
+              const oldPublishedAt = tool.published_at
 
               tool.published_at = now
               tool.currently_published_tool_uid = null
@@ -661,33 +708,16 @@ export default function(state = initialState, action) {
                 tools: tools.filter(({ uid }) => uid !== oldPublishedToolUid),
               }
 
-              // get properties for logEvent...
-
-              const allPublishedTools = classrooms[idx].tools.filter(({ published_at, _delete }) => published_at && !_delete)
-              const isDefaultClassroom = action.classroomUid.split('-')[1] === action.bookId
-
-              const properties = {
-                type: tool.toolType,
-                'current total instructor-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'INSTRUCTOR').length,
-                'current total publisher-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'PUBLISHER').length,
-                'current total publisher-created/instructor-modified tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'BOTH').length,
-                'book title': action.bookInfoForAnalytics.title || `Book id: ${action.bookId}`,
-                'book author': action.bookInfoForAnalytics.author || ``,
-                'book id': action.bookId,
+              if(!oldPublishedAt) {
+                logPublishDeleteToolEvents({
+                  eventName: `Publish new tool`,
+                  tool,
+                  tools: classrooms[idx].tools,
+                  classroom,
+                  bookInfoForAnalytics: action.bookInfoForAnalytics,
+                  bookId: action.bookId,
+                })
               }
-
-              if(isDefaultClassroom) {
-                properties['classroom name'] = 'Enhanced book (default)'
-                properties['classroom id'] = `publisher default for book id ${action.bookId}`
-              } else {
-                properties['classroom name'] = classroom.name
-                properties['classroom id'] = classroom.uid
-              }
-
-              logEvent({
-                eventName: `Add new tool`,
-                properties,
-              })
 
               return true
             }

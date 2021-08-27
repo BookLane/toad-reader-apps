@@ -202,12 +202,13 @@ export const deleteToolEngagement = ({ bookId, classroomUid, toolUid, uid }) => 
   doPatch: true,
 })
 
-export const deleteTool = ({ bookId, classroomUid, uid }) => ({
+export const deleteTool = ({ bookId, classroomUid, uid, bookInfoForAnalytics }) => ({
   type: "UPDATE_TOOL",
   bookId,
   classroomUid,
   uid,
   _delete: true,
+  bookInfoForAnalytics,
   doPatch: true,
 })
 
