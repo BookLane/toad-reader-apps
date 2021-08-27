@@ -129,7 +129,7 @@ export const deleteClassroomMember = ({ classroomUid, bookId, userId }) => ({
   doPatch: true,
 })
 
-export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid }) => ({
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid, creatorType }) => ({
   type: "CREATE_TOOL",
   bookId,
   classroomUid,
@@ -143,6 +143,7 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   due_at,
   closes_at,
   currently_published_tool_uid,
+  creatorType,
   doPatch: true,
 })
 

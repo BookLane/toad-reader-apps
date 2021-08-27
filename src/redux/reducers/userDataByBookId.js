@@ -537,6 +537,7 @@ export default function(state = initialState, action) {
             due_at: action.due_at,
             closes_at: action.closes_at,
             currently_published_tool_uid: action.currently_published_tool_uid,
+            creatorType: action.creatorType,
           }
 
           tools.push(newTool)

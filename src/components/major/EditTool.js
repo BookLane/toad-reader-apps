@@ -104,6 +104,11 @@ const EditTool = React.memo(({
           uid,
           published_at: null,
           currently_published_tool_uid: tool.uid,
+          creatorType: (
+            (!isDefaultClassroom && tool.creatorType === 'PUBLISHER')
+              ? 'BOTH'
+              : tool.creatorType
+          ),
           ...updates,
         })
 

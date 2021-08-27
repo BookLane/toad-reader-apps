@@ -53,7 +53,7 @@ const BookContents = React.memo(({
   createTool,
 }) => {
 
-  const { toc, classroomUid, visibleTools, selectedTool, bookVersion,
+  const { toc, classroomUid, visibleTools, selectedTool, bookVersion, isDefaultClassroom,
           myRole, viewingFrontMatter, viewingOptions, selectedToolUid } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { latest_location } = userDataByBookId[bookId] || {}
@@ -287,6 +287,7 @@ const BookContents = React.memo(({
         ordering,
         name: "",
         // toolType,
+        creatorType: isDefaultClassroom ? 'PUBLISHER' : 'INSTRUCTOR',
       })
     },
     [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],
