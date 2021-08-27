@@ -2,6 +2,7 @@ import uuidv4 from 'uuid/v4'
 
 import { latestLocationToStr, createAccessCode, getDraftToolByCurrentlyPublishedToolUid, createShareCode } from '../../utils/toolbox'
 import { getToolInfo } from "../../utils/toolInfo"
+import { logEvent } from "../../utils/analytics"
 
 const MAX_QUOTE_WORD_LENGTH = 300
 const MAX_QUOTE_CHARACTER_LENGTH = 1500
@@ -659,7 +660,35 @@ export default function(state = initialState, action) {
                 // simply get rid the previous version (if exists) as the backend will take care of its data updates
                 tools: tools.filter(({ uid }) => uid !== oldPublishedToolUid),
               }
-  
+
+              // get properties for logEvent...
+
+              const allPublishedTools = classrooms[idx].tools.filter(({ published_at, _delete }) => published_at && !_delete)
+              const isDefaultClassroom = action.classroomUid.split('-')[1] === action.bookId
+
+              const properties = {
+                type: tool.toolType,
+                'current total instructor-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'INSTRUCTOR').length,
+                'current total publisher-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'PUBLISHER').length,
+                'current total publisher-created/instructor-modified tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'BOTH').length,
+                'book title': action.bookInfoForAnalytics.title || `Book id: ${action.bookId}`,
+                'book author': action.bookInfoForAnalytics.author || ``,
+                'book id': action.bookId,
+              }
+
+              if(isDefaultClassroom) {
+                properties['classroom name'] = 'Enhanced book (default)'
+                properties['classroom id'] = `publisher default for book id ${action.bookId}`
+              } else {
+                properties['classroom name'] = classroom.name
+                properties['classroom id'] = classroom.uid
+              }
+
+              logEvent({
+                eventName: `Add new tool`,
+                properties,
+              })
+
               return true
             }
           })
@@ -670,7 +699,7 @@ export default function(state = initialState, action) {
           ...userDataForThisBook,
           classrooms,
         }
-  
+
         return newState
 
       }

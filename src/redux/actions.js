@@ -163,11 +163,12 @@ export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   doPatch: true,
 })
 
-export const publishTool = ({ bookId, classroomUid, uid }) => ({
+export const publishTool = ({ bookId, classroomUid, uid, bookInfoForAnalytics }) => ({
   type: "PUBLISH_TOOL",
   bookId,
   classroomUid,
   uid,
+  bookInfoForAnalytics,
   doPatch: true,
 })
 

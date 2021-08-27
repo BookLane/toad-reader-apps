@@ -162,10 +162,11 @@ const StatusAndActions = React.memo(({
           bookId,
           classroomUid,
           uid: selectedToolUid,
+          bookInfoForAnalytics: books[bookId],
         })
       }
     },
-    [ bookId, classroomUid, selectedToolUid, viewingOptions, viewingFrontMatter ],
+    [ books, bookId, classroomUid, selectedToolUid, viewingOptions, viewingFrontMatter ],
   )
 
   const onDelete = useCallback(
