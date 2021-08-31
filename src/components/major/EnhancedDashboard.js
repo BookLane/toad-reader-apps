@@ -23,6 +23,7 @@ const EnhancedDashboard = React.memo(({
   closeToolAndExitReading,
   inEditMode,
   goTo,
+  logToolUsageEvent,
 
   books,
   userDataByBookId,
@@ -91,6 +92,7 @@ const EnhancedDashboard = React.memo(({
       content: (
         <EnhancedDiscussionQuestions
           bookId={bookId}
+          logToolUsageEvent={logToolUsageEvent}
         />
       ),
     }]),

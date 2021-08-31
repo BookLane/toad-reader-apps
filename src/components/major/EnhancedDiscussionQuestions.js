@@ -1,11 +1,12 @@
-import React, { useState, useMemo, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import React, { useState, useMemo, useCallback, useEffect } from "react"
+import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
-import getDummyDiscussionQuestions from '../../utils/getDummyDiscussionQuestions'
+import usePrevious from "react-use/lib/usePrevious"
 
+import getDummyDiscussionQuestions from '../../utils/getDummyDiscussionQuestions'
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems } from '../../utils/toolbox'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
 
 const EnhancedDiscussionQuestions = React.memo(({
   bookId,
+  logToolUsageEvent,
 
   books,
   userDataByBookId,
@@ -68,6 +70,7 @@ const EnhancedDiscussionQuestions = React.memo(({
   const wideMode = useWideMode()
 
   const [ currentQuestionUids, setCurrentQuestionUids ] = useState([])
+  const prevCurrentQuestionUids = usePrevious(currentQuestionUids)
 
   const { orderedQuestions } = useMemo(
     () => {
@@ -125,6 +128,20 @@ const EnhancedDiscussionQuestions = React.memo(({
     [ wideMode, orderedQuestions ],
   )
 
+  useEffect(
+    () => {
+      currentQuestionUids.forEach(toolUid => {
+        if(!prevCurrentQuestionUids.includes(toolUid)) {
+          logToolUsageEvent({
+            toolUid,
+            eventName: `View tool`,
+          })
+        }
+      })
+    },
+    [ currentQuestionUids ],
+  )
+
   const currentQuestions = useMemo(
     () => (
       orderedQuestions.filter(({ uid }) => currentQuestionUids.includes(uid))
@@ -171,6 +188,7 @@ const EnhancedDiscussionQuestions = React.memo(({
               toolUid={uid}
               question={question}
               extraKeyboardVerticalOffset={92}
+              logUsageEvent={logToolUsageEvent}
             />
           </View>
         ))}

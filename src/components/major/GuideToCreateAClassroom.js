@@ -145,6 +145,7 @@ const GuideToCreateAClassroom = React.memo(({
         </Text>
         {Object.keys(ENHANCED_EDITOR_HOW_TO_LINKS.CREATE_A_CLASSROOM || {}).map(linkText => (
           <LinkLikeText
+            key={linkText}
             url={ENHANCED_EDITOR_HOW_TO_LINKS.CREATE_A_CLASSROOM[linkText]}
             style={styles.links}
           >

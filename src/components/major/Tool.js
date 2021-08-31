@@ -98,6 +98,7 @@ const Tool = React.memo(({
   setFullscreenInfo,
   viewingPreview,
   setViewingPreview,
+  logUsageEvent,
 }) => {
 
   const wideMode = useWideMode()
@@ -221,6 +222,7 @@ const Tool = React.memo(({
           classroomQueryString={classroomQueryString}
           fullscreenInfo={fullscreenInfo}
           setFullscreenInfo={setFullscreenInfo}
+          logUsageEvent={logUsageEvent}
           {...data}
         />
       </ToolComponentContainer>

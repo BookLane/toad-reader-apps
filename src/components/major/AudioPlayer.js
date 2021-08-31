@@ -84,6 +84,7 @@ const getTimeStringFromMS = ms => {
 
 const AudioPlayer = ({
   source,
+  logUsageEvent,
 }) => {
 
   const [ loading, setLoading ] = useState(true)
@@ -98,6 +99,8 @@ const AudioPlayer = ({
   const getDurationMS = useInstanceValue(durationMS)
 
   const soundObj = useRef()
+  const totalTimePlayed = useRef(0)
+  const currentPlaybackStartTime = useRef(null)
 
   const onPlaybackStatusUpdate = useCallback(
     ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
@@ -114,6 +117,13 @@ const AudioPlayer = ({
 
       if(isPlaying !== getPlaying()) {
         setPlaying(isPlaying)
+
+        if(isPlaying) {
+          currentPlaybackStartTime.current = Date.now()
+        } else if(currentPlaybackStartTime.current) {
+          totalTimePlayed.current += Math.round((Date.now() - currentPlaybackStartTime.current) / 1000)
+          currentPlaybackStartTime.current = null
+        }
       }
 
       const newPositionMS = didJustFinish ? 0 : positionMillis
@@ -167,7 +177,21 @@ const AudioPlayer = ({
   const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
-  useEffect(() => (soundObj.isLoaded && pause), [])  // pause on unload
+  useEffect(() => pause, [])  // pause on unload
+
+  useEffect(
+    () => (
+      () => {
+        if(logUsageEvent && totalTimePlayed.current) {
+          logUsageEvent({
+            usageType: `Audio playback`,
+            'total playback time in seconds': totalTimePlayed.current,
+          })
+        }
+      }
+    ),
+    [],
+  )
 
   const setPosition = useCallback(
     async ms => {

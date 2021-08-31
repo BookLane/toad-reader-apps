@@ -31,17 +31,21 @@ export const youtubeRegex = /^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([^&]*)
 export const shortYoutubeRegex = /^https:\/\/youtu\.be\/([^?]+).*$/
 
 const VideoTool = React.memo(({
+  toolUid,
   videoLink,
   startTime,
   endTime,
   subtitlesOn,
   containerStyle,
+  logUsageEvent,
 }) => {
 
   const wideModeWithEitherOrientation = useWideMode(true)
 
   const videoRef = useRef()
   const prevIsPlaying = useRef(false)
+  const totalTimePlayed = useRef(0)
+  const currentPlaybackStartTime = useRef()
 
   useEffect(
     () => async () => {
@@ -87,22 +91,47 @@ const VideoTool = React.memo(({
   const onPlaybackStatusUpdate = useCallback(
     ({ isPlaying, didJustFinish }) => {
       (async () => {
-        if(wideModeWithEitherOrientation) return
-        if(Platform.OS === 'web') return
 
-        try {
-          if(!prevIsPlaying.current && isPlaying) {
-            await videoRef.current.presentFullscreenPlayer()
-          } else if(didJustFinish) {
-            await videoRef.current.dismissFullscreenPlayer()
-          }
-        } catch(err) {}  // ignore as it just means the state is already what I am setting it to be
+        if(!prevIsPlaying.current && isPlaying) {
+          currentPlaybackStartTime.current = Date.now()
+        } else if(!isPlaying && currentPlaybackStartTime.current) {
+          totalTimePlayed.current += Math.round((Date.now() - currentPlaybackStartTime.current) / 1000)
+          currentPlaybackStartTime.current = null
+        }
+
+        if(
+          !wideModeWithEitherOrientation
+          && Platform.OS !== 'web'
+        ) {
+          try {
+            if(!prevIsPlaying.current && isPlaying) {
+              await videoRef.current.presentFullscreenPlayer()
+            } else if(didJustFinish) {
+              await videoRef.current.dismissFullscreenPlayer()
+            }
+          } catch(err) {}  // ignore as it just means the state is already what I am setting it to be
+        }
 
         prevIsPlaying.current = isPlaying
 
       })()
     },
     [ wideModeWithEitherOrientation ],
+  )
+
+  useEffect(
+    () => (
+      () => {
+        if(logUsageEvent && totalTimePlayed.current) {
+          logUsageEvent({
+            toolUid,
+            usageType: `Video playback`,
+            'total playback time in seconds': totalTimePlayed.current,
+          })
+        }
+      }
+    ),
+    [],
   )
 
   videoLink = videoLink || ""

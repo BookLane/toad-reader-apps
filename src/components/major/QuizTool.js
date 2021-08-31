@@ -100,6 +100,7 @@ const QuizTool = React.memo(({
   toolUid,
   viewingPreview,
   priorEngagements,
+  logUsageEvent,
 
   questions,
   shuffle,
@@ -163,6 +164,12 @@ const QuizTool = React.memo(({
           answers: selectedAnswers,
           score,
         })
+
+        logUsageEvent({
+          toolUid,
+          usageType: `Quiz submission`,
+        })
+
       }
     },
     [ currentQuestionSubmitted, pageIndex, viewingPreview, questions, selectedAnswers, numAnsweredCorrectly, bookId, classroomUid, toolUid ],

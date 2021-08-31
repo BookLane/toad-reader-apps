@@ -29,6 +29,7 @@ import useClassroomQueryString from "../../hooks/useClassroomQueryString"
 import useSpineInlineToolsHash from "../../hooks/useSpineInlineToolsHash"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
          setTocAndSpines, updateTool, setSelectedToolUid, setBookCookies, setClassroomQueryString } from "../../redux/actions"
+import { logEvent } from "../../utils/analytics"
 
 import SafeLayout from "../basic/SafeLayout"
 import BookPage from "../major/BookPage"
@@ -305,7 +306,7 @@ const Book = React.memo(({
   const wideMode = useWideMode()
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter,
-          viewingOptions, viewingDashboard, myRole, hasFrontMatterDraftData, bookVersion,
+          viewingOptions, viewingDashboard, myRole, hasFrontMatterDraftData, bookVersion, classroom,
           draftToolByCurrentlyPublishedToolUid, inEditMode, idpId, isDefaultClassroom, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId, rawInEditMode })
 
   const spineInlineToolsHash = useSpineInlineToolsHash({ visibleTools, spineIdRef })
@@ -974,6 +975,44 @@ const Book = React.memo(({
     [ bookId, classroomUid ],
   )
 
+  const logToolUsageEvent = useCallback(
+    ({ eventName=`Engage tool`, toolUid, usageType, ...extraProperties }) => {
+      const tool = visibleTools.filter(({ uid }) => uid === toolUid)[0]
+
+      if(!tool || inEditMode) return
+
+      const properties = {
+        id: tool.uid,
+        type: tool.toolType,
+        name: tool.name || '',
+        'book title': books[bookId].title || `Book id: ${bookId}`,
+        'book author': books[bookId].author || ``,
+        'book id': bookId,
+        'classroom role': myRole,
+        'creator type': (tool.creatorType || '').replace(/^BOTH$/, "PUBLISHER (EDITED BY INSTRUCTOR)"),
+        ...extraProperties,
+      }
+
+      if(usageType) {
+        properties['engagement type'] = usageType
+      }
+
+      if(isDefaultClassroom) {
+        properties['classroom name'] = 'Enhanced book (default)'
+        properties['classroom id'] = `publisher default for book id ${bookId}`
+      } else {
+        properties['classroom name'] = classroom.name
+        properties['classroom id'] = classroom.uid
+      }
+
+      logEvent({
+        eventName,
+        properties,
+      })
+    },
+    [ books, classroom, myRole, bookId, inEditMode, isDefaultClassroom ],
+  )
+
   const pageCfisKey = getPageCfisKey({
     displaySettings,
     width,
@@ -1198,6 +1237,7 @@ const Book = React.memo(({
             goTo={goTo}
             closeToolAndExitReading={closeToolAndExitReading}
             classroomQueryString={classroomQueryString}
+            logToolUsageEvent={logToolUsageEvent}
           />
           {viewingHighlights &&
             <HighlightsWrapper
@@ -1210,6 +1250,7 @@ const Book = React.memo(({
             bookId={bookId}
             closeToolAndExitReading={closeToolAndExitReading}
             goTo={goTo}
+            logToolUsageEvent={logToolUsageEvent}
           />
           <EnhancedOptions
             bookId={bookId}

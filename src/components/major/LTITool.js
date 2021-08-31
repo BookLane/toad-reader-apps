@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
 const LTITool = React.memo(({
   bookId,
   toolUid,
+  logUsageEvent,
 
   url,
   instructions,
@@ -80,6 +81,12 @@ const LTITool = React.memo(({
         }
 
         openURL({ url: launchLink, historyPush })
+
+        logUsageEvent({
+          toolUid,
+          usageType: `LTI launch`,
+          'LTI domain': (launchLink.match(/^https?:\/\/([^:\/\n?]+)/i) || [])[1],
+        })
 
       } catch(err) {
         historyPush("/error", err)

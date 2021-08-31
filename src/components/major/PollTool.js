@@ -7,6 +7,7 @@ import { RadioGroup, Radio } from "@ui-kitten/components"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { updateToolEngagement } from "../../redux/actions"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
 const info = {
   marginVertical: 20,
@@ -65,6 +66,7 @@ const PollTool = React.memo(({
   toolUid,
   viewingPreview,
   priorEngagement,
+  logUsageEvent,
 
   question,
   choices,
@@ -89,6 +91,8 @@ const PollTool = React.memo(({
     return null
   })
 
+  const getSelectedAnswer = useInstanceValue(selectedAnswer)
+
   const selectAnswer = useCallback(
     answer => {
       setSelectedAnswer(answer)
@@ -101,8 +105,17 @@ const PollTool = React.memo(({
         toolUid,
         answers: [ answer ],
       })
+
+      if(getSelectedAnswer() == null) {
+        // Only log when they first answer
+        logUsageEvent({
+          toolUid,
+          usageType: `Poll answer`,
+        })
+      }
+
     },
-    [ viewingPreview, question, choices, bookId, classroomUid, toolUid ],
+    [ viewingPreview, question, choices, bookId, classroomUid, toolUid, getSelectedAnswer ],
   )
 
   return (

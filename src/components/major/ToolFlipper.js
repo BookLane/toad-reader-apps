@@ -8,7 +8,6 @@ import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
-import { logEvent } from "../../utils/analytics"
 
 import Tool from "./Tool"
 import Icon from "../basic/Icon"
@@ -71,6 +70,7 @@ const ToolFlipper = React.memo(({
   goTo,
   closeToolAndExitReading,
   classroomQueryString,
+  logToolUsageEvent,
 
   books,
   userDataByBookId,
@@ -159,34 +159,22 @@ const ToolFlipper = React.memo(({
     [ (selectedTool || {}).uid ],
   )
 
+  const logUsageEvent = useCallback(
+    params => {
+      if(viewingPreview) return
+      logToolUsageEvent(params)
+    },
+    [ logToolUsageEvent, viewingPreview ],
+  )
+
   useEffect(
     () => {
-      if(!selectedTool || inEditMode || viewingPreview) return
-
-      const properties = {
-        type: selectedTool.toolType,
-        name: selectedTool.name || '',
-        'book title': books[bookId].title || `Book id: ${bookId}`,
-        'book author': books[bookId].author || ``,
-        'book id': bookId,
-        'classroom role': myRole,
-        'creator type': (selectedTool.creatorType || '').replace(/^BOTH$/, "PUBLISHER (EDITED BY INSTRUCTOR)"),
-      }
-
-      if(isDefaultClassroom) {
-        properties['classroom name'] = 'Enhanced book (default)'
-        properties['classroom id'] = `publisher default for book id ${bookId}`
-      } else {
-        properties['classroom name'] = classroom.name
-        properties['classroom id'] = classroom.uid
-      }
-
-      logEvent({
+      logUsageEvent({
+        toolUid: (selectedTool || {}).uid,
         eventName: `View tool`,
-        properties,
       })
     },
-    [ books, classroom, myRole, bookId, selectedTool, inEditMode, viewingPreview, isDefaultClassroom ],
+    [ (selectedTool || {}).uid, inEditMode, viewingPreview ],
   )
 
   if(!selectedTool) return null
@@ -209,6 +197,7 @@ const ToolFlipper = React.memo(({
           setFullscreenInfo={setFullscreenInfo}
           viewingPreview={viewingPreview}
           setViewingPreview={setViewingPreview}
+          logUsageEvent={logUsageEvent}
         />
       </View>
     )  
@@ -238,6 +227,7 @@ const ToolFlipper = React.memo(({
               setFullscreenInfo={setFullscreenInfo}
               viewingPreview={viewingPreview}
               setViewingPreview={setViewingPreview}
+              logUsageEvent={logUsageEvent}
             />
           </View>
         </View>
@@ -269,6 +259,7 @@ const ToolFlipper = React.memo(({
                   setFullscreenInfo={setFullscreenInfo}
                   viewingPreview={viewingPreview}
                   setViewingPreview={setViewingPreview}
+                  logUsageEvent={logUsageEvent}
                 />
               </View>
             ))}

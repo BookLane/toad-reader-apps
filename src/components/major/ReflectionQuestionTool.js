@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useRef } from "react"
 import { StyleSheet, Text, View, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -53,6 +53,7 @@ const ReflectionQuestionTool = React.memo(({
   toolUid,
   viewingPreview,
   priorEngagement,
+  logUsageEvent,
 
   question,
 
@@ -64,6 +65,7 @@ const ReflectionQuestionTool = React.memo(({
   const { isDefaultClassroom, classroomUid } = useClassroomInfo({ books, bookId })
 
   const [ answerValue, setAnswerValue ] = useState((!viewingPreview && (priorEngagement || {}).text) || "")
+  const shouldLogUsage = useRef((priorEngagement || {}).text == null)
 
   const [ setAnswerSaveTimeout ] = useSetTimeout({ fireOnUnmount: true })
 
@@ -91,8 +93,16 @@ const ReflectionQuestionTool = React.memo(({
           300,
         )
       }
+
+      if(shouldLogUsage.current) {
+        logUsageEvent({
+          toolUid,
+          usageType: `Reflection question answer`,
+        })
+        shouldLogUsage.current = false
+      }
     },
-    [ goUpdateEngagement ],
+    [ goUpdateEngagement, toolUid ],
   )
 
   return (

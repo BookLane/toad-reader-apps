@@ -143,6 +143,7 @@ const DiscussionQuestionTool = React.memo(({
   toolUid,
   viewingPreview,
   extraKeyboardVerticalOffset=0,
+  logUsageEvent,
 
   question,
 
@@ -327,6 +328,11 @@ const DiscussionQuestionTool = React.memo(({
           data: {
             text,
           },
+        })
+
+        logUsageEvent({
+          toolUid,
+          usageType: `Discussion contribution`,
         })
 
       }

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -19,7 +19,9 @@ const styles = StyleSheet.create({
 
 const AudioTool = React.memo(({
   bookId,
+  toolUid,
   classroomQueryString,
+  logUsageEvent,
 
   audioFile={},
 
@@ -27,6 +29,16 @@ const AudioTool = React.memo(({
   accounts,
   books,
 }) => {
+
+  const logUsageEventWithToolUid = useCallback(
+    params => {
+      logUsageEvent({
+        toolUid,
+        ...params,
+      })
+    },
+    [ logUsageEvent, toolUid ],
+  )
 
   const { accountId, classroomUid } = useClassroomInfo({ books, bookId })
   const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
@@ -46,6 +58,7 @@ const AudioTool = React.memo(({
           }),
           uri,
         }}
+        logUsageEvent={logUsageEventWithToolUid}
       />
     </View>
   )
