@@ -94,6 +94,7 @@ const logPublishDeleteToolEvents = ({
 
   const properties = {
     type: tool.toolType,
+    name: tool.name || '',
     'current total instructor-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'INSTRUCTOR').length,
     'current total publisher-created tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'PUBLISHER').length,
     'current total publisher-created/instructor-modified tools': allPublishedTools.filter(({ creatorType }) => creatorType === 'BOTH').length,
@@ -696,7 +697,6 @@ export default function(state = initialState, action) {
               tools[idx2] = tool = { ...tool }
 
               const oldPublishedToolUid = tool.currently_published_tool_uid
-              const oldPublishedAt = tool.published_at
 
               tool.published_at = now
               tool.currently_published_tool_uid = null
@@ -708,7 +708,7 @@ export default function(state = initialState, action) {
                 tools: tools.filter(({ uid }) => uid !== oldPublishedToolUid),
               }
 
-              if(!oldPublishedAt) {
+              if(!oldPublishedToolUid) {
                 logPublishDeleteToolEvents({
                   eventName: `Publish new tool`,
                   tool,

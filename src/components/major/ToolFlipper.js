@@ -8,6 +8,7 @@ import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
+import { logEvent } from "../../utils/analytics"
 
 import Tool from "./Tool"
 import Icon from "../basic/Icon"
@@ -77,7 +78,7 @@ const ToolFlipper = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { selectedTool, visibleTools, spines } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { selectedTool, visibleTools, spines, classroom, myRole, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
   const [ fullscreenInfo, setFullscreenInfo ] = useState()
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
@@ -156,6 +157,36 @@ const ToolFlipper = React.memo(({
       setFullscreenInfo()
     },
     [ (selectedTool || {}).uid ],
+  )
+
+  useEffect(
+    () => {
+      if(!selectedTool || inEditMode || viewingPreview) return
+
+      const properties = {
+        type: selectedTool.toolType,
+        name: selectedTool.name || '',
+        'book title': books[bookId].title || `Book id: ${bookId}`,
+        'book author': books[bookId].author || ``,
+        'book id': bookId,
+        'classroom role': myRole,
+        'creator type': (selectedTool.creatorType || '').replace(/^BOTH$/, "PUBLISHER (EDITED BY INSTRUCTOR)"),
+      }
+
+      if(isDefaultClassroom) {
+        properties['classroom name'] = 'Enhanced book (default)'
+        properties['classroom id'] = `publisher default for book id ${bookId}`
+      } else {
+        properties['classroom name'] = classroom.name
+        properties['classroom id'] = classroom.uid
+      }
+
+      logEvent({
+        eventName: `View tool`,
+        properties,
+      })
+    },
+    [ books, classroom, myRole, bookId, selectedTool, inEditMode, viewingPreview, isDefaultClassroom ],
   )
 
   if(!selectedTool) return null
