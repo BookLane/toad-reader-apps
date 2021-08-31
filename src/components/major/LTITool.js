@@ -85,7 +85,7 @@ const LTITool = React.memo(({
         logUsageEvent({
           toolUid,
           usageType: `LTI launch`,
-          'LTI domain': (launchLink.match(/^https?:\/\/([^:\/\n?]+)/i) || [])[1],
+          'LTI domain': (url.match(/^https?:\/\/([^:\/\n?]+)/i) || [])[1],
         })
 
       } catch(err) {
