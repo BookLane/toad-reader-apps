@@ -81,7 +81,7 @@ const fixToolOrdering = ({
 
 }
 
-const logPublishDeleteToolEvents = ({
+const logPublishDeleteToolEvent = ({
   eventName,
   tool,
   tools,
@@ -109,6 +109,27 @@ const logPublishDeleteToolEvents = ({
   } else {
     properties['classroom name'] = classroom.name
     properties['classroom id'] = classroom.uid
+  }
+
+  logEvent({
+    eventName,
+    properties,
+  })
+}
+
+const logHighlightEvent = ({
+  eventName,
+  bookInfoForAnalytics,
+  bookId,
+  ...extraProperties
+}) => {
+
+  const properties = {
+    'book title': bookInfoForAnalytics.title || `Book id: ${bookId}`,
+    'book author': bookInfoForAnalytics.author || ``,
+    'book version': bookInfoForAnalytics.version,
+    'book id': bookId,
+    ...extraProperties,
   }
 
   logEvent({
@@ -258,7 +279,9 @@ export default function(state = initialState, action) {
     }
 
     case "SET_HIGHLIGHT": {
-      let noChange, highlightShareInfo = {}
+      const { bookId, bookInfoForAnalytics } = action
+
+      let noChange, highlightShareInfo = {}, isNewHighlight = true, isNewAnnotation = !!action.note
       highlights = highlights.filter(highlight => {
         if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
           if(
@@ -277,6 +300,8 @@ export default function(state = initialState, action) {
                 share_quote: highlight.share_quote,
               }
             }
+            isNewHighlight = false
+            isNewAnnotation = !highlight.note && !!action.note
             return false
           }
         }
@@ -313,9 +338,25 @@ export default function(state = initialState, action) {
         updated_at: now,
       })
 
-      newState[action.bookId] = {
+      newState[bookId] = {
         ...userDataForThisBook,
         highlights,
+      }
+
+      if(bookInfoForAnalytics) {
+        if(isNewHighlight) {
+          logHighlightEvent({
+            eventName: `Add highlight`,
+            bookInfoForAnalytics,
+            bookId,
+          })
+        } else if(isNewAnnotation) {
+          logHighlightEvent({
+            eventName: `Add annotation`,
+            bookInfoForAnalytics,
+            bookId,
+          })
+        }
       }
 
       return newState
@@ -657,7 +698,7 @@ export default function(state = initialState, action) {
               }
   
               if(tool.published_at && action._delete) {
-                logPublishDeleteToolEvents({
+                logPublishDeleteToolEvent({
                   eventName: `Delete published tool`,
                   tool,
                   tools,
@@ -709,7 +750,7 @@ export default function(state = initialState, action) {
               }
 
               if(!oldPublishedToolUid) {
-                logPublishDeleteToolEvents({
+                logPublishDeleteToolEvent({
                   eventName: `Publish new tool`,
                   tool,
                   tools: classrooms[idx].tools,
@@ -894,6 +935,8 @@ export default function(state = initialState, action) {
     }
 
     case "CREATE_INSTRUCTOR_HIGHLIGHT": {
+      const { bookId, bookInfoForAnalytics } = action
+
       if(classrooms.some((classroom, idx) => {
         if(classroom.uid === action.classroomUid) {
 
@@ -918,11 +961,19 @@ export default function(state = initialState, action) {
         }
       })) {
 
-        newState[action.bookId] = {
+        newState[bookId] = {
           ...userDataForThisBook,
           classrooms,
         }
-  
+
+        if(bookInfoForAnalytics) {
+          logHighlightEvent({
+            eventName: `Share highlight/annotation with classrooms`,
+            bookInfoForAnalytics,
+            bookId,
+          })
+        }
+
         return newState
 
       }

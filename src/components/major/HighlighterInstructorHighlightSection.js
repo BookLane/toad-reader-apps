@@ -83,6 +83,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
           classroomUid,
           spineIdRef: highlight.spineIdRef,
           cfi: highlight.cfi,
+          bookInfoForAnalytics: books[bookId],
         })
 
       } else {
@@ -94,7 +95,7 @@ const HighlighterInstructorHighlightSection = React.memo(({
         })
       }
     },
-    [ hasIsMineInstructorHighlight, bookId, classroomUid, highlight ],
+    [ hasIsMineInstructorHighlight, books, bookId, classroomUid, highlight ],
   )
 
   if(isDefaultClassroom || enhancedIsOff) return null

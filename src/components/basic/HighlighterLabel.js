@@ -117,7 +117,7 @@ const HighlighterLabel = React.memo(({
   const { routerState } = useRouterState()
   const { widget } = routerState
 
-  const toggleHighlightDependencies = [ selectionInfo, bookId, highlight, setHighlight, deleteHighlight ]
+  const toggleHighlightDependencies = [ books, selectionInfo, bookId, highlight, setHighlight, deleteHighlight ]
 
   const toggleHighlight = useCallback(
     color => {
@@ -147,6 +147,7 @@ const HighlighterLabel = React.memo(({
           color,
           note,
           share_quote,
+          bookInfoForAnalytics: books[bookId],
         })
 
         setShowDeletedMsgAndUndoColor()

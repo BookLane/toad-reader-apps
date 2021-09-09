@@ -212,12 +212,13 @@ export const deleteTool = ({ bookId, classroomUid, uid, bookInfoForAnalytics }) 
   doPatch: true,
 })
 
-export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi }) => ({
+export const createInstructorHighlight = ({ bookId, classroomUid, spineIdRef, cfi, bookInfoForAnalytics }) => ({
   type: "CREATE_INSTRUCTOR_HIGHLIGHT",
   bookId,
   classroomUid,
   spineIdRef,
   cfi,
+  bookInfoForAnalytics,
   doPatch: true,
 })
 
@@ -337,7 +338,7 @@ export const setLatestLocation = ({ bookId, latestLocation }) => ({
   doPatch: true,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote, forceNewShareCode }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote, forceNewShareCode, bookInfoForAnalytics }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
@@ -346,6 +347,7 @@ export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote
   note,
   share_quote,
   forceNewShareCode,
+  bookInfoForAnalytics,
   doPatch: true,
 })
 

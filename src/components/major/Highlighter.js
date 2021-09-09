@@ -64,6 +64,7 @@ const Highlighter = React.memo(({
   setSelectionText,
   updateNoteInEdit,
   
+  books,
   userDataByBookId,
 
   setHighlight,
@@ -127,6 +128,7 @@ const Highlighter = React.memo(({
           ...highlight.current,
           bookId,
           share_quote: selectionInfo.text,
+          bookInfoForAnalytics: books[bookId],
         })
       }
     },
@@ -145,6 +147,7 @@ const Highlighter = React.memo(({
           ...highlight.current,
           bookId,
           note: noteInEdit,
+          bookInfoForAnalytics: books[bookId],
         })
 
         updateNoteInEdit(null)
@@ -157,7 +160,7 @@ const Highlighter = React.memo(({
         }
       }
     },
-    [ bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current ],
+    [ books, bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current ],
   )
 
   const endEditingNote = Keyboard.dismiss
@@ -202,7 +205,8 @@ const Highlighter = React.memo(({
   ]
 })
 
-const mapStateToProps = ({ userDataByBookId }) => ({
+const mapStateToProps = ({ books, userDataByBookId }) => ({
+  books,
   userDataByBookId,
 })
 
