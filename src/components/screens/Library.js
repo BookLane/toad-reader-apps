@@ -19,6 +19,7 @@ import useHasNoAuth from "../../hooks/useHasNoAuth"
 import useWideMode from "../../hooks/useWideMode"
 import usePushToken from "../../hooks/usePushToken"
 import usePushNotifications from "../../hooks/usePushNotifications"
+import { setUser } from "../../utils/analytics"
 
 import { Switch, Route } from "../routers/react-router"
 import SafeLayout from "../basic/SafeLayout"
@@ -229,6 +230,29 @@ const Library = ({
         console.log(`Updated metadata keys (idpId: ${idpId})...`)
 
       })()
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      // This is only necessary since the user may have logged in prior
+      // to the setUser function being added to the accounts reducer.
+
+      const accountId = Object.keys(accounts)[0]
+
+      if(accountId) {
+        const { userId } = getIdsFromAccountId(accountId)
+        const account = accounts[accountId]
+        setUser({
+          userId,
+          properties: {
+            name: account.fullname,
+            email: account.email,
+            admin: !!account.isAdmin,
+          },
+        })
+      }
     },
     [],
   )
