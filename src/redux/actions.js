@@ -392,6 +392,11 @@ export const endRecordReading = () => ({
   doReportReadings: true,
 })
 
+export const indicateRecordReadingActivity = () => ({
+  type: "INDICATE_RECORD_READING_ACTIVITY",
+  doReportReadings: true,
+})
+
 export const flushReadingRecords = ({ accountId, numberOfRecords }) => ({
   type: "FLUSH_READING_RECORDS",
   accountId,

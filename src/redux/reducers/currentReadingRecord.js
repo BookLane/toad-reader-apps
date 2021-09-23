@@ -20,6 +20,7 @@ export default function(state = initialState, action) {
         bookId,
         spineIdRef,
         startTime: Date.now(),
+        lastActivityTime: Date.now(),
       }
 
       return newState

@@ -15,7 +15,8 @@ import useRouterState from "../../hooks/useRouterState"
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
-import { setLatestLocation, startRecordReading, endRecordReading, flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
+import { setLatestLocation, startRecordReading, endRecordReading, indicateRecordReadingActivity,
+         flushReadingRecords, setSelectedToolUid } from "../../redux/actions"
 import useIsUpdatingRef from "../../hooks/useIsUpdatingRef"
 
 import PageWebView from "./PageWebView"
@@ -73,6 +74,7 @@ const BookPage = React.memo(props => {
     setLatestLocation,
     startRecordReading,
     endRecordReading,
+    indicateRecordReadingActivity,
     flushReadingRecords,
     setSelectedToolUid,
   } = props
@@ -237,6 +239,8 @@ const BookPage = React.memo(props => {
               bookId,
               spineIdRef: newSpineIdRef,
             })
+          } else {
+            indicateRecordReadingActivity()
           }
 
           setInPageTurn(false)
@@ -355,6 +359,7 @@ const BookPage = React.memo(props => {
           if(getNoteInEdit() != null) break
         case 'textSelected': {
           setSelectionInfo(data.payload)
+          indicateRecordReadingActivity()
           return true
         }
 
@@ -477,6 +482,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setLatestLocation,
   startRecordReading,
   endRecordReading,
+  indicateRecordReadingActivity,
   flushReadingRecords,
   setSelectedToolUid,
 }, dispatch)

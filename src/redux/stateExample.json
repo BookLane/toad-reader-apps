@@ -259,7 +259,8 @@
   "currentReadingRecord": {
     "bookId": 66,
     "spineIdRef": "chapter5",
-    "startTime": 1506091622203
+    "startTime": 1506091622203,
+    "lastActivityTime": 1506622203091
   },
   "readingRecordsByAccountId": {
     "1:-1": [
