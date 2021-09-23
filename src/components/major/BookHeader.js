@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { StyleSheet, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -22,6 +22,9 @@ import SaveStateHeaderIcon from "../basic/SaveStateHeaderIcon"
 const styles = StyleSheet.create({
   optionsMenu: {
     width: 225,
+  },
+  libraryIcon: {
+    width: 25,
   },
 })
 
@@ -220,6 +223,28 @@ const BookHeader = React.memo(({
     ]),
   ]
 
+  const leftControl = useMemo(
+    () => (
+      wideMode
+        ? (
+          <HeaderIcon
+            iconPack="image"
+            iconStyle={styles.libraryIcon}
+            onPress={onBackPress}
+            uiStatus="faded"
+            iconName={require('../../../assets/library.png')}
+          />
+        )
+        : (
+          <HeaderIcon
+            iconName="md-arrow-back"
+            onPress={onBackPress}
+          />
+        )
+    ),
+    [ wideMode ],
+  )
+
   return (
     <>
       <AppHeader
@@ -227,13 +252,7 @@ const BookHeader = React.memo(({
         title={title}
         subtitle={subtitle}
         titleCentered={true}
-        leftControl={
-          <HeaderIcon
-            iconName="md-arrow-back"
-            onPress={onBackPress}
-            uiStatus={wideMode ? "faded" : null}
-          />
-        }
+        leftControl={leftControl}
         rightControls={rightControls}
         uiStatus={wideMode ? "faded" : null}
       />

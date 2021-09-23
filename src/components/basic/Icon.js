@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, Platform } from "react-native"
+import { StyleSheet, Platform, Image } from "react-native"
 import * as Font from "expo-font"
 import { Ionicons, MaterialIcons, MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons"
 const FONT_VERSION = '12.0.4'
@@ -50,13 +50,25 @@ const Icon = ({
   const IconComponent = packs[pack]
   const adjustedStyle = { ...StyleSheet.flatten(style) }
 
-  adjustedStyle.fontSize = adjustedStyle.height
-  adjustedStyle.width = 'auto'
-  adjustedStyle.height = 'auto'
+  if(pack !== 'image') {
+    adjustedStyle.fontSize = adjustedStyle.height
+    adjustedStyle.width = 'auto'
+    adjustedStyle.height = 'auto'
+  }
 
   if(adjustedStyle.tintColor) {
     adjustedStyle.color = adjustedStyle.tintColor
     delete adjustedStyle.tintColor
+  }
+
+  if(pack === 'image') {
+    return (
+      <Image
+        style={adjustedStyle}
+        source={otherProps.name}
+        {...otherProps}
+      />
+    )
   }
 
   return (

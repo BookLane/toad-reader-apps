@@ -167,10 +167,11 @@ const mapping = {
       variantGroups: {
         uiStatus: {
           faded: {
-            iconTintColor: "color-basic-600",
+            iconColor: "color-basic-1100",
+            iconOpacity: .4,
             state: {
               hover: {
-                iconTintColor: "color-basic-1100",
+                iconOpacity: 1,
               },
             },
           },
