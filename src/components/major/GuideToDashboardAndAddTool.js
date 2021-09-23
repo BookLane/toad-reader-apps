@@ -113,7 +113,7 @@ const GuideToDashboardAndAddTool = React.memo(({
       markComplete={markComplete}
       ready={bookLoaded}
       blockUntilReady={true}
-      componentsAfterOkay={[ <View style={styles.spacer} /> ]}
+      componentsAfterOkay={<View style={styles.spacer} />}
     >
 
       <View style={styles.spacer} />
