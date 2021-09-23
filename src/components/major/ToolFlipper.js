@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState, useEffect } from "react"
 import { Platform, StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { ViewPager, Button } from "@ui-kitten/components"
+import { ViewPager } from "@ui-kitten/components"
 
 import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
@@ -10,21 +10,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
 
 import Tool from "./Tool"
-import Icon from "../basic/Icon"
-
-const buttonContainer = {
-  position: 'absolute',
-  top: getToolbarHeight(),
-  bottom: 30,   // this is the padding-bottom in the reader
-  justifyContent: 'center',
-  zIndex: 5,
-}
-
-const button = {
-  position: 'absolute',
-  width: 50,
-  height: 120,
-}
+import ToolFlipperButton from "../basic/ToolFlipperButton"
 
 const styles = StyleSheet.create({
   container: {
@@ -38,30 +24,6 @@ const styles = StyleSheet.create({
   toolContainer: {
     flex: 1,
   },
-  leftButtonContainer: {
-    ...buttonContainer,
-    left: -10,
-  },
-  leftButton: {
-    ...button,
-    left: 0,
-    borderTopRightRadius: 60,
-    borderBottomRightRadius: 60,
-  },
-  rightButtonContainer: {
-    ...buttonContainer,
-    right: -10,
-  },
-  rightButton: {
-    ...button,
-    right: 0,
-    borderTopLeftRadius: 60,
-    borderBottomLeftRadius: 60,
-  },
-  icon: {
-    height: 28,
-    tintColor: '#b3b3b3',
-  }
 })
 
 const ToolFlipper = React.memo(({
@@ -122,28 +84,6 @@ const ToolFlipper = React.memo(({
       })
     },
     [ toolSet, bookId, spines, goTo ],
-  )
-
-  const LeftButtonIcon = useCallback(
-    ({ style }) => (
-      <Icon
-        style={styles.icon}
-        pack="fontAwesome"
-        name="angle-left"
-      />
-    ),
-    [],
-  )
-
-  const RightButtonIcon = useCallback(
-    ({ style }) => (
-      <Icon
-        style={styles.icon}
-        pack="fontAwesome"
-        name="angle-right"
-      />
-    ),
-    [],
   )
 
   const closeTool = useCallback(
@@ -267,22 +207,16 @@ const ToolFlipper = React.memo(({
           </ViewPager>
           {Platform.OS === 'web' && !inEditMode &&
             <>
-              <View style={styles.leftButtonContainer}>
-                <Button
-                  onPress={() => onPageChange(pageIndex - 1)}
-                  appearance="ghost"
-                  style={styles.leftButton}
-                  accessoryLeft={LeftButtonIcon}
-                />
-              </View>
-              <View style={styles.rightButtonContainer}>
-                <Button
-                  onPress={() => onPageChange(pageIndex + 1)}
-                  appearance="ghost"
-                  style={styles.rightButton}
-                  accessoryLeft={RightButtonIcon}
-                />
-              </View>
+              <ToolFlipperButton
+                side="left"
+                onPageChange={onPageChange}
+                newPageIndex={pageIndex - 1}
+              />
+              <ToolFlipperButton
+                side="right"
+                onPageChange={onPageChange}
+                newPageIndex={pageIndex + 1}
+              />
             </>
           }
         </>

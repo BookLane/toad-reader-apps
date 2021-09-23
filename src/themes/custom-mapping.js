@@ -273,6 +273,18 @@ const mapping = {
       },
     },
     {
+      component: 'ToolFlipperButton',
+      parameters: {
+        iconTintColor: '#888',
+        state: {
+          hover: {
+            backgroundColor: '#dbdbdb',
+            iconTintColor: '#444',
+          },
+        },
+      },
+    },
+    {
       component: 'BookContentsLine',
       variantGroups: {
         uiStatus: {
