@@ -7,6 +7,7 @@ import { ViewPager } from "@ui-kitten/components"
 import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import Tool from "./Tool"
@@ -40,7 +41,8 @@ const ToolFlipper = React.memo(({
   setSelectedToolUid,
 }) => {
 
-  const { selectedTool, visibleTools, spines, classroom, myRole, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { selectedTool, visibleTools, spines } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { historyReplace, historyGoBack, getRouterState } = useRouterState()
   const [ fullscreenInfo, setFullscreenInfo ] = useState()
   const [ viewingPreview, setViewingPreview ] = useState(false)
 
@@ -71,23 +73,26 @@ const ToolFlipper = React.memo(({
         const goToSpine = spines[pageIdx === 0 ? followingSpineIndex - 1 : followingSpineIndex]
 
         if(!goToSpine) return
-
+  
         goTo({
           spineIdRef: goToSpine.idref,
           lastPage: pageIdx === 0,
+          pageFlipFromTool: true,
         })
       }
 
       setSelectedToolUid({
         bookId,
         uid,
+        getRouterState,
+        historyReplace,
       })
     },
     [ toolSet, bookId, spines, goTo ],
   )
 
   const closeTool = useCallback(
-    () => setSelectedToolUid({ bookId }),
+    () => setSelectedToolUid({ bookId, getRouterState, historyGoBack, historyReplace }),
     [ bookId ],
   )
 

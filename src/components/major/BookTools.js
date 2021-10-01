@@ -5,6 +5,7 @@ import { connect } from "react-redux"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
+import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import ToolChip from "../basic/ToolChip"
@@ -35,6 +36,7 @@ const BookTools = React.memo(({
 }) => {
 
   const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { getRouterState, historyPush } = useRouterState()
 
   const spineToolsByCfi = useSpineToolsByCfi({ visibleTools, spineIdRef })
 
@@ -69,6 +71,8 @@ const BookTools = React.memo(({
               onPress={() => setSelectedToolUid({
                 bookId,
                 uid,
+                getRouterState,
+                historyPush,      
               })}
               onToolMove={onToolMove}
               onToolRelease={onToolRelease}

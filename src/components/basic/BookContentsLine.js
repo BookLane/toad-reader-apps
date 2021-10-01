@@ -6,6 +6,7 @@ import { useLayout } from '@react-native-community/hooks'
 import { styled } from '@ui-kitten/components'
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useRouterState from "../../hooks/useRouterState"
 import useThemedStates from "../../hooks/useThemedStates"
 import useWideMode from "../../hooks/useWideMode"
 import { setSelectedToolUid } from "../../redux/actions"
@@ -82,6 +83,7 @@ const BookContentsLine = ({
 }) => {
 
   const { scheduleDatesToDisplay } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { getRouterState, historyPush, historyReplace } = useRouterState()
 
   const dueDate = useMemo(
     () => {
@@ -116,10 +118,16 @@ const BookContentsLine = ({
         setSelectedToolUid({
           bookId,
           uid,
+          getRouterState,
+          historyPush,
         })
       } else {
-        setSelectedToolUid({ bookId })  // unselects any tool
-        goTo({ href, spineIdRef })
+        const newRouterState = goTo({ href, spineIdRef })
+        setSelectedToolUid({  // unselects any tool
+          bookId,
+          getRouterState: () => newRouterState,
+          historyReplace,
+        })
       }
     },
     [ href, bookId, goTo ],

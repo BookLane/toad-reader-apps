@@ -9,6 +9,7 @@ import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import { getDateLine, getTimeLine } from "../../utils/toolbox"
 import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import Dialog from "./Dialog"
@@ -98,6 +99,8 @@ const ReadingScheduleDate = React.memo(({
 
   setSelectedToolUid,
 }) => {
+
+  const { historyReplace } = useRouterState()
 
   const { spines } = useClassroomInfo({ books, bookId })
   const spinesByIdRef = useMemo(
@@ -267,8 +270,13 @@ const ReadingScheduleDate = React.memo(({
 
   const onItemPress = useCallback(
     ({ id: spineIdRef }) => {
-      setSelectedToolUid({ bookId })  // unselects any tool
-      goTo({ spineIdRef })
+      const newRouterState = goTo({ spineIdRef })
+      setSelectedToolUid({  // unselects any tool
+        bookId,
+        getRouterState: () => newRouterState,
+        historyReplace,
+      })
+
     },
     [ bookId, goTo ],
   )

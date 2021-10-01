@@ -32,7 +32,7 @@ const EnhancedDashboard = React.memo(({
   const { viewingDashboard, myRole, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { historyReplace, routerState } = useRouterState()
-  const { initialSelectedTabId } = routerState || {}
+  const { initialSelectedTabId, ...routerStateWithoutInitialSelectedTabId } = routerState || {}
 
   if(!viewingDashboard) return null
 
@@ -123,7 +123,7 @@ const EnhancedDashboard = React.memo(({
         initialSelectedTabIndex = idx
       }
     })
-    setTimeout(historyReplace)  // clear it out
+    setTimeout(() => historyReplace(null, routerStateWithoutInitialSelectedTabId))  // clear it out
   }
 
   return (

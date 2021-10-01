@@ -22,6 +22,7 @@ import darkTheme from "./src/themes/dark"
 import customMapping from "./src/themes/custom-mapping"
 import updateDataStructure from "./src/utils/updateDataStructure"
 import { setStore, patch, reportReadings } from "./src/utils/syncUserData"
+import doHistoryAction from "./src/utils/doHistoryAction"
 import translations from "./src/utils/translations/current.json"
 import { getDataOrigin, setStatusBarHidden, getQueryString } from './src/utils/toolbox'
 import { loadIconFonts } from "./src/components/basic/Icon"
@@ -60,6 +61,9 @@ const patchMiddleware = store => next => action => {
   }
   if(action.doReportReadings) {
     reportReadings()
+  }
+  if(action.doHistoryAction) {
+    doHistoryAction(action)
   }
   return result
 }

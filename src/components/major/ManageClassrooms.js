@@ -50,6 +50,7 @@ const ManageClassrooms = React.memo(({
   open,
   requestHide,
   bookId,
+  inEditMode,
   toggleInEditMode,
 
   books,
@@ -214,6 +215,7 @@ const ManageClassrooms = React.memo(({
         open={showCreateClassroom}
         requestHide={toggleShowCreateClassroom}
         bookId={bookId}
+        inEditMode={inEditMode}
         toggleInEditMode={toggleInEditMode}
       />
       <ConnectToAClassroom

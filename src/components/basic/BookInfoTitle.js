@@ -1,6 +1,6 @@
 import React from "react"
 import { StyleSheet, Text } from "react-native"
-import { Link } from "../routers/react-router"
+import { Link } from "../../hooks/useRouterState"
 import { Platform } from "@unimodules/core"
 
 const styles = StyleSheet.create({

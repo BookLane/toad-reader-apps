@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { StyleSheet, Text } from "react-native"
 import { i18n } from "inline-i18n"
-import { Link } from "../routers/react-router"
+import { Link } from "../../hooks/useRouterState"
 
 import FileImporter from "./FileImporter"
 

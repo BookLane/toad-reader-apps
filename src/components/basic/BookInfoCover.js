@@ -3,7 +3,7 @@ import * as FileSystem from 'expo-file-system'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Image, StyleSheet, View, Platform } from "react-native"
-import { Link } from "../routers/react-router"
+import { Link } from "../../hooks/useRouterState"
 
 import CoverAndSpin from "./CoverAndSpin"
 

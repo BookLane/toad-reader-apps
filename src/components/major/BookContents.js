@@ -12,6 +12,7 @@ import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useSpineIdRefAndCfi from "../../hooks/useSpineIdRefAndCfi"
+import useRouterState from "../../hooks/useRouterState"
 import { createTool } from "../../redux/actions"
 
 import BookContentsLine from "../basic/BookContentsLine"
@@ -58,6 +59,7 @@ const BookContents = React.memo(({
 
   const { latest_location } = userDataByBookId[bookId] || {}
   const currentSpineIdRef = useSpineIdRefAndCfi(latest_location).spineIdRef
+  const { getRouterState, historyPush } = useRouterState()
 
   const wideMode = useWideMode()
         
@@ -288,6 +290,8 @@ const BookContents = React.memo(({
         name: "",
         // toolType,
         creatorType: isDefaultClassroom ? 'PUBLISHER' : 'INSTRUCTOR',
+        getRouterState,
+        historyPush,
       })
     },
     [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],

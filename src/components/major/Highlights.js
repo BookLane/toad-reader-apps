@@ -10,6 +10,7 @@ import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems, getIDPOrigin }
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import { setSelectedToolUid } from "../../redux/actions"
 import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
 
 import FAB from '../basic/FAB'
 import Icon from "../basic/Icon"
@@ -192,6 +193,7 @@ const Highlights = React.memo(({
 }) => {
 
   const { book, spines, instructorHighlights, enhancedIsOff, isDefaultClassroom, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { historyReplace } = useRouterState()
 
   const wideMode = useWideMode()
 
@@ -356,8 +358,13 @@ const Highlights = React.memo(({
 
   const goRead = useCallback(
     ({ info }) => {
-      goTo(info)
-      setSelectedToolUid({ bookId })  // unselects any tool
+      const newRouterState = goTo(info)
+      setSelectedToolUid({  // unselects any tool
+        bookId,
+        getRouterState: () => newRouterState,
+        historyReplace,
+      })
+
     },
     [ bookId ],
   )

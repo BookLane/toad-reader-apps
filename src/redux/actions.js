@@ -76,10 +76,15 @@ export const setCurrentClassroom = ({ bookId, uid }) => ({
   uid,
 })
 
-export const setSelectedToolUid = ({ bookId, uid }) => ({
+export const setSelectedToolUid = ({ bookId, uid, getRouterState, historyPush, historyReplace, historyGoBack }) => ({
   type: "SET_SELECTED_TOOL_UID",
   bookId,
   uid,
+  getRouterState,
+  historyPush,
+  historyReplace,
+  historyGoBack,
+  doHistoryAction: true,
 })
 
 export const createClassroom = ({ uid, bookId, name, userId, fullname, email, based_off_classroom_uid }) => ({
@@ -129,7 +134,7 @@ export const deleteClassroomMember = ({ classroomUid, bookId, userId }) => ({
   doPatch: true,
 })
 
-export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid, creatorType }) => ({
+export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at, currently_published_tool_uid, creatorType, getRouterState, historyPush, historyReplace }) => ({
   type: "CREATE_TOOL",
   bookId,
   classroomUid,
@@ -144,7 +149,11 @@ export const createTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, orderin
   closes_at,
   currently_published_tool_uid,
   creatorType,
+  getRouterState,
+  historyPush,
+  historyReplace,
   doPatch: true,
+  doHistoryAction: true,
 })
 
 export const updateTool = ({ bookId, classroomUid, uid, spineIdRef, cfi, ordering, name, toolType, data, due_at, closes_at }) => ({

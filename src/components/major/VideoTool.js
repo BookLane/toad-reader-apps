@@ -160,7 +160,7 @@ const VideoTool = React.memo(({
 
       const vimeoIframeId = `vimeoiframe-${videoLink.replace(/"/g, '')}-${startTime}-${endTime}`
 
-      // if((startSecs || endSecs) && typeof document !== 'undefined') {
+      // if((startSecs || endSecs) && Platform.OS === 'web') {
 
       //   const setupStartEnd = () => {
       //     try {

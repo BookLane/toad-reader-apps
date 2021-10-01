@@ -84,7 +84,7 @@ const Reports = ({
   const accountId = Object.keys(accounts)[0]
   const { idpId } = getIdsFromAccountId(accountId)
 
-  const { historyGoBack } = useRouterState()
+  const { historyGoBackToLibrary } = useRouterState()
 
   useEffect(
     () => {
@@ -121,14 +121,14 @@ const Reports = ({
 
   return (
     <SafeLayout>
-      <BackFunction func={historyGoBack} />
+      <BackFunction func={historyGoBackToLibrary} />
       <AppHeader
         title={i18n("Reports")}
         titleCentered={true}
         leftControl={
           <HeaderIcon
             iconName="md-arrow-back"
-            onPress={historyGoBack}
+            onPress={historyGoBackToLibrary}
           />
         }
       />

@@ -126,7 +126,7 @@ const Library = ({
 
 }) => {
 
-  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, pathname, clearKeyFromRouterState } = useRouterState()
+  const { historyPush, historyReplace, historyGoBackToLibrary, routerState, pathname, clearKeyFromRouterState } = useRouterState()
   const { logOutAccountId, widget, parent_domain, doEmailLogin } = routerState
 
   const [ showLogin, setShowLogin ] = useState(Object.keys(accounts).length === 0)
@@ -156,8 +156,10 @@ const Library = ({
       // the Library to the browser history so that calling back on the router
       // works properly.
       if(pathname !== '/' && !widget) {
-        historyReplace('/')
-        historyPush(pathname, routerState)
+        historyReplace('/', null, 0)
+        historyPush(pathname, routerState, 1)
+      } else if(routerState.back) {
+        historyReplace(null, routerState, 0)
       }
     },
     [],
@@ -456,7 +458,7 @@ const Library = ({
   const openImportBooks = useCallback(
     () => {
       setImportingBooks(true)
-      historyGoBack()
+      historyGoBackToLibrary()
     },
     [],
   )
@@ -478,7 +480,7 @@ const Library = ({
   const openAccessCodeDialog = useCallback(
     () => {
       setShowAccessCodeDialog(true)
-      historyGoBack()
+      historyGoBackToLibrary()
     },
     [],
   )
@@ -486,7 +488,7 @@ const Library = ({
   const openMetadataDialog = useCallback(
     () => {
       setShowMetadataDialog(true)
-      historyGoBack()
+      historyGoBackToLibrary()
     },
     [],
   )
@@ -523,7 +525,7 @@ const Library = ({
 
   const yesConfirmReplaceExisting = useCallback(
     () => {
-      historyGoBack()
+      historyGoBackToLibrary()
       setConfirmReplaceExisting(false)
       setReplaceExisting(true)
     },
@@ -720,7 +722,7 @@ const Library = ({
   return (
     <SideMenu
       open={pathname === '/drawer'}
-      onClose={historyGoBack}
+      onClose={historyGoBackToLibrary}
       menu={
         widget
           ? null

@@ -34,7 +34,7 @@ const BookHeader = React.memo(({
   subtitle,
   mode,
   showDisplaySettings,
-  onBackPress,
+  onLibraryPress,
   setModeToPage,
   toggleShowSearch,
 
@@ -60,7 +60,7 @@ const BookHeader = React.memo(({
 
   const bookLinkInfo = getFirstBookLinkInfo(book)
 
-  const { historyGo, historyPush, historyReplace } = useRouterState()
+  const { historyGo, historyPush, historyReplace, getRouterState } = useRouterState()
 
   const goToBookLink = useCallback(
     () => {
@@ -114,16 +114,22 @@ const BookHeader = React.memo(({
   const goToHighlights = useCallback(
     () => {
       if(canViewDashboard) {
-        historyReplace(null, { initialSelectedTabId: 'highlights' })
         setSelectedToolUid({
           bookId,
           uid: 'DASHBOARD',
+          getRouterState: () => ({
+            ...getRouterState(),
+            initialSelectedTabId: 'highlights',
+          }),
+          historyPush,
         })
 
       } else {
         setSelectedToolUid({
           bookId,
           uid: 'HIGHLIGHTS',
+          getRouterState,
+          historyPush,
         })
       }
 
@@ -230,7 +236,7 @@ const BookHeader = React.memo(({
           <HeaderIcon
             iconPack="image"
             iconStyle={styles.libraryIcon}
-            onPress={onBackPress}
+            onPress={onLibraryPress}
             uiStatus="faded"
             iconName={require('../../../assets/library.png')}
           />
@@ -238,7 +244,7 @@ const BookHeader = React.memo(({
         : (
           <HeaderIcon
             iconName="md-arrow-back"
-            onPress={onBackPress}
+            onPress={onLibraryPress}
           />
         )
     ),

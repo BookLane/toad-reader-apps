@@ -289,7 +289,7 @@ const Book = React.memo(({
   const movingToolOffsets = useRef()
   const searchInputRef = useRef()
 
-  const { historyPush, historyReplace, historyGoBack, routerState, clearKeyFromRouterState } = useRouterState()
+  const { historyPush, historyReplace, historyGoBack, historyGoBackToLibrary, routerState, getRouterState, clearKeyFromRouterState, inManualHistoryUpdate } = useRouterState()
   const { widget, goToInfo } = routerState
 
   const [ setStatusBarTimeout ] = useSetTimeout()
@@ -326,6 +326,8 @@ const Book = React.memo(({
   const getInEditMode = useInstanceValue(inEditMode)
   const getSelectedToolUid = useInstanceValue(selectedToolUid)
   const getVisibleTools = useInstanceValue(visibleTools)
+
+  const prevRouterState = usePrevious(routerState)
 
   const toolCfiCounts = useMemo(
     () => getToolCfiCounts({ visibleTools, spineIdRef }),
@@ -402,6 +404,8 @@ const Book = React.memo(({
             setSelectedToolUid({
               bookId,
               uid: bookVersion !== 'PUBLISHER' ? 'DASHBOARD' : undefined,
+              getRouterState,
+              historyReplace,
             })
 
           } else if(selectedTool.currently_published_tool_uid) {
@@ -409,6 +413,8 @@ const Book = React.memo(({
             setSelectedToolUid({
               bookId,
               uid: selectedTool.currently_published_tool_uid,
+              getRouterState,
+              historyReplace,
             })
 
           } else if(!selectedTool.published_at) {
@@ -421,6 +427,8 @@ const Book = React.memo(({
             setSelectedToolUid({
               bookId,
               uid: 'OPTIONS OR SETTINGS',
+              getRouterState,
+              historyReplace,
             })
 
           } else if(draftToolByCurrentlyPublishedToolUid[selectedToolUid]) {
@@ -428,6 +436,8 @@ const Book = React.memo(({
             setSelectedToolUid({
               bookId,
               uid: draftToolByCurrentlyPublishedToolUid[selectedToolUid].uid,
+              getRouterState,
+              historyReplace,
             })
           }
         }
@@ -546,6 +556,33 @@ const Book = React.memo(({
 
   useEffect(
     () => {
+      if(!book) return
+
+      // handle direct load to page or tool
+
+      const routerState = getRouterState()
+      const { selectedToolUid } = routerState
+      const reduxSelectedToolUid = getSelectedToolUid()
+
+      if(selectedToolUid != reduxSelectedToolUid) {
+        if(selectedToolUid) {
+          setSelectedToolUid({
+            bookId,
+            uid: selectedToolUid,
+          })
+        } else {
+          historyReplace(null, {
+            ...routerState,
+            selectedToolUid: reduxSelectedToolUid,
+          })
+        }
+      }
+    },
+    [ bookId ],
+  )
+
+  useEffect(
+    () => {
       if(!book) {
         // direct load to invalid book
         const message = i18n("Either this book does not exist, or you do not have access to it.")
@@ -634,6 +671,8 @@ const Book = React.memo(({
 
   const goTo = useCallback(
     info => {
+      let newRouterState = getRouterState()
+
       pauseProcessing()
 
       toggleShowSearch(false)
@@ -642,13 +681,26 @@ const Book = React.memo(({
       reportSpots({ type: 'BookPage' })
 
       if(info.spineIdRef) {
+        const latestLocation = {
+          spineIdRef: info.spineIdRef,
+        }
+
         // This is to make the toc selection show there immediately
         setLatestLocation({
           bookId,
-          latestLocation: {
-            spineIdRef: info.spineIdRef,
-          },
+          latestLocation,
         })
+
+        if(
+          !info.initialLoad
+          && !info.pageFlipFromTool
+          && !info.navigationViaBrowserButton
+        ) {
+          newRouterState = historyPush(null, {
+            ...getRouterState(),
+            latestLocation,
+          })
+        }
 
         info.toolCfiCounts = getToolCfiCounts({ visibleTools, spineIdRef: info.spineIdRef })
       }
@@ -675,8 +727,43 @@ const Book = React.memo(({
         // reading record will be stopped once that loads and the new one will
         // be initiated.
       })
+
+      return newRouterState
     },
     [ bookId, spineIdRef, reportSpots, wideMode ],
+  )
+
+  useEffect(
+    () => {
+      if(!book) return
+
+      // handle back/forward buttons in the browser
+
+      if(
+        prevRouterState
+        && routerState.latestLocation
+        && (prevRouterState.back || 0) !== (routerState.back || 0)
+        && !inManualHistoryUpdate()
+      ) {
+
+        if(JSON.stringify(prevRouterState.latestLocation) !== JSON.stringify(routerState.latestLocation)) {
+          goTo({
+            ...routerState.latestLocation,
+            navigationViaBrowserButton: true,
+          })
+        }
+
+        const currentSelectedToolUid = getSelectedToolUid
+        if(currentSelectedToolUid != routerState.selectedToolUid) {
+          setSelectedToolUid({
+            bookId,
+            uid: routerState.selectedToolUid,
+          })
+        }
+
+      }
+    },
+    [ JSON.stringify(routerState) ],
   )
 
   const backToReading = useCallback(
@@ -721,7 +808,7 @@ const Book = React.memo(({
 
   const closeToolAndExitReading = useCallback(
     () => {
-      setSelectedToolUid({ bookId })
+      setSelectedToolUid({ bookId, getRouterState, historyGoBack, historyReplace })
       setState({
         mode: 'info',
         snapshotZoomed: false,
@@ -782,7 +869,10 @@ const Book = React.memo(({
 
       if(goToInfo) {
         clearKeyFromRouterState('goToInfo')
-        goTo(goToInfo)
+        goTo({
+          ...goToInfo,
+          initialLoad: true,
+        })
       }
     },
     [ mode, zoomToInfo, goToInfo ],
@@ -792,7 +882,7 @@ const Book = React.memo(({
     () => {
       pauseProcessing()
 
-      setSelectedToolUid({ bookId })
+      setSelectedToolUid({ bookId, getRouterState, historyGoBack, historyReplace })
 
       setState({
         showSettings: true,
@@ -837,7 +927,7 @@ const Book = React.memo(({
   )
 
   const unselectTool = useCallback(
-    () => setSelectedToolUid({ bookId }),
+    () => setSelectedToolUid({ bookId, getRouterState, historyReplace }),
     [ bookId ],
   )
 
@@ -920,7 +1010,7 @@ const Book = React.memo(({
       }
 
       if(getSelectedToolUid()) {
-        setSelectedToolUid({ bookId })
+        setSelectedToolUid({ bookId, getRouterState, historyGoBack, historyReplace })
       }
 
       setToolMoveInfo({
@@ -1094,7 +1184,7 @@ const Book = React.memo(({
                 mode={mode}
                 showDisplaySettings={showDisplaySettings}
                 width={width}  // By sending this as a prop, I force a rerender
-                onBackPress={historyGoBack}
+                onLibraryPress={historyGoBackToLibrary}
                 setModeToPage={setModeToPage}
                 toggleShowSearch={toggleShowSearch}
               />

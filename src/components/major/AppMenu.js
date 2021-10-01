@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-// import { Route, Link } from "../routers/react-router"
+// import { Route } from "../routers/react-router"
 import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from "react-native"
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer, DrawerItem } from "@ui-kitten/components"

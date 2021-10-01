@@ -39,7 +39,7 @@ const LibraryBook = ({
 
       if(downloadStatus == 2 || Platform.OS === 'web') {
         historyPush(`/book/${bookId}`)
-        
+
       } else if(downloadStatus == 0) {
         setDownloadStatus({ bookId, downloadStatus: 1 })
         pushToBookDownloadQueue({ bookId })

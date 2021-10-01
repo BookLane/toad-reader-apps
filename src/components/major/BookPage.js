@@ -94,7 +94,7 @@ const BookPage = React.memo(props => {
 
   const [ latestLocationIsUpdating, startLatestLocationUpdate ] = useIsUpdatingRef()
 
-  const { historyPush, historyReplace, historyGoBack, routerState } = useRouterState()
+  const { historyPush, historyReplace, historyGoBackToLibrary, routerState, getRouterState } = useRouterState()
   const { latestLocation, widget, textsize, textspacing, theme } = routerState
 
   const { visibleTools, spines, toc, instructorHighlights, bookVersion, idpId } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
@@ -217,7 +217,7 @@ const BookPage = React.memo(props => {
 
         case 'pageChanged': {
 
-          const { newSpineIdRef, newCfi } = data.payload
+          const { newSpineIdRef, newCfi, initiatedByInteralLinkClick } = data.payload
           const latestLocation = {
             spineIdRef: newSpineIdRef,
             cfi: newCfi,
@@ -228,8 +228,8 @@ const BookPage = React.memo(props => {
             latestLocation,
           })
 
-          historyReplace(null, {
-            ...routerState,
+          ;(initiatedByInteralLinkClick ? historyPush : historyReplace)(null, {
+            ...getRouterState(),
             latestLocation,
           })
 
@@ -293,6 +293,8 @@ const BookPage = React.memo(props => {
               setSelectedToolUid({
                 bookId,
                 uid: (pagedForward ? toolsBeforeLaterSpine[0] : toolsBeforeLaterSpine.pop()).uid,
+                getRouterState,
+                historyReplace,
               })
 
               return true
@@ -395,7 +397,7 @@ const BookPage = React.memo(props => {
   const onError = useCallback(
     e => {
       console.log('ERROR: BookPage webview had an error on load', e)
-      historyGoBack()
+      historyGoBackToLibrary()
       setTimeout(() => {
         historyPush("/error", {
           message: i18n("Failed to load book."),

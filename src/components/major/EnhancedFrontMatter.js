@@ -31,7 +31,7 @@ const EnhancedFrontMatter = React.memo(({
   const { classroom, viewingFrontMatter, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
 
   const { historyReplace, routerState } = useRouterState()
-  const { initialSelectedTabId } = routerState || {}
+  const { initialSelectedTabId, ...routerStateWithoutInitialSelectedTabId } = routerState || {}
 
   const goUpdateClassroom = useCallback(
     updates => {
@@ -153,7 +153,7 @@ const EnhancedFrontMatter = React.memo(({
         initialSelectedTabIndex = idx
       }
     })
-    setTimeout(historyReplace)  // clear it out
+    setTimeout(() => historyReplace(null, routerStateWithoutInitialSelectedTabId))  // clear it out
   }
 
   return (

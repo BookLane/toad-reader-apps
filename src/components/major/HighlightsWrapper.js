@@ -6,6 +6,7 @@ import { i18n } from "inline-i18n"
 
 import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
+import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import Highlights from "./Highlights"
@@ -79,10 +80,11 @@ const HighlightsWrapper = React.memo(({
 }) => {
 
   const wideMode = useWideMode()
+  const { getRouterState, historyGoBack, historyReplace } = useRouterState()
 
   const xOutOfHighlights = useCallback(
     () => {
-      setSelectedToolUid({ bookId })
+      setSelectedToolUid({ bookId, getRouterState, historyGoBack, historyReplace })
     },
     [ bookId ],
   )

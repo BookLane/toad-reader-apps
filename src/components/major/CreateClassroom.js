@@ -13,6 +13,7 @@ import BackFunction from '../basic/BackFunction'
 import { getIdsFromAccountId } from "../../utils/toolbox"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useRouterState from "../../hooks/useRouterState"
 
 import { createClassroom, setCurrentClassroom, setSelectedToolUid } from "../../redux/actions"
 
@@ -30,6 +31,7 @@ const CreateClassroom = React.memo(({
   open,
   requestHide,
   bookId,
+  inEditMode,
   toggleInEditMode,
 
   accounts,
@@ -42,6 +44,7 @@ const CreateClassroom = React.memo(({
 }) => {
 
   const { defaultClassroomUid, sortedClassrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { getRouterState, historyPush } = useRouterState()
 
   const [ name, setName ] = useState("")
   const [ basedOffUid, setBasedOffUid ] = useState(defaultClassroomUid)
@@ -73,13 +76,15 @@ const CreateClassroom = React.memo(({
       setSelectedToolUid({
         bookId,
         uid: 'FRONT MATTER',
+        getRouterState,
+        historyPush,
       })
 
-      toggleInEditMode()
+      !inEditMode && toggleInEditMode()
 
       requestHide({ hideAll: true })
     },
-    [ bookId, name, userId, fullname, email, basedOffUid ],
+    [ bookId, name, userId, fullname, email, basedOffUid, inEditMode ],
   )
 
   const onChangeText = useCallback(name => setName(name), [])

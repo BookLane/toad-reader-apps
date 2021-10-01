@@ -9,6 +9,7 @@ import useThemedStates from "../../hooks/useThemedStates"
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useSpineToolsByCfi from "../../hooks/useSpineToolsByCfi"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useRouterState from "../../hooks/useRouterState"
 import useDimensions from "../../hooks/useDimensions"
 import { contentCfiComparator } from "../../utils/toolbox"
 import { setSelectedToolUid } from "../../redux/actions"
@@ -74,6 +75,7 @@ const GroupedToolsChip = ({
 }) => {
 
   const { visibleTools } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { getRouterState, historyPush } = useRouterState()
 
   const themedStateEvents = useThemedStates({ dispatch, states: [ 'hover' ] })
   const { baseThemedStyle, labelThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
@@ -113,7 +115,7 @@ const GroupedToolsChip = ({
                 data={data}
                 isDraft={!published_at}
                 onPress={() => {
-                  setSelectedToolUid({ bookId, uid })
+                  setSelectedToolUid({ bookId, uid, getRouterState, historyPush })
                   toggleShowTools()
                   setModeToPage && setModeToPage({ snapshotZoomed: true })
                 }}

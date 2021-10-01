@@ -10,6 +10,7 @@ import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useWideMode from "../../hooks/useWideMode"
 import useDimensions from "../../hooks/useDimensions"
+import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
 import { statusBarHeight } from "../../utils/toolbox"
 
@@ -89,6 +90,7 @@ const EnhancedHeader = React.memo(({
           bookVersion, canViewOptions, canViewFrontMatter, viewingDashboard,
           viewingOptions, viewingFrontMatter,
           iCanEdit, hasFrontMatterDraftData } = useClassroomInfo({ books, bookId, userDataByBookId, inEditMode })
+  const { getRouterState, historyPush } = useRouterState()
 
   const { baseThemedStyle, altThemedStyleSets } = useThemedStyleSets(themedStyle)
   const [ frontMatterThemedStyle={} ] = altThemedStyleSets
@@ -111,6 +113,8 @@ const EnhancedHeader = React.memo(({
       setSelectedToolUid({
         bookId,
         uid: 'DASHBOARD',
+        getRouterState,
+        historyPush,
       })
       setModeToPage && setTimeout(setModeToPage)
       goMarkGuideComplete()
@@ -123,6 +127,8 @@ const EnhancedHeader = React.memo(({
       setSelectedToolUid({
         bookId,
         uid: 'OPTIONS OR SETTINGS',
+        getRouterState,
+        historyPush,
       })
       setModeToPage && setTimeout(setModeToPage)
       goMarkGuideComplete()
@@ -135,6 +141,8 @@ const EnhancedHeader = React.memo(({
       setSelectedToolUid({
         bookId,
         uid: 'FRONT MATTER',
+        getRouterState,
+        historyPush,
       })
       setModeToPage && setTimeout(setModeToPage)
       goMarkGuideComplete()
@@ -318,12 +326,14 @@ const EnhancedHeader = React.memo(({
           open={showManageClassrooms}
           requestHide={hideManageClassroom}
           bookId={bookId}
+          inEditMode={inEditMode}
           toggleInEditMode={toggleInEditMode}
         />
         <CreateClassroom
           open={showCreateClassroom}
           requestHide={hideCreateClassroom}
           bookId={bookId}
+          inEditMode={inEditMode}
           toggleInEditMode={toggleInEditMode}
         />
         <ConnectToAClassroom

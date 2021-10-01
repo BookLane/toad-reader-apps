@@ -8,7 +8,7 @@ import { i18n } from "inline-i18n"
 
 import { getDataOrigin } from '../../utils/toolbox'
 
-import { Link } from "../routers/react-router"
+import { Link } from "../../hooks/useRouterState"
 import CoverAndSpin from "./CoverAndSpin"
 import CoverCheck from "./CoverCheck"
 // import CoverPercentage from "./CoverPercentage"

@@ -124,7 +124,7 @@ const StatusAndActions = React.memo(({
   const wideMode = useWideMode()
   const { online } = useNetwork()
   const getClassroomDraftData = useInstanceValue(classroom.draftData || {})
-  const { historyPush } = useRouterState()
+  const { historyPush, historyReplace, historyGoBack, getRouterState } = useRouterState()
 
   const { toolInfoByType } = useMemo(getToolInfo, [])
 
@@ -208,6 +208,9 @@ const StatusAndActions = React.memo(({
         setSelectedToolUid({
           bookId,
           uid: selectedTool.currently_published_tool_uid || undefined,
+          getRouterState,
+          historyGoBack,
+          historyReplace,
         })
 
       }

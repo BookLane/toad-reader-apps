@@ -10,6 +10,7 @@ import { getToolInfo } from '../../utils/toolInfo'
 import useWideMode from "../../hooks/useWideMode"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
+import useRouterState from "../../hooks/useRouterState"
 import { updateTool, createTool } from "../../redux/actions"
 
 import StatusAndActions from "./StatusAndActions"
@@ -77,6 +78,7 @@ const EditTool = React.memo(({
   const { toolTypes, toolInfoByType } = getToolInfo()
 
   const { accountId, classroomUid, classroom, isDefaultClassroom } = useClassroomInfo({ books, bookId, userDataByBookId })
+  const { getRouterState, historyReplace } = useRouterState()
 
   const wideMode = useWideMode()
 
@@ -110,6 +112,8 @@ const EditTool = React.memo(({
               : tool.creatorType
           ),
           ...updates,
+          getRouterState,
+          historyReplace,
         })
 
       } else {
