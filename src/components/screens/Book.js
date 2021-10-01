@@ -1154,7 +1154,7 @@ const Book = React.memo(({
 
   return (
     <SafeLayout>
-      {mode !== 'page' && <BackFunction func={backToReading} />}
+      <BackFunction func={historyGoBack} />
       {mode === 'page' && <CustomKeepAwake />}
 
       {Platform.OS !== 'web' && !inEditMode &&
