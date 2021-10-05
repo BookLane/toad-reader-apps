@@ -27,6 +27,7 @@ import Button from "../basic/Button"
 import BookImporter from "../major/BookImporter"
 import AccessCodeDialog from "../major/AccessCodeDialog"
 import MetadataDialog from "../major/MetadataDialog"
+import SubscriptionsDialog from "../major/SubscriptionsDialog"
 import Book from "./Book"
 import Reports from "./Reports"
 import ErrorMessage from "./ErrorMessage"
@@ -135,6 +136,7 @@ const Library = ({
   const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
   const [ showMetadataDialog, setShowMetadataDialog ] = useState(false)
+  const [ showSubscriptionsDialog, setShowSubscriptionsDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
@@ -230,6 +232,37 @@ const Library = ({
         }
 
         console.log(`Updated metadata keys (idpId: ${idpId})...`)
+
+      })()
+    },
+    [],
+  )
+
+  useEffect(
+    () => {
+      (async () => {
+
+        // update subscriptions
+
+        const idpId = Object.keys(idps)[0]
+
+        console.log(`Getting updated subscriptions (idpId: ${idpId})...`)
+
+        const subscriptionsUrl = `${getDataOrigin(idps[idpId])}/subscriptions`
+        const response = await safeFetch(subscriptionsUrl, getReqOptionsWithAdditions({
+          headers: {
+            "Content-Type": 'application/json',
+          },
+        }))
+
+        try {
+          const { subscriptions } = await response.json()
+          updateSubscriptions(subscriptions)
+        } catch(err) {
+          console.log(`/subscriptions GET had an error.`, err.message, response.status)
+        }
+
+        console.log(`Updated subscriptions (idpId: ${idpId})...`)
 
       })()
     },
@@ -493,6 +526,14 @@ const Library = ({
     [],
   )
 
+  const openSubscriptionsDialog = useCallback(
+    () => {
+      setShowSubscriptionsDialog(true)
+      historyGoBackToLibrary()
+    },
+    [],
+  )
+
   const closeEnvironmentUrlsDialog = useCallback(
     () => {
       setShowEnvironmentUrlsDialog(false)
@@ -510,6 +551,13 @@ const Library = ({
   const closeMetadataDialog = useCallback(
     () => {
       setShowMetadataDialog(false)
+    },
+    [],
+  )
+
+  const closeSubscriptionsDialog = useCallback(
+    () => {
+      setShowSubscriptionsDialog(false)
     },
     [],
   )
@@ -733,6 +781,7 @@ const Library = ({
               onShowEnvironmentUrls={openEnvironmentUrlsDialog}
               onOpenAccessCodeDialog={openAccessCodeDialog}
               onOpenMetadataDialog={openMetadataDialog}
+              onOpenSubscriptionsDialog={openSubscriptionsDialog}
             />
           )
       }
@@ -908,6 +957,12 @@ const Library = ({
       <MetadataDialog
         open={!!showMetadataDialog}
         onClose={closeMetadataDialog}
+        handleNewLibrary={handleNewLibrary}
+      />
+
+      <SubscriptionsDialog
+        open={!!showSubscriptionsDialog}
+        onClose={closeSubscriptionsDialog}
         handleNewLibrary={handleNewLibrary}
       />
 

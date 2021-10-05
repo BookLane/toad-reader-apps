@@ -430,3 +430,8 @@ export const updateMetadataKeys = metadataKeys => ({
   type: "UPDATE_METADATA_KEYS",
   metadataKeys,
 })
+
+export const updateSubscriptions = subscriptions => ({
+  type: "UPDATE_SUBSCRIPTIONS",
+  subscriptions,
+})

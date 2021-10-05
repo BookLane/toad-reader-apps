@@ -160,7 +160,7 @@ const MetadataDialog = ({
           return
         }
 
-        console.log(`...done submitting access code and updating books (accountId: ${accountId}).`)
+        console.log(`...done updating metadata keys (accountId: ${accountId}).`)
 
       } catch(err) {
 

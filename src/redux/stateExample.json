@@ -53,6 +53,16 @@
       ]
     }
   ],
+  "subscriptions": [
+    {
+      "id": 122,
+      "label": "Basic"
+    },
+    {
+      "id": 123,
+      "label": "Premium"
+    }
+  ],
   "fetchingBooks": false,
   "bookDownloadQueue": [65, 66],
   "downloadProgressByBookId": {

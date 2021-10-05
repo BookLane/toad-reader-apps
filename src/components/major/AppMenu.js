@@ -69,6 +69,7 @@ const AppMenu = ({
   onShowEnvironmentUrls,
   onOpenAccessCodeDialog,
   onOpenMetadataDialog,
+  onOpenSubscriptionsDialog,
 
   accounts,
   idps,
@@ -356,6 +357,14 @@ const AppMenu = ({
         title: i18n("Manage book metadata categories"),
         // icon: removeIcon,
         onSelect: onOpenMetadataDialog,
+        disabled: !online,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+      {
+        title: i18n("Manage subscription types"),
+        // icon: removeIcon,
+        onSelect: onOpenSubscriptionsDialog,
         disabled: !online,
       },
     ]),
