@@ -803,3 +803,10 @@ export const bookCookiesToCookieStr = bookCookies => {
   }
   return cookies.join('; ')
 }
+
+export const getVersionString = version => ({
+  BASE: i18n("Basic book"),
+  ENHANCED: i18n("Enhanced book (student edition)"),
+  INSTRUCTOR: i18n("Enhanced book (instructor edition)"),
+  PUBLISHER: i18n("Enhanced book (publisher edition)"),
+})[version]

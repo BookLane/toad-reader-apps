@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useMemo } from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, View, Platform } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { Button } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -19,9 +19,10 @@ import Dialog from "../major/Dialog"
 import CheckBox from "./CheckBox"
 import CoverAndSpin from "./CoverAndSpin"
 import BookMetadataDialog from "../major/BookMetadataDialog"
+import BookSubscriptionsDialog from "../major/BookSubscriptionsDialog"
 import useToggle from "react-use/lib/useToggle"
 
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, getVersionString } from '../../utils/toolbox'
 import useRouterState from "../../hooks/useRouterState"
 
 import { deleteBook, setSubscriptions } from "../../redux/actions"
@@ -75,6 +76,30 @@ const styles = StyleSheet.create({
   spin: {
     backgroundColor: 'transparent',
   },
+  subscriptions: {
+    flexDirection: 'row',
+    marginTop: 5,
+  },
+  subscriptionsLabel: {
+    fontSize: 13,
+  },
+  subscription: {
+    backgroundColor: "rgba(0, 0, 0, .1)",
+    borderRadius: 3,
+    paddingHorizontal: 5,
+    paddingBottom: 2,
+    marginLeft: 5,
+    fontSize: 13,
+  },
+  subscriptionLabel: {
+    marginHorizontal: 2,
+    fontWeight: '500',
+  },
+  subscriptionVersion: {
+    fontSize: 11,
+    fontWeight: '200',
+    marginHorizontal: 2,
+  },
 })
 
 const BookInfo = ({
@@ -85,6 +110,7 @@ const BookInfo = ({
 
   accounts,
   idps,
+  subscriptions,
 
   deleteBook,
   setSubscriptions,
@@ -97,23 +123,41 @@ const BookInfo = ({
   const [ deleteStatus, setDeleteStatus ] = useState('none')
   const [ updatingSubscriptions, setUpdatingSubscriptions ] = useState(false)
   const [ editingMetadata, toggleEditingMetadata ] = useToggle(false)
+  const [ editingSubscriptions, toggleEditingSubscriptions ] = useToggle(false)
 
-  let adminInfo = false
-  Object.keys(bookInfo.accounts).some(accountId => {
-    const { isAdmin, cookie } = accounts[accountId] || {}
-
-    if(isAdmin) {
-      const { subscriptions } = bookInfo.accounts[accountId]
+  const adminInfo = useMemo(
+    () => {
+      let adminInfo = false
+      Object.keys(bookInfo.accounts).some(accountId => {
+        const { isAdmin, cookie } = accounts[accountId] || {}
     
-      adminInfo = {
-        idpId: getIdsFromAccountId(accountId).idpId,
-        accountId,
-        cookie,
-        subscriptions,
-      }
-      return true
-    }
-  })
+        if(isAdmin) {
+          const { subscriptions } = bookInfo.accounts[accountId]
+        
+          adminInfo = {
+            idpId: getIdsFromAccountId(accountId).idpId,
+            accountId,
+            cookie,
+            subscriptions,
+          }
+          return true
+        }
+      })
+      return adminInfo
+    },
+    [ bookInfo, accounts ],
+  )
+
+  const subscriptionsById = useMemo(
+    () => {
+      let subscriptionsById = {}
+      subscriptions.forEach(subscription => {
+        subscriptionsById[subscription.id] = subscription
+      })
+      return subscriptionsById
+    },
+    [ subscriptions ],
+  )
 
   const confirmDelete = useCallback(
     () => setDeleteStatus('confirming'),
@@ -140,7 +184,7 @@ const BookInfo = ({
       }
 
     },
-    [ bookId ],
+    [ bookId, adminInfo ],
   )
 
   const closeDelete = useCallback(
@@ -158,7 +202,7 @@ const BookInfo = ({
         })
       })
     },
-    [ bookId ],
+    [ bookId, adminInfo ],
   )
 
   const setDefaultSubscription = useCallback(
@@ -203,10 +247,14 @@ const BookInfo = ({
       setUpdatingSubscriptions(false)
 
     },
-    [ bookId, JSON.stringify(adminInfo) ],
+    [ bookId, adminInfo ],
   )
 
   const showIsbn = !!adminInfo || !HIDE_ISBN_FOR_NON_ADMINS
+  const assignedSubscriptions = useMemo(
+    () => ((adminInfo || {}).subscriptions || []).filter(({ id }) => id > 0),
+    [ (adminInfo || {}).subscriptions ],
+  )
 
   return (
     <View style={[
@@ -235,9 +283,26 @@ const BookInfo = ({
           ? (
             (!!adminInfo &&
               <>
+                {assignedSubscriptions.length > 0 &&
+                  <View style={styles.subscriptions}>
+                    <Text style={styles.subscriptionsLabel}>
+                      {i18n("Subscriptions:")}
+                    </Text>
+                    {assignedSubscriptions.map(({ id, version }) => (
+                      <Text style={styles.subscription} key={id}>
+                        <Text style={styles.subscriptionLabel}>
+                          {(subscriptionsById[id] || {}).label || 'Unknown'}
+                        </Text>
+                        <Text style={styles.subscriptionVersion}>
+                          {getVersionString(version)}
+                        </Text>
+                      </Text>
+                    ))}
+                  </View>
+                }
                 <View style={styles.checkBoxContainer}>
                   <CheckBox
-                    checked={!!(adminInfo && (adminInfo.subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1))}
+                    checked={(adminInfo.subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1)}
                     onChange={setDefaultSubscription}
                   >
                     {i18n("Accessible to all users")}
@@ -253,6 +318,19 @@ const BookInfo = ({
                     {i18n("Edit metadata")}
                   </Button>
                   <View style={styles.buttonSpacer} />
+                  {subscriptions.length > 0 &&
+                    <>
+                      <Button
+                        onPress={toggleEditingSubscriptions}
+                        size="tiny"
+                        status="primary"
+                        appearance="filled"
+                      >
+                        {i18n("Edit subscriptions")}
+                      </Button>
+                      <View style={styles.buttonSpacer} />
+                    </>
+                  }
                   <Button
                     onPress={confirmDelete}
                     size="tiny"
@@ -306,6 +384,16 @@ const BookInfo = ({
         handleNewLibrary={handleNewLibrary}
       />
 
+      <BookSubscriptionsDialog
+        open={editingSubscriptions}
+        bookId={bookId}
+        bookTitle={title}
+        assignedSubscriptions={assignedSubscriptions}
+        subscriptionsById={subscriptionsById}
+        onClose={toggleEditingSubscriptions}
+        handleNewLibrary={handleNewLibrary}
+      />
+
       {updatingSubscriptions &&
         <CoverAndSpin
           style={styles.spin}
@@ -316,9 +404,10 @@ const BookInfo = ({
   )
 }
 
-const mapStateToProps = ({ accounts, idps }) => ({
+const mapStateToProps = ({ accounts, idps, subscriptions }) => ({
   accounts,
   idps,
+  subscriptions,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
