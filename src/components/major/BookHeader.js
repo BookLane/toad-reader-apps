@@ -231,22 +231,13 @@ const BookHeader = React.memo(({
 
   const leftControl = useMemo(
     () => (
-      wideMode
-        ? (
-          <HeaderIcon
-            iconPack="image"
-            iconStyle={styles.libraryIcon}
-            onPress={onLibraryPress}
-            uiStatus="faded"
-            iconName={require('../../../assets/library.png')}
-          />
-        )
-        : (
-          <HeaderIcon
-            iconName="md-arrow-back"
-            onPress={onLibraryPress}
-          />
-        )
+      <HeaderIcon
+        iconPack="image"
+        iconStyle={styles.libraryIcon}
+        onPress={onLibraryPress}
+        uiStatus={wideMode ? "faded" : null}
+        iconName={require('../../../assets/library.png')}
+      />
     ),
     [ wideMode ],
   )
