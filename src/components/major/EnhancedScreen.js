@@ -5,6 +5,7 @@ import { i18n } from "inline-i18n"
 
 import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
 import StatusAndActions from "./StatusAndActions"
 import HeaderIcon from "../basic/HeaderIcon"
@@ -138,6 +139,8 @@ const EnhancedScreen = React.memo(({
   }
   const setTabIndex = viewingPreview ? setPreviewSelectedTabIndex : setSelectedTabIndex
   const resetTabIndex = useCallback(() => setTabIndex(), [ setTabIndex ])
+  const getTabIndex = useInstanceValue(tabIndex)
+  const shouldLoadComponent = useCallback(index => index === (getTabIndex() || 0), [])
 
   return (
     <View style={wideMode ? styles.constainerWideMode : styles.container}>
@@ -207,6 +210,7 @@ const EnhancedScreen = React.memo(({
               style={styles.tabsContent}
               selectedIndex={tabIndex || 0}
               onSelect={setTabIndex}
+              shouldLoadComponent={shouldLoadComponent}
             >
               {tabs.map(({ content }, idx) => (
                 <View

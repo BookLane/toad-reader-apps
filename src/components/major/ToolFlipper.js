@@ -3,11 +3,13 @@ import { Platform, StyleSheet, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { ViewPager } from "@ui-kitten/components"
+import { useLayout } from '@react-native-community/hooks'
 
 import { getToolbarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useRouterState from "../../hooks/useRouterState"
+import useInstanceValue from "../../hooks/useInstanceValue"
 import { setSelectedToolUid } from "../../redux/actions"
 
 import Tool from "./Tool"
@@ -45,6 +47,9 @@ const ToolFlipper = React.memo(({
   const { historyReplace, historyGoBack, getRouterState } = useRouterState()
   const [ fullscreenInfo, setFullscreenInfo ] = useState()
   const [ viewingPreview, setViewingPreview ] = useState(false)
+  const [ swipingOut, setSwipingOut ] = useState()
+
+  const { onLayout, width } = useLayout()
 
   const wideMode = useWideMode()
 
@@ -67,18 +72,8 @@ const ToolFlipper = React.memo(({
       const { uid } = toolSet[pageIdx - 1] || {}
 
       if(!uid) {
-        const followingSpineIndex = toolSet[0].spineIdRef === 'AFTER LAST SPINE'
-          ? spines.length
-          : spines.map(({ idref }) => idref).indexOf(toolSet[0].spineIdRef)
-        const goToSpine = spines[pageIdx === 0 ? followingSpineIndex - 1 : followingSpineIndex]
-
-        if(!goToSpine) return
-  
-        goTo({
-          spineIdRef: goToSpine.idref,
-          lastPage: pageIdx === 0,
-          pageFlipFromTool: true,
-        })
+        setSwipingOut(pageIdx === 0 ? 'back' : 'forward')
+        return
       }
 
       setSelectedToolUid({
@@ -88,7 +83,43 @@ const ToolFlipper = React.memo(({
         historyReplace,
       })
     },
-    [ toolSet, bookId, spines, goTo ],
+    [ toolSet, bookId ],
+  )
+
+  const onPageMove = useCallback(
+    scroll => {
+
+      const goBack = scroll === 0
+      const goForward = scroll >= parseInt(width, 10) * (toolSet.length + 1)
+      if(!goBack && !goForward) return
+
+      const followingSpineIndex = toolSet[0].spineIdRef === 'AFTER LAST SPINE'
+        ? spines.length
+        : spines.map(({ idref }) => idref).indexOf(toolSet[0].spineIdRef)
+      const goToSpine = spines[goBack ? followingSpineIndex - 1 : followingSpineIndex]
+
+      if(goToSpine) {
+        goTo({
+          spineIdRef: goToSpine.idref,
+          lastPage: goBack,
+          pageFlipFromTool: true,
+        })
+      }
+
+      setTimeout(() => {
+
+        setSelectedToolUid({
+          bookId,
+          getRouterState,
+          historyReplace,
+        })
+
+        setSwipingOut()
+
+      }, 100)  // give it a moment for the goTo to trigger the readium spinner
+
+    },
+    [ toolSet, bookId, spines, goTo, width ],
   )
 
   const closeTool = useCallback(
@@ -122,7 +153,26 @@ const ToolFlipper = React.memo(({
     [ (selectedTool || {}).uid, inEditMode, viewingPreview ],
   )
 
-  if(!selectedTool) return null
+  const pageIndex = (
+    swipingOut === 'back'
+      ? 0
+      : (
+        swipingOut === 'forward'
+          ? toolSet.length + 1
+          : toolSet.map(({ uid }) => uid).indexOf((selectedTool || {}).uid) + 1
+      )
+  )
+
+  const getPageIndex = useInstanceValue(pageIndex)
+  const shouldLoadComponent = useCallback(
+    index => (
+      index >= getPageIndex() - 1
+      && index <= getPageIndex() + 1
+    ),
+    [],
+  )
+
+  if(Object.keys(selectedTool || {}).length === 0) return null
 
   if(selectedTool.cfi) {  // no pager needed
     return (
@@ -147,8 +197,6 @@ const ToolFlipper = React.memo(({
       </View>
     )  
   }
-
-  const pageIndex = toolSet.map(({ uid }) => uid).indexOf(selectedTool.uid) + 1
 
   return (
     <>
@@ -188,12 +236,15 @@ const ToolFlipper = React.memo(({
             ]}
             selectedIndex={pageIndex}
             onSelect={onPageChange}
+            onOffsetChange={onPageMove}
+            shouldLoadComponent={shouldLoadComponent}
           >
             <View style={styles.toolContainer} />
             {toolSet.map(tool => (
               <View
                 key={tool.currently_published_tool_uid || tool.uid}
                 style={styles.toolContainer}
+                onLayout={onLayout}
               >
                 <Tool
                   bookId={bookId}
