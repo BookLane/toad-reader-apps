@@ -702,6 +702,10 @@ const Book = React.memo(({
           })
         }
 
+        if(info.spineIdRef !== spineIdRef) {
+          setState({ bookLoaded: false })
+        }
+
         info.toolCfiCounts = getToolCfiCounts({ visibleTools, spineIdRef: info.spineIdRef })
       }
 

@@ -106,18 +106,13 @@ const ToolFlipper = React.memo(({
         })
       }
 
-      setTimeout(() => {
+      setSelectedToolUid({
+        bookId,
+        getRouterState,
+        historyReplace,
+      })
 
-        setSelectedToolUid({
-          bookId,
-          getRouterState,
-          historyReplace,
-        })
-
-        setSwipingOut()
-
-      }, 100)  // give it a moment for the goTo to trigger the readium spinner
-
+      setSwipingOut()
     },
     [ toolSet, bookId, spines, goTo, width ],
   )
