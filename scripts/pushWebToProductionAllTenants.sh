@@ -27,3 +27,11 @@ node ./scripts/pushwebstagingtoproduction.js
 npm run change-tenant -- orca
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
+
+npm run change-tenant -- readyman
+npm run go-push-web-to-staging
+node ./scripts/pushwebstagingtoproduction.js
+
+npm run change-tenant -- biblearc
+npm run go-push-web-to-staging
+node ./scripts/pushwebstagingtoproduction.js
