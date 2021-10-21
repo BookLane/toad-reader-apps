@@ -1,10 +1,24 @@
 import React, { useMemo } from "react"
 import { i18n } from "inline-i18n"
+import { StyleSheet, Text } from "react-native"
 
 import { getHoursMinutesStr, getDateLine } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryLine, VictoryLegend } from "./Victory"
 import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
+
+const styles = StyleSheet.create({
+  notEnoughData: {
+    fontWeight: '200',
+    marginVertical: 30,
+    textAlign: 'center',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,.2)",
+    alignSelf: 'center',
+    padding: 20,
+  },
+})
 
 const color1 = '#d62020'
 const color2 = '#f1b00e'
@@ -35,9 +49,11 @@ const readingOverTimeStyles = {
     },
   },
 }
+
 const EnhancedAnalyticsReadingOverTime = React.memo(({
   readingOverTime,
   width,
+  singleUser,
 }) => {
 
   const minWidth = readingOverTime.totals.length < 5 ? width : Math.max(500, width)
@@ -75,6 +91,14 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
     },
     [ readingOverTime ],
   )
+
+  if(readingOverTime.totals.length < 2) {
+    return (
+      <Text style={styles.notEnoughData}>
+        {i18n("There is not yet enough data to display this chart.")}
+      </Text>
+    )
+  }
 
   const chart = (
     <VictoryChart
@@ -120,12 +144,12 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
               fill: color1,
             },
           },
-          {
+          ...(singleUser ? [] : [{
             name: i18n("Number of readers", "", "enhanced"),
             symbol: {
               fill: color2,
             },
-          },
+          }]),
         ]}
       />
 
@@ -159,23 +183,27 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
         style={readingOverTimeStyles.totals.line}
       />
 
-      <VictoryAxis
-        dependentAxis
-        orientation="right"
-        standalone={false}
-        style={readingOverTimeStyles.numReaders.axis}
-        tickFormat={num => num * maxNumReaders}
-        offsetX={50}
-      />
+      {!singleUser &&
+        <VictoryAxis
+          dependentAxis
+          orientation="right"
+          standalone={false}
+          style={readingOverTimeStyles.numReaders.axis}
+          tickFormat={num => num * maxNumReaders}
+          offsetX={50}
+        />
+      }
 
-      <VictoryLine
-        data={readingOverTimeNumReadersData}
-        interpolation="monotoneX"
-        standalone={false}
-        x="idx"
-        y="num"
-        style={readingOverTimeStyles.numReaders.line}
-      />
+      {!singleUser &&
+        <VictoryLine
+          data={readingOverTimeNumReadersData}
+          interpolation="monotoneX"
+          standalone={false}
+          x="idx"
+          y="num"
+          style={readingOverTimeStyles.numReaders.line}
+        />
+      }
 
     </VictoryChart>
   )

@@ -1,9 +1,24 @@
 import React from "react"
+import { i18n } from "inline-i18n"
+import { StyleSheet, Text } from "react-native"
 
 import { getHoursMinutesStr, concatText } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryLabel } from "./Victory"
 import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
+
+const styles = StyleSheet.create({
+  notEnoughData: {
+    fontWeight: '200',
+    marginVertical: 30,
+    textAlign: 'center',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,.2)",
+    alignSelf: 'center',
+    padding: 20,
+  },
+})
 
 const EnhancedAnalyticsReadingBySpine = React.memo(({
   readingBySpine,
@@ -12,6 +27,14 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
 
   const showInCondensedMode = width / readingBySpine.length < 90
   const minWidth = Math.max(readingBySpine.length * 35, width)
+
+  if(readingBySpine.length === 0) {
+    return (
+      <Text style={styles.notEnoughData}>
+        {i18n("There is not yet enough data to display this chart.")}
+      </Text>
+    )
+  }
 
   const chart = (
     <VictoryChart

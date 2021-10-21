@@ -1,10 +1,24 @@
 import React from "react"
 import { i18n } from "inline-i18n"
+import { StyleSheet, Text } from "react-native"
 
 import { fractionToPercent, concatText } from '../../utils/toolbox'
 
 import { VictoryChart, VictoryTheme, VictoryAxis, VictoryBar, VictoryLegend, VictoryLabel } from "./Victory"
 import EnhancedAnalyticsScrollContainer from '../basic/EnhancedAnalyticsScrollContainer'
+
+const styles = StyleSheet.create({
+  noQuizzes: {
+    fontWeight: '200',
+    marginVertical: 30,
+    textAlign: 'center',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,.2)",
+    alignSelf: 'center',
+    padding: 20,
+  },
+})
 
 const EnhancedAnalyticsQuizCompletions = React.memo(({
   completionsByQuiz,
@@ -14,6 +28,14 @@ const EnhancedAnalyticsQuizCompletions = React.memo(({
 
   const showInCondensedMode = width / completionsByQuiz.length < 90
   const minWidth = Math.max(completionsByQuiz.length * 35, width)
+
+  if(completionsByQuiz.length === 0) {
+    return (
+      <Text style={styles.noQuizzes}>
+        {i18n("This classroom does not contain any quizzes.")}
+      </Text>
+    )
+  }
 
   const chart = (
     <VictoryChart

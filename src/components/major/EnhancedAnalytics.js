@@ -1,8 +1,9 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState, useCallback } from "react"
 import { StyleSheet, View, Text, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
 import { getDateLine, getTimeLine, orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
 import dummyStudents from '../../utils/dummyStudents'
@@ -24,6 +25,11 @@ import EnhancedAnalyticsQuizScores from './EnhancedAnalyticsQuizScores'
 const chartMarginHorizontal = 20
 const chartMarginHorizontalWideMode = 30
 
+const selectContainer = {
+  maxWidth: 400,
+  margin: 20,
+}
+
 const styles = StyleSheet.create({
   error: {
     marginVertical: 20,
@@ -42,6 +48,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+  },
+  selectContainer: {
+    ...selectContainer,
+  },
+  selectContainerWideMode: {
+    ...selectContainer,
+    marginHorizontal: 30,
   },
   chart: {
     marginVertical: 20,
@@ -81,11 +94,19 @@ const EnhancedAnalytics = React.memo(({
   const wideMode = useWideMode()
   const chartWidth = fullPageWidth - (wideMode ? chartMarginHorizontalWideMode : chartMarginHorizontal) * 2
 
+  const [ currentStudentIdx, setCurrentStudentIdx ] = useState(-1)
+
   const { data, error } = useDashboardData({
     classroomUid,
     idp: idps[idpId],
     accounts,
     query: "getanalytics",
+    appendToPathItems: (
+      currentStudentIdx === -1
+        ? []
+        : [ (students[currentStudentIdx] || {}).user_id ]
+    ),
+    skip: students.length === 0,
   })
 
   const { isDummy=false, ...orderedData } = useMemo(
@@ -145,6 +166,10 @@ const EnhancedAnalytics = React.memo(({
     [ data, students ],
   )
 
+  const studentsToUse = isDummy ? dummyStudents : students
+
+  const onSelect = useCallback(({ row: index }) => setCurrentStudentIdx(index - 1), [])
+
   if(!classroomUid) return null
 
   if(error && !classroom.isNew) {
@@ -155,7 +180,7 @@ const EnhancedAnalytics = React.memo(({
     )
   }
 
-  if(!data && !(error && classroom.isNew)) {
+  if(data === undefined && !(error && classroom.isNew)) {
     return (
       <View style={styles.genericContainer}>
         <CoverAndSpin />
@@ -171,13 +196,47 @@ const EnhancedAnalytics = React.memo(({
 
       {isDummy && <NoStudentsBox />}
 
+      {!isDummy &&
+        <View style={wideMode ? styles.selectContainerWideMode : styles.selectContainer}>
+          <Select
+            label={i18n("Show data for...", "", "enhanced")}
+            style={styles.select}
+            value={
+              currentStudentIdx === -1
+                ? i18n("Entire classroom")
+                : (
+                  i18n("{{fullname}} ({{email}})", "", "enhanced", {
+                    fullname: studentsToUse[currentStudentIdx].fullname || "—",
+                    email: studentsToUse[currentStudentIdx].email,
+                  })
+                )
+            }
+            selectedIndex={new IndexPath(currentStudentIdx + 1)}
+            onSelect={onSelect}
+          >
+            <SelectItem
+              title={i18n("Entire classroom")}
+            />
+            {studentsToUse.map(({ fullname, email, user_id }) => (
+              <SelectItem
+                key={user_id}
+                title={i18n("{{fullname}} ({{email}})", "", "enhanced", {
+                  fullname: fullname || "—",
+                  email,
+                })}
+              />
+            ))}
+          </Select>
+        </View>
+      }
+
       <View style={wideMode ? styles.chartWideMode : styles.chart}>
         <Text style={styles.chartName}>
           {i18n("Total reading", "", "enhanced")}
         </Text>
         <EnhancedAnalyticsTotalReading
           readingBySpine={orderedData.readingBySpine}
-          numStudents={(isDummy ? dummyStudents : students).length}
+          numStudents={studentsToUse.length}
         />
       </View>
 
@@ -198,6 +257,7 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsReadingOverTime
           readingOverTime={orderedData.readingOverTime}
           width={chartWidth}
+          singleUser={currentStudentIdx !== -1}
         />
       </View>
 
@@ -211,30 +271,35 @@ const EnhancedAnalytics = React.memo(({
         <EnhancedAnalyticsStatusesByDueDate
           readingScheduleStatuses={orderedData.readingScheduleStatuses}
           width={chartWidth}
-          numStudents={(isDummy ? dummyStudents : students).length}
+          numStudents={studentsToUse.length}
+          singleUser={currentStudentIdx !== -1}
         />
       </View>
 
-      <View style={wideMode ? styles.chartWideMode : styles.chart}>
-        <Text style={styles.chartName}>
-          {i18n("Quizzes taken", "", "enhanced")}
-        </Text>
-        <EnhancedAnalyticsQuizCompletions
-          completionsByQuiz={orderedData.completionsByQuiz}
-          width={chartWidth}
-          numStudents={(isDummy ? dummyStudents : students).length}
-        />
-      </View>
+      {currentStudentIdx === -1 &&
+        <View style={wideMode ? styles.chartWideMode : styles.chart}>
+          <Text style={styles.chartName}>
+            {i18n("Quizzes taken", "", "enhanced")}
+          </Text>
+          <EnhancedAnalyticsQuizCompletions
+            completionsByQuiz={orderedData.completionsByQuiz}
+            width={chartWidth}
+            numStudents={studentsToUse.length}
+          />
+        </View>
+      }
 
-      <View style={wideMode ? styles.chartWideMode : styles.chart}>
-        <Text style={styles.chartName}>
-          {i18n("Quiz scores", "", "enhanced")}
-        </Text>
-        <EnhancedAnalyticsQuizScores
-          averageScoresByQuiz={orderedData.averageScoresByQuiz}
-          width={chartWidth}
-        />
-      </View>
+      {currentStudentIdx === -1 &&
+        <View style={wideMode ? styles.chartWideMode : styles.chart}>
+          <Text style={styles.chartName}>
+            {i18n("Quiz scores", "", "enhanced")}
+          </Text>
+          <EnhancedAnalyticsQuizScores
+            averageScoresByQuiz={orderedData.averageScoresByQuiz}
+            width={chartWidth}
+          />
+        </View>
+      }
 
     </ScrollView>
   )

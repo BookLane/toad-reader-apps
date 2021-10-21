@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { getDataOrigin, getReqOptionsWithAdditions, safeFetch } from '../utils/toolbox'
 
-const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItems=[] }) => {
+const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItems=[], skip }) => {
 
   const [ data, setData ] = useState()
   const [ error, setError ] = useState()
@@ -16,8 +16,10 @@ const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItem
     () => {
       (async () => {
 
-        setData()
+        setData(skip ? null : undefined)
         setError()
+
+        if(skip) return
 
         let response = {}
 
@@ -43,7 +45,7 @@ const useDashboardData = ({ classroomUid, idp, accounts, query, appendToPathItem
 
       })()
     },
-    [ path, cookie ],
+    [ path, cookie, skip ],
   )
 
   return {

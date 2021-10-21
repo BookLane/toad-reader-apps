@@ -73,7 +73,10 @@ const EnhancedMembers = React.memo(({
     ({ item, index }) => (
       <ListItem
         style={wideMode ? styles.listItemWideMode : styles.listItem}
-        title={i18n("{{fullname}} ({{email}})", "", "enhanced", item)}
+        title={i18n("{{fullname}} ({{email}})", "", "enhanced", {
+          fullname: item.fullname || "—",
+          email: item.email,
+        })}
         description={eva => (
           <Text
             {...eva}
