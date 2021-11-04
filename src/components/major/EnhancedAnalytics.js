@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
-import { getDateLine, getTimeLine, orderSpineIdRefKeyedObj, orderCfiKeyedObj } from '../../utils/toolbox'
+import { getDateLine, getTimeLine, orderSpineIdRefKeyedObj, orderCfiKeyedObj, roundFractionToTwoDecimals } from '../../utils/toolbox'
 import dummyStudents from '../../utils/dummyStudents'
 import dummyAnalytics from '../../utils/dummyAnalytics'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -147,8 +147,8 @@ const EnhancedAnalytics = React.memo(({
             })
             averageScoresByQuiz.push({
               name,
-              avgFirstScore,
-              avgBestScore,
+              avgFirstScore: roundFractionToTwoDecimals(avgFirstScore),
+              avgBestScore: roundFractionToTwoDecimals(avgBestScore),
             })
           })
         })
