@@ -1,5 +1,5 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 
 const styles = StyleSheet.create({
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, .05)',
     borderColor: 'rgba(0, 0, 0, .1)',
     borderWidth: 1,
-    maxWidth: 'calc(100vw - 40px)',
+    maxWidth: Platform.OS === 'web' ? 'calc(100vw - 40px)' : '95%',
   },
   none: {
     textAlign: 'center',

@@ -18,7 +18,8 @@ import FAB from '../basic/FAB'
 
 const height = 35
 const margin = 10
-const paddingVertical = 10
+const paddingTop = 30
+const paddingBottom = 10
 
 const cell = {
   maxWidth: 150,
@@ -71,10 +72,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
+  scoreExpl: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    fontWeight: '200',
+  },
   students: {
     backgroundColor: 'rgb(247, 249, 252)',
     flexDirection: 'column',
-    paddingVertical,
+    paddingTop,
+    paddingBottom,
     minHeight: '100%',
   },
   scrollView: {
@@ -84,11 +92,13 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexDirection: 'row',
     paddingLeft: 10,
-    paddingVertical: 10,
+    paddingTop,
+    paddingBottom,
     paddingRight: 30,
     flexGrow: 0,
     flexShrink: 0,
     flexBasis: 'auto',
+    minWidth: 340,
   },
   none: {
     textAlign: 'center',
@@ -215,7 +225,7 @@ const EnhancedScores = React.memo(({
   }
 
   const columnHeightStyle = {
-    height: (height + margin*2) * ((isDummy ? dummyStudents : students).length + 1) + paddingVertical*2,
+    height: (height + margin*2) * ((isDummy ? dummyStudents : students).length + 1) + paddingTop + paddingBottom,
   }
 
   return (
@@ -268,6 +278,9 @@ const EnhancedScores = React.memo(({
             contentContainerStyle={styles.scrollViewContent}
             horizontal={true}
           >
+            <Text style={styles.scoreExpl}>
+              {i18n("Scores represent each student’s latest attempt.", "", "enhanced")}
+            </Text>
             {dataColumns.map((column, idx) => (
               <View
                 key={idx}
