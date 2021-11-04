@@ -289,17 +289,16 @@ const EnhancedAnalytics = React.memo(({
         </View>
       }
 
-      {currentStudentIdx === -1 &&
-        <View style={wideMode ? styles.chartWideMode : styles.chart}>
-          <Text style={styles.chartName}>
-            {i18n("Quiz scores", "", "enhanced")}
-          </Text>
-          <EnhancedAnalyticsQuizScores
-            averageScoresByQuiz={orderedData.averageScoresByQuiz}
-            width={chartWidth}
-          />
-        </View>
-      }
+      <View style={wideMode ? styles.chartWideMode : styles.chart}>
+        <Text style={styles.chartName}>
+          {i18n("Quiz scores", "", "enhanced")}
+        </Text>
+        <EnhancedAnalyticsQuizScores
+          averageScoresByQuiz={orderedData.averageScoresByQuiz}
+          width={chartWidth}
+          singleUser={currentStudentIdx !== -1}
+        />
+      </View>
 
     </ScrollView>
   )

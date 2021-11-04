@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
 const EnhancedAnalyticsQuizScores = React.memo(({
   averageScoresByQuiz,
   width,
+  singleUser,
 }) => {
 
   const showInCondensedMode = width / averageScoresByQuiz.length < 90
@@ -63,10 +64,10 @@ const EnhancedAnalyticsQuizScores = React.memo(({
         colorScale="heatmap"
         data={[
           {
-            name: i18n("Average score on first attempt", "", "enhanced"),
+            name: singleUser ? i18n("Score on first attempt", "", "enhanced") : i18n("Average score on first attempt", "", "enhanced"),
           },
           {
-            name: i18n("Average best score", "", "enhanced"),
+            name: singleUser ? i18n("Best score", "", "enhanced") : i18n("Average best score", "", "enhanced"),
           },
         ]}
       />
