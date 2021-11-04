@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
@@ -11,12 +11,16 @@ import useRouterState from "../../hooks/useRouterState"
 import Button from "../basic/Button"
 import CoverAndSpin from "../basic/CoverAndSpin"
 import FlipEditorContent from '../basic/FlipEditorContent'
+import WebView from '../major/WebView'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 30,
+  },
+  ltiContainer: {
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -32,6 +36,9 @@ const styles = StyleSheet.create({
   },
   instructions: {
     paddingTop: 0,
+  },
+  webview: {
+    ...StyleSheet.absoluteFillObject,
   },
 })
 
@@ -54,6 +61,7 @@ const LTITool = React.memo(({
   const { historyPush } = useRouterState()
 
   const [ showWaiting, setShowWaiting ] = useState(false)
+  const [ launchLink, setLaunchLink ] = useState()
 
   const launch = useCallback(
     async () =>  {
@@ -80,7 +88,11 @@ const LTITool = React.memo(({
           throw new Error(error)
         }
 
-        openURL({ url: launchLink, historyPush })
+        if(Platform.OS === 'web') {
+          openURL({ url: launchLink, historyPush })
+        } else {
+          setLaunchLink(launchLink)
+        }
 
         logUsageEvent({
           toolUid,
@@ -99,6 +111,19 @@ const LTITool = React.memo(({
   )
 
   const invalidSetup = !validLTIUrl({ url, fromDefaultClassroom, classroom })
+
+  if(launchLink) {
+    return (
+      <View style={styles.ltiContainer}>
+        <WebView
+          source={{
+            uri: launchLink,
+          }}
+          style={styles.webview}
+        />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
