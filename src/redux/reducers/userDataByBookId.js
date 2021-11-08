@@ -291,6 +291,7 @@ export default function(state = initialState, action) {
             && !highlight._delete
             && !!highlight.share_quote
             && !!highlight.share_code
+            && !action.forceNewShareCode
           ) {
             noChange = true
           } else {
