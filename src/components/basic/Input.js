@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   inputText: {
-    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
+    ...(Platform.OS !== 'web' ? {} : { outlineStyle: 'none' }),
   },
 })
 

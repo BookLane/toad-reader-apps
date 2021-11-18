@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   newResponseInput: {
     flex: 1,
-    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
+    ...(Platform.OS !== 'web' ? {} : { outlineStyle: 'none' }),
     marginLeft: 10,
     marginVertical: 10,
     paddingVertical: 8,

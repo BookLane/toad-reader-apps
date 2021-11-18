@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   answer: {
-    ...(Platform.OS !== 'web' ? {} : { outlineWidth: 0 }),
+    ...(Platform.OS !== 'web' ? {} : { outlineStyle: 'none' }),
     paddingHorizontal: 30,
     marginHorizontal: -30,
     paddingBottom: 30 + bottomSpace,
