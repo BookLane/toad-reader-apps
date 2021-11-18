@@ -696,7 +696,7 @@ export const orderCfiKeyedObj = ({ obj }) => {
 
 export const getHoursMinutesStr = minutes => {
   const hours = parseInt(minutes / 60, 10)
-  minutes = minutes % 60
+  minutes = (minutes % 60).toFixed(1).replace(/\.0$/, '')
 
   if(hours && minutes) {
     return i18n("{{hours}}h {{minutes}}m", "", "enhanced", { hours, minutes })

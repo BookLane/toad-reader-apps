@@ -189,7 +189,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
           orientation="right"
           standalone={false}
           style={readingOverTimeStyles.numReaders.axis}
-          tickFormat={num => num * maxNumReaders}
+          tickFormat={num => (num * maxNumReaders).toFixed(1).replace(/\.0$/, '')}
           offsetX={50}
         />
       }
