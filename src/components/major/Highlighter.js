@@ -169,6 +169,14 @@ const Highlighter = React.memo(({
 
   const windowTooShortToShowNotes = useDimensions().window.height < 350
 
+  const preventDefault = useCallback(
+    event => {
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    [],
+  )
+
   return [
     ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
     <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
@@ -179,6 +187,7 @@ const Highlighter = React.memo(({
         ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing) ? styles.containerTop : styles.containerBottom),
         ((selectionInfo.copyTooltipInLowerHalf && wideMode && !widget) ? styles.containerTopWideMode : null),
       ]}
+      onTouchEnd={!isEditingNote ? preventDefault : null}
     >
       <HighlighterInstructorHighlightSection
         bookId={bookId}
@@ -199,6 +208,7 @@ const Highlighter = React.memo(({
           note={isEditingNote ? noteInEdit : highlight.current.note}
           updateNoteInEdit={updateNoteInEdit}
           setEditingNote={setEditingNote}
+          isEditingNote={isEditingNote}
         />
       }
     </View>

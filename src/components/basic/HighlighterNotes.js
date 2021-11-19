@@ -16,9 +16,17 @@ const HighlighterNotes = React.memo(({
   note,
   updateNoteInEdit,
   setEditingNote,
+  isEditingNote,
 }) => {
 
-  const onFocus = useCallback(() => setEditingNote(true), [ setEditingNote ])
+  const onTouchStart = useCallback(
+    ({ target }) => {
+      setEditingNote(true)
+      target.focus()
+    },
+    [ setEditingNote ],
+  )
+
   const onBlur = useCallback(() => setEditingNote(false), [ setEditingNote ])
 
   return (
@@ -29,7 +37,7 @@ const HighlighterNotes = React.memo(({
       underlineColorAndroid="transparent"
       value={note}
       onChangeText={updateNoteInEdit}
-      onFocus={onFocus}
+      onTouchStart={!isEditingNote ? onTouchStart : null}
       onBlur={onBlur}
     />
   )

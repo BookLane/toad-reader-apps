@@ -4,6 +4,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 
+import useNonBlurringOnPress from "../../hooks/useNonBlurringOnPress"
+
 import Icon from './Icon'
 
 import { setHighlight } from "../../redux/actions"
@@ -56,7 +58,7 @@ const HighlighterColorSwitcher = React.memo(({
 
   const color = Math.max(1, Math.min(parseInt(highlight.color, 10), NUM_COLOR_OPTIONS)) || 1
 
-  const switchColor = useCallback(
+  const switchColorOnPressProps = useNonBlurringOnPress(
     () => {
       setHighlight({
         ...highlight,
@@ -69,7 +71,7 @@ const HighlighterColorSwitcher = React.memo(({
 
   return (
     <TouchableOpacity
-      onPress={switchColor}
+      {...switchColorOnPressProps}
     >
       <View style={styles.container}>
         {Array(NUM_COLOR_OPTIONS).fill().map((x, idx) => (

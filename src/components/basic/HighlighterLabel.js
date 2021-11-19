@@ -9,6 +9,7 @@ import { i18n } from "inline-i18n"
 
 import useClassroomInfo from "../../hooks/useClassroomInfo"
 import useRouterState from "../../hooks/useRouterState"
+import useNonBlurringOnPress from "../../hooks/useNonBlurringOnPress"
 
 import HighlighterShareIcon from "./HighlighterShareIcon"
 import HighlighterColorSwitcher from "./HighlighterColorSwitcher"
@@ -156,12 +157,14 @@ const HighlighterLabel = React.memo(({
     toggleHighlightDependencies,
   )
 
-  const toggleHighlightByColor = [
+  const toggleHighlightByColorOnPressProps = [
     null,
-    useCallback(() => toggleHighlight(1), toggleHighlightDependencies),
-    useCallback(() => toggleHighlight(2), toggleHighlightDependencies),
-    useCallback(() => toggleHighlight(3), toggleHighlightDependencies),
+    useNonBlurringOnPress(() => toggleHighlight(1), toggleHighlightDependencies),
+    useNonBlurringOnPress(() => toggleHighlight(2), toggleHighlightDependencies),
+    useNonBlurringOnPress(() => toggleHighlight(3), toggleHighlightDependencies),
   ]
+
+  const endEditingNoteOnPressProps = useNonBlurringOnPress(endEditingNote)
 
   const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity
 
@@ -182,7 +185,7 @@ const HighlighterLabel = React.memo(({
       </Text>
       {!!(highlight && !isEditingNote) &&
         <TouchableComponent
-          onPress={toggleHighlightByColor[color]}
+          {...toggleHighlightByColorOnPressProps[color]}
         >
           <Ionicons
             name="md-trash"
@@ -201,7 +204,7 @@ const HighlighterLabel = React.memo(({
         </Text>
         <Button
           // style={styles.undoButton}
-          onPress={toggleHighlightByColor[showDeletedMsgAndUndoColor]}
+          {...toggleHighlightByColorOnPressProps[showDeletedMsgAndUndoColor]}
           size="small"
           status="basic"
         >
@@ -213,7 +216,7 @@ const HighlighterLabel = React.memo(({
   } else if(!highlight) {
     highlightButton = (
       <TouchableComponent
-        onPress={toggleHighlightByColor[1]}
+        {...toggleHighlightByColorOnPressProps[1]}
       >
         {highlightButton}
       </TouchableComponent>
@@ -253,7 +256,7 @@ const HighlighterLabel = React.memo(({
       {!!isEditingNote &&
         <Button
           // style={styles.doneButton}
-          onPress={endEditingNote}
+          {...endEditingNoteOnPressProps}
           size="small"
           status="basic"
         >
