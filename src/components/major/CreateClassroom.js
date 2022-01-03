@@ -102,7 +102,7 @@ const CreateClassroom = React.memo(({
       .map(({ uid, name }) => ({
         title: (
           uid === defaultClassroomUid
-            ? i18n("Enhanced book", "", "enhanced")
+            ? i18n("Interactive book", "", "enhanced")
             : (
               !uid
                 ? i18n("None", "", "enhanced")

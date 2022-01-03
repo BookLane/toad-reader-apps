@@ -808,7 +808,7 @@ export const bookCookiesToCookieStr = bookCookies => {
 
 export const getVersionString = version => ({
   BASE: i18n("Basic book"),
-  ENHANCED: i18n("Enhanced book (student edition)"),
-  INSTRUCTOR: i18n("Enhanced book (instructor edition)"),
-  PUBLISHER: i18n("Enhanced book (publisher edition)"),
+  ENHANCED: i18n("Interactive book (student edition)"),
+  INSTRUCTOR: i18n("Interactive book (instructor edition)"),
+  PUBLISHER: i18n("Interactive book (publisher edition)"),
 })[version]

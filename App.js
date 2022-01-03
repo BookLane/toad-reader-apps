@@ -16,6 +16,7 @@ import { ApplicationProvider } from "@ui-kitten/components"
 import { i18nSetup } from "inline-i18n"
 
 import './src/themes/style'
+import translationModifier from './translationModifier'
 import reducers from "./src/redux/reducers"
 import lightTheme from "./src/themes/light"
 import darkTheme from "./src/themes/dark"
@@ -201,6 +202,7 @@ const App = () => {
         await i18nSetup({
           locales: [ LANGUAGE_CODE ],
           fetchLocale: async locale => translations,
+          translationModifier,
         })
 
         setStatusBarHidden(false)

@@ -323,7 +323,7 @@ const EnhancedScores = React.memo(({
             i18n("Quiz scores")
             + " - "
             + (isDefaultClassroom
-              ? i18n("Enhanced book", "", "enhanced")
+              ? i18n("Interactive book", "", "enhanced")
               : (classroom || "").name
             )
             + " - "

@@ -197,7 +197,7 @@ const EnhancedMyReflectionQuestions = React.memo(({
             i18n("My reflection question answers")
             + " - "
             + (isDefaultClassroom
-              ? i18n("Enhanced book", "", "enhanced")
+              ? i18n("Interactive book", "", "enhanced")
               : (classroom || "").name
             )
             + ".csv"

@@ -138,7 +138,7 @@ const GuideToCreateAClassroom = React.memo(({
         ]}
       >
         <Text style={styles.instructionText}>
-          {i18n("Open the “Enhanced book” pulldown and then choose “Create a classroom.”", "", "enhanced")}
+          {i18n("Open the Interactive book” pulldown and then choose “Create a classroom.”", "", "enhanced")}
         </Text>
         <Text style={styles.videoInstructionText}>
           {i18n("Video Instructions", "", "enhanced")}

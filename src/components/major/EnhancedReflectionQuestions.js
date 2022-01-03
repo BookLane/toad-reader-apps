@@ -263,7 +263,7 @@ const EnhancedReflectionQuestions = React.memo(({
             i18n("Reflection question answers")
             + " - "
             + (isDefaultClassroom
-              ? i18n("Enhanced book", "", "enhanced")
+              ? i18n("Interactive book", "", "enhanced")
               : (classroom || "").name
             )
             + " - "

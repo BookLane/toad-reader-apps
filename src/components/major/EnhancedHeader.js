@@ -177,7 +177,7 @@ const EnhancedHeader = React.memo(({
         uid === defaultClassroomUid
           ? (
             <Text style={styles.optionsEmphasis}>
-              {i18n("Enhanced book", "", "enhanced")}
+              {i18n("Interactive book", "", "enhanced")}
             </Text>
           )
           : (
@@ -229,7 +229,7 @@ const EnhancedHeader = React.memo(({
 
   const classroomName = (
     isDefaultClassroom
-      ? i18n("Enhanced book", "", "enhanced")
+      ? i18n("Interactive book", "", "enhanced")
       : (
         classroom
           ? classroom.name
