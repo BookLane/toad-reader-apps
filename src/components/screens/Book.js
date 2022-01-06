@@ -648,6 +648,11 @@ const Book = React.memo(({
               latestLocation: zoomToInfo,
             })
 
+            historyPush(null, {
+              ...getRouterState(),
+              latestLocation: zoomToInfo,
+            })
+
           } else {  // back to the same page
 
             setState({
@@ -741,13 +746,19 @@ const Book = React.memo(({
     () => {
       if(!book) return
 
-      // handle back/forward buttons in the browser
+      // handle back/forward buttons in the browser and Android
 
       if(
         prevRouterState
         && routerState.latestLocation
         && (prevRouterState.back || 0) !== (routerState.back || 0)
-        && !inManualHistoryUpdate()
+        && (
+          (
+            Platform.OS === 'web'
+            && !inManualHistoryUpdate()
+          )
+          || Platform.OS === 'android'
+        )
       ) {
 
         if(JSON.stringify(prevRouterState.latestLocation) !== JSON.stringify(routerState.latestLocation)) {
@@ -1158,7 +1169,7 @@ const Book = React.memo(({
 
   return (
     <SafeLayout>
-      <BackFunction func={historyGoBackToLibrary} />
+      <BackFunction func={mode === 'page' ? historyGoBack : historyGoBackToLibrary} />
       {mode === 'page' && <CustomKeepAwake />}
 
       {Platform.OS !== 'web' && !inEditMode &&
