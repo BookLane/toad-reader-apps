@@ -90,6 +90,11 @@ const styles = StyleSheet.create({
   highlightedIcon: {
     height: 22,
   },
+  highlightedLibraryIcon: {
+    top: 1,
+    height: 22,
+    width: 25,
+  },
 })
 
 const GuideToBookBrowser = React.memo(({
@@ -122,8 +127,9 @@ const GuideToBookBrowser = React.memo(({
 
       <View style={styles.backToLibrary}>
         <Icon
-          style={styles.highlightedIcon}
-          name="md-arrow-back"
+          style={styles.highlightedLibraryIcon}
+          pack="image"
+          name={require('../../../assets/library.png')}
         />
       </View>
       <View style={styles.backToLibraryText}>
