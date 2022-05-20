@@ -47,7 +47,7 @@ import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
-         autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid } from "../../redux/actions"
+         autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid, updateSubscriptions } from "../../redux/actions"
 
 const styles = StyleSheet.create({
   flex1: {
@@ -124,6 +124,7 @@ const Library = ({
   autoUpdateCoreIdps,
   setCurrentClassroom,
   setSelectedToolUid,
+  updateSubscriptions,
 
 }) => {
 
@@ -991,6 +992,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   autoUpdateCoreIdps,
   setCurrentClassroom,
   setSelectedToolUid,
+  updateSubscriptions,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)
