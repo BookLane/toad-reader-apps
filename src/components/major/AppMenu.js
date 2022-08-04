@@ -244,6 +244,13 @@ const AppMenu = ({
     [],
   )
 
+  const goToLookupUser = useCallback(
+    () => {
+      historyReplace(`/users`)
+    },
+    [ idps ],
+  )
+
   const goToReports = useCallback(
     () => {
       historyReplace(`/reports`)
@@ -334,6 +341,14 @@ const AppMenu = ({
     ...(!isAdmin ? [] : [
       {
         style: styles.separator,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web') ? [] : [
+      {
+        title: i18n("Look-up user info"),
+        // icon: onDeviceIcon,
+        onSelect: goToLookupUser,
+        disabled: !online,
       },
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
