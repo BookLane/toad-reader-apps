@@ -24,8 +24,11 @@ const {
 
 const styles = StyleSheet.create({
   error: {
-    padding: 30,
-    fontSize: 18,
+    paddingTop: 50,
+    padding: 20,
+    fontSize: 16,
+    alignSelf: "center",
+    color: "#BB0000",
   },
   container: {
     flex: 1,
@@ -33,7 +36,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignSelf: "center",
     maxWidth: 500,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingBottom: 300,
   },
   warning: {
@@ -117,8 +120,8 @@ const DeleteMyAccount = ({
           }),
         }))
 
-        if(response.status >= 400) {
-          setError(response.statusText)
+        if(response.status !== 200) {
+          throw new Error(response.statusText || i18n("Invalid code"))
         }
 
         setUser()

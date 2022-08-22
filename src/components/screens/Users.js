@@ -244,7 +244,7 @@ const Users = ({
           }),
         }))
 
-        if(response.status >= 400) {
+        if(response.status !== 200) {
           throw new Error(response.statusText)
         }
 
