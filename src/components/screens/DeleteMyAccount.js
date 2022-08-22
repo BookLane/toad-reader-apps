@@ -54,9 +54,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   confirmButton: {
     marginRight: 10,
+    marginBottom: 10,
+  },
+  cancelButton: {
+    marginBottom: 10,
   },
   accountDeletedContainer: {
     justifyContent: "center",
@@ -236,9 +241,10 @@ const DeleteMyAccount = ({
               appearance="filled"
               disabled={!code}
             >
-              {i18n("Confirm and permanently delete my account")}
+              {i18n("Permanently delete my account")}
             </Button>
             <Button
+              style={styles.cancelButton}
               onPress={historyGoBackToLibrary}
               status="basic"
               appearance="filled"
