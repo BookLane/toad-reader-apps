@@ -31,6 +31,7 @@ const BookPageMessage = ({
   const showMoreInfo = useCallback(
     () =>  {
       if(moreInfoText) {
+        // Issue? This probably needs to use alert() if on web
         Alert.alert(text, moreInfoText)
       } else if(externalHref) {
         openURL({ url: externalHref, historyPush })

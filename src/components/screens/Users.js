@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { StyleSheet, View, Text, ScrollView } from "react-native"
+import { StyleSheet, View, Text, ScrollView, Alert } from "react-native"
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Autocomplete, AutocompleteItem, Button } from '@ui-kitten/components'
+import { Autocomplete, AutocompleteItem, Button, Input } from '@ui-kitten/components'
 import { i18n } from "inline-i18n"
 
 import { safeFetch, getDataOrigin, getIdsFromAccountId, getReqOptionsWithAdditions, getDateLine, getTimeLine, getVersionString } from "../../utils/toolbox"
@@ -18,6 +19,10 @@ import LinkLikeText from "../basic/LinkLikeText"
 
 const MAX_SNIPPET_LENGTH = 350
 const DEFAULT_ACTIVITY_LIMIT = 3
+
+const {
+  AMPLITUDE_API_KEY,
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   error: {
@@ -175,9 +180,22 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: 150,
   },
+  deleteInputContainer: {
+    paddingTop: 20,
+    marginTop: 50,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0,0,0,.1)',
+  },
+  deleteInput: {
+    maxWidth: 300,
+  },
+  deleteButtonContainer: {
+    marginTop: 10,
+    maxWidth: 300,
+  },
 })
 
-const cachedUserSearchResults = {}
+let cachedUserSearchResults = {}
 
 const getIdStr = ({ id, user_id_from_idp, email }) => `[id: ${id}${user_id_from_idp !== email ? `, Tenant id: ${user_id_from_idp}` : ``}]`
 
@@ -195,12 +213,54 @@ const Users = ({
   const [ limit, setLimit ] = useState(DEFAULT_ACTIVITY_LIMIT)
   const [ loading, setLoading ] = useState(false)
   const [ error, setError ] = useState()
+  const [ confirmDeleteEmail, setConfirmDeleteEmail ] = useState(``)
 
   const accountId = Object.keys(accounts)[0]
   const { idpId } = getIdsFromAccountId(accountId)
   const { useEnhancedReader } = idps[idpId]
 
   const { historyGoBackToLibrary } = useRouterState()
+
+  const confirmAccountDeletion = useCallback(
+    async () => {
+
+      setError()
+      setLoading(true)
+      setConfirmDeleteEmail(``)
+
+      try {
+
+        const requestDeletionConfirmationCodeUrl = `${getDataOrigin(idps[idpId])}/delete-account`
+
+        const response = await safeFetch(requestDeletionConfirmationCodeUrl, getReqOptionsWithAdditions({
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+            "x-cookie-override": accounts[accountId].cookie,
+          },
+          body: JSON.stringify({
+            userIdToDelete: getUserInfo().id,
+            AMPLITUDE_API_KEY,
+          }),
+        }))
+
+        if(response.status >= 400) {
+          throw new Error(response.statusText)
+        }
+
+        cachedUserSearchResults = {}
+        onChangeText(``)
+
+        setTimeout(() => alert(i18n("User has been deleted.")))
+
+      } catch(err) {
+        setError(err.message)
+        setLoading(false)
+      }
+
+    },
+    [ idps[idpId], accounts[accountId] ],
+  )
 
   useEffect(
     () => {
@@ -636,6 +696,27 @@ const Users = ({
                         {i18n("None")}
                       </Text>
                     }
+
+                    <View style={styles.deleteInputContainer}>
+                      <Input
+                        style={styles.deleteInput}
+                        value={confirmDeleteEmail}
+                        onChangeText={setConfirmDeleteEmail}
+                        placeholder={userInfo.email}
+                        label={i18n("To delete this user, enter their email here")}
+                      />
+                    </View>
+                    <View style={styles.deleteButtonContainer}>
+                      <Button
+                        style={styles.confirmButton}
+                        onPress={confirmAccountDeletion}
+                        status="danger"
+                        appearance="filled"
+                        disabled={confirmDeleteEmail !== userInfo.email}
+                      >
+                        {i18n("Permanently delete this account")}
+                      </Button>
+                    </View>
 
                   </>
                 }
