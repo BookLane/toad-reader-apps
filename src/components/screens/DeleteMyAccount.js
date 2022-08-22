@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
+    padding: 20,
   },
   accountDeleted: {
     fontSize: 20,
