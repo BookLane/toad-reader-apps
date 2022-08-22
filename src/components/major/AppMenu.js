@@ -258,6 +258,13 @@ const AppMenu = ({
     [ idps ],
   )
 
+  const goToDeleteAccount = useCallback(
+    () => {
+      historyReplace(`/delete-my-account`)
+    },
+    [ idps ],
+  )
+
   // const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
   // const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
   // // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
@@ -338,9 +345,16 @@ const AppMenu = ({
         onSelect: doEmailLogin,
       },
     ]),
-    ...(!isAdmin ? [] : [
+    ...(hasNoAuth ? [] : [
       {
         style: styles.separator,
+      },
+    ]),
+    ...(!(!hasNoAuth && !isAdmin) ? [] : [
+      {
+        title: i18n("Delete my account"),
+        // icon: logOutIcon,
+        onSelect: goToDeleteAccount,
       },
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
@@ -438,11 +452,11 @@ const AppMenu = ({
         header={renderHeader}
         footer={renderFooter}
       >
-        {drawerData.map(({ title, disabled, style }, idx) => (
+        {drawerData.map(({ title, titleStyle, disabled, style }, idx) => (
           <DrawerItem
             key={idx}
             title={title}
-            titleStyle={title}
+            titleStyle={titleStyle}
             disabled={disabled}
             style={style}
           />

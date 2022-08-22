@@ -30,6 +30,7 @@ import MetadataDialog from "../major/MetadataDialog"
 import SubscriptionsDialog from "../major/SubscriptionsDialog"
 import Book from "./Book"
 import Reports from "./Reports"
+import DeleteMyAccount from "./DeleteMyAccount"
 import Users from "./Users"
 import ErrorMessage from "./ErrorMessage"
 import SideMenu from "react-native-simple-side-menu"
@@ -794,6 +795,7 @@ const Library = ({
           <Route path="/error" component={ErrorMessage} />
           {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
           {!doingInitialFetch && <Route path="/reports" component={Reports} />}
+          {!doingInitialFetch && <Route path="/delete-my-account" component={DeleteMyAccount} />}
           {!doingInitialFetch && <Route path="/users" component={Users} />}
           <Route>
 
