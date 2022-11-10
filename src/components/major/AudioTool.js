@@ -24,6 +24,7 @@ const AudioTool = React.memo(({
   logUsageEvent,
 
   audioFile={},
+  audioLink,
 
   idps,
   accounts,
@@ -43,19 +44,19 @@ const AudioTool = React.memo(({
   const { accountId, classroomUid } = useClassroomInfo({ books, bookId })
   const baseUri = useAssetBaseUri({ idps, accounts, forceCookieInUri: !classroomQueryString })
 
-  const uri = `${baseUri}/enhanced_assets/${classroomUid}/${audioFile.filename}${classroomQueryString}`
+  const uri = audioLink || `${baseUri}/enhanced_assets/${classroomUid}/${audioFile.filename}${classroomQueryString}`
 
-  if(!audioFile.filename) return null
+  if(!audioLink && !audioFile.filename) return null
 
   return (
     <View style={styles.container}>
       <AudioPlayer
         source={{
-          ...getReqOptionsWithAdditions({
+          ...(audioLink ? {} : getReqOptionsWithAdditions({
             headers: {
               "x-cookie-override": accounts[accountId].cookie,
             },
-          }),
+          })),
           uri,
         }}
         logUsageEvent={logUsageEventWithToolUid}

@@ -310,15 +310,41 @@ export const getToolInfo = () => {
       text: i18n("Audio", "", "enhanced"),
       dataStructure: [
         {
+          name: 'instructions',
+          type: 'boolean',
+          isHiddenWithMessage: ({ dataSegment: { audioFile, audioLink } }) => (
+            (audioLink && i18n("(To rather upload an MP3 file, clear out the link field.)", "", "enhanced"))
+            || (!audioFile && i18n("You may either upload an MP3 file or provide a link to one already published on the internet.", "", "enhanced"))
+            || i18n("(Remove the chosen file if you would rather provide a link to an MP3.)", "", "enhanced")
+          ),
+        },
+        {
           name: 'audioFile',
           type: 'file',
           fileTypes: [
             'audio/mpeg',
           ],
-          required: true,
+          isHidden: ({ dataSegment: { audioLink } }) => audioLink,
+        },
+        {
+          name: 'audioLink',
+          type: 'string',
+          label: i18n("MP3 link", "", "enhanced"),
+          isHidden: ({ dataSegment: { audioFile } }) => audioFile,
+          hasErrorWithMessage: ({ data: { audioLink } }) => (
+            nonEmpty(audioLink)
+            && (
+              !validUrl(audioLink)
+                ? i18n("Invalid URL. (Note: https required.)", "", "enhanced")
+                : false
+            )
+          ),
         },
       ],
-      readyToPublish: ({ data: { audioFile } }) => !!audioFile,
+      readyToPublish: ({ data: { audioFile, audioLink } }) => (
+        audioFile
+        || validUrl(audioLink)
+      ),
     },
   ]
 
