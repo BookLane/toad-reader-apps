@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useCallback } from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
@@ -98,6 +98,7 @@ const HighlighterLabel = React.memo(({
   isEditingNote,
 
   books,
+  userDataByBookId,
   accounts,
 
   setHighlight,
@@ -107,8 +108,19 @@ const HighlighterLabel = React.memo(({
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
 
   const [ showDeletedMsgAndUndoColor, setShowDeletedMsgAndUndoColor ] = useState()
-  const { bookVersion } = useClassroomInfo({ books, bookId })
+  const { bookVersion, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
   const isAdmin = Object.values(accounts).some(({ isAdmin }) => isAdmin)
+
+  const hasAsInstructorHighlightForSomeClassroom = (
+    classrooms.some(({ instructorHighlights=[] }) => (
+      instructorHighlights.some(({ isMine, _delete, spineIdRef, cfi }) => (
+        isMine
+        && spineIdRef === selectionInfo.spineIdRef
+        && cfi === selectionInfo.cfi
+        && !_delete
+      ))
+    ))
+  )
 
   useLayoutEffect(
     () => setShowDeletedMsgAndUndoColor(),
@@ -118,7 +130,7 @@ const HighlighterLabel = React.memo(({
   const { routerState } = useRouterState()
   const { widget } = routerState
 
-  const toggleHighlightDependencies = [ books, selectionInfo, bookId, highlight, setHighlight, deleteHighlight ]
+  const toggleHighlightDependencies = [ books, selectionInfo, bookId, highlight, setHighlight, deleteHighlight, hasAsInstructorHighlightForSomeClassroom ]
 
   const toggleHighlight = useCallback(
     color => {
@@ -126,6 +138,19 @@ const HighlighterLabel = React.memo(({
       const note = (highlight || {}).note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
 
       if(highlight) {
+
+        if(hasAsInstructorHighlightForSomeClassroom) {
+          if(Platform.OS === 'web') {
+            alert(i18n("You must unshare this highlight with all classrooms before you can delete it."))
+          } else {
+            Alert.alert(
+              i18n("Whoops"),
+              i18n("You must unshare this highlight with all classrooms before you can delete it."),
+            )
+          }
+          return
+        }
+
         // save for if they highlight this selection again in the near future (effectively an "undo")
         if(note) {
           notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
@@ -276,7 +301,8 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, accounts }) => ({
+const mapStateToProps = ({ books, userDataByBookId, accounts }) => ({
+  userDataByBookId,
   books,
   accounts,
 })
