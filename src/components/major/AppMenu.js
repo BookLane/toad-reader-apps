@@ -14,6 +14,7 @@ import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
 import BackFunction from '../basic/BackFunction'
 import useHasNoAuth from "../../hooks/useHasNoAuth"
+import useLoggedInUser from "../../hooks/useLoggedInUser"
 import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
@@ -30,6 +31,18 @@ const styles = StyleSheet.create({
   separator: {
     backgroundColor: '#e8e8e8',
   },
+  loggedIn: {
+    paddingTop: 20,
+    textAlign: 'center',
+    color: '#999999',
+    fontSize: 12,
+  },
+  loggedInUser: {
+    paddingBottom: 10,
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#444',
+  },
   image: {
     width: '100%',
     height: 0,
@@ -42,13 +55,13 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   createdByContainer: {
-    paddingTop: 40,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 5,
   },
   createdBy: {
     textAlign: 'center',
     fontSize: 12,
-    color: '#cccccc',
+    color: '#999999',
   },
   launchYour: {
     textAlign: 'center',
@@ -58,7 +71,7 @@ const styles = StyleSheet.create({
   subversion: {
     fontSize: 9,
     textAlign: 'center',
-    color: '#ddd',
+    color: '#ccc',
     paddingBottom: 20,
   },
 })
@@ -87,6 +100,7 @@ const AppMenu = ({
   const [ loading, setLoading ] = useState(false)
 
   const hasNoAuth = useHasNoAuth(accounts)
+  const loggedInUser = useLoggedInUser(accounts)
   const { authMethod, devAuthMethod, accessCodeInfo } = Object.values(idps)[0] || {}
   const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
@@ -427,19 +441,42 @@ const AppMenu = ({
   const renderFooter = useCallback(
     () => (
       <>
+
+        {!!loggedInUser &&
+          <>
+            <Text style={styles.loggedIn}>
+              {i18n("Logged in as:")}
+            </Text>
+            <Text style={styles.loggedInUser}>
+              {
+                loggedInUser.fullname
+                  ? (
+                    i18n("{{name}} ({{email}})", {
+                      name: loggedInUser.fullname,
+                      email: loggedInUser.email,
+                    })
+                  )
+                  : loggedInUser.email
+              }
+            </Text>
+          </>
+        }
+
         {!!LINK_TO_TOAD_READER_MARKETING_SITE &&
           <TouchableOpacity
             onPress={goToToadReaderMarketingSite}
           >
             <View style={styles.createdByContainer}>
               <Text style={styles.createdBy}>{i18n("Created by Toad Reader")}</Text>
-              {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
+              {/* {!!INCLUDE_TOAD_READER_PROMO_TEXT &&
                 <Text style={styles.launchYour}>{i18n("Launch your custom eReader")}</Text>
-              }
+              } */}
             </View>
           </TouchableOpacity>
         }
+
         <Text style={styles.subversion}>Updated PUSH_DATE_STRING</Text>
+
       </>
     ),
     [],
