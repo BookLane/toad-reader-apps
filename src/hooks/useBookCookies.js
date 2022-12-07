@@ -80,7 +80,7 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId }) => {
       if(bookCookies) {
         setReady(true)
 
-      } else {
+      } else if(Platform.OS === 'web') {
         historyPush("/error", {
           message: "Internet connection error",
           critical: true,
