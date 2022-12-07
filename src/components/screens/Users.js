@@ -533,6 +533,12 @@ const Users = ({
                       <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.created_at })}</Text>
                     </Text>
 
+                    <Text style={styles.userInfoCreated}>
+                      {i18n("Last Login:")}
+                      {` `}
+                      <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.last_login_at })}</Text>
+                    </Text>
+
                     <Text>
                       <LinkLikeText
                         style={styles.getLoginLink}
