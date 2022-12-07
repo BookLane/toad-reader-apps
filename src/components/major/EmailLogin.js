@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react"
-import { StyleSheet, View, Text, Image } from "react-native"
+import React, { useState, useCallback, useEffect } from "react"
+import { StyleSheet, View, Text } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import SafeLayout from "../basic/SafeLayout"
@@ -11,6 +11,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 import { safeFetch, getReqOptionsWithAdditions, getDataOrigin, isValidEmail } from "../../utils/toolbox"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useRouterState from "../../hooks/useRouterState"
 
 import { addAccount } from "../../redux/actions"
 
@@ -69,9 +70,12 @@ const EmailLogin = ({
   addAccount,
 }) => {
 
-  const [ stage, setStage ] = useState('AWAITING_EMAIL')
+  const { routerState, clearKeyFromRouterState } = useRouterState()
+  const { accessCode } = routerState
+
+  const [ stage, setStage ] = useState(accessCode ? 'AWAITING_CODE' : 'AWAITING_EMAIL')
   const [ email, setEmail ] = useState("")
-  const [ code, setCode ] = useState("")
+  const [ code, setCode ] = useState(accessCode || "")
   const [ error, setError ] = useState()
 
   const getEmail = useInstanceValue(email)
@@ -158,6 +162,16 @@ const EmailLogin = ({
 
     },
     [ idps[idpId], idpId, onSuccess ],
+  )
+
+  useEffect(
+    () => {
+      if(accessCode) {
+        clearKeyFromRouterState('accessCode')
+        goCheckCode()
+      }
+    },
+    [],
   )
 
   const sendAnotherEmail = useCallback(() => setStage('AWAITING_EMAIL'), [])

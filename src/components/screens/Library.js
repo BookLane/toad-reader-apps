@@ -429,7 +429,7 @@ const Library = ({
           pathname === '/'
           && !['/drawer', '/'].includes(previousPathname)
         )
-        || accountIds > previousAccountIds  // i.e. they just logged in
+        || accountIds !== previousAccountIds  // i.e. they just logged in
       ) {
         (async () => {
 

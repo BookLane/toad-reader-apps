@@ -5,6 +5,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Autocomplete, AutocompleteItem, Button, Input } from '@ui-kitten/components'
 import { i18n } from "inline-i18n"
+import copy from 'copy-to-clipboard'
 
 import { safeFetch, getDataOrigin, getIdsFromAccountId, getReqOptionsWithAdditions, getDateLine, getTimeLine, getVersionString } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
@@ -16,6 +17,7 @@ import HeaderIcon from "../basic/HeaderIcon"
 import BackFunction from "../basic/BackFunction"
 import CoverAndSpin from "../basic/CoverAndSpin"
 import LinkLikeText from "../basic/LinkLikeText"
+import useSetTimeout from "../../hooks/useSetTimeout"
 
 const MAX_SNIPPET_LENGTH = 350
 const DEFAULT_ACTIVITY_LIMIT = 3
@@ -193,6 +195,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     maxWidth: 300,
   },
+  getLoginLink: {
+    fontSize: 12,
+  },
+  copied: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
 })
 
 let cachedUserSearchResults = {}
@@ -211,6 +221,8 @@ const Users = ({
   const [ userInfo, setUserInfo ] = useState({})
   const getUserInfo = useInstanceValue(userInfo)
   const [ limit, setLimit ] = useState(DEFAULT_ACTIVITY_LIMIT)
+  const [ copied, setCopied ] = useState(copied)
+  const [ setCopiedTimeout ] = useSetTimeout()
   const [ loading, setLoading ] = useState(false)
   const [ error, setError ] = useState()
   const [ confirmDeleteEmail, setConfirmDeleteEmail ] = useState(``)
@@ -299,6 +311,50 @@ const Users = ({
       })()
     },
     [ userInfo.id, limit ],
+  )
+
+  const getLoginLink = useCallback(
+    async () => {
+
+      setError()
+      setLoading(true)
+
+      let response = {}
+
+      try {
+        response = await safeFetch(
+          `${getDataOrigin(idps[idpId])}/createaccesscode`,
+          getReqOptionsWithAdditions({
+            method: 'POST',
+            headers: {
+              "Content-Type": 'application/json',
+              "x-cookie-override": accounts[accountId].cookie,
+            },
+            body: JSON.stringify({ email: userInfo.email }),
+          }),
+        )
+
+      } catch(err) {
+        response.statusText = err.message || 'Internet connection error'
+        response.status = 500
+      }
+
+      if(response.status >= 400) {
+        const json = response.json && await response.json()
+        setError((json || {}).error || response.statusText)
+        setLoading(false)
+        return
+      }
+
+      const { accessCode } = await response.json()
+      copy(`${window.location.origin}/#/#${JSON.stringify({ doEmailLogin: true, accessCode, back: 0 })}`)
+      setCopied(true)
+      setCopiedTimeout(() => setCopied(false), 1500)
+
+      setLoading(false)
+
+    },
+    [ idps[idpId], accounts[accountId].cookie, userInfo.email ],
   )
 
   const getUserSearchLabel = useCallback(
@@ -475,6 +531,20 @@ const Users = ({
                       {i18n("Created:")}
                       {` `}
                       <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.created_at })}</Text>
+                    </Text>
+
+                    <Text>
+                      <LinkLikeText
+                        style={styles.getLoginLink}
+                        onPress={getLoginLink}
+                      >
+                        {i18n("Get login link")}
+                      </LinkLikeText>
+                      {copied &&
+                        <Text style={styles.copied}>
+                          {i18n("Copied to clipboard")}
+                        </Text>
+                      }
                     </Text>
 
                     {!!useEnhancedReader &&
