@@ -203,6 +203,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
   },
+  expires: {
+    fontSize: 12,
+    marginLeft: 5,
+  },
 })
 
 let cachedUserSearchResults = {}
@@ -547,9 +551,14 @@ const Users = ({
                         {i18n("Get login link")}
                       </LinkLikeText>
                       {copied &&
-                        <Text style={styles.copied}>
-                          {i18n("Copied to clipboard")}
-                        </Text>
+                        <>
+                          <Text style={styles.copied}>
+                            {i18n("Copied to clipboard")}
+                          </Text>
+                          <Text style={styles.expires}>
+                            {i18n("(Expires in 15 minutes)")}
+                          </Text>
+                        </>
                       }
                     </Text>
 
