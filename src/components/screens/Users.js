@@ -541,6 +541,8 @@ const Users = ({
                       {i18n("Last Login:")}
                       {` `}
                       <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.last_login_at })}</Text>
+                      {` `}
+                      <Text style={styles.userInfoPlatform}>{`(${userInfo.last_login_platform || `Unknown platform`})`}</Text>
                     </Text>
 
                     <Text>
