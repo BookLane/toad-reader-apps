@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react"
+import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Platform } from "react-native"
@@ -11,6 +12,10 @@ import { getBooksDir, getDataOrigin, bookCookiesToCookieStr } from "../../utils/
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useRouterState from "../../hooks/useRouterState"
 import getReaderCode from '../../../getReaderCode'
+
+const {
+  ENABLE_WIDE_TABLE_BEHAVIOR=false,
+} = Constants.manifest.extra
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -216,6 +221,10 @@ const PageWebView = ({
 
   if(initialDisplaySettings) {
     initialQueryStringParams.settings = JSON.stringify(initialDisplaySettings)
+  }
+
+  if(ENABLE_WIDE_TABLE_BEHAVIOR) {
+    initialQueryStringParams.enableWideTableBehavior = `true`
   }
 
   if(initialAddlParams) {
