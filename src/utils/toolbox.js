@@ -12,6 +12,7 @@ const {
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
+  ENABLE_WIDE_TABLE_BEHAVIOR,
 } = Constants.manifest.extra
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
@@ -79,7 +80,7 @@ export const getDisplaySettingsObj = displaySettings => ({
 export const getPageCfisKey = ({ displaySettings, width, height, spineInlineToolsHash }) => {
   const { textSize, textSpacing } = displaySettings
 
-  return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}`
+  return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}${ENABLE_WIDE_TABLE_BEHAVIOR ? `_wtb` : ``}`
 }
 
 export const getSnapshotURI = params => {
