@@ -2224,34 +2224,34 @@ ta-toadreader-wide-table="show-button"]').attr("data-toadreader-wide-table",null
 (t.borderRightWidth)||0)+(parseFloat(t.paddingLeft)||0)+(parseFloat(t.paddingRight)||0):0);return!(w!==e||!(n+5<g||"table"!==t.display||e.getAttribute("data-toadreader-no-wide-table-behavior")))||("st\
 atic"!==t.position||void 0)}(E);)E=E.parentElement;if(E===M[0]){var C=F[0].contentWindow.getComputedStyle(w),S=parseFloat(C.marginLeft)||0;if(S<0)break;var I=parseFloat(C.width)+S+("content-box"===C.b\
 oxSizing?(parseFloat(C.borderLeftWidth)||0)+(parseFloat(C.borderRightWidth)||0)+(parseFloat(C.paddingLeft)||0)+(parseFloat(C.paddingRight)||0):0),R=parseFloat(C.height)+("content-box"===C.boxSizing?(p\
-arseFloat(C.borderTopWidth)||0)+(parseFloat(C.borderBottomWidth)||0)+(parseFloat(C.paddingTop)||0)+(parseFloat(C.paddingBottom)||0):0);I-5>g&&y.push({table:w,width:I-S,height:R})}}for(var b=0;b<v.leng\
-th;b++){var w=v[b],N=y.find(function(e){return e.table===w});N?(w.setAttribute("data-toadreader-wide-table","show-button"),w.setAttribute("data-toadreader-wide-table-width",N.width),t(w).bind("click",\
-ee)):(w.removeAttribute("data-toadreader-wide-table"),t(w).unbind("click",ee))}M.attr("data-toadreader-wide-table-last-width",parseInt(g)),s.triggerLayout(F)}X.columnCount=((U?M[0].scrollHeight:M[0].s\
-crollWidth)+X.columnGap)/(X.columnWidth+X.columnGap),X.columnCount=Math.round(X.columnCount),M.css("position","fixed"),M.css("transform","translate3d(0px, 0px, 0px)"),X.spreadCount=Math.ceil(X.columnC\
-ount/X.visibleColumnCount),X.currentSpreadIndex>=X.spreadCount&&(X.currentSpreadIndex=X.spreadCount-1);var O=(X.columnCount-1)*X.columnGap,A=((U?M[0].scrollHeight:M[0].scrollWidth)-O)/X.columnCount;A>\
-X.columnWidth&&(console.debug("ADJUST COLUMN"),console.log(X.columnWidth),console.log(A),X.columnWidth=A),k?_():Z(H)}}function T(){-1==K&&(K=M[0].style.opacity,M.css("opacity","0"))}function S(){-1!=K\
-&&M.css("opacity",K),K=-1}function I(){for(var e=[],t=X.currentSpreadIndex*X.visibleColumnCount,n=0;n<X.visibleColumnCount&&t+n<X.columnCount;n++)e.push(t+n);return e}function R(){if(M){var e;t("img, \
-svg",M).each(function(){e=t(this),e.css("max-width","100%"),e.css("max-height","100vh");var n=e[0].style.verticalAlign||e.attr("vertical-align");"block"!=e.parent().css("display")||0!=e.siblings().len\
-gth||/[0-9]/.test(n||"")||e.css("vertical-align","middle")})}}function N(e){return new r(P.idref,e)}t.extend(this,new i);var P,k,O,A,D,F,M,L,U,B,j,H=this,z=u.\$viewport,V=u.spine,W=u.userStyles,\$=u.boo\
-kStyles,q=u.iframeLoader,G=!1,J=100,K=-1,Q={width:void 0,height:void 0},X={visibleColumnCount:2,columnGap:20,columnMaxWidth:550,columnMinWidth:400,spreadCount:0,currentSpreadIndex:0,columnWidth:void 0\
-,pageOffset:-10,columnCount:0};this.render=function(){var e=s.loadTemplate("reflowable_book_frame",{});D=t(e),z.append(D);var n=d.viewerSettings();return n&&void 0!==n.enableGPUHardwareAccelerationCSS\
-3D||(n=new c({})),n.enableGPUHardwareAccelerationCSS3D&&D.css("transform","translateZ(0)"),p(),H},this.remove=function(){D.remove()},this.isReflowable=function(){return!0},this.onViewportResize=functi\
-on(){x()&&C()};var Y=void 0;this.setViewSettings=function(e){Y=e,X.columnGap=e.columnGap,X.columnMaxWidth=e.columnMaxWidth,X.columnMinWidth=e.columnMinWidth,J=e.fontSize,m(),v(),x(),C()},this.applySty\
-les=function(){s.setStyles(W.getStyles(),D.parent()),f(s.Margins.fromElement(D).padding),x(),setTimeout(C)},this.applyBookStyles=function(){M&&s.setStyles(\$.getStyles(),M)},this.openPage=function(e){i\
-f(G)return void(k=e);if(e.spineItem&&e.spineItem!=P)return k=e,void g(e.spineItem);var n=void 0;if("ID:"===(e.elementCfi||"").substr(0,3)&&(e.elementId=e.elementCfi.substr(3)),e.prePageTurnFunc&&e.pre\
-PageTurnFunc(),void 0!==e.spineItemPageIndex)n=e.spineItemPageIndex;else if(e.elementId)(n=A.getPageForElementId(e.elementId))<0&&(n=0);else if(e.elementCfi||e.textNodeInfo)try{var i=e.elementCfi;if(e\
-.textNodeInfo){for(var r=e.textNodeInfo.content,o=e.textNodeInfo.hitIndex||0,a=e.textNodeInfo.startOffset||0,s=e.textNodeInfo.endOffset||a+1,l=document.createTreeWalker(t("body",M)[0],NodeFilter.SHOW_\
-TEXT,{acceptNode:function(e){return e.textContent===r?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}}),c=l.nextNode(),u=0;c&&u<o;u++)c=l.nextNode();var d=document.createRange();d.setStart(c,a),d.s\
-etEnd(c,s),i=H.getRangeCfiFromDomRange(d).contentCFI}n=A.getPageForElementCfi(i,["cfi-marker","mo-cfi-highlight"],[],["MathJax_Message"]),n<0&&(n=0)}catch(e){n=0,console.error(e)}else e.firstPage?n=0:\
-e.lastPage?n=X.columnCount-1:(console.debug("No criteria in pageRequest"),n=0);n>=0&&n<X.columnCount?(X.currentSpreadIndex=Math.floor(n/X.visibleColumnCount),Z(e.initiator,e.spineItem,e.elementId)):co\
-nsole.log("Illegal pageIndex value: ",n,"column count is ",X.columnCount),e.postFunc&&e.postFunc()};var Z=E;this.openPagePrev=function(e){if(P)if(X.currentSpreadIndex>0)X.currentSpreadIndex--,Z(e);els\
-e{var t=V.prevItem(P,!0);if(t){var n=new l(t,e);n.setLastPage(),H.openPage(n)}}},this.openPageNext=function(e){if(P)if(X.currentSpreadIndex<X.spreadCount-1)X.currentSpreadIndex++,Z(e);else{var t=V.nex\
-tItem(P,!0);if(t){var n=new l(t,e);n.setFirstPage(),H.openPage(n)}}};var ee=function(e){e.preventDefault(),e.stopPropagation();var n=e.currentTarget;if("show-button"===n.getAttribute("data-toadreader-\
-wide-table")){var i=t(n.parentElement),r=t("body"),o=parseFloat(M[0].style.width),a=parseFloat(M[0].style.height),s=parseFloat(M[0].style.left),l=X.columnCount,c=t("<div class='toadreader-close-table'\
->×</div>");c.click(function(){t(M.find('.toadreader-table-backdrop, [data-toadreader-wide-table="show-table"]')).remove(),r.removeClass("toadreader-viewing-wide-table"),t(".toadreader-close-table").re\
-move()}),r.after(c);var u=t("<div>",{class:"toadreader-table-backdrop"});u.css("width",o*l+X.columnGap*(l-1)),i.append(u);var d=parseFloat(n.getAttribute("data-toadreader-wide-table-width")),f=t(n.clo\
-neNode(!0));f.attr("data-toadreader-wide-table","show-table"),f.css("width",d),i.append(f);var h=f.height();if((o+40)/d<a/h){var p=(o+X.columnGap-20)/d,g=10-s,m=(a-h)/2;f.css("transform-origin","left"\
-)}else{var p=a/h,g=-s+(o+X.columnGap-d)/2,m=0;f.css("transform-origin","top")}f.css("transform","translate("+g+"px, "+m+"px) scale("+p+")"),r.addClass("toadreader-viewing-wide-table")}}
+arseFloat(C.borderTopWidth)||0)+(parseFloat(C.borderBottomWidth)||0)+(parseFloat(C.paddingTop)||0)+(parseFloat(C.paddingBottom)||0):0);I-15>g&&y.push({table:w,width:I-S,height:R})}}for(var b=0;b<v.len\
+gth;b++){var w=v[b],N=y.find(function(e){return e.table===w});N?(w.setAttribute("data-toadreader-wide-table","show-button"),w.setAttribute("data-toadreader-wide-table-width",N.width),t(w).bind("click"\
+,ee)):(w.removeAttribute("data-toadreader-wide-table"),t(w).unbind("click",ee))}M.attr("data-toadreader-wide-table-last-width",parseInt(g)),s.triggerLayout(F)}X.columnCount=((U?M[0].scrollHeight:M[0].\
+scrollWidth)+X.columnGap)/(X.columnWidth+X.columnGap),X.columnCount=Math.round(X.columnCount),M.css("position","fixed"),M.css("transform","translate3d(0px, 0px, 0px)"),X.spreadCount=Math.ceil(X.column\
+Count/X.visibleColumnCount),X.currentSpreadIndex>=X.spreadCount&&(X.currentSpreadIndex=X.spreadCount-1);var O=(X.columnCount-1)*X.columnGap,A=((U?M[0].scrollHeight:M[0].scrollWidth)-O)/X.columnCount;A\
+>X.columnWidth&&(console.debug("ADJUST COLUMN"),console.log(X.columnWidth),console.log(A),X.columnWidth=A),k?_():Z(H)}}function T(){-1==K&&(K=M[0].style.opacity,M.css("opacity","0"))}function S(){-1!=\
+K&&M.css("opacity",K),K=-1}function I(){for(var e=[],t=X.currentSpreadIndex*X.visibleColumnCount,n=0;n<X.visibleColumnCount&&t+n<X.columnCount;n++)e.push(t+n);return e}function R(){if(M){var e;t("img,\
+ svg",M).each(function(){e=t(this),e.css("max-width","100%"),e.css("max-height","100vh");var n=e[0].style.verticalAlign||e.attr("vertical-align");"block"!=e.parent().css("display")||0!=e.siblings().le\
+ngth||/[0-9]/.test(n||"")||e.css("vertical-align","middle")})}}function N(e){return new r(P.idref,e)}t.extend(this,new i);var P,k,O,A,D,F,M,L,U,B,j,H=this,z=u.\$viewport,V=u.spine,W=u.userStyles,\$=u.bo\
+okStyles,q=u.iframeLoader,G=!1,J=100,K=-1,Q={width:void 0,height:void 0},X={visibleColumnCount:2,columnGap:20,columnMaxWidth:550,columnMinWidth:400,spreadCount:0,currentSpreadIndex:0,columnWidth:void \
+0,pageOffset:-10,columnCount:0};this.render=function(){var e=s.loadTemplate("reflowable_book_frame",{});D=t(e),z.append(D);var n=d.viewerSettings();return n&&void 0!==n.enableGPUHardwareAccelerationCS\
+S3D||(n=new c({})),n.enableGPUHardwareAccelerationCSS3D&&D.css("transform","translateZ(0)"),p(),H},this.remove=function(){D.remove()},this.isReflowable=function(){return!0},this.onViewportResize=funct\
+ion(){x()&&C()};var Y=void 0;this.setViewSettings=function(e){Y=e,X.columnGap=e.columnGap,X.columnMaxWidth=e.columnMaxWidth,X.columnMinWidth=e.columnMinWidth,J=e.fontSize,m(),v(),x(),C()},this.applySt\
+yles=function(){s.setStyles(W.getStyles(),D.parent()),f(s.Margins.fromElement(D).padding),x(),setTimeout(C)},this.applyBookStyles=function(){M&&s.setStyles(\$.getStyles(),M)},this.openPage=function(e){\
+if(G)return void(k=e);if(e.spineItem&&e.spineItem!=P)return k=e,void g(e.spineItem);var n=void 0;if("ID:"===(e.elementCfi||"").substr(0,3)&&(e.elementId=e.elementCfi.substr(3)),e.prePageTurnFunc&&e.pr\
+ePageTurnFunc(),void 0!==e.spineItemPageIndex)n=e.spineItemPageIndex;else if(e.elementId)(n=A.getPageForElementId(e.elementId))<0&&(n=0);else if(e.elementCfi||e.textNodeInfo)try{var i=e.elementCfi;if(\
+e.textNodeInfo){for(var r=e.textNodeInfo.content,o=e.textNodeInfo.hitIndex||0,a=e.textNodeInfo.startOffset||0,s=e.textNodeInfo.endOffset||a+1,l=document.createTreeWalker(t("body",M)[0],NodeFilter.SHOW\
+_TEXT,{acceptNode:function(e){return e.textContent===r?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}}),c=l.nextNode(),u=0;c&&u<o;u++)c=l.nextNode();var d=document.createRange();d.setStart(c,a),d.\
+setEnd(c,s),i=H.getRangeCfiFromDomRange(d).contentCFI}n=A.getPageForElementCfi(i,["cfi-marker","mo-cfi-highlight"],[],["MathJax_Message"]),n<0&&(n=0)}catch(e){n=0,console.error(e)}else e.firstPage?n=0\
+:e.lastPage?n=X.columnCount-1:(console.debug("No criteria in pageRequest"),n=0);n>=0&&n<X.columnCount?(X.currentSpreadIndex=Math.floor(n/X.visibleColumnCount),Z(e.initiator,e.spineItem,e.elementId)):c\
+onsole.log("Illegal pageIndex value: ",n,"column count is ",X.columnCount),e.postFunc&&e.postFunc()};var Z=E;this.openPagePrev=function(e){if(P)if(X.currentSpreadIndex>0)X.currentSpreadIndex--,Z(e);el\
+se{var t=V.prevItem(P,!0);if(t){var n=new l(t,e);n.setLastPage(),H.openPage(n)}}},this.openPageNext=function(e){if(P)if(X.currentSpreadIndex<X.spreadCount-1)X.currentSpreadIndex++,Z(e);else{var t=V.ne\
+xtItem(P,!0);if(t){var n=new l(t,e);n.setFirstPage(),H.openPage(n)}}};var ee=function(e){e.preventDefault(),e.stopPropagation();var n=e.currentTarget;if("show-button"===n.getAttribute("data-toadreader\
+-wide-table")){var i=t(n.parentElement),r=t("body"),o=parseFloat(M[0].style.width),a=parseFloat(M[0].style.height),s=parseFloat(M[0].style.left),l=X.columnCount,c=t("<div class='toadreader-close-table\
+'>×</div>");c.click(function(){t(M.find('.toadreader-table-backdrop, [data-toadreader-wide-table="show-table"]')).remove(),r.removeClass("toadreader-viewing-wide-table"),t(".toadreader-close-table").r\
+emove()}),r.after(c);var u=t("<div>",{class:"toadreader-table-backdrop"});u.css("width",o*l+X.columnGap*(l-1)),i.append(u);var d=parseFloat(n.getAttribute("data-toadreader-wide-table-width")),f=t(n.cl\
+oneNode(!0));f.attr("data-toadreader-wide-table","show-table"),f.css("width",d),i.append(f);var h=f.height();if((o+40)/d<a/h){var p=(o+X.columnGap-20)/d,g=10-s,m=(a-h)/2;f.css("transform-origin","left\
+")}else{var p=a/h,g=-s+(o+X.columnGap-d)/2,m=0;f.css("transform-origin","top")}f.css("transform","translate("+g+"px, "+m+"px) scale("+p+")"),r.addClass("toadreader-viewing-wide-table")}}
 ;this.getPaginationInfo=function(){var e=new a(V,!1);if(!P)return e;for(var t=I(),n=0,i=t.length;n<i;n++)e.addOpenPage(t[n],X.columnCount,P.idref,P.index);return e},this.bookmarkCurrentPage=function()\
 {if(P)return H.getFirstVisibleCfi()},this.getLoadedSpineItems=function(){return[P]},this.getElementByCfi=function(e,t,n,i,r){return e!=P.idref?void console.warn("spine item is not loaded"):A.getElemen\
 tByCfi(t,n,i,r)},this.getElementById=function(e,t){return e!=P.idref?void console.error("spine item is not loaded"):A.getElementById(t)},this.getElement=function(e,t){return e!=P.idref?void console.wa\
@@ -2356,45 +2356,45 @@ M.getRangeCfiFromDomRange(e)},this.getVisibleCfiFromPoint=function(e,t,n,i){if(M
 oints(e,t,n,i,r)},this.getCfiForElement=function(e){if(M)return M.getCfiForElement(e)},this.biblemesh_getColumnCount=function(){if(M&&M.biblemesh_getColumnCount)return M.biblemesh_getColumnCount()},th\
 is.biblemesh_updatePagination=function(){if(M&&M.biblemesh_updatePagination)return M.biblemesh_updatePagination()}};return _.VIEW_TYPE_COLUMNIZED=1,_.VIEW_TYPE_FIXED=2,_.VIEW_TYPE_SCROLLED_DOC=3,_.VIE\
 W_TYPE_SCROLLED_CONTINUOUS=4,_}),define("text",{load:function(e){throw new Error("Dynamic load not allowed: "+e)}}),define("text!version.json",[],function(){return'{"readiumJsViewer":{"sha":"73f699857\
-0b5c7148c90e7e77234a7c328c65ce3","clean":true,"version":"0.24.0","chromeVersion":"2.24.0","tag":"1.0.8-204-g73f6998","branch":"for-version-2","release":false},"readiumJs":{"sha":"de98e47a63ff1f85a60a6\
-14c857d7c00be509726","clean":true,"version":"0.24.0","tag":"1.0.8-80-gde98e47","branch":"for-version-2","release":false},"readiumSharedJs":{"sha":"71c48b9f7e49cfb595616691266b4a5893c905e9","clean":tru\
-e,"version":"0.24.0","tag":"1.0.8-73-g71c48b9","branch":"for-version-2","release":false},"readiumCfiJs":{"sha":"0a2a6d2d0e4f8cdf53e6c1c6f72171ae33c97ab4","clean":true,"version":"0.24.0","tag":"1.0.8-2\
-1-g0a2a6d2","branch":"for-server","release":false}}'}),define("readium_js/epub-fetch/markup_parser",[],function(){return function(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(),"\
-text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}}),define("readium_js/epub-fetch/discover_content_type",["jquery","URIjs"],function(e,t){var n=void 0,i=fu\
-nction(){var n=this;i.suffixContentTypeMap={css:"text/css",epub:"application/epub+zip",gif:"image/gif",html:"text/html",jpg:"image/jpeg",jpeg:"image/jpeg",ncx:"application/x-dtbncx+xml",opf:"applicati\
-on/oebps-package+xml",png:"image/png",svg:"image/svg+xml",xhtml:"application/xhtml+xml"},this.identifyContentTypeFromFileName=function(e){var n=t(e).suffix(),r="application/octet-stream";return void 0\
-!==i.suffixContentTypeMap[n]&&(r=i.suffixContentTypeMap[n]),r},this.identifyContentType=function(t){var i=e.ajax({type:"HEAD",url:t,async:!1}).getResponseHeader("Content-Type");return null===i&&(i=n.i\
-dentifyContentTypeFromFileName(t),console.log("guessed contentType ["+i+"] from URI ["+t+"]. Configuring the web server to provide the content type is recommended.")),i}};return n||(n=new i),n}),defin\
-e("readium_shared_js/biblemesh_helpers",["readium_shared_js/helpers"],function(e){var t={},n=0;return t.getURLQueryParams=function(){var t=e.getURLQueryParams();if(window.location.pathname.match(/^\\/b\
-ook\\/([0-9]+)\$/)){var n=parseInt(window.location.pathname.replace(/^\\/book\\/([0-9]+)\$/,"\$1"),10);t.epub="/epub_content/book_"+n}return t},t.buildUrlQueryParameters=function(e,n,i){e||(e=window.locatio\
-n?window.location.protocol+"//"+window.location.hostname+(window.location.port?":"+window.location.port:""):"index.html");var r=/^.*?epub_content\\/book_([0-9]+)\$/;(n.epub||"").match(r)&&(e=n.epub.repl\
-ace(r,"/book/\$1"));var o="";for(var a in n)if(n.hasOwnProperty(a)&&n[a]&&"epub"!=a){var s=n[a].trim();s&&(console.debug("URL QUERY PARAM OVERRIDE: "+a+" = "+s),o+=a+"="+encodeURIComponent(s),o+="&")}v\
-ar l=i?{}:t.getURLQueryParams();for(var a in l)if(l.hasOwnProperty(a)&&l[a]&&!n[a]){var s=l[a].trim();s&&(console.debug("URL QUERY PARAM PRESERVED: "+a+" = "+s),o+=a+"="+encodeURIComponent(s),o+="&")}\
-return e+"?"+o},t.setupGoogleAnalytics=function(e){!function(e,t,n,i,r,o,a){e.GoogleAnalyticsObject=r,e[r]=e[r]||function(){(e[r].q=e[r].q||[]).push(arguments)},e[r].l=1*new Date,o=t.createElement(n),\
-a=t.getElementsByTagName(n)[0],o.async=1,o.src="https://www.google-analytics.com/analytics.js",a.parentNode.insertBefore(o,a)}(window,document,"script",0,"ga"),ga("create",e,"auto")},t.setServerTimeOf\
-fset=function(e){n=e-(new Date).getTime(),console.log("Set serverTimeOffset to "+n)},t.getUTCTimeStamp=function(){return(new Date).getTime()+n},t.getCurrentSpotInfo=function(){var e=t.getURLQueryParam\
-s(),n={};try{n=JSON.parse(e.settings)}catch(e){}return{ebookURL:e.epub,ebookSpot:e.goto,settings:n,bookId:parseInt((e.epub||"").replace(/^.*?book_([0-9]+).*\$/,"\$1"),10)||0}},t}),define("biblemesh_Sett\
-ings",["readium_shared_js/biblemesh_helpers","biblemesh_AppComm"],function(e,t){var n={},i={},r=/^(reader|needsMigration|replaceByDefault|404:.*|alertedToAndroidApp)\$/,o=e.getUTCTimeStamp(),a=!1,s=fun\
-ction(){return location.origin+"/users/"+n.id+"/"},l=void 0,c=function(){if(l)return!0;if(void 0===l){if(l=!1,localStorage)try{localStorage.setItem("_isLocalStorageEnabled","?"),localStorage.removeIte\
-m("_isLocalStorageEnabled"),l=!0}catch(e){}return l}return!1},u=function(){c()&&(localStorage.removeItem("userDataPatch"),console.log("Local storage patch emptied."))},d=function(){try{var e=\$("#epub-\
-reader-frame iframe")[0],t=(e.contentWindow||e.contentDocument).document;\$(t.documentElement)[a?"addClass":"removeClass"]("highlightssaving")}catch(e){}};return Settings={put:function(e,t,n){if(c()){v\
-ar t=JSON.stringify(t);localStorage[e]=t}e.match(r)||console.error("Put method not supported to the server."),n&&n()},patch:function(n,i,r){var l=function(){var f=e.getUTCTimeStamp(),h={books:{}},p=!1\
-;for(var g in n.books){var m=n.books[g];if(m&&(h.books[g]={highlights:[]},(r||m.updated_at>o)&&(h.books[g].latest_location=m.latest_location,h.books[g].updated_at=m.updated_at,p=!0),m.highlights))for(\
-var v in m.highlights)(r||m.highlights[v].updated_at>o)&&(h.books[g].highlights.push(m.highlights[v]),p=!0)}if(p){if(c()&&(localStorage.userDataPatch=JSON.stringify(h),console.log("Local storage patch\
-: ",localStorage.userDataPatch)),a)return;console.log("Time-filtered userData object for patch request(s):",h);for(var g in h.books){var m=h.books[g];if(m.latest_location||m.highlights.length>0){var y\
-=s()+"books/"+g+".json";a=!0,d();var b={url:y,method:"PATCH",data:m,success:function(){console.log("Patch successful."),a=!1,d(),o=f,r?r():l()},error:function(e,s,c){if(403==e.status)return void t.pos\
-tMsg("reportError",{errorCode:"permission denied",info:{request:"patch",url:y}});a=!1,d(),412==e.status?(console.log("userData is stale."),o=f,r?r():Settings.refreshUserData(g,n,i)):(console.error("Pa\
-tch error when AJAX fetching "+y),console.error(s),console.error(c),console.error("Will rerun in 10 seconds."),setTimeout(function(){l()},1e4))}};console.log("Patch:",b),\$.ajax(b)}}}else console.log("\
-Nothing to patch."),u()};l()},get:function(e,n){if(e.match(r)){if(!c())return void(n&&n(null));var i=localStorage[e];n(i?JSON.parse(i):null)}else{var o=s()+e+".json";\$.ajax({url:o,success:function(e){\
-n(e)},error:function(e,i,r){if(403==e.status)return void t.postMsg("reportError",{errorCode:"permission denied",info:{request:"data get",url:o}});console.error("Error when AJAX fetching "+o),console.e\
-rror(i),console.error(r),n({})}})}},getMultiple:function(e,n){var o={},a=function(){Object.keys(o).length>=e.length&&n(o)};e.forEach(function(e,n){if(e.match(r))c()?o[e]=JSON.parse(localStorage[e]||nu\
-ll):o["_err_"+e]=!0,a();else{var l=s()+e+".json";if(i[l])return o[e]=i[l],void a();\$.ajax({url:l,success:function(t){o[e]=t,a(),i[l]=t},error:function(n,i,r){if(403==n.status)return void t.postMsg("re\
-portError",{errorCode:"permission denied",info:{request:"data getMultiple",url:l}});console.error("Error when AJAX fetching "+l),console.error(i),console.error(r),o["_err_"+e]=!0,a()}})}})},clearCache\
-:function(){i={}},refreshUserData:function(e,t,n){var i="books/"+e;Settings.get(i,function(i){if(!i)throw"Unexpected blank response on refreshUserData";t.books[e]=i,console.log("userData has been refr\
-eshed."),n&&n()})},patchFromLocalStorage:function(e){if(c()&&localStorage.userDataPatch)try{return void Settings.patch(JSON.parse(localStorage.userDataPatch),null,function(){u(),e&&e()})}catch(e){}e&&\
-e()},initialize:function(i,r){\$.ajax({url:location.origin+"/usersetup.json",success:function(t){n=t.userInfo,t.gaCode&&e.setupGoogleAnalytics(t.gaCode),e.setServerTimeOffset(t.currentServerTime),i()},\
-error:function(e,n,i){if(403==e.status)return void t.postMsg("reportError",{errorCode:"permission denied",info:{request:"initialize",url:location.origin+"/usersetup.json"}});console.error("Error setti\
-ng up the user."),r()}})},getUserAttr:function(e){return n[e]}},Settings}),define("text!readium_js_viewer_i18n/_locales/de/messages.json",[],function(){
+0b5c7148c90e7e77234a7c328c65ce3","clean":false,"version":"0.24.0","chromeVersion":"2.24.0","tag":"1.0.8-204-g73f6998","branch":"for-version-2","release":false},"readiumJs":{"sha":"de98e47a63ff1f85a60a\
+614c857d7c00be509726","clean":false,"version":"0.24.0","tag":"1.0.8-80-gde98e47","branch":"for-version-2","release":false},"readiumSharedJs":{"sha":"71c48b9f7e49cfb595616691266b4a5893c905e9","clean":f\
+alse,"version":"0.24.0","tag":"1.0.8-73-g71c48b9","branch":"for-version-2","release":false},"readiumCfiJs":{"sha":"0a2a6d2d0e4f8cdf53e6c1c6f72171ae33c97ab4","clean":true,"version":"0.24.0","tag":"1.0.\
+8-21-g0a2a6d2","branch":"for-server","release":false}}'}),define("readium_js/epub-fetch/markup_parser",[],function(){return function(){var e=this;this.parseXml=function(t){return e.parseMarkup(t.trim(\
+),"text/xml")},this.parseMarkup=function(e,t){return(new window.DOMParser).parseFromString(e,t)}}}),define("readium_js/epub-fetch/discover_content_type",["jquery","URIjs"],function(e,t){var n=void 0,i\
+=function(){var n=this;i.suffixContentTypeMap={css:"text/css",epub:"application/epub+zip",gif:"image/gif",html:"text/html",jpg:"image/jpeg",jpeg:"image/jpeg",ncx:"application/x-dtbncx+xml",opf:"applic\
+ation/oebps-package+xml",png:"image/png",svg:"image/svg+xml",xhtml:"application/xhtml+xml"},this.identifyContentTypeFromFileName=function(e){var n=t(e).suffix(),r="application/octet-stream";return voi\
+d 0!==i.suffixContentTypeMap[n]&&(r=i.suffixContentTypeMap[n]),r},this.identifyContentType=function(t){var i=e.ajax({type:"HEAD",url:t,async:!1}).getResponseHeader("Content-Type");return null===i&&(i=\
+n.identifyContentTypeFromFileName(t),console.log("guessed contentType ["+i+"] from URI ["+t+"]. Configuring the web server to provide the content type is recommended.")),i}};return n||(n=new i),n}),de\
+fine("readium_shared_js/biblemesh_helpers",["readium_shared_js/helpers"],function(e){var t={},n=0;return t.getURLQueryParams=function(){var t=e.getURLQueryParams();if(window.location.pathname.match(/^\
+\\/book\\/([0-9]+)\$/)){var n=parseInt(window.location.pathname.replace(/^\\/book\\/([0-9]+)\$/,"\$1"),10);t.epub="/epub_content/book_"+n}return t},t.buildUrlQueryParameters=function(e,n,i){e||(e=window.loca\
+tion?window.location.protocol+"//"+window.location.hostname+(window.location.port?":"+window.location.port:""):"index.html");var r=/^.*?epub_content\\/book_([0-9]+)\$/;(n.epub||"").match(r)&&(e=n.epub.r\
+eplace(r,"/book/\$1"));var o="";for(var a in n)if(n.hasOwnProperty(a)&&n[a]&&"epub"!=a){var s=n[a].trim();s&&(console.debug("URL QUERY PARAM OVERRIDE: "+a+" = "+s),o+=a+"="+encodeURIComponent(s),o+="&"\
+)}var l=i?{}:t.getURLQueryParams();for(var a in l)if(l.hasOwnProperty(a)&&l[a]&&!n[a]){var s=l[a].trim();s&&(console.debug("URL QUERY PARAM PRESERVED: "+a+" = "+s),o+=a+"="+encodeURIComponent(s),o+="&\
+")}return e+"?"+o},t.setupGoogleAnalytics=function(e){!function(e,t,n,i,r,o,a){e.GoogleAnalyticsObject=r,e[r]=e[r]||function(){(e[r].q=e[r].q||[]).push(arguments)},e[r].l=1*new Date,o=t.createElement(\
+n),a=t.getElementsByTagName(n)[0],o.async=1,o.src="https://www.google-analytics.com/analytics.js",a.parentNode.insertBefore(o,a)}(window,document,"script",0,"ga"),ga("create",e,"auto")},t.setServerTim\
+eOffset=function(e){n=e-(new Date).getTime(),console.log("Set serverTimeOffset to "+n)},t.getUTCTimeStamp=function(){return(new Date).getTime()+n},t.getCurrentSpotInfo=function(){var e=t.getURLQueryPa\
+rams(),n={};try{n=JSON.parse(e.settings)}catch(e){}return{ebookURL:e.epub,ebookSpot:e.goto,settings:n,bookId:parseInt((e.epub||"").replace(/^.*?book_([0-9]+).*\$/,"\$1"),10)||0}},t}),define("biblemesh_S\
+ettings",["readium_shared_js/biblemesh_helpers","biblemesh_AppComm"],function(e,t){var n={},i={},r=/^(reader|needsMigration|replaceByDefault|404:.*|alertedToAndroidApp)\$/,o=e.getUTCTimeStamp(),a=!1,s=\
+function(){return location.origin+"/users/"+n.id+"/"},l=void 0,c=function(){if(l)return!0;if(void 0===l){if(l=!1,localStorage)try{localStorage.setItem("_isLocalStorageEnabled","?"),localStorage.remove\
+Item("_isLocalStorageEnabled"),l=!0}catch(e){}return l}return!1},u=function(){c()&&(localStorage.removeItem("userDataPatch"),console.log("Local storage patch emptied."))},d=function(){try{var e=\$("#ep\
+ub-reader-frame iframe")[0],t=(e.contentWindow||e.contentDocument).document;\$(t.documentElement)[a?"addClass":"removeClass"]("highlightssaving")}catch(e){}};return Settings={put:function(e,t,n){if(c()\
+){var t=JSON.stringify(t);localStorage[e]=t}e.match(r)||console.error("Put method not supported to the server."),n&&n()},patch:function(n,i,r){var l=function(){var f=e.getUTCTimeStamp(),h={books:{}},p\
+=!1;for(var g in n.books){var m=n.books[g];if(m&&(h.books[g]={highlights:[]},(r||m.updated_at>o)&&(h.books[g].latest_location=m.latest_location,h.books[g].updated_at=m.updated_at,p=!0),m.highlights))f\
+or(var v in m.highlights)(r||m.highlights[v].updated_at>o)&&(h.books[g].highlights.push(m.highlights[v]),p=!0)}if(p){if(c()&&(localStorage.userDataPatch=JSON.stringify(h),console.log("Local storage pa\
+tch: ",localStorage.userDataPatch)),a)return;console.log("Time-filtered userData object for patch request(s):",h);for(var g in h.books){var m=h.books[g];if(m.latest_location||m.highlights.length>0){va\
+r y=s()+"books/"+g+".json";a=!0,d();var b={url:y,method:"PATCH",data:m,success:function(){console.log("Patch successful."),a=!1,d(),o=f,r?r():l()},error:function(e,s,c){if(403==e.status)return void t.\
+postMsg("reportError",{errorCode:"permission denied",info:{request:"patch",url:y}});a=!1,d(),412==e.status?(console.log("userData is stale."),o=f,r?r():Settings.refreshUserData(g,n,i)):(console.error(\
+"Patch error when AJAX fetching "+y),console.error(s),console.error(c),console.error("Will rerun in 10 seconds."),setTimeout(function(){l()},1e4))}};console.log("Patch:",b),\$.ajax(b)}}}else console.lo\
+g("Nothing to patch."),u()};l()},get:function(e,n){if(e.match(r)){if(!c())return void(n&&n(null));var i=localStorage[e];n(i?JSON.parse(i):null)}else{var o=s()+e+".json";\$.ajax({url:o,success:function(\
+e){n(e)},error:function(e,i,r){if(403==e.status)return void t.postMsg("reportError",{errorCode:"permission denied",info:{request:"data get",url:o}});console.error("Error when AJAX fetching "+o),consol\
+e.error(i),console.error(r),n({})}})}},getMultiple:function(e,n){var o={},a=function(){Object.keys(o).length>=e.length&&n(o)};e.forEach(function(e,n){if(e.match(r))c()?o[e]=JSON.parse(localStorage[e]|\
+|null):o["_err_"+e]=!0,a();else{var l=s()+e+".json";if(i[l])return o[e]=i[l],void a();\$.ajax({url:l,success:function(t){o[e]=t,a(),i[l]=t},error:function(n,i,r){if(403==n.status)return void t.postMsg(\
+"reportError",{errorCode:"permission denied",info:{request:"data getMultiple",url:l}});console.error("Error when AJAX fetching "+l),console.error(i),console.error(r),o["_err_"+e]=!0,a()}})}})},clearCa\
+che:function(){i={}},refreshUserData:function(e,t,n){var i="books/"+e;Settings.get(i,function(i){if(!i)throw"Unexpected blank response on refreshUserData";t.books[e]=i,console.log("userData has been r\
+efreshed."),n&&n()})},patchFromLocalStorage:function(e){if(c()&&localStorage.userDataPatch)try{return void Settings.patch(JSON.parse(localStorage.userDataPatch),null,function(){u(),e&&e()})}catch(e){}\
+e&&e()},initialize:function(i,r){\$.ajax({url:location.origin+"/usersetup.json",success:function(t){n=t.userInfo,t.gaCode&&e.setupGoogleAnalytics(t.gaCode),e.setServerTimeOffset(t.currentServerTime),i(\
+)},error:function(e,n,i){if(403==e.status)return void t.postMsg("reportError",{errorCode:"permission denied",info:{request:"initialize",url:location.origin+"/usersetup.json"}});console.error("Error se\
+tting up the user."),r()}})},getUserAttr:function(e){return n[e]}},Settings}),define("text!readium_js_viewer_i18n/_locales/de/messages.json",[],function(){
 return'{ "about": {\\n    "message": "Über Readium"\\n    },\\n    "preview": {\\n        "message": "Vorschau"\\n    },\\n    "list_view": {\\n        "message": "Listenansicht"\\n    },\\n    "thumbnail_view\
 ": {\\n        "message": "Kachelansicht"\\n    },\\n    "view_library": {\\n        "message": "Bibliothek"\\n    },\\n    "highlight_selection": {\\n        "message": "Ausgewählten Text hervorheben"\\n    \
 },\\n    "toc": {\\n        "message": "Inhaltsverzeichnis"\\n    },\\n    "settings": {\\n        "message": "Einstellungen"\\n    },\\n    "enter_fullscreen": {\\n        "message": "Vollbildmodus"\\n    },\\\
@@ -3662,78 +3662,78 @@ ef!=t||e._delete||n.push(e)}),n.sort(function(e,t){return z(e.cfi,t.cfi)}),n.for
 ch(e){}}),M()}},j=function(e){if(void 0==e.spineItem)try{U(),g.reader.plugins.highlights.redrawAnnotations(),M()}catch(e){}else B()},H=function(e){return e.replace(/\\[(.*?)\\]/,"").split(/[\\/,:]/).map(\
 function(e){return parseInt(e)}).filter(Boolean)},z=function(e,t){e=H(e),t=H(t);for(var n=0;n<e.length;n++){if(e[n]>t[n])return 1;if(e[n]<t[n])return-1}return e.length<t.length?-1:0},V=function(e){var\
  t=n("#epub-reader-frame iframe")[0],i=t.contentWindow||t,r=i.getSelection(),o=r.toString().replace(/\\n/g," ").trim(),a=g.reader.plugins.highlights.getCurrentSelectionCfi();if(!r.isCollapsed&&""!=o&&a\
-){var s=(D(a),r.getRangeAt(0)),l=s.getBoundingClientRect(),c=l.top,u=l.top+l.height,d=n(i).height(),f=c-30>0||u+30>d,p=f?c-30>d/2:u+30>d/2;h.postMsg("textSelected",{text:o,spineIdRef:a.idref,cfi:a.cfi\
-,copyTooltipInLowerHalf:p}),E=!0}else h.postMsg("textUnselected"),E=!1},W=function(){var e=n("#app-container");e.empty(),e.append(o()),O(!0)},\$=function(t){S=t.epub,I=u.getEbookUrlFilePath(S),m=!!t.wi\
-dget,m&&h.postMsg("loading",{}),W(),g&&g.reader&&(e.logEvent("__ALL__","OFF","EpubReader.js"),g.reader.off()),window.ReadiumSDK&&(e.logEvent("PLUGINS_LOADED","OFF","EpubReader.js"),ReadiumSDK.off(Read\
-iumSDK.Events.PLUGINS_LOADED)),setTimeout(function(){G()},0)},q=function(e){e.syntheticSpread=e.columns,e.fontSize=e.textSize},G=function(){w=!!window.isWebPlatform,x=!!window.doReportToolSpots,_=wind\
-ow.initialToolCfiCountsObjFromWebView||_,delete window.initialToolCfiCountsObjFromWebView,y=window.initialHighlightsObjFromWebView||y,delete window.initialHighlightsObjFromWebView;var o=d.getCurrentSp\
-otInfo();try{ga("send","pageview",window.location.pathname)}catch(e){}var u={el:"#epub-reader-frame",annotationCSSContent:t.annotationCSSContent,mathJaxUrl:t.mathJaxUrl},T={jsLibRoot:t.jsLibRoot,openB\
-ookOptions:{}};t.useSimpleLoader&&(T.useSimpleLoader=!0);var S={},I=o.ebookSpot;if(I){console.log("Goto override? "+I);try{var R=JSON.parse(I),N=void 0;R.idref?N=R.spineItemPageIndex?{idref:R.idref,sp\
-ineItemPageIndex:R.spineItemPageIndex}:R.elementCfi?{idref:R.idref,elementCfi:R.elementCfi}:{idref:R.idref}:R.contentRefUrl&&R.sourceFileHref&&(N={contentRefUrl:R.contentRefUrl,sourceFileHref:R.source\
-FileHref}),N&&(m&&(m=N),S=N,console.debug("Open request (goto): "+JSON.stringify(S)))}catch(e){console.error(e)}}S.prePageTurnFunc=L,g=new c(T,u),window.READIUM=g,ReadiumSDK.on(ReadiumSDK.Events.PLUGI\
-NS_LOADED,function(){e.logEvent("PLUGINS_LOADED","ON","EpubReader.js"),console.log("PLUGINS INITIALIZED!"),g.reader.plugins.highlights?(n(".icon-annotations").css("display","none"),g.reader.plugins.hi\
-ghlights.initialize({annotationCSSContent:u.annotationCSSContent}),g.reader.plugins.highlights.on("annotationTouched",function(e,t,n,i){b=!0}),g.reader.plugins.highlights.on("annotationClicked",functi\
-on(e,t,i,r){console.debug("ANNOTATION CLICK: "+r);var o=n("#epub-reader-frame iframe")[0],a=o.contentWindow||o,s=a.getSelection(),l=new f(t,i),c=g.reader.getDomRangeFromRangeCfi(l);s.removeAllRanges()\
-,s.addRange(c)})):n(".icon-annotations").css("display","none")});var P,A,D,F,M,j,H,z,W,\$,G,K,Q,X,Y=function(){g.reader.pauseMediaOverlay(),J(),h.postMsg("showPageListView")},Z=function(e){if(!Q){h.pos\
-tMsg("reportPageTurnStart");var t=n("#epub-reader-frame iframe")[0],i=(t.contentWindow||t.contentDocument).document;P=n(i.documentElement),j=parseInt(P.css("left"),10),ie(e),t.contentWindow.focus()}};\
-g.reader.addIFrameEventListener("keydown",function(e){if(27===e.keyCode||27===e.which){e.preventDefault(),e.stopPropagation();var t=n("#epub-reader-frame iframe")[0];return void(n("body.toadreader-vie\
-wing-wide-table").length>0?n(".toadreader-close-table").click():[t,t.contentWindow].includes(document.activeElement)?Y():t.contentWindow.focus())}if(!n(e.target).is("textarea, input")&&0==n(e.target).\
-closest('[contenteditable="true"]').length&&0==n("body.toadreader-viewing-wide-table").length&&(-1!=[37,39].indexOf(e.keyCode)||-1!=[37,39].indexOf(e.which)))return e.preventDefault(),e.stopPropagatio\
-n(),37!==e.keyCode&&37!==e.which||Z("Left"),void(39!==e.keyCode&&39!==e.which||Z("Right"))});var ee=function(e,t,n,i){var r=Math.min(t/2,100);Q=!0,P.css("transition","left "+t/1e3+"s "+(i||"ease-in-ou\
-t")),requestAnimationFrame(e),setTimeout(function(){P.css("transition",""),n&&n(),Q=!1},t+r)},te=function(e,t){F=M=!1,t&&(t.target.touchIsSwipe=!1),ee(function(){P.css("left",j+"px")},e||200,function(\
-){h.postMsg("cancelPageTurn")})},ne=function(e){var t=g.reader.spine(),n=g.reader.getPaginationInfo(),i="Left"===e;if(t.isLeftToRight()&&(i=!i),i){if(0==n.openPages.length)return!1;var r=n.openPages[n\
-.openPages.length-1];if(r.spineItemPageIndex<r.spineItemPageCount-1)return!0;var o=t.getItemById(r.idref),a=t.nextItem(o);return!!a&&a.idref}if(0==n.openPages.length)return!1;var s=n.openPages[0];if(s\
-.spineItemPageIndex>0)return!0;var o=t.getItemById(s.idref),l=t.prevItem(o);return!!l&&l.idref};g.reader.addIFrameEventListener("touchstart",function(e){if(!w){var t=n("#epub-reader-frame iframe")[0],\
-i=t.contentWindow||t,r=i.getSelection();if(!Q){if(1!==e.touches.length||!r.isCollapsed)return void te(null,e);h.postMsg("requestPauseProcessing");var t=n("#epub-reader-frame iframe")[0],o=(t.contentWi\
-ndow||t.contentDocument).document;P=n(o.documentElement),X=E,H=z=A=e.touches[0].pageX,D=e.touches[0].pageY,F=!0,M=e.target.touchIsSwipe=!1,j=parseInt(P.css("left"),10),\$=G=Date.now()}}},"document"),w|\
-|g.reader.addIFrameEventListener("selectionchange",function(e){te(null,e)},"document"),g.reader.addIFrameEventListener("touchmove",function(e){w||Q||1===e.touches.length&&(e.target&&n(e.target).closes\
-t("[ontouchstart]")[0]||n("body.toadreader-viewing-wide-table").length>0||(F&&(F=Math.sqrt(2*(A-e.touches[0].pageX)+2*(D-e.touches[0].pageY))<4,(M=e.target.touchIsSwipe=!F)&&h.postMsg("startPageTurn")\
-),M&&(W=z,K=G,z=e.touches[0].pageX,G=Date.now(),P.css("left",j+(z-H)+"px"))))},"document");var ie=function(e,t){h.postMsg("startPageTurn");var n=ne(e);if(n)re(n,e);else{h.postMsg("flipToNewSpine");var\
- i="Left"===e?80:-80;ee(function(){P.css("left",j+i+"px")},50,function(){ee(function(){P.css("left",j-parseInt(i/2,10)+"px")},75,function(){te(50,t)})})}},re=function(e,t,i){var r=n("#epub-reader-fram\
-e iframe").width();ee(function(){P.css("left",j+r*("Left"===t?1:-1)+"px")},i||250,function(){"string"==typeof e?h.postMsg("flipToNewSpine",{newSpineIdRef:e}):g.reader["openPage"+t]()},"linear")};n("#e\
-pub-reader-container")[0].addEventListener("touchend",function(e){if(!w&&0===(e.touches||[]).length){var t=window.innerWidth,n=e.changedTouches[0].pageX,i=(t-1e3)/2;n<i?(e.preventDefault(),e.stopPropa\
-gation(),Z("Left")):n>t-i&&(e.preventDefault(),e.stopPropagation(),Z("Right"))}}),g.reader.addIFrameEventListener("touchend",function(e){if(!w&&!Q&&0===e.touches.length){if(F){X&&(h.postMsg("textUnsel\
-ected"),E=!1);var t=n("#epub-reader-frame iframe")[0],i=(t.contentWindow||t.contentDocument).document,o=i.body,a=!1,s=new CustomEvent("media_overlay_touch_tap",{detail:{pageX:e.pageX,pageY:e.pageY,tar\
-get:e.target,indicateMediaChange:function(){a=!0}}});if(o.dispatchEvent(s),!(X||b||!(Date.now()-\$<500)||e.target&&n(e.target).closest("a[href], [onclick], [onmousedown], [ontouchstart]")[0]||a||0!==n(\
-"body.toadreader-viewing-wide-table").length)){e.preventDefault(),e.stopPropagation();var l=n(e.target).closest('[data-toadreader-wide-table="show-button"]')[0];if(l)l.click();else{var c=window.innerW\
-idth,u=Math.max((c-1e3)/2,0),d="";(A+u)/c<.3&&(d="Left"),(A+u)/c>.7&&(d="Right"),d?r.willSpin||r.isSpinning||ie(d,e):Y()}}}else if(M&&!r.willSpin&&!r.isSpinning){var f=H<z?"Left":"Right",p=W<z?"Left":\
-"Right",g=Math.abs(z-W)/(G-K),m=n("#epub-reader-frame iframe").width(),v=Math.abs(parseInt(P.css("left"),10)-j),y=ne(f);if((f===p||g<.2)&&900*g+v>m/2&&y){var _=(m-v)/Math.max(g,.8);if(re(y,f,_),C)h.po\
-stMsg("textUnselected"),E=X;else{var t=n("#epub-reader-frame iframe")[0],x=t.contentWindow||t,T=x.getSelection();T.removeAllRanges()}}else te(null,e)}b=F=M=e.target.touchIsSwipe=!1}},"document");var o\
-e=n("#readium-page-btns"),ae=function(){n("#left-page-btn").unbind("click"),n("#right-page-btn").unbind("click"),oe.empty()};ae(),w&&0===n("#left-page-btn").length&&!m&&(ae(),oe.append(a()),n("#left-p\
-age-btn").on("click",function(){Z("Left")}),n("#right-page-btn").on("click",function(){Z("Right")}),n("#view-toc").on("click",function(){Y()})),g.reader.addIFrameEventListener("selectionchange",V,"doc\
-ument");var se={fontSize:100,syntheticSpread:"auto",scroll:"auto",theme:"author-theme",columnGap:60,columnMaxWidth:1e3,columnMinWidth:300,enableWideTableBehavior:!!d.getURLQueryParams().enableWideTabl\
-eBehavior};if(m){var le=d.getURLQueryParams();se.scroll="scroll-doc",se.theme=le.theme||"author-theme",se.columnMaxWidth=99999,se.columnMinWidth=100,se.syntheticSpread="single",se.fontSize=parseInt(le\
-.textsize,10)||100,ae(),n("#epub-reader-container").css("top",0).css("bottom",0)}q(o.settings);var ce=Object.assign(se,o.settings);g.reader.updateSettings(ce),g.reader.on(ReadiumSDK.Events.CONTENT_DOC\
-UMENT_LOAD_START,function(t,i){e.logEvent("CONTENT_DOCUMENT_LOAD_START","ON","EpubReader.js [ "+i.href+" ]"),n("#epub-reader-frame").css("opacity",".01"),O(!0)}),s.init(g),l.init(g),k(S);var ue=functi\
-on(e){var t=n("#epub-reader-frame iframe")[0],i=t.contentWindow||t,r=i.getSelection(),o=E;if(!e||!e.spineIdRef||!e.cfi)return r.removeAllRanges(),void(E=!1);var a=new f(e.spineIdRef,e.cfi),s=g.reader.\
-getDomRangeFromRangeCfi(a);r.removeAllRanges(),r.addRange(s),C&&(E=o)},de=function(){ue()};n(document.body).on("touchstart",de),n(document.body).on("mousedown",de),h.subscribe("goToCfi",function(e){tr\
-y{e.toolCfiCounts&&(_=e.toolCfiCounts),g.reader.openSpineItemElementCfi(e.spineIdRef,e.lastPage||e.textNodeInfo?e:e.cfi,void 0,e.toolCfiCounts?L:void 0,function(){e.autoSelectHighlight&&e.cfi&&ue(e)})\
-}catch(e){h.postMsg("reportError",{errorCode:"invalid cfi"})}}),h.subscribe("goToHref",function(e){try{e.toolCfiCounts&&(_=e.toolCfiCounts);var t=g.reader.spine().getItemByHref(e.href),n=new i(e.href)\
-,r=n.fragment();_=e.toolCfiCounts,g.reader.openSpineItemElementId(t.idref,r,void 0,e.toolCfiCounts?L:void 0)}catch(e){h.postMsg("reportError",{errorCode:"invalid href"})}}),h.subscribe("goToPage",func\
-tion(e){if(JSON.parse(g.reader.bookmarkCurrentPage()).idref==e.spineIdRef){if((g.reader.getPaginationInfo().openPages[0]||{}).spineItemPageIndex==e.pageIndexInSpine)return;g.reader.openPageIndex(e.pag\
-eIndexInSpine)}else e.toolCfiCounts&&(_=e.toolCfiCounts),g.reader.openSpineItemPage(e.spineIdRef,e.lastPage?e:e.pageIndexInSpine,void 0,e.toolCfiCounts?L:void 0)});var fe,he=function(e){return functio\
-n(){var t=n("#epub-reader-frame iframe");if(p)if(p.idref==e.spineIdRef){v=void 0;var i=e.allottedMS||250,r=e.minimumPagesToFetch||3,o=Date.now(),a=e.startIndex||0,s=g.reader.biblemesh_getColumnCount()\
-,l=e.width*s;window.biblemesh_preventAllResizing=!0,t.css("width",l),n(document.body).css("width",l);var c=[];if(!fe||Date.now()-fe<i)for(var u=a;u<s;u++){var d=g.reader.biblemesh_getFirstVisibleCfiOn\
-SpineItemPageIndex(u);if(c.push(d),u+1-a>=r&&Date.now()-o>i)break}fe=null,h.postMsg("pagesInfo",{spineIdRef:e.spineIdRef,pageCfis:c,startIndex:a,completed:u===s,toolSpotSets:u===s?U(!0,e.width):null})\
-}else _=e.toolCfiCounts,g.reader.openSpineItemElementId(e.spineIdRef,void 0,void 0,L)}};h.subscribe("continueToGetPagesInfo",function(e){he(e)()}),h.subscribe("loadSpineAndGetPagesInfo",function(e){fe\
-=Date.now(),v=he(e)}),h.subscribe("insertTools",function(e){JSON.stringify(_)!==JSON.stringify(e.toolCfiCounts)&&(_=e.toolCfiCounts,L(),g.reader.plugins.highlights.redrawAnnotations())}),h.subscribe("\
-renderHighlights",function(e){y=e.highlights,B()}),h.subscribe("setDisplaySettings",function(e){q(e),g.reader.updateSettings(e);var t=n("#epub-reader-frame iframe")[0];(t.contentWindow||t.contentDocum\
-ent).document.documentElement.removeAttribute("data-toadreader-wide-table-last-width")}),h.subscribe("setSelectionText",ue),h.postMsg("loaded")},J=function(){var e=function(t){n("audio, video",t.conte\
-nts()).each(function(){this.pause()}),n("iframe",t.contents()).each(function(){e(n(this))})};e(n("#epub-reader-frame iframe"))},K=function(){if(g&&g.closePackageDocument(),g&&g.reader)try{g.reader.pau\
-seMediaOverlay()}catch(e){}};return{loadUI:function(e){Settings.get("reader",function(t){\$(e)})},unloadUI:K,tooltipSelector:function(){},ensureUrlIsRelativeToApp:P}}),define("readium_js_viewer/Readium\
-ViewerLite",["jquery","./EpubReader","readium_shared_js/helpers","biblemesh_AppComm"],function(e,t,n,i){"undefined"!=typeof Sentry&&Sentry.init({dsn:"https://0569beced42c4b068367c8d47cfddf36@sentry.io\
-/144504"}),window.addEventListener("error",function(e){Sentry.captureException(e)}),window.addEventListener("unhandledrejection",function(e){Sentry.captureException(e)}),window.addEventListener("unloa\
-d",function(){i.postMsg("unload")});var r={},o={};if(i.subscribe("fileAsText",function(t){var n=t.uri;o[n]&&(t.error?e.each(o[n],function(e,t){t.error({},"error",null)}):(r[n]=t.fileText,e.each(o[n],f\
-unction(e,n){n.success(t.fileText)})),delete o[n])}),e._ajax=e.ajax,e.ajax=function(t){var a=t.error,s=t.success;if(t.error=function(e,n,i){"undefined"!=typeof Sentry&&Sentry.captureMessage("Ajax call\
- returned with error. Request: "+JSON.stringify(t)),a(e,n,i)},t.success=function(e){s(e)},window.isReactNativeWebView)return r[t.url]?void t.success(r[t.url]):(o[t.url]||(o[t.url]=[]),o[t.url].push(t)\
-,void i.postMsg("getFileAsText",{uri:t.url}));var l=n.getURLQueryParams().epub.replace(/^(https?:\\/\\/[^\\/]*).*\$/i,"\$1");return 0===t.url.indexOf(l)&&(t.headers=window.epubFileFetchHeaders),e._ajax(t)}\
-,e(function(){var i=n.getURLQueryParams();t.loadUI(i),e(document.body).on("click",function(){e(document.body).removeClass("keyboard")}),e(document).on("keyup",function(t){e(document.body).addClass("ke\
-yboard")})}),e(document.body).tooltip({selector:t.tooltipSelector(),placement:function(e,t){var n="auto";return"left-page-btn"==t.id?n="right":"right-page-btn"==t.id&&(n="left"),n},container:"body"}).\
-on("show.bs.tooltip",function(n){e(t.tooltipSelector()).not(n.target).tooltip("destroy");var i=n.target;setTimeout(function(){e(i).tooltip("destroy")},8e3)}),window.File){var a=e(document.body);a.on("\
-dragover",function(e){e.stopPropagation(),e.preventDefault(),a.addClass("fileDragHover")}),a.on("dragleave",function(e){e.stopPropagation(),e.preventDefault(),a.removeClass("fileDragHover")}),a.on("dr\
-op",function(e){e.stopPropagation(),e.preventDefault(),a.removeClass("fileDragHover");var n=e.target.files||e.originalEvent.dataTransfer.files;if(n.length){var i=n[0];console.log("File drag-n-drop:"),\
-console.log(i.name),console.log(i.type),console.log(i.size),("application/epub+zip"==i.type||/\\.epub\$/.test(i.name))&&t.loadUI({epub:i})}})}}),require(["readium_cfi_js/cfi_API","readium_plugin_highlig\
-hts","readium_shared_js/globalsSetup","readium_js_viewer/ReadiumViewerLite"]);
+){var s=(D(a),r.getRangeAt(0)),l=s.getBoundingClientRect(),c=l.top,u=l.top+l.height,d=n(i).height(),f=c-30>0||u+30>d,p=f?c-30>d/2:u+30>d/2;0===n("body.toadreader-viewing-wide-table").length&&h.postMsg\
+("textSelected",{text:o,spineIdRef:a.idref,cfi:a.cfi,copyTooltipInLowerHalf:p}),E=!0}else h.postMsg("textUnselected"),E=!1},W=function(){var e=n("#app-container");e.empty(),e.append(o()),O(!0)},\$=func\
+tion(t){S=t.epub,I=u.getEbookUrlFilePath(S),m=!!t.widget,m&&h.postMsg("loading",{}),W(),g&&g.reader&&(e.logEvent("__ALL__","OFF","EpubReader.js"),g.reader.off()),window.ReadiumSDK&&(e.logEvent("PLUGIN\
+S_LOADED","OFF","EpubReader.js"),ReadiumSDK.off(ReadiumSDK.Events.PLUGINS_LOADED)),setTimeout(function(){G()},0)},q=function(e){e.syntheticSpread=e.columns,e.fontSize=e.textSize},G=function(){w=!!wind\
+ow.isWebPlatform,x=!!window.doReportToolSpots,_=window.initialToolCfiCountsObjFromWebView||_,delete window.initialToolCfiCountsObjFromWebView,y=window.initialHighlightsObjFromWebView||y,delete window.\
+initialHighlightsObjFromWebView;var o=d.getCurrentSpotInfo();try{ga("send","pageview",window.location.pathname)}catch(e){}var u={el:"#epub-reader-frame",annotationCSSContent:t.annotationCSSContent,mat\
+hJaxUrl:t.mathJaxUrl},T={jsLibRoot:t.jsLibRoot,openBookOptions:{}};t.useSimpleLoader&&(T.useSimpleLoader=!0);var S={},I=o.ebookSpot;if(I){console.log("Goto override? "+I);try{var R=JSON.parse(I),N=voi\
+d 0;R.idref?N=R.spineItemPageIndex?{idref:R.idref,spineItemPageIndex:R.spineItemPageIndex}:R.elementCfi?{idref:R.idref,elementCfi:R.elementCfi}:{idref:R.idref}:R.contentRefUrl&&R.sourceFileHref&&(N={c\
+ontentRefUrl:R.contentRefUrl,sourceFileHref:R.sourceFileHref}),N&&(m&&(m=N),S=N,console.debug("Open request (goto): "+JSON.stringify(S)))}catch(e){console.error(e)}}S.prePageTurnFunc=L,g=new c(T,u),wi\
+ndow.READIUM=g,ReadiumSDK.on(ReadiumSDK.Events.PLUGINS_LOADED,function(){e.logEvent("PLUGINS_LOADED","ON","EpubReader.js"),console.log("PLUGINS INITIALIZED!"),g.reader.plugins.highlights?(n(".icon-ann\
+otations").css("display","none"),g.reader.plugins.highlights.initialize({annotationCSSContent:u.annotationCSSContent}),g.reader.plugins.highlights.on("annotationTouched",function(e,t,n,i){b=!0}),g.rea\
+der.plugins.highlights.on("annotationClicked",function(e,t,i,r){console.debug("ANNOTATION CLICK: "+r);var o=n("#epub-reader-frame iframe")[0],a=o.contentWindow||o,s=a.getSelection(),l=new f(t,i),c=g.r\
+eader.getDomRangeFromRangeCfi(l);s.removeAllRanges(),s.addRange(c)})):n(".icon-annotations").css("display","none")});var P,A,D,F,M,j,H,z,W,\$,G,K,Q,X,Y=function(){g.reader.pauseMediaOverlay(),J(),h.pos\
+tMsg("showPageListView")},Z=function(e){if(!Q){h.postMsg("reportPageTurnStart");var t=n("#epub-reader-frame iframe")[0],i=(t.contentWindow||t.contentDocument).document;P=n(i.documentElement),j=parseIn\
+t(P.css("left"),10),ie(e),t.contentWindow.focus()}};g.reader.addIFrameEventListener("keydown",function(e){if(27===e.keyCode||27===e.which){e.preventDefault(),e.stopPropagation();var t=n("#epub-reader-\
+frame iframe")[0];return void(n("body.toadreader-viewing-wide-table").length>0?n(".toadreader-close-table").click():[t,t.contentWindow].includes(document.activeElement)?Y():t.contentWindow.focus())}if\
+(!n(e.target).is("textarea, input")&&0==n(e.target).closest('[contenteditable="true"]').length&&0==n("body.toadreader-viewing-wide-table").length&&(-1!=[37,39].indexOf(e.keyCode)||-1!=[37,39].indexOf(\
+e.which)))return e.preventDefault(),e.stopPropagation(),37!==e.keyCode&&37!==e.which||Z("Left"),void(39!==e.keyCode&&39!==e.which||Z("Right"))});var ee=function(e,t,n,i){var r=Math.min(t/2,100);Q=!0,P\
+.css("transition","left "+t/1e3+"s "+(i||"ease-in-out")),requestAnimationFrame(e),setTimeout(function(){P.css("transition",""),n&&n(),Q=!1},t+r)},te=function(e,t){F=M=!1,t&&(t.target.touchIsSwipe=!1),\
+ee(function(){P.css("left",j+"px")},e||200,function(){h.postMsg("cancelPageTurn")})},ne=function(e){var t=g.reader.spine(),n=g.reader.getPaginationInfo(),i="Left"===e;if(t.isLeftToRight()&&(i=!i),i){i\
+f(0==n.openPages.length)return!1;var r=n.openPages[n.openPages.length-1];if(r.spineItemPageIndex<r.spineItemPageCount-1)return!0;var o=t.getItemById(r.idref),a=t.nextItem(o);return!!a&&a.idref}if(0==n\
+.openPages.length)return!1;var s=n.openPages[0];if(s.spineItemPageIndex>0)return!0;var o=t.getItemById(s.idref),l=t.prevItem(o);return!!l&&l.idref};g.reader.addIFrameEventListener("touchstart",functio\
+n(e){if(!w){var t=n("#epub-reader-frame iframe")[0],i=t.contentWindow||t,r=i.getSelection();if(!Q){if(1!==e.touches.length||!r.isCollapsed)return void te(null,e);h.postMsg("requestPauseProcessing");va\
+r t=n("#epub-reader-frame iframe")[0],o=(t.contentWindow||t.contentDocument).document;P=n(o.documentElement),X=E,H=z=A=e.touches[0].pageX,D=e.touches[0].pageY,F=!0,M=e.target.touchIsSwipe=!1,j=parseIn\
+t(P.css("left"),10),\$=G=Date.now()}}},"document"),w||g.reader.addIFrameEventListener("selectionchange",function(e){te(null,e)},"document"),g.reader.addIFrameEventListener("touchmove",function(e){w||Q|\
+|1===e.touches.length&&(e.target&&n(e.target).closest("[ontouchstart]")[0]||n("body.toadreader-viewing-wide-table").length>0||(F&&(F=Math.sqrt(2*(A-e.touches[0].pageX)+2*(D-e.touches[0].pageY))<4,(M=e\
+.target.touchIsSwipe=!F)&&h.postMsg("startPageTurn")),M&&(W=z,K=G,z=e.touches[0].pageX,G=Date.now(),P.css("left",j+(z-H)+"px"))))},"document");var ie=function(e,t){h.postMsg("startPageTurn");var n=ne(\
+e);if(n)re(n,e);else{h.postMsg("flipToNewSpine");var i="Left"===e?80:-80;ee(function(){P.css("left",j+i+"px")},50,function(){ee(function(){P.css("left",j-parseInt(i/2,10)+"px")},75,function(){te(50,t)\
+})})}},re=function(e,t,i){var r=n("#epub-reader-frame iframe").width();ee(function(){P.css("left",j+r*("Left"===t?1:-1)+"px")},i||250,function(){"string"==typeof e?h.postMsg("flipToNewSpine",{newSpine\
+IdRef:e}):g.reader["openPage"+t]()},"linear")};n("#epub-reader-container")[0].addEventListener("touchend",function(e){if(!w&&0===(e.touches||[]).length){var t=window.innerWidth,n=e.changedTouches[0].p\
+ageX,i=(t-1e3)/2;n<i?(e.preventDefault(),e.stopPropagation(),Z("Left")):n>t-i&&(e.preventDefault(),e.stopPropagation(),Z("Right"))}}),g.reader.addIFrameEventListener("touchend",function(e){if(!w&&!Q&&\
+0===e.touches.length){if(F){X&&(h.postMsg("textUnselected"),E=!1);var t=n("#epub-reader-frame iframe")[0],i=(t.contentWindow||t.contentDocument).document,o=i.body,a=!1,s=new CustomEvent("media_overlay\
+_touch_tap",{detail:{pageX:e.pageX,pageY:e.pageY,target:e.target,indicateMediaChange:function(){a=!0}}});if(o.dispatchEvent(s),!(X||b||!(Date.now()-\$<500)||e.target&&n(e.target).closest("a[href], [onc\
+lick], [onmousedown], [ontouchstart]")[0]||a||0!==n("body.toadreader-viewing-wide-table").length)){e.preventDefault(),e.stopPropagation();var l=n(e.target).closest('[data-toadreader-wide-table="show-b\
+utton"]')[0];if(l)l.click();else{var c=window.innerWidth,u=Math.max((c-1e3)/2,0),d="";(A+u)/c<.3&&(d="Left"),(A+u)/c>.7&&(d="Right"),d?r.willSpin||r.isSpinning||ie(d,e):Y()}}}else if(M&&!r.willSpin&&!\
+r.isSpinning){var f=H<z?"Left":"Right",p=W<z?"Left":"Right",g=Math.abs(z-W)/(G-K),m=n("#epub-reader-frame iframe").width(),v=Math.abs(parseInt(P.css("left"),10)-j),y=ne(f);if((f===p||g<.2)&&900*g+v>m/\
+2&&y){var _=(m-v)/Math.max(g,.8);if(re(y,f,_),C)h.postMsg("textUnselected"),E=X;else{var t=n("#epub-reader-frame iframe")[0],x=t.contentWindow||t,T=x.getSelection();T.removeAllRanges()}}else te(null,e\
+)}b=F=M=e.target.touchIsSwipe=!1}},"document");var oe=n("#readium-page-btns"),ae=function(){n("#left-page-btn").unbind("click"),n("#right-page-btn").unbind("click"),oe.empty()};ae(),w&&0===n("#left-pa\
+ge-btn").length&&!m&&(ae(),oe.append(a()),n("#left-page-btn").on("click",function(){Z("Left")}),n("#right-page-btn").on("click",function(){Z("Right")}),n("#view-toc").on("click",function(){Y()})),g.re\
+ader.addIFrameEventListener("selectionchange",V,"document");var se={fontSize:100,syntheticSpread:"auto",scroll:"auto",theme:"author-theme",columnGap:60,columnMaxWidth:1e3,columnMinWidth:300,enableWide\
+TableBehavior:!!d.getURLQueryParams().enableWideTableBehavior};if(m){var le=d.getURLQueryParams();se.scroll="scroll-doc",se.theme=le.theme||"author-theme",se.columnMaxWidth=99999,se.columnMinWidth=100\
+,se.syntheticSpread="single",se.fontSize=parseInt(le.textsize,10)||100,ae(),n("#epub-reader-container").css("top",0).css("bottom",0)}q(o.settings);var ce=Object.assign(se,o.settings);g.reader.updateSe\
+ttings(ce),g.reader.on(ReadiumSDK.Events.CONTENT_DOCUMENT_LOAD_START,function(t,i){e.logEvent("CONTENT_DOCUMENT_LOAD_START","ON","EpubReader.js [ "+i.href+" ]"),n("#epub-reader-frame").css("opacity","\
+.01"),O(!0)}),s.init(g),l.init(g),k(S);var ue=function(e){var t=n("#epub-reader-frame iframe")[0],i=t.contentWindow||t,r=i.getSelection(),o=E;if(!e||!e.spineIdRef||!e.cfi)return r.removeAllRanges(),vo\
+id(E=!1);var a=new f(e.spineIdRef,e.cfi),s=g.reader.getDomRangeFromRangeCfi(a);r.removeAllRanges(),r.addRange(s),C&&(E=o)},de=function(){ue()};n(document.body).on("touchstart",de),n(document.body).on(\
+"mousedown",de),h.subscribe("goToCfi",function(e){try{e.toolCfiCounts&&(_=e.toolCfiCounts),g.reader.openSpineItemElementCfi(e.spineIdRef,e.lastPage||e.textNodeInfo?e:e.cfi,void 0,e.toolCfiCounts?L:voi\
+d 0,function(){e.autoSelectHighlight&&e.cfi&&ue(e)})}catch(e){h.postMsg("reportError",{errorCode:"invalid cfi"})}}),h.subscribe("goToHref",function(e){try{e.toolCfiCounts&&(_=e.toolCfiCounts);var t=g.\
+reader.spine().getItemByHref(e.href),n=new i(e.href),r=n.fragment();_=e.toolCfiCounts,g.reader.openSpineItemElementId(t.idref,r,void 0,e.toolCfiCounts?L:void 0)}catch(e){h.postMsg("reportError",{error\
+Code:"invalid href"})}}),h.subscribe("goToPage",function(e){if(JSON.parse(g.reader.bookmarkCurrentPage()).idref==e.spineIdRef){if((g.reader.getPaginationInfo().openPages[0]||{}).spineItemPageIndex==e.\
+pageIndexInSpine)return;g.reader.openPageIndex(e.pageIndexInSpine)}else e.toolCfiCounts&&(_=e.toolCfiCounts),g.reader.openSpineItemPage(e.spineIdRef,e.lastPage?e:e.pageIndexInSpine,void 0,e.toolCfiCou\
+nts?L:void 0)});var fe,he=function(e){return function(){var t=n("#epub-reader-frame iframe");if(p)if(p.idref==e.spineIdRef){v=void 0;var i=e.allottedMS||250,r=e.minimumPagesToFetch||3,o=Date.now(),a=e\
+.startIndex||0,s=g.reader.biblemesh_getColumnCount(),l=e.width*s;window.biblemesh_preventAllResizing=!0,t.css("width",l),n(document.body).css("width",l);var c=[];if(!fe||Date.now()-fe<i)for(var u=a;u<\
+s;u++){var d=g.reader.biblemesh_getFirstVisibleCfiOnSpineItemPageIndex(u);if(c.push(d),u+1-a>=r&&Date.now()-o>i)break}fe=null,h.postMsg("pagesInfo",{spineIdRef:e.spineIdRef,pageCfis:c,startIndex:a,com\
+pleted:u===s,toolSpotSets:u===s?U(!0,e.width):null})}else _=e.toolCfiCounts,g.reader.openSpineItemElementId(e.spineIdRef,void 0,void 0,L)}};h.subscribe("continueToGetPagesInfo",function(e){he(e)()}),h\
+.subscribe("loadSpineAndGetPagesInfo",function(e){fe=Date.now(),v=he(e)}),h.subscribe("insertTools",function(e){JSON.stringify(_)!==JSON.stringify(e.toolCfiCounts)&&(_=e.toolCfiCounts,L(),g.reader.plu\
+gins.highlights.redrawAnnotations())}),h.subscribe("renderHighlights",function(e){y=e.highlights,B()}),h.subscribe("setDisplaySettings",function(e){q(e),g.reader.updateSettings(e);var t=n("#epub-reade\
+r-frame iframe")[0];(t.contentWindow||t.contentDocument).document.documentElement.removeAttribute("data-toadreader-wide-table-last-width")}),h.subscribe("setSelectionText",ue),h.postMsg("loaded")},J=f\
+unction(){var e=function(t){n("audio, video",t.contents()).each(function(){this.pause()}),n("iframe",t.contents()).each(function(){e(n(this))})};e(n("#epub-reader-frame iframe"))},K=function(){if(g&&g\
+.closePackageDocument(),g&&g.reader)try{g.reader.pauseMediaOverlay()}catch(e){}};return{loadUI:function(e){Settings.get("reader",function(t){\$(e)})},unloadUI:K,tooltipSelector:function(){},ensureUrlIs\
+RelativeToApp:P}}),define("readium_js_viewer/ReadiumViewerLite",["jquery","./EpubReader","readium_shared_js/helpers","biblemesh_AppComm"],function(e,t,n,i){"undefined"!=typeof Sentry&&Sentry.init({dsn\
+:"https://0569beced42c4b068367c8d47cfddf36@sentry.io/144504"}),window.addEventListener("error",function(e){Sentry.captureException(e)}),window.addEventListener("unhandledrejection",function(e){Sentry.\
+captureException(e)}),window.addEventListener("unload",function(){i.postMsg("unload")});var r={},o={};if(i.subscribe("fileAsText",function(t){var n=t.uri;o[n]&&(t.error?e.each(o[n],function(e,t){t.err\
+or({},"error",null)}):(r[n]=t.fileText,e.each(o[n],function(e,n){n.success(t.fileText)})),delete o[n])}),e._ajax=e.ajax,e.ajax=function(t){var a=t.error,s=t.success;if(t.error=function(e,n,i){"undefin\
+ed"!=typeof Sentry&&Sentry.captureMessage("Ajax call returned with error. Request: "+JSON.stringify(t)),a(e,n,i)},t.success=function(e){s(e)},window.isReactNativeWebView)return r[t.url]?void t.success\
+(r[t.url]):(o[t.url]||(o[t.url]=[]),o[t.url].push(t),void i.postMsg("getFileAsText",{uri:t.url}));var l=n.getURLQueryParams().epub.replace(/^(https?:\\/\\/[^\\/]*).*\$/i,"\$1");return 0===t.url.indexOf(l)&\
+&(t.headers=window.epubFileFetchHeaders),e._ajax(t)},e(function(){var i=n.getURLQueryParams();t.loadUI(i),e(document.body).on("click",function(){e(document.body).removeClass("keyboard")}),e(document).\
+on("keyup",function(t){e(document.body).addClass("keyboard")})}),e(document.body).tooltip({selector:t.tooltipSelector(),placement:function(e,t){var n="auto";return"left-page-btn"==t.id?n="right":"righ\
+t-page-btn"==t.id&&(n="left"),n},container:"body"}).on("show.bs.tooltip",function(n){e(t.tooltipSelector()).not(n.target).tooltip("destroy");var i=n.target;setTimeout(function(){e(i).tooltip("destroy"\
+)},8e3)}),window.File){var a=e(document.body);a.on("dragover",function(e){e.stopPropagation(),e.preventDefault(),a.addClass("fileDragHover")}),a.on("dragleave",function(e){e.stopPropagation(),e.preven\
+tDefault(),a.removeClass("fileDragHover")}),a.on("drop",function(e){e.stopPropagation(),e.preventDefault(),a.removeClass("fileDragHover");var n=e.target.files||e.originalEvent.dataTransfer.files;if(n.\
+length){var i=n[0];console.log("File drag-n-drop:"),console.log(i.name),console.log(i.type),console.log(i.size),("application/epub+zip"==i.type||/\\.epub\$/.test(i.name))&&t.loadUI({epub:i})}})}}),requi\
+re(["readium_cfi_js/cfi_API","readium_plugin_highlights","readium_shared_js/globalsSetup","readium_js_viewer/ReadiumViewerLite"]);
 //# sourceMappingURL=readium-js-viewer_all_LITE.js.map
 
     </script>
