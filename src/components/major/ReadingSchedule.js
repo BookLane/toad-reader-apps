@@ -13,7 +13,7 @@ import VideoTool from './VideoTool'
 
 const {
   ENHANCED_EDITOR_HOW_TO_LINKS={},
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const container = {
   flexGrow: 1,

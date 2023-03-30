@@ -10,7 +10,7 @@ import BookInfo from "../basic/BookInfo"
 
 const {
   LIBRARY_LIST_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

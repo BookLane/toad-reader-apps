@@ -15,7 +15,7 @@ import getReaderCode from '../../../getReaderCode'
 
 const {
   ENABLE_WIDE_TABLE_BEHAVIOR=false,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   containerNormal: {
@@ -119,7 +119,16 @@ const PageWebView = ({
 
   const { truePageWidth: width, truePageHeight: height } = useAdjustedDimensions({ sidePanelSettings, widget })
 
-  useEffect(() => () => webView.current.unmounted = true, [])
+  useEffect(
+    () => {
+      () => {
+        if(webView.current) {
+          webView.current.unmounted = true
+        }
+      }
+    },
+    [],
+  )
 
   const prevProps = usePrevious(props)
 

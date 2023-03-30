@@ -25,7 +25,7 @@ import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
 const {
   LINK_TO_TOAD_READER_MARKETING_SITE,
   INCLUDE_TOAD_READER_PROMO_TEXT,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
         
 const styles = StyleSheet.create({
   separator: {

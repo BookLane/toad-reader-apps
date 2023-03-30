@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { StyleSheet, TouchableOpacity } from "react-native"
-import Clipboard from 'expo-clipboard'
+import * as Clipboard from 'expo-clipboard'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
@@ -28,7 +28,7 @@ const HighlighterEmbedIcon = React.memo(({
 }) => {
 
   const goCopyEmbedCode = useCallback(
-    () => {
+    async () => {
 
       const book = books[bookId] || {}
       const accountId = Object.keys(book.accounts)[0] || ""
@@ -55,7 +55,7 @@ const HighlighterEmbedIcon = React.memo(({
         <script>!function(d,i,s){if(!window.erasereader){if(!d.getElementById(i)) {var c=d.getElementsByTagName(s)[0],j=d.createElement(s);j.id=i; j.src="${scriptUrl}"; c.parentNode.insertBefore(j,c);}}else{erasereader.setup()}}(document,"erasereader-widget-script","script");</script>
       `.replace(/^\n+|\n+$/, '').replace(/^ +/gm, '')
 
-      Clipboard.setString(embedCode)
+      await Clipboard.setStringAsync(embedCode)
       Toast.show({
         text: i18n("Embed code copied"),
         duration: 4000,

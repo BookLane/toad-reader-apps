@@ -1,17 +1,23 @@
 import Constants from "expo-constants"
-import * as Amplitude from "expo-analytics-amplitude"
+import { init, track, setUserId, reset, identify, Identify } from '@amplitude/analytics-react-native'
 import { isStaging, isBeta } from './toolbox'
 
 const {
   AMPLITUDE_API_KEY,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const on = !!(!__DEV__ && AMPLITUDE_API_KEY && !isStaging() && !isBeta())
 let initialized = false
 
-const initializeIfNeedBe = async () => {
+const initializeIfNeedBe = () => {
   if(!initialized) {
-    await Amplitude.initializeAsync(AMPLITUDE_API_KEY)
+    init(
+      AMPLITUDE_API_KEY,
+      null,
+      {
+        minIdLength: 1,
+      },
+    )
     initialized = true
   }
 }
@@ -20,8 +26,8 @@ export const logEvent = async ({ eventName, properties }) => {
 
   if(on) {
 
-    await initializeIfNeedBe()
-    await Amplitude.logEventWithPropertiesAsync(
+    initializeIfNeedBe()
+    track(
       eventName,
       properties || {},
     )
@@ -34,13 +40,17 @@ export const setUser = async ({ userId=null, properties={} }={}) => {
 
   if(on) {
 
-    await initializeIfNeedBe()
-    await Amplitude.setUserIdAsync(userId && `${userId}`)
+    initializeIfNeedBe()
 
     if(userId) {
-      await Amplitude.setUserPropertiesAsync(properties)
+      setUserId(userId)
+      const identifyObj = new Identify()
+      for(let property in properties) {
+        identifyObj.set(property, properties[property])
+      }
+      identify(identifyObj)
     } else {
-      await Amplitude.clearUserPropertiesAsync()
+      reset()
     }
 
   }

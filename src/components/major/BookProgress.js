@@ -15,7 +15,7 @@ import useDimensions from "../../hooks/useDimensions"
 const {
   ANDROID_TOOLBAR_COLOR,
   PROGRESS_BAR_SIDE_SPACING,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   footer: {

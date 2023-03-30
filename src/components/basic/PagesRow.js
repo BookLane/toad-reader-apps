@@ -5,7 +5,7 @@ import { StyleSheet, View } from "react-native"
 const {
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   pages: {

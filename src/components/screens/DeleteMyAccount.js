@@ -20,7 +20,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 
 const {
   AMPLITUDE_API_KEY,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   error: {

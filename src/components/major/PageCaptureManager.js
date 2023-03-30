@@ -18,7 +18,7 @@ import { getSpineInlineToolsHash } from "../../hooks/useSpineInlineToolsHash"
 const {
   INITIAL_SPINE_CAPTURE_TIMEOUT,
   MAX_SPINE_CAPTURE_TIMEOUT,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const bookIsDownloaded = ({ books, uriAsKey }) => {
   const bookIdFromUri = (uriAsKey.match(/\/([0-9]+)\/[^\/]+$/) || [])[1]

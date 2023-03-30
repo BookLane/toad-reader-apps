@@ -5,7 +5,7 @@ import { objectMap } from '../utils/toolbox'
 
 const {
   MAPPING_CUSTOMIZATION=[],
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const getComponentSetup = ({ parameters={}, appearance="default", variantGroups={}, isCustom=true }={}) => {
 

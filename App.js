@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import Constants from 'expo-constants'
-import AppLoading from 'expo-app-loading'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Updates from 'expo-updates'
 import { Platform, StatusBar } from "react-native"
@@ -40,12 +39,12 @@ const {
   LANGUAGE_CODE='en',
   IDPS,
   SENTRY_DSN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 Sentry.init({
   dsn: SENTRY_DSN,
   enableInExpoDevelopment: true,
-  release: Constants.manifest.revisionId,
+  release: Constants.expoConfig.revisionId,
   debug: true,
 })
 
@@ -94,7 +93,6 @@ const App = () => {
   const [ updateExists, setUpdateExists ] = useState(false)
   const [ isReady, setIsReady ] = useState(false)
 
-  // TODO: Install and test (expo install react-native-appearance)
   const colorScheme = 'light' // useColorScheme()
 
   const [ setInitialOpenTimeout ] = useSetTimeout()
@@ -103,7 +101,13 @@ const App = () => {
 
   useEffect(() => { logEvent({ eventName: `Open app` }) }, [])
 
-  useEffect(() => { setIsFirstRender(false) }, [])
+  useEffect(
+    () => {
+      setIsFirstRender(false)
+      SplashScreen.hideAsync()
+    },
+    [],
+  )
 
   useEffect(
     () => {
@@ -226,11 +230,9 @@ const App = () => {
     [],
   )
 
-  const Loading = Platform.OS === 'web' ? CoverAndSpin : AppLoading
-
   if(isFirstRender) {
     // needed to prevent an ugly flash on android
-    return <Loading />
+    return <CoverAndSpin />
   }
 
   return (
@@ -260,7 +262,7 @@ const App = () => {
         />
       }
       {Platform.OS === 'web' && !isLoaded &&
-        <Loading />
+        <CoverAndSpin />
       }
     </>
   )

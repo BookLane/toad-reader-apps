@@ -12,7 +12,7 @@ const {
   CURRENT_PAGE_BORDER_COLOR,
   CURRENT_PAGE_BORDER_WIDTH,
   PAGES_HORIZONTAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

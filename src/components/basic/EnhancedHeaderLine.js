@@ -10,7 +10,7 @@ import Icon from '../basic/Icon'
 
 const {
   ENHANCED_LOGO_WIDTH=75,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   line: {

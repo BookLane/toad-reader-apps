@@ -24,7 +24,7 @@ const DEFAULT_ACTIVITY_LIMIT = 3
 
 const {
   AMPLITUDE_API_KEY,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   error: {

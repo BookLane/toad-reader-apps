@@ -17,7 +17,7 @@ import { addCompletedGuide } from "../../redux/actions"
 
 const {
   ENHANCED_EDITOR_HOW_TO_LINKS={},
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   enhancedBoxContainer: {

@@ -2,7 +2,7 @@ import Constants from 'expo-constants'
 
 const {
   IDPS,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const initialState = IDPS || {
   "21": {

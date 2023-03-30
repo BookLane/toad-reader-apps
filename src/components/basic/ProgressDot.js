@@ -11,7 +11,7 @@ import useDimensions from "../../hooks/useDimensions"
 
 const {
   PROGRESS_BAR_SIDE_SPACING,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   dot: {

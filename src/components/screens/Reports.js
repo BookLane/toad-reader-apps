@@ -152,7 +152,7 @@ const Reports = ({
               style={styles.select}
             >
               {info.map(({ tab }) => (
-                <SelectItem title={tab} />
+                <SelectItem title={tab} key={tab} />
               ))}
             </Select>
           }
