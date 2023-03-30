@@ -26,7 +26,7 @@ const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_VERTICAL_MARGIN,
   PAGES_HORIZONTAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

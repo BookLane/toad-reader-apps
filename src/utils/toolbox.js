@@ -13,7 +13,7 @@ const {
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
   ENABLE_WIDE_TABLE_BEHAVIOR,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
 
@@ -353,7 +353,7 @@ const convertBase = ({ str, fromBase, toBase }) => {
 export const encodeDomain = domain => convertBase({ str: domain, fromBase: 38, toBase: 36 })
 
 export const isStaging = () => (
-  Constants.manifest.releaseChannel === 'staging'
+  Constants.expoConfig.releaseChannel === 'staging'
   || (
     Platform.OS === 'web'
     && /\.staging\.toadreader\.com$/.test(window.location.hostname)
@@ -361,7 +361,7 @@ export const isStaging = () => (
 )
 
 export const isBeta = () => (
-  Constants.manifest.releaseChannel === 'beta'
+  Constants.expoConfig.releaseChannel === 'beta'
   || (
     Platform.OS === 'web'
     && /\.beta\.toadreader\.com$/.test(window.location.hostname)

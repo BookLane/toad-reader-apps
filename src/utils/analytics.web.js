@@ -5,7 +5,7 @@ import { isStaging, isBeta, getQueryString } from './toolbox'
 
 const {
   AMPLITUDE_API_KEY,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const on = !!(!__DEV__ && AMPLITUDE_API_KEY && !isStaging() && !isBeta())
 

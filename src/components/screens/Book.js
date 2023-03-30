@@ -65,7 +65,7 @@ const {
   BOTTOM_NAVIGATION_HEIGHT=58,
   RETURN_TO_READING_WIDTH=60,
   MAX_TOOLS_PER_SPOT=10
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
 
@@ -495,7 +495,7 @@ const Book = React.memo(({
         setCurrentAppState(nextAppState)
       }
     
-      AppState.addEventListener('change', handleAppStateChange)
+      const subscription = AppState.addEventListener('change', handleAppStateChange)
 
       startRecordReading({
         bookId,
@@ -507,7 +507,7 @@ const Book = React.memo(({
           endRecordReading()
         }
     
-        AppState.removeEventListener('change', handleAppStateChange)
+        subscription.remove()
       }
     },
     [ spineIdRef, currentAppState, mode ],

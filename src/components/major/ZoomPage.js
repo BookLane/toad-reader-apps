@@ -13,7 +13,7 @@ import useWideMode from "../../hooks/useWideMode"
 
 const {
   PAGE_ZOOM_MILLISECONDS,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   snapshotCont: {

@@ -1,4 +1,4 @@
-import useNetworkFromReactUse from "react-use/lib/useNetwork"
+import useNetworkFromReactUse from "react-use/lib/useNetworkState"
 
 import { getConnectionInfoWeb } from "../utils/connectionInfo"
 

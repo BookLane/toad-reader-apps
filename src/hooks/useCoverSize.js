@@ -5,7 +5,7 @@ import useDimensions from './useDimensions'
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
   LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const useCoverSize = () => {
 

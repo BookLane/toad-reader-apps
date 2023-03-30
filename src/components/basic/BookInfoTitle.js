@@ -1,7 +1,6 @@
 import React from "react"
-import { StyleSheet, Text } from "react-native"
+import { StyleSheet, Text, Platform } from "react-native"
 import { Link } from "../../hooks/useRouterState"
-import { Platform } from "@unimodules/core"
 
 const styles = StyleSheet.create({
   title: {

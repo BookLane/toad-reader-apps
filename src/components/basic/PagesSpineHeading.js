@@ -5,7 +5,7 @@ import { StyleSheet, View, Text } from "react-native"
 const {
   PAGE_LIST_HEADER_ROW_HEIGHT,
   PAGES_HORIZONTAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   heading: {

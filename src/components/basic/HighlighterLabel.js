@@ -19,7 +19,7 @@ import { setHighlight, deleteHighlight } from "../../redux/actions"
 
 const {
   NUM_COLOR_OPTIONS=3,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

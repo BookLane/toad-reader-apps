@@ -15,7 +15,7 @@ const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
   LIBRARY_COVERS_VERTICAL_MARGIN,
   LIBRARY_COVERS_BOTTOM_PADDING,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

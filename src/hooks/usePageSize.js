@@ -6,7 +6,7 @@ import useAdjustedDimensions from './useAdjustedDimensions'
 const {
   PAGE_LIST_MAXIMUM_PAGE_SIZE,
   PAGES_HORIZONTAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const usePageSize = ({ sidePanelSettings }) => {
 

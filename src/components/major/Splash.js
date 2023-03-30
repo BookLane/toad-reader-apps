@@ -10,7 +10,7 @@ const {
   FIRST_LOAD_SPLASH_TEXT_LINE_1="Great eBooks.",
   FIRST_LOAD_SPLASH_TEXT_LINE_2="Beautiful eReader.",
   FIRST_LOAD_SPLASH_TEXT_COLOR="black",
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const loadingLine = {
   position: 'absolute',
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-    resizeMode: Constants.manifest.splash.resizeMode,
-    backgroundColor: Constants.manifest.splash.backgroundColor,
+    resizeMode: Constants.expoConfig.splash.resizeMode,
+    backgroundColor: Constants.expoConfig.splash.backgroundColor,
   },
   loadingLine1: {
     ...loadingLine,

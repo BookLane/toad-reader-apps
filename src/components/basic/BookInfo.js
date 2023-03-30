@@ -30,7 +30,7 @@ import { deleteBook, setSubscriptions } from "../../redux/actions"
 const {
   LIBRARY_LIST_MARGIN,
   HIDE_ISBN_FOR_NON_ADMINS,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   container: {

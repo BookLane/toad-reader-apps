@@ -3,7 +3,7 @@ import { dark as darkTheme } from '@eva-design/eva'
 
 const {
   THEME_CUSTOMIZATION={},
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const theme = {
   ...darkTheme,

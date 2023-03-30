@@ -9,5 +9,13 @@ module.exports = async function(env, argv) {
             dangerouslyAddModulePathsToTranspile: ['@ui-kitten/components']
         }
     }, argv);
+
+    config.module.rules.push({
+        test: /.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+    })
+
     return config;
 };

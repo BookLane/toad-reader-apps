@@ -18,7 +18,7 @@ import CoverCheck from "./CoverCheck"
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
   LIBRARY_COVERS_VERTICAL_MARGIN,
-} = Constants.manifest.extra
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   cover: {
