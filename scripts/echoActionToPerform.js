@@ -36,6 +36,7 @@ const actionStrings = {
   'build-ios-staging': `About to build iOS STAGING app (connects to staging backend) for ${domain}.`,
   'build-ios-beta': `About to build iOS BETA app (connects to production backend) for ${domain}.`,
   'build-ios-production': `About to build iOS PRODUCTION app for ${domain}.`,
+  'submit-ios-production': `About to submit iOS PRODUCTION app for ${domain}.`,
 }
 
 const action = actionStrings[arguments[actionIndex]]
