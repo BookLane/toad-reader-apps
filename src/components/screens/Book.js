@@ -128,7 +128,8 @@ const showZoomStyles = {
 }
 
 const hidePageStyles = {
-  display: 'none',
+  // display: 'none',
+  opacity: 0,  // on Android, doing display:none caused a layout change and subsequent unexpected behavior
 }
 
 const styles = StyleSheet.create({

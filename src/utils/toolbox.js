@@ -6,6 +6,8 @@ import Constants from 'expo-constants'
 import { i18n, getLocale } from "inline-i18n"
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
 import * as Device from 'expo-device'
+import * as Updates from 'expo-updates'
+
 import * as Sentry from "./sentry"
 
 const {
@@ -84,7 +86,7 @@ export const getPageCfisKey = ({ displaySettings, width, height, spineInlineTool
 }
 
 export const getSnapshotURI = params => {
-  let { bookId, spineIdRef, pageIndexInSpine=0, pageCfisKey } = params
+  let { bookId, spineIdRef, pageIndexInSpine=0, pageCfisKey } = params || {}
 
   return `${getSnapshotsDir()}${bookId}/${spineIdRef}_${pageIndexInSpine}_${pageCfisKey || getPageCfisKey(params)}.jpg`
 }
@@ -353,7 +355,7 @@ const convertBase = ({ str, fromBase, toBase }) => {
 export const encodeDomain = domain => convertBase({ str: domain, fromBase: 38, toBase: 36 })
 
 export const isStaging = () => (
-  Constants.expoConfig.releaseChannel === 'staging'
+  Updates.channel === 'staging'
   || (
     Platform.OS === 'web'
     && /\.staging\.toadreader\.com$/.test(window.location.hostname)
@@ -361,7 +363,7 @@ export const isStaging = () => (
 )
 
 export const isBeta = () => (
-  Constants.expoConfig.releaseChannel === 'beta'
+  Updates.channel === 'beta'
   || (
     Platform.OS === 'web'
     && /\.beta\.toadreader\.com$/.test(window.location.hostname)
