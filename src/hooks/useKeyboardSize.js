@@ -11,9 +11,11 @@ const useKeyboardSize = ({ handleChange }={}) => {
   useEffect(
     () => {
       const setHeight = newHeight => {
-        handleChange({
-          changeInHeight: newHeight - getKeyboardHeight(),
-        })
+        if(handleChange) {
+          handleChange({
+            changeInHeight: newHeight - getKeyboardHeight(),
+          })
+        }
         setKeyboardHeight(newHeight)
       }
 
