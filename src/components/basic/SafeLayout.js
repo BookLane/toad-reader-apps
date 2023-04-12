@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 const SafeLayout = ({
   children,
 }) => (
-  <Layout style={(Platform.OS === 'android' && !__DEV__) ? null : styles.layout}>
+  <Layout style={Platform.OS === 'android' ? null : styles.layout}>
     <View style={styles.view}>
       {children}
     </View>
