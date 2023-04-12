@@ -6,3 +6,4 @@
 /translationModifier.js
 /src/utils/translations/current.json
 /web-build/*
+/dist/*
