@@ -130,6 +130,7 @@ const showZoomStyles = {
 const hidePageStyles = {
   // display: 'none',
   opacity: 0,  // on Android, doing display:none caused a layout change and subsequent unexpected behavior
+  zIndex: -1,
 }
 
 const styles = StyleSheet.create({
