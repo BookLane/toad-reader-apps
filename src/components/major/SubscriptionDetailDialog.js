@@ -54,7 +54,7 @@ const SubscriptionDetailDialog = ({
 
     <Dialog
       open={open}
-      title={i18n("Edit subscription label")}
+      title={i18n("Edit subscription label", "", "admin")}
       onCancel={onClose}
       onConfirm={onConfirm}
       confirmButtonText={subscriptionData ? i18n("Update") : i18n("Add")}
@@ -64,8 +64,8 @@ const SubscriptionDetailDialog = ({
         <View style={styles.container}>
 
           <Input
-            label={i18n("Subscription label")}
-            placeholder={i18n("Eg. Basic, Premium")}
+            label={i18n("Subscription label", "", "admin")}
+            placeholder={i18n("Eg. Basic, Premium", "", "admin")}
             value={label}
             onChangeText={updateLabel}
             style={styles.labelInput}

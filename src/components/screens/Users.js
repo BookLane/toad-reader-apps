@@ -267,7 +267,7 @@ const Users = ({
         cachedUserSearchResults = {}
         onChangeText(``)
 
-        setTimeout(() => alert(i18n("User has been deleted.")))
+        setTimeout(() => alert(i18n("User has been deleted.", "", "admin")))
 
       } catch(err) {
         setError(err.message)
@@ -439,7 +439,7 @@ const Users = ({
     <SafeLayout>
       <BackFunction func={historyGoBackToLibrary} />
       <AppHeader
-        title={i18n("Users")}
+        title={i18n("Users", "", "admin")}
         titleCentered={true}
         leftControl={
           <HeaderIcon
@@ -458,7 +458,7 @@ const Users = ({
 
           <View style={styles.inputContainer}>
             <Autocomplete
-              placeholder={i18n("Search by email, name, or id")}
+              placeholder={i18n("Search by email, name, or id", "", "admin")}
               value={searchStr}
               onSelect={onSelect}
               onChangeText={onChangeText}
@@ -532,13 +532,13 @@ const Users = ({
                   <>
 
                     <Text style={styles.userInfoCreated}>
-                      {i18n("Created:")}
+                      {i18n("Created:", "", "admin")}
                       {` `}
                       <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.created_at })}</Text>
                     </Text>
 
                     <Text style={styles.userInfoCreated}>
-                      {i18n("Last Login:")}
+                      {i18n("Last Login:", "", "admin")}
                       {` `}
                       <Text style={styles.userInfoCreatedTime}>{getDateLine({ timestamp: userInfo.last_login_at })}</Text>
                       {` `}
@@ -550,15 +550,15 @@ const Users = ({
                         style={styles.getLoginLink}
                         onPress={getLoginLink}
                       >
-                        {i18n("Get login link")}
+                        {i18n("Get login link", "", "admin")}
                       </LinkLikeText>
                       {copied &&
                         <>
                           <Text style={styles.copied}>
-                            {i18n("Copied to clipboard")}
+                            {i18n("Copied to clipboard", "", "admin")}
                           </Text>
                           <Text style={styles.expires}>
-                            {i18n("(Expires in 15 minutes)")}
+                            {i18n("(Expires in 15 minutes)", "", "admin")}
                           </Text>
                         </>
                       }
@@ -566,7 +566,7 @@ const Users = ({
 
                     {!!useEnhancedReader &&
                       <>
-                        <Text style={styles.userInfoHeading}>{i18n("Recent Interactive Activity")}</Text>
+                        <Text style={styles.userInfoHeading}>{i18n("Recent Interactive Activity", "", "enhanced")}</Text>
                         {userInfo.interactiveActivity.map(({
                           uid, text, updated_at, submitted_at, score,  // tool_engagement
                           name, toolType, isDiscussion, creatorType, spineIdRef, cfi, currently_published_tool_uid,  // tool
@@ -590,15 +590,15 @@ const Users = ({
 
                               <Text style={styles.userInfoActivityAction}>
                                 {{
-                                  POLL: i18n("Answered a poll"),
-                                  QUIZ: i18n("Took a quiz"),
-                                  QUESTION: i18n("Answered a reflection question"),
-                                  DISCUSSION_QUESTION: i18n("Added a comment to a discussion question"),
+                                  POLL: i18n("Answered a poll", "", "enhanced"),
+                                  QUIZ: i18n("Took a quiz", "", "enhanced"),
+                                  QUESTION: i18n("Answered a reflection question", "", "enhanced"),
+                                  DISCUSSION_QUESTION: i18n("Added a comment to a discussion question", "", "enhanced"),
                                 }[isDiscussion ? `DISCUSSION_QUESTION` : toolType]}
                               </Text>
 
                               <Text style={styles.userInfoActivityToolNameLine}>
-                                {i18n("Tool name:")}
+                                {i18n("Tool name:", "", "enhanced")}
                                 {` `}
                                 <Text style={styles.userInfoActivityToolName}>
                                   {name || {
@@ -628,11 +628,11 @@ const Users = ({
 
                               <Text style={styles.userInfoActivityClassroom}>
                                 <Text style={styles.userInfoActivityClassroomLabel}>
-                                  {i18n("Classroom:")}
+                                  {i18n("Classroom:", "", "enhanced")}
                                 </Text>
                                 {` `}
                                 <Text style={styles.userInfoActivityClassroomValue}>
-                                  {classroom_name || i18n("[No classroom]")}                                  {` `}
+                                  {classroom_name || i18n("[No classroom]", "", "enhanced")}                                  {` `}
                                 </Text>
 
                               </Text>
@@ -640,7 +640,7 @@ const Users = ({
                               {toolType !== 'POLL' &&
                                 <Text style={styles.userInfoActivityExtra}>
                                   {{
-                                    QUIZ: i18n("Score: {{score}}", { score }),
+                                    QUIZ: i18n("Score: {{score}}", "", "enhanced", { score }),
                                     QUESTION: adjustedText.length > MAX_SNIPPET_LENGTH ? `...${adjustedText.slice(-MAX_SNIPPET_LENGTH)}` : adjustedText,
                                     DISCUSSION_QUESTION: adjustedText.length > MAX_SNIPPET_LENGTH ? `${adjustedText.slice(0, MAX_SNIPPET_LENGTH)}...` : adjustedText,
                                   }[isDiscussion ? `DISCUSSION_QUESTION` : toolType]}
@@ -662,7 +662,7 @@ const Users = ({
                             style={styles.moreButton}
                             status="basic"
                           >
-                            {i18n("Load more activity")}
+                            {i18n("Load more activity", "", "admin")}
                           </Button>
                         }
                       </>
@@ -677,14 +677,14 @@ const Users = ({
                         </Text>
 
                         <Text style={styles.userInfoSubDetail}>
-                          {i18n("First given access:")}
+                          {i18n("First given access:", "", "admin")}
                           {` `}
                           <Text style={styles.userInfoSubDetailTime}>{getDateLine({ timestamp: first_given_access_at })}</Text>
                         </Text>
 
                         {!!expires_at &&
                           <Text style={styles.userInfoSubDetail}>
-                            {i18n("Expires:")}
+                            {i18n("Expires:", "", "admin")}
                             {` `}
                             <Text style={styles.userInfoSubDetailTime}>{getDateLine({ timestamp: expires_at })}</Text>
                           </Text>
@@ -692,7 +692,7 @@ const Users = ({
 
                         {!!enhanced_tools_expire_at &&
                           <Text style={styles.userInfoSubDetail}>
-                            {i18n("Interactive version expires:")}
+                            {i18n("Interactive version expires:", "", "enhanced")}
                             {` `}
                             <Text style={styles.userInfoSubDetailTime}>{getDateLine({ timestamp: enhanced_tools_expire_at })}</Text>
                           </Text>
@@ -759,7 +759,7 @@ const Users = ({
                             {!!enhanced_tools_expire_at &&
                               <Text style={styles.userInfoBookDetail}>
                                 {` `}
-                                {i18n("Interactive version expires:")}
+                                {i18n("Interactive version expires:", "", "enhanced")}
                                 {` `}
                                 <Text style={styles.userInfoBookDetailValue}>{getDateLine({ timestamp: enhanced_tools_expire_at })}</Text>
                               </Text>
@@ -770,7 +770,7 @@ const Users = ({
                           <Text style={styles.userInfoLinkLine}>
 
                             <LinkLikeText url={link}>
-                              {i18n("Go to this user’s latest reading location")}
+                              {i18n("Go to this user’s latest reading location", "", "admin")}
                             </LinkLikeText>
 
                           </Text>
@@ -790,7 +790,7 @@ const Users = ({
                         value={confirmDeleteEmail}
                         onChangeText={setConfirmDeleteEmail}
                         placeholder={userInfo.email}
-                        label={i18n("To delete this user, enter their email here")}
+                        label={i18n("To delete this user, enter their email here", "", "admin")}
                       />
                     </View>
                     <View style={styles.deleteButtonContainer}>
@@ -801,7 +801,7 @@ const Users = ({
                         appearance="filled"
                         disabled={confirmDeleteEmail !== userInfo.email}
                       >
-                        {i18n("Permanently delete this account")}
+                        {i18n("Permanently delete this account", "", "admin")}
                       </Button>
                     </View>
 

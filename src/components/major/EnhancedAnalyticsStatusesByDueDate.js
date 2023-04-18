@@ -33,7 +33,7 @@ const EnhancedAnalyticsStatusesByDueDate = React.memo(({
   if(readingScheduleStatuses.length === 0) {
     return (
       <Text style={styles.notReadingSchedule}>
-        {i18n("There is currently no reading schedule for this classroom.")}
+        {i18n("There is currently no reading schedule for this classroom.", "", "enhanced")}
       </Text>
     )
   }

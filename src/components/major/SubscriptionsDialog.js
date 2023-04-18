@@ -190,7 +190,7 @@ const SubscriptionsDialog = ({
 
       <Dialog
         open={open}
-        title={i18n("Book subscription types")}
+        title={i18n("Book subscription types", "", "admin")}
         style={styles.dialog}
         onClose={onClose}
         onCancel={onCancel}
@@ -211,15 +211,15 @@ const SubscriptionsDialog = ({
             {editedSubscriptions.length === 0 &&
               <>
                 <Text style={styles.none}>
-                  {i18n("There are currently no subscription types.")}
+                  {i18n("There are currently no subscription types.", "", "admin")}
                 </Text>
                 <Text style={styles.noneExpl}>
-                  {i18n("Optionally manage the makeup of bundled book subscriptions here within your Toad Reader admin. Once set up, you will be able to easily add and remove books to a subscription via the Library, immediately affecting the book access of users with the given subscription.")}
+                  {i18n("Optionally manage the makeup of bundled book subscriptions here within your Toad Reader admin. Once set up, you will be able to easily add and remove books to a subscription via the Library, immediately affecting the book access of users with the given subscription.", "", "admin")}
                 </Text>
               </>
             }
 
-            {editedSubscriptions.map(({ id=i18n("[ pending save ]"), label }, idx) => (
+            {editedSubscriptions.map(({ id=i18n("[ pending save ]", "", "admin"), label }, idx) => (
               <View key={idx} style={styles.line}>
                 <View style={styles.keyLine}>
                   <Text
@@ -262,13 +262,13 @@ const SubscriptionsDialog = ({
                 status="basic"
                 disabled={submitting}
               >
-                {i18n("Add a new subscription type")}
+                {i18n("Add a new subscription type", "", "admin")}
               </Button>
             </View>
 
             {hasDuplicateLabels &&
               <Text style={styles.error}>
-                {i18n("Two subscriptions cannot share the same label.")}
+                {i18n("Two subscriptions cannot share the same label.", "", "admin")}
               </Text>
             }
 

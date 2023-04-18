@@ -185,7 +185,7 @@ const EnhancedMyReflectionQuestions = React.memo(({
               {question}
             </Text>
             <Text style={answer ? styles.answer : styles.noAnswer}>
-              {answer || i18n("No answer.")}
+              {answer || i18n("No answer.", "", "enhanced")}
             </Text>
           </View>
         ))}
@@ -194,7 +194,7 @@ const EnhancedMyReflectionQuestions = React.memo(({
         <CSVLink
           data={csvData}
           filename={
-            i18n("My reflection question answers")
+            i18n("My reflection question answers", "", "enhanced")
             + " - "
             + (isDefaultClassroom
               ? i18n("Interactive book", "", "enhanced")

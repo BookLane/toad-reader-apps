@@ -141,8 +141,8 @@ const ConnectToAClassroom = React.memo(({
       Toast.show({
         text: (
           role === 'INSTRUCTOR'
-            ? i18n("You are now connected as an instructor.")
-            : i18n("You are now connected as an student.")
+            ? i18n("You are now connected as an instructor.", "", "enhanced")
+            : i18n("You are now connected as an student.", "", "enhanced")
         ),
         duration: 4000,
       })
@@ -185,7 +185,7 @@ const ConnectToAClassroom = React.memo(({
                 size="small"
                 status="basic"
               >
-                {i18n("Scan QR code")}
+                {i18n("Scan QR code", "", "enhanced")}
               </Button>
             }
           </>

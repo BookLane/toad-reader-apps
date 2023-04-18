@@ -164,7 +164,7 @@ const BookSubscriptionsDialog = ({
 
     <Dialog
       open={open}
-      title={i18n("Edit subscriptions for “{{book_title}}”", {
+      title={i18n("Edit subscriptions for “{{book_title}}”", "", "admin", {
         book_title: bookTitle,
       })}
       style={styles.dialog}
@@ -179,7 +179,7 @@ const BookSubscriptionsDialog = ({
         <View style={styles.container}>
 
           <Text style={styles.instructions}>
-            {i18n("Choose which book version users will have access to with each subscription type.")}
+            {i18n("Choose which book version users will have access to with each subscription type.", "", "admin")}
           </Text>
 
           {subscriptions.map(({ id, label }) => (
@@ -206,8 +206,8 @@ const BookSubscriptionsDialog = ({
 
           <Text style={styles.status}>
             {hasChange
-              ? i18n("There are outstanding edits.")
-              : i18n("All changes are saved.")
+              ? i18n("There are outstanding edits.", "", "admin")
+              : i18n("All changes are saved.", "", "admin")
             }
           </Text>
 

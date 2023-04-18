@@ -373,7 +373,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Look-up user info"),
+        title: i18n("Look-up user info", "", "admin"),
         // icon: onDeviceIcon,
         onSelect: goToLookupUser,
         disabled: !online,
@@ -381,7 +381,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Import books to server"),
+        title: i18n("Import books to server", "", "admin"),
         // icon: onDeviceIcon,
         onSelect: onImportBooks,
         disabled: !online,
@@ -389,7 +389,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Replace an existing EPUB"),
+        title: i18n("Replace an existing EPUB", "", "admin"),
         // icon: onDeviceIcon,
         onSelect: onReplaceExisting,
         disabled: !online,
@@ -397,7 +397,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Manage book metadata categories"),
+        title: i18n("Manage book metadata categories", "", "admin"),
         // icon: removeIcon,
         onSelect: onOpenMetadataDialog,
         disabled: !online,
@@ -405,7 +405,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Manage subscription types"),
+        title: i18n("Manage subscription types", "", "admin"),
         // icon: removeIcon,
         onSelect: onOpenSubscriptionsDialog,
         disabled: !online,
@@ -413,14 +413,14 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Show environment URLs"),
+        title: i18n("Show environment URLs", "", "admin"),
         onSelect: onShowEnvironmentUrls,
         disabled: !online,
       },
     ]),
     ...(!isAdmin ? [] : [
       {
-        title: i18n("Reports"),
+        title: i18n("Reports", "", "admin"),
         // icon: onDeviceIcon,
         onSelect: goToReports,
         disabled: !online,
@@ -445,13 +445,13 @@ const AppMenu = ({
         {!!loggedInUser &&
           <>
             <Text style={styles.loggedIn}>
-              {i18n("Logged in as:")}
+              {i18n("Logged in as:", "", "admin")}
             </Text>
             <Text style={styles.loggedInUser}>
               {
                 loggedInUser.fullname
                   ? (
-                    i18n("{{name}} ({{email}})", {
+                    i18n("{{name}} ({{email}})", "", "admin", {
                       name: loggedInUser.fullname,
                       email: loggedInUser.email,
                     })

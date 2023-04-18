@@ -50,19 +50,19 @@ const BookImporter = ({
             <Text style={styles.result}>
               {(
                 {
-                  'already-associated': i18n("Not imported as this book is already in the library."),
-                  'associated-to-existing': i18n("Not imported as this book is already in the library of an associated site. Created association to this library."),
+                  'already-associated': i18n("Not imported as this book is already in the library.", "", "admin"),
+                  'associated-to-existing': i18n("Not imported as this book is already in the library of an associated site. Created association to this library.", "", "admin"),
                 }[(result || {}).note]
                 || (
                   replaceExisting
-                    ? i18n("Replaced successfully.")
-                    : i18n("Imported successfully.")
+                    ? i18n("Replaced successfully.", "", "admin")
+                    : i18n("Imported successfully.", "", "admin")
                 )
               )}
               {!!result.noOfflineSearch &&
                 <>
                   {` `}
-                  {i18n("However, due to size, offline search will not be available in the apps. (Online search will still be available.)")}
+                  {i18n("However, due to size, offline search will not be available in the apps. (Online search will still be available.)", "", "admin")}
                 </>
               }
             </Text>
@@ -84,7 +84,7 @@ const BookImporter = ({
   return (
     <FileImporter
       open={open}
-      title={replaceExisting ? i18n("Replacing EPUB") : i18n("Importing books")}
+      title={replaceExisting ? i18n("Replacing EPUB", "", "admin") : i18n("Importing books", "", "admin")}
       fileType='application/epub+zip'
       multiple={!replaceExisting}
       relativePath={`/importbook.json${replaceExisting ? `?replaceExisting=1` : ``}`}

@@ -260,7 +260,7 @@ const EnhancedReflectionQuestions = React.memo(({
         <CSVLink
           data={csvData}
           filename={
-            i18n("Reflection question answers")
+            i18n("Reflection question answers", "", "enhanced")
             + " - "
             + (isDefaultClassroom
               ? i18n("Interactive book", "", "enhanced")

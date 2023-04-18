@@ -31,7 +31,7 @@ const EnhancedAnalyticsReadingBySpine = React.memo(({
   if(readingBySpine.length === 0) {
     return (
       <Text style={styles.notEnoughData}>
-        {i18n("There is not yet enough data to display this chart.")}
+        {i18n("There is not yet enough data to display this chart.", "", "enhanced")}
       </Text>
     )
   }

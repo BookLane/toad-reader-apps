@@ -41,7 +41,7 @@ const EnhancedEditButton = React.memo(({
     () => {
       Alert.alert(
         i18n("Note"),
-        i18n("Editing is currently restricted to the web app."),
+        i18n("Editing is currently restricted to the web app.", "", "enhanced"),
       )
     },
     [],

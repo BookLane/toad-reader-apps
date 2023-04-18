@@ -141,11 +141,11 @@ const HighlighterLabel = React.memo(({
 
         if(hasAsInstructorHighlightForSomeClassroom) {
           if(Platform.OS === 'web') {
-            alert(i18n("You must unshare this highlight with all classrooms before you can delete it."))
+            alert(i18n("You must unshare this highlight with all classrooms before you can delete it.", "", "enhanced"))
           } else {
             Alert.alert(
               i18n("Whoops"),
-              i18n("You must unshare this highlight with all classrooms before you can delete it."),
+              i18n("You must unshare this highlight with all classrooms before you can delete it.", "", "enhanced"),
             )
           }
           return

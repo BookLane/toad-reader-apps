@@ -252,7 +252,7 @@ const EnhancedMyScores = React.memo(({
         <CSVLink
           data={csvData}
           filename={
-            i18n("My scores")
+            i18n("My scores", "", "enhanced")
             + " - "
             + (isDefaultClassroom
               ? i18n("Interactive book", "", "enhanced")

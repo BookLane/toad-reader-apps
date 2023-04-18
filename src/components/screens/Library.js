@@ -867,44 +867,44 @@ const Library = ({
         message={
           <>
             <Text style={styles.warningP}>
-              {i18n("Warning: Replacing EPUBs is highly discouraged as it can corrupt user data and enhanced content.")}
+              {i18n("Warning: Replacing EPUBs is highly discouraged as it can corrupt user data and enhanced content.", "", "admin")}
             </Text>
             <Text style={styles.p}>
-              {i18n("User highlights and notes are based upon the EPUB structure. Therefore, replacing an EPUB will corrupt this user data if any structural elements or content has been changed. In addition, if this is an enhanced book, replacing an EPUB can corrupt the placement of tools. Finally, replacing an EPUB may result in users viewing cached copies of the old EPUB’s content or assets at times, and not the new versions.")}
+              {i18n("User highlights and notes are based upon the EPUB structure. Therefore, replacing an EPUB will corrupt this user data if any structural elements or content has been changed. In addition, if this is an enhanced book, replacing an EPUB can corrupt the placement of tools. Finally, replacing an EPUB may result in users viewing cached copies of the old EPUB’s content or assets at times, and not the new versions.", "", "admin")}
             </Text>
             <Text style={styles.p}>
-              {i18n("For these reasons, replacing an EPUB should only be used as a last resort.")}
-            </Text>
-            <View style={styles.section}>
-              <Text style={styles.heading}>
-                {i18n("Reasons NOT to replace an EPUB")}
-              </Text>
-              <Text style={styles.exampleP}>
-                {i18n("Example 1: If end users do not yet have access to your EPUB, it is often easiest to simply delete it and then import it afresh.")}
-              </Text>
-              <Text style={styles.exampleP}>
-                {i18n("Example 2: If you are wanting to import a new addition of a book, it is often best to do so without deleting the existing version. That way, users with highlights in the existing version will not lose their data while new users can be given access to the new addition.")}
-              </Text>
-            </View>
-            <Text style={styles.p}>
-              {i18n("That said, there are some uncommon scenarios when you may want to replace an existing EPUB.")}
+              {i18n("For these reasons, replacing an EPUB should only be used as a last resort.", "", "admin")}
             </Text>
             <View style={styles.section}>
               <Text style={styles.heading}>
-                {i18n("Valid reasons to consider replacing an EPUB")}
+                {i18n("Reasons NOT to replace an EPUB", "", "admin")}
               </Text>
               <Text style={styles.exampleP}>
-                {i18n("Example 1: If you find your EPUB has an ugly typo and end users already have access to it, replacing the EPUB might be your best option. If the only change to the EPUB is a letter being swapped for another, user highlights and enhanced tools will not be corrupted. If the edit is slightly more involved, minor user data corruption may be introduced.")}
+                {i18n("Example 1: If end users do not yet have access to your EPUB, it is often easiest to simply delete it and then import it afresh.", "", "admin")}
               </Text>
               <Text style={styles.exampleP}>
-                {i18n("Example 2: If you are building out default enhanced content and end users do not yet have access when you discover a need to correct the EPUB, replacing the EPUB is a good option. However, understand that some inline tools may be misplaced or missing as a result.")}
-              </Text>
-              <Text style={styles.exampleP}>
-                {i18n("Example 3: You realize a need to reduce the size of EPUB assets after end users already have access. So long as the assets are not renamed and there are no structure or content changes, user data will not be affected.")}
+                {i18n("Example 2: If you are wanting to import a new addition of a book, it is often best to do so without deleting the existing version. That way, users with highlights in the existing version will not lose their data while new users can be given access to the new addition.", "", "admin")}
               </Text>
             </View>
             <Text style={styles.p}>
-              {i18n("If you still wish to replace an EPUB, click confirm below and then upload an EPUB file whose ISBN, Title and Author match those of the existing book to be replaced.")}
+              {i18n("That said, there are some uncommon scenarios when you may want to replace an existing EPUB.", "", "admin")}
+            </Text>
+            <View style={styles.section}>
+              <Text style={styles.heading}>
+                {i18n("Valid reasons to consider replacing an EPUB", "", "admin")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 1: If you find your EPUB has an ugly typo and end users already have access to it, replacing the EPUB might be your best option. If the only change to the EPUB is a letter being swapped for another, user highlights and enhanced tools will not be corrupted. If the edit is slightly more involved, minor user data corruption may be introduced.", "", "admin")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 2: If you are building out default enhanced content and end users do not yet have access when you discover a need to correct the EPUB, replacing the EPUB is a good option. However, understand that some inline tools may be misplaced or missing as a result.", "", "admin")}
+              </Text>
+              <Text style={styles.exampleP}>
+                {i18n("Example 3: You realize a need to reduce the size of EPUB assets after end users already have access. So long as the assets are not renamed and there are no structure or content changes, user data will not be affected.", "", "admin")}
+              </Text>
+            </View>
+            <Text style={styles.p}>
+              {i18n("If you still wish to replace an EPUB, click confirm below and then upload an EPUB file whose ISBN, Title and Author match those of the existing book to be replaced.", "", "admin")}
             </Text>
           </>
         }
@@ -912,7 +912,7 @@ const Library = ({
 
       <Dialog
         open={!!showEnvironmentUrlsDialog}
-        title={i18n("Environment URLs")}
+        title={i18n("Environment URLs", "", "admin")}
         onClose={closeEnvironmentUrlsDialog}
         message={
           [
@@ -931,14 +931,14 @@ const Library = ({
                   </Text>
                 </View>
                 <View style={styles.exampleP}>
-                  {i18n("Frontend")}
+                  {i18n("Frontend", "", "admin")}
                   {`\n`}
                   <Text style={styles.a} onPress={() => openURL({ url, historyPush })}>
                     {url}
                   </Text>
                 </View>
                 <View style={styles.exampleP}>
-                  {i18n("Backend")}
+                  {i18n("Backend", "", "admin")}
                   {`\n`}
                   <Text style={styles.a} onPress={() => openURL({ url: dataUrl, historyPush })}>
                     {dataUrl}

@@ -305,7 +305,7 @@ const BookInfo = ({
                     checked={(adminInfo.subscriptions || []).some(({ id }) => id === adminInfo.idpId * -1)}
                     onChange={setDefaultSubscription}
                   >
-                    {i18n("Accessible to all users")}
+                    {i18n("Accessible to all users", "", "admin")}
                   </CheckBox>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -355,19 +355,19 @@ const BookInfo = ({
       <Dialog
         open={[ 'confirming', 'deleting', 'done' ].includes(deleteStatus)}
         type={[ 'done' ].includes(deleteStatus) ? "info" : "confirm"}
-        title={i18n("Delete book from server")}
+        title={i18n("Delete book from server", "", "admin")}
         message={[ 'done' ].includes(deleteStatus)
           ? [
-            i18n("“{{title}}” has been deleted.", { title }),
+            i18n("“{{title}}” has been deleted.", "", "admin", { title }),
             { text: i18n("Book id: {{book_id}}", { book_id: bookId }), textStyle: styles.subtle },
           ]
           : [
-            i18n("Deleting this book from the server will revoke access to it for all users and make user data connected to this book permanently inaccessible."),
-            { text: i18n("Are you sure you want to delete “{{title}}”?", { title }), textStyle: styles.emphasis },
+            i18n("Deleting this book from the server will revoke access to it for all users and make user data connected to this book permanently inaccessible.", "", "admin"),
+            { text: i18n("Are you sure you want to delete “{{title}}”?", "", "admin", { title }), textStyle: styles.emphasis },
             { text: i18n("Book id: {{book_id}}", { book_id: bookId }), textStyle: styles.subtle },
           ]
         }
-        confirmButtonText={i18n("Permanently Delete")}
+        confirmButtonText={i18n("Permanently Delete", "", "admin")}
         confirmButtonStatus="danger"
         onCancel={closeDelete}
         onConfirm={doDelete}

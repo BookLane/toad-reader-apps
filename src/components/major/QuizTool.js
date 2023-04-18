@@ -190,7 +190,7 @@ const QuizTool = React.memo(({
         >
           {isDefaultClassroom && pageIdx === 0 &&
             <Text style={styles.note}>
-              {i18n("Note: No one will see your score since you are not within a classroom.")}
+              {i18n("Note: No one will see your score since you are not within a classroom.", "", "enhanced")}
             </Text>
           }
           <View style={styles.questionContainer}>
@@ -292,7 +292,7 @@ const QuizTool = React.memo(({
         }
         {!isDefaultClassroom &&
           <Text style={styles.note}>
-            {i18n("Your instructor(s) will see your latest score.")}
+            {i18n("Your instructor(s) will see your latest score.", "", "enhanced")}
           </Text>
         }
         <View style={styles.buttonContainer}>

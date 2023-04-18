@@ -173,7 +173,7 @@ const BookMetadataDialog = ({
 
     <Dialog
       open={open}
-      title={i18n("Edit metadata for “{{book_title}}”", {
+      title={i18n("Edit metadata for “{{book_title}}”", "", "admin", {
         book_title: bookTitle,
       })}
       style={styles.dialog}
@@ -233,8 +233,8 @@ const BookMetadataDialog = ({
 
           <Text style={styles.status}>
             {hasChange
-              ? i18n("There are outstanding edits.")
-              : i18n("All changes are saved.")
+              ? i18n("There are outstanding edits.", "", "admin")
+              : i18n("All changes are saved.", "", "admin")
             }
           </Text>
 

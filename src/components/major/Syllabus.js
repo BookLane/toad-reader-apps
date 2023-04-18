@@ -103,7 +103,7 @@ const Syllabus = React.memo(({
 
   return (
     <Document
-      name={i18n("Syllabus")}
+      name={i18n("Syllabus", "", "enhanced")}
       filename={data.syllabus.filename}
       uri={uri}
       uriWithCookieInPath={uriWithCookieInPath}

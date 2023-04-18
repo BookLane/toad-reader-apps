@@ -141,7 +141,7 @@ const LTITool = React.memo(({
       </View>
       {!!invalidSetup &&
         <Text style={styles.noLTISetup}>
-          {i18n("There is not a LTI configuration with a domain matching this tool’s Launch URL.")}
+          {i18n("There is not a LTI configuration with a domain matching this tool’s Launch URL.", "", "enhanced")}
         </Text>
       }
       {!invalidSetup && !!instructions &&

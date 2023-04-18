@@ -50,7 +50,7 @@ const InstructorsHighlightLabel = ({
           style,
         ]}
       >
-        {i18n("Highlighted by your instructor.")}
+        {i18n("Highlighted by your instructor.", "", "enhanced")}
       </Text>
     </View>
   )

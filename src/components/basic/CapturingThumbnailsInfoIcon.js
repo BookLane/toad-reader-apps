@@ -27,7 +27,7 @@ const CapturingThumbnailsInfoIcon = React.memo(({
       i18n("Note"),
       (
         inEditMode
-          ? i18n("Thumbnails are not created when a classroom is in edit mode.")
+          ? i18n("Thumbnails are not created when a classroom is in edit mode.", "", "enhanced")
           : i18n("We will create thumbnail images in the background when you are reading.")
       ),
     ),

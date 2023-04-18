@@ -123,7 +123,7 @@ const Reports = ({
     <SafeLayout>
       <BackFunction func={historyGoBackToLibrary} />
       <AppHeader
-        title={i18n("Reports")}
+        title={i18n("Reports", "", "admin")}
         titleCentered={true}
         leftControl={
           <HeaderIcon

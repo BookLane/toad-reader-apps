@@ -165,7 +165,7 @@ const EnhancedHeader = React.memo(({
     () => {
       Alert.alert(
         i18n("Note"),
-        i18n("Classroom management is currently restricted to the web app."),
+        i18n("Classroom management is currently restricted to the web app.", "", "enhanced"),
       )
     },
     [],

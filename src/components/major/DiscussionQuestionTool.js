@@ -306,7 +306,7 @@ const DiscussionQuestionTool = React.memo(({
       if(text) {
 
         if(viewingPreview || isDummy) {
-          const message = i18n("In the live discussion, this would add your response to the bottom of the feed.")
+          const message = i18n("In the live discussion, this would add your response to the bottom of the feed.", "", "enhanced")
 
           if(Platform.OS === 'web') {
             alert(message)

@@ -95,7 +95,7 @@ const EnhancedAnalyticsReadingOverTime = React.memo(({
   if(readingOverTime.totals.length < 2) {
     return (
       <Text style={styles.notEnoughData}>
-        {i18n("There is not yet enough data to display this chart.")}
+        {i18n("There is not yet enough data to display this chart.", "", "enhanced")}
       </Text>
     )
   }

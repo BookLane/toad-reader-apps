@@ -262,7 +262,7 @@ export const getFirstBookLinkInfo = book => {
 
 export const showConsent = ({ idps, setConsentShown }) => {
 
-  let text = i18n("Note: By using this app, you consent to us recording usage data for the purposes of providing instructors with analytics and better improving our services.")
+  let text = i18n("Note: By using this app, you consent to us recording usage data for the purposes of providing instructors with analytics and better improving our services.", "", "enhanced")
 
   if(Object.values(idps).some(idpInfo => {
     if((idpInfo.xapiOn || idpInfo.readingSessionsOn) && !idpInfo.consentShown) {
@@ -810,8 +810,8 @@ export const bookCookiesToCookieStr = bookCookies => {
 }
 
 export const getVersionString = version => ({
-  BASE: i18n("Basic book"),
-  ENHANCED: i18n("Interactive book (student edition)"),
-  INSTRUCTOR: i18n("Interactive book (instructor edition)"),
-  PUBLISHER: i18n("Interactive book (publisher edition)"),
+  BASE: i18n("Basic book", "", "enhanced"),
+  ENHANCED: i18n("Interactive book (student edition)", "", "enhanced"),
+  INSTRUCTOR: i18n("Interactive book (instructor edition)", "", "enhanced"),
+  PUBLISHER: i18n("Interactive book (publisher edition)", "", "enhanced"),
 })[version]

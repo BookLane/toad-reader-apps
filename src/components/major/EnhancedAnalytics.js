@@ -203,7 +203,7 @@ const EnhancedAnalytics = React.memo(({
             style={styles.select}
             value={
               currentStudentIdx === -1
-                ? i18n("Entire classroom")
+                ? i18n("Entire classroom", "", "enhanced")
                 : (
                   i18n("{{fullname}} ({{email}})", "", "enhanced", {
                     fullname: studentsToUse[currentStudentIdx].fullname || "—",
@@ -215,7 +215,7 @@ const EnhancedAnalytics = React.memo(({
             onSelect={onSelect}
           >
             <SelectItem
-              title={i18n("Entire classroom")}
+              title={i18n("Entire classroom", "", "enhanced")}
             />
             {studentsToUse.map(({ fullname, email, user_id }) => (
               <SelectItem

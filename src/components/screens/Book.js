@@ -1060,7 +1060,7 @@ const Book = React.memo(({
         })
 
         if(toolCfiCounts[cfi] >= MAX_TOOLS_PER_SPOT) {
-          alert(i18n("You cannot move a tool to this spot as it already contains the limit of {{num}} tools per location.", { num: MAX_TOOLS_PER_SPOT }))
+          alert(i18n("You cannot move a tool to this spot as it already contains the limit of {{num}} tools per location.", "", "enhanced", { num: MAX_TOOLS_PER_SPOT }))
           
         } else {
           updateTool({

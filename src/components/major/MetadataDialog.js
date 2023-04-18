@@ -190,7 +190,7 @@ const MetadataDialog = ({
 
       <Dialog
         open={open}
-        title={i18n("Book metadata categories")}
+        title={i18n("Book metadata categories", "", "admin")}
         style={styles.dialog}
         onClose={onClose}
         onCancel={onCancel}
@@ -211,10 +211,10 @@ const MetadataDialog = ({
             {editedMetadataKeys.length === 0 &&
               <>
                 <Text style={styles.none}>
-                  {i18n("There are currently no metadata categories.")}
+                  {i18n("There are currently no metadata categories.", "", "admin")}
                 </Text>
                 <Text style={styles.noneExpl}>
-                  {i18n("Tell your users more about your books with metadata categories. Add metadata categories like “Description” in order to present more information about each book. You may also use metadata categories like “Genre” or “Reading Level” with predefined option lists in order to group your books.")}
+                  {i18n("Tell your users more about your books with metadata categories. Add metadata categories like “Description” in order to present more information about each book. You may also use metadata categories like “Genre” or “Reading Level” with predefined option lists in order to group your books.", "", "admin")}
                 </Text>
               </>
             }
@@ -279,8 +279,8 @@ const MetadataDialog = ({
                   </View>
                   <Text style={styles.optionLabel}>
                     {!options
-                      ? i18n("Free form text")
-                      : i18n("Predefined list")
+                      ? i18n("Free form text", "", "admin")
+                      : i18n("Predefined list", "", "admin")
                     }
                   </Text>
                   {!!options &&
@@ -299,13 +299,13 @@ const MetadataDialog = ({
                 status="basic"
                 disabled={submitting}
               >
-                {i18n("Add a new metadata key")}
+                {i18n("Add a new metadata key", "", "admin")}
               </Button>
             </View>
 
             {hasDuplicateNames &&
               <Text style={styles.error}>
-                {i18n("Two metadata categories cannot share the same name.")}
+                {i18n("Two metadata categories cannot share the same name.", "", "admin")}
               </Text>
             }
 

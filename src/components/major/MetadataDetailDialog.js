@@ -104,7 +104,7 @@ const MetadataDetailDialog = ({
 
     <Dialog
       open={open}
-      title={i18n("Edit metadata key details")}
+      title={i18n("Edit metadata key details", "", "admin")}
       onCancel={onClose}
       onConfirm={onConfirm}
       confirmButtonText={metadataKeyData ? i18n("Update") : i18n("Add")}
@@ -114,8 +114,8 @@ const MetadataDetailDialog = ({
         <View style={styles.container}>
 
           <Input
-            label={i18n("Metadata key name")}
-            placeholder={i18n("Eg. Description, Genre")}
+            label={i18n("Metadata key name", "", "admin")}
+            placeholder={i18n("Eg. Description, Genre", "", "admin")}
             value={name}
             onChangeText={updateName}
             style={styles.nameInput}
@@ -123,7 +123,7 @@ const MetadataDetailDialog = ({
           />
 
           <Text style={styles.typeLabel}>
-            {i18n("Metadata key type")}
+            {i18n("Metadata key type", "", "admin")}
           </Text>
 
           <RadioGroup
@@ -134,19 +134,19 @@ const MetadataDetailDialog = ({
             <Radio
               style={styles.radio}
             >
-              {i18n("Free form text")}
+              {i18n("Free form text", "", "admin")}
             </Radio>
             <Radio
               style={styles.radio}
             >
-              {i18n("Predefined list")}
+              {i18n("Predefined list", "", "admin")}
             </Radio>
           </RadioGroup>
 
           {typeIndex === 1 && optionsWithAddlEmpty.map((option, idx) => (
             <View key={idx} style={styles.line}>
               <Input
-                placeholder={i18n("List option")}
+                placeholder={i18n("List option", "", "admin")}
                 value={option}
                 onChangeText={text => updateOption({ idx, text })}
                 style={styles.optionInput}

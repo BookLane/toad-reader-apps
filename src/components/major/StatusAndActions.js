@@ -355,7 +355,7 @@ const StatusAndActions = React.memo(({
               {i18n("Warning:")}
             </Text>
             {` `}
-            {i18n("Publishing an update will erase this tool’s student data.")}
+            {i18n("Publishing an update will erase this tool’s student data.", "", "enhanced")}
           </Text>
         }
         {Object.keys(ENHANCED_EDITOR_HOW_TO_LINKS[selectedTool.toolType] || {}).map(linkText => (

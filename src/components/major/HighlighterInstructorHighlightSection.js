@@ -111,8 +111,8 @@ const HighlighterInstructorHighlightSection = React.memo(({
             disabled={othersInstructorHighlights.length !== 0}
           >
             {hasInstructorHighlight
-              ? i18n("Shared with this classroom")
-              : i18n("Click to share with this classroom")
+              ? i18n("Shared with this classroom", "", "enhanced")
+              : i18n("Click to share with this classroom", "", "enhanced")
             }
           </Toggle>
         }
