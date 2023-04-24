@@ -5,8 +5,9 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import uuidv4 from 'uuid/v4'
 import { useLayout } from '@react-native-community/hooks'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { statusBarHeight, bottomSpace, getSpineIdRefsInToc } from '../../utils/toolbox'
+import { getSpineIdRefsInToc } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useClassroomInfo from '../../hooks/useClassroomInfo'
@@ -24,12 +25,6 @@ const paddingTop = 12
 const styles = StyleSheet.create({
   listHeader: {
     paddingTop,
-  },
-  listHeaderWideMode: {
-    paddingTop: paddingTop + (Platform.OS === 'ios' ? statusBarHeight : 0),
-  },
-  listFooter: {
-    paddingTop: 70 + bottomSpace,
   },
   list: {
     backgroundColor: 'rgb(238, 241, 245)',
@@ -297,6 +292,8 @@ const BookContents = React.memo(({
     [ bookId, classroomUid, currentSpineIdRef, JSON.stringify(visibleTools), selectedTool ],
   )
 
+  const safeAreaInsets = useSafeAreaInsets()
+console.log('safeAreaInsets', safeAreaInsets)
   const ListHeader = useMemo(
     () => (
       <View
@@ -305,15 +302,24 @@ const BookContents = React.memo(({
             wideMode
             && bookVersion === 'BASE'
           )
-            ? styles.listHeaderWideMode
+            ? { paddingTop: paddingTop + safeAreaInsets.top }
             : styles.listHeader
         }
       />
     ),
-    [ wideMode ],
+    [ wideMode, safeAreaInsets.top ],
   )
 
-  const ListFooter = useMemo(() => <View style={styles.listFooter} />, [])
+  const ListFooter = useMemo(
+    () => (
+      <View
+        style={{
+          paddingTop: 70 + safeAreaInsets.bottom,
+        }}
+      />
+    ),
+    [ safeAreaInsets.bottom ],
+  )
 
   if(!toc) return null
 

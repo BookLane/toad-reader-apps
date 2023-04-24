@@ -5,11 +5,11 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import { Modal } from "@ui-kitten/components"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import BackFunction from '../basic/BackFunction'
 import useRouterState from "../../hooks/useRouterState"
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch,
-         isIPhoneX, statusBarHeight, bottomSpace } from '../../utils/toolbox'
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch } from '../../utils/toolbox'
 import { refreshUserData } from "../../utils/syncUserData"
 import { setCurrentClassroom } from "../../redux/actions"
 import useDimensions from "../../hooks/useDimensions"
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
   },
   modal: {
     ...StyleSheet.absoluteFillObject,
-    top: isIPhoneX ? statusBarHeight * -1 - 4 : 0,  // I do not know why the 4 is needed
     backgroundColor: 'black',
   },
   codeScanner: {
@@ -33,7 +32,6 @@ const styles = StyleSheet.create({
   },
   backToTextCodeButton: {
     position: 'absolute',
-    bottom: 30 + bottomSpace,
     left: 30,
     right: 30,
   },
@@ -57,6 +55,7 @@ const ConnectToAClassroom = React.memo(({
   const [ mode, setMode ] = useState("text")
 
   const windowDimensions = useDimensions().window
+  const safeAreaInsets = useSafeAreaInsets()
 
   const { historyPush, historyReplace } = useRouterState()
 
@@ -199,14 +198,24 @@ const ConnectToAClassroom = React.memo(({
       <Modal
         visible={!!open && mode === 'qr' && hasPermission}
         allowBackdrop={true}
-        style={styles.modal}
+        style={[
+          styles.modal,
+          {
+            top: safeAreaInsets.top > 30 ? safeAreaInsets.top * -1 - 4 : 0,  // I do not know why the 4 is needed
+          },
+        ]}
       >
         <BarCodeScanner
           onBarCodeScanned={handleBarCodeScanned}
           style={styles.codeScanner}
         />
         <Button
-          style={styles.backToTextCodeButton}
+          style={[
+            styles.backToTextCodeButton,
+            {
+              bottom: 30 + safeAreaInsets.bottom,
+            },
+          ]}
           onPress={setModeText}
           status="basic"
         >

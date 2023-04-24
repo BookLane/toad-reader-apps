@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useRef, useEffect } from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, View, FlatList, Animated } from "react-native"
+import { StyleSheet, View, FlatList, Animated, StatusBar } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import PagesSpineHeading from "../basic/PagesSpineHeading"
 import PagesRow from "../basic/PagesRow"
@@ -10,7 +11,7 @@ import PagesPage from "../basic/PagesPage"
 // import BookProgress from "./BookProgress"
 import EnhancedHeader from "./EnhancedHeader"
 
-import { getToolbarHeight, statusBarHeight, getPageCfisKey } from '../../utils/toolbox'
+import { getToolbarHeight, getPageCfisKey } from '../../utils/toolbox'
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
 import useSetTimeout from '../../hooks/useSetTimeout'
 import usePrevious from "react-use/lib/usePrevious"
@@ -166,6 +167,8 @@ const BookPages = React.memo(({
     [ pageHeight ],
   )
 
+  const safeAreaInsets = useSafeAreaInsets()
+
   const getScrollToLatestLocation = useInstanceValue(() => {
 
       if(spineIdRef == null || pageIndexInSpine == null) return
@@ -177,7 +180,7 @@ const BookPages = React.memo(({
         return
       }
 
-      const heightWithoutStatusBar = height - statusBarHeight
+      const heightWithoutStatusBar = height - StatusBar.currentHeight
       let index = 0
       let indexInRow = 0
 
@@ -216,7 +219,7 @@ const BookPages = React.memo(({
       // since this might not be immediately rendered (given the FlatList), let's calculate its position
       const thisItemOffset = getItemLayout(list, index).offset
       const scrolledToTopYPos = thisItemOffset + getToolbarHeight()
-      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - footerHeight)/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + statusBarHeight
+      const middleYPos = (heightWithoutStatusBar - getToolbarHeight() - footerHeight)/2 - (pageHeight + PAGES_VERTICAL_MARGIN)/2 + getToolbarHeight() + StatusBar.currentHeight + (safeAreaInsets.top - safeAreaInsets.bottom)
       const lastItemLayout = getItemLayout(list, list.length - 1)
       const scrolledToBottomYPos = heightWithoutStatusBar - footerHeight - ((lastItemLayout.offset + lastItemLayout.length) - thisItemOffset)
       updateSnapshotCoords({

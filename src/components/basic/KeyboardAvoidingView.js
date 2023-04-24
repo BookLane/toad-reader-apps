@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Platform, StyleSheet, KeyboardAvoidingView as RNKeyboardAvoidingView } from "react-native"
+import { Platform, StyleSheet, KeyboardAvoidingView as RNKeyboardAvoidingView, StatusBar } from "react-native"
 import * as ScreenOrientation from 'expo-screen-orientation'
 import useCounter from 'react-use/lib/useCounter'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { bottomSpace, statusBarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useKeyboardSize from "../../hooks/useKeyboardSize"
 
@@ -25,6 +25,8 @@ const KeyboardAvoidingView = ({
   const wideModeWithEitherOrientation = useWideMode(true)
   const { keyboardOpen } = useKeyboardSize()
 
+  const safeAreaInsets = useSafeAreaInsets()
+
   useEffect(
     () => {
       // Note: This works on the assumption that this elements y position will not change after it is constructed.
@@ -32,7 +34,7 @@ const KeyboardAvoidingView = ({
         try {
           ref.current.viewRef.current.measure(
             (x, y, w, h, pageX, pageY) => {
-              setYOffset(pageY - bottomSpace + (Platform.OS === 'android' ? statusBarHeight : 0))
+              setYOffset(pageY - safeAreaInsets.bottom + StatusBar.currentHeight)
             }
           )
         } catch(e) {}

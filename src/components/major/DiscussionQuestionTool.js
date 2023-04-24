@@ -3,13 +3,14 @@ import { StyleSheet, View, ScrollView, Text, Platform, Alert } from "react-nativ
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
 import useWebSocket from '../../hooks/useWebSocket'
 import useScroll from '../../hooks/useScroll'
 import useKeyboardSize from '../../hooks/useKeyboardSize'
-import { getDateLine, getTimeLine, bottomSpace } from "../../utils/toolbox"
+import { getDateLine, getTimeLine } from "../../utils/toolbox"
 import getDummyDiscussionQuestions from "../../utils/getDummyDiscussionQuestions"
 
 import TextInput from "../basic/TextInput"
@@ -110,7 +111,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,.1)',
     paddingHorizontal: 5,
-    paddingBottom: bottomSpace,
   },
   newResponseInput: {
     flex: 1,
@@ -165,6 +165,8 @@ const DiscussionQuestionTool = React.memo(({
 
   const getResponses = useInstanceValue(responses)
   const getNewResponseValue = useInstanceValue(newResponseValue)
+
+  const safeAreaInsets = useSafeAreaInsets()
 
   const handleScrolledToTop = useCallback(
     () => {
@@ -296,7 +298,7 @@ const DiscussionQuestionTool = React.memo(({
     [],
   )
 
-  const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height + bottomSpace), [])
+  const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height + safeAreaInsets.bottom), [])
 
   const sendNewResponse = useCallback(
     () => {
@@ -410,7 +412,14 @@ const DiscussionQuestionTool = React.memo(({
           })}
         </View>
       </ScrollView>
-      <View style={styles.newResponse}>
+      <View
+        style={[
+          styles.newResponse,
+          {
+            paddingBottom: safeAreaInsets.bottom,
+          }
+        ]}
+      >
         <TextInput
           placeholder={
             i18n("Type a response (seen by entire classroom)", "", "enhanced")

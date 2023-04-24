@@ -5,6 +5,7 @@ import { connect } from "react-redux"
 import { OverflowMenu, MenuItem, IndexPath, styled } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import useToggle from "react-use/lib/useToggle"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import useThemedStyleSets from "../../hooks/useThemedStyleSets"
 import useClassroomInfo from "../../hooks/useClassroomInfo"
@@ -12,7 +13,6 @@ import useWideMode from "../../hooks/useWideMode"
 import useDimensions from "../../hooks/useDimensions"
 import useRouterState from "../../hooks/useRouterState"
 import { setSelectedToolUid, setCurrentClassroom } from "../../redux/actions"
-import { statusBarHeight } from "../../utils/toolbox"
 
 import ManageClassrooms from "./ManageClassrooms"
 import CreateClassroom from "./CreateClassroom"
@@ -27,10 +27,6 @@ const container = {
 const styles = StyleSheet.create({
   container: {
     ...container,
-  },
-  containerWideMode: {
-    ...container,
-    paddingTop: container.paddingVertical + (Platform.OS === 'ios' ? statusBarHeight : 0),
   },
   containerWithFrontMatter: {
     paddingBottom: 5,
@@ -107,6 +103,7 @@ const EnhancedHeader = React.memo(({
 
   const wideMode = useWideMode()
   const { height } = useDimensions().window
+  const safeAreaInsets = useSafeAreaInsets()
 
   const selectDashboard = useCallback(
     () => {
@@ -249,7 +246,10 @@ const EnhancedHeader = React.memo(({
     <>
       <View
         style={[
-          wideMode ? styles.containerWideMode : styles.container,
+          styles.container,
+          !wideMode ? null : {
+            paddingTop: container.paddingVertical + safeAreaInsets.top,
+          },
           canViewFrontMatter ? styles.containerWithFrontMatter : null,
           baseThemedStyle,
         ]}

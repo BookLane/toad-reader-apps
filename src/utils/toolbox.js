@@ -4,8 +4,6 @@ import * as Linking from 'expo-linking'
 import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { i18n, getLocale } from "inline-i18n"
-import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper"
-import * as Device from 'expo-device'
 import * as Updates from 'expo-updates'
 
 import * as Sentry from "./sentry"
@@ -108,21 +106,8 @@ export const getToolCfiCounts = ({ visibleTools, spineIdRef }) => {
 export const getBooksDir = () => Platform.OS === 'web' ? `${window.location.origin}/book/` : `${FileSystem.documentDirectory}books/`
 export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
-export const isIPhoneX = isIphoneX()
-const getBottomSpace = () => (
-  // In react-native-iphone-x-helper, the getBottomSpace function does not support iPad Pro.
-  // But maybe it will at some point.
-  // See: https://github.com/ptelad/react-native-iphone-x-helper/issues/20
-
-  (isIPhoneX || /^iPad8/.test(Device.modelId))
-    ? 34
-    : 0
-)
-export const statusBarHeight = getStatusBarHeight()
-export const statusBarHeightSafe = getStatusBarHeight(true)
 export const getFooterHeight = () => 0  // Not used now; will bring back with BookProgress
 export const getToolbarHeight = () => 56
-export const bottomSpace = getBottomSpace() / 2
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 

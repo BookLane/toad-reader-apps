@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { bottomSpace } from "../../utils/toolbox"
 import { updateToolEngagement } from "../../redux/actions"
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useSetTimeout from '../../hooks/useSetTimeout'
@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     ...(Platform.OS !== 'web' ? {} : { outlineStyle: 'none' }),
     paddingHorizontal: 30,
     marginHorizontal: -30,
-    paddingBottom: 30 + bottomSpace,
     textAlignVertical: 'top',
     flex: 1,
   },
@@ -68,6 +67,8 @@ const ReflectionQuestionTool = React.memo(({
   const shouldLogUsage = useRef((priorEngagement || {}).text == null)
 
   const [ setAnswerSaveTimeout ] = useSetTimeout({ fireOnUnmount: true })
+
+  const safeAreaInsets = useSafeAreaInsets()
 
   const goUpdateEngagement = useCallback(
     updates => {
@@ -123,7 +124,12 @@ const ReflectionQuestionTool = React.memo(({
         multiline
         value={answerValue}
         onChangeText={onChangeText}
-        style={styles.answer}
+        style={[
+          styles.answer,
+          {
+            paddingBottom: 30 + safeAreaInsets.bottom,
+          },
+        ]}
       />
     </View>
   )

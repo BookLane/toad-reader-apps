@@ -1,10 +1,11 @@
 import React, { useRef, useCallback, useState, useEffect } from "react"
-import { StyleSheet, Platform, View, Keyboard } from "react-native"
+import { StyleSheet, Platform, View, Keyboard, StatusBar } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import useUnmount from "react-use/lib/useUnmount"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { setStatusBarHidden, isIPhoneX, statusBarHeight, statusBarHeightSafe } from '../../utils/toolbox'
+import { setStatusBarHidden } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -35,21 +36,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(0,0,0,.2)',
     backgroundColor: 'white',
-  },
-  containerBottom: {
-    bottom: 0,
-  },
-  containerTop: {
-    top: isIPhoneX ? statusBarHeight * -1 : 0,
-    paddingTop: (
-      Platform.OS === 'android'
-        ? 10
-        : (
-          isIPhoneX
-            ? statusBarHeightSafe
-            : 0
-        )
-    ),
   },
   containerTopWideMode: {
     paddingTop: 0,
@@ -95,6 +81,7 @@ const Highlighter = React.memo(({
   const { widget } = routerState
 
   const wideMode = useWideMode()
+  const safeAreaInsets = useSafeAreaInsets()
 
   const [ keyboardShowing, setKeyboardShowing ] = useState(false)
 
@@ -184,7 +171,16 @@ const Highlighter = React.memo(({
       key="container"
       style={[
         styles.container,
-        ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing) ? styles.containerTop : styles.containerBottom),
+        ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing)
+          ? {
+            top: safeAreaInsets.top > 30 ? (safeAreaInsets.top - 20) * -1 : 0,
+            paddingTop: Math.max(safeAreaInsets.top + StatusBar.currentHeight - 10, 0),
+          }
+          : {
+            bottom: 0,
+            paddingBottom: safeAreaInsets.bottom,
+          }
+        ),
         ((selectionInfo.copyTooltipInLowerHalf && wideMode && !widget) ? styles.containerTopWideMode : null),
       ]}
       onTouchEnd={!isEditingNote ? preventDefault : null}

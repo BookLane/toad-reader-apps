@@ -5,7 +5,6 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { statusBarHeight, bottomSpace } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 
 import Icon from '../basic/Icon'
@@ -39,7 +38,7 @@ const highlightText = {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    marginTop: statusBarHeight + 170,
+    marginTop: 170,
     marginBottom: 20,
     marginHorizontal: 30,
     paddingVertical: 10,
@@ -59,32 +58,32 @@ const styles = StyleSheet.create({
   },
   textSize: {
     ...highlightItem,
-    top: statusBarHeight + 3,
+    top: 3,
     right: 40,
   },
   textSizeText: {
     ...highlightText,
-    top: statusBarHeight + 60,
+    top: 60,
     right: 10,
   },
   backToLibrary: {
     ...highlightItem,
-    top: statusBarHeight + 2,
+    top: 2,
     left: 2,
   },
   backToLibraryText: {
     ...highlightText,
-    top: statusBarHeight + 60,
+    top: 60,
     left: 10,
   },
   backToReading: {
     ...highlightItem,
-    bottom: bottomSpace + 5,
+    bottom: 5,
     left: 5,
   },
   backToReadingText: {
     ...highlightText,
-    bottom: bottomSpace + 60,
+    bottom: 60,
     left: 10,
   },
   highlightedIcon: {

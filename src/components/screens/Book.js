@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { StyleSheet, View, Platform, AppState } from "react-native"
+import { StyleSheet, View, Platform, AppState, StatusBar } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -9,12 +9,13 @@ import useSetState from "react-use/lib/useSetState"
 import useToggle from "react-use/lib/useToggle"
 import usePrevious from "react-use/lib/usePrevious"
 import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getToolbarHeight, statusBarHeight, statusBarHeightSafe,
-         isIPhoneX, setStatusBarHidden, showConsent, getIdsFromAccountId,
-         getToolCfiCounts, bottomSpace } from "../../utils/toolbox"
+import { getPageCfisKey, getToolbarHeight,
+         setStatusBarHidden, showConsent, getIdsFromAccountId,
+         getToolCfiCounts } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -67,10 +68,10 @@ const {
   MAX_TOOLS_PER_SPOT=10
 } = Constants.expoConfig.extra
 
-const pageTop = (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : statusBarHeight) * -1
+const pageTop = Platform.OS === 'ios' ? -20 : StatusBar.currentHeight * -1
 
 const pageTopInWideMode = {
-  top: pageTop + (isIPhoneX ? 0 : statusBarHeight) + getToolbarHeight(),
+  top: getToolbarHeight()
 }
 
 const pageStyles = {
@@ -85,7 +86,6 @@ const pageStyles = {
 const pagesStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: 'rgb(238, 241, 245)',
@@ -95,7 +95,6 @@ const pagesStyles = {
 const searchStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: 'rgb(238, 241, 245)',
@@ -113,7 +112,6 @@ const zoomStyles = {
 const contentsStyles = {
   position: 'absolute',
   top: getToolbarHeight(),
-  bottom: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
   left: 0,
   right: 0,
   backgroundColor: '#fff',
@@ -188,7 +186,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F6FF',
     width: 0,
     zIndex: 6,
-    marginTop: Platform.OS === 'ios' ? statusBarHeight * -1 : 0,
   },
   toolChipContainer: {
     position: 'absolute',
@@ -210,7 +207,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 2,
-    height: BOTTOM_NAVIGATION_HEIGHT + bottomSpace,
     backgroundColor: '#fff',
   },
   bottomNavigation: {
@@ -218,7 +214,6 @@ const styles = StyleSheet.create({
     left: RETURN_TO_READING_WIDTH,
     right: 0,
     top: 0,
-    bottom: bottomSpace,
     paddingVertical: 0,
   },
   bottomNavigationTab: {
@@ -232,7 +227,6 @@ const styles = StyleSheet.create({
     left: 0,
     width: RETURN_TO_READING_WIDTH,
     top: 0,
-    bottom: bottomSpace,
   },
 })
 
@@ -306,6 +300,7 @@ const Book = React.memo(({
 
   const { fullPageWidth: width, fullPageHeight: height } = useAdjustedDimensions({ sidePanelSettings })
   const wideMode = useWideMode()
+  const safeAreaInsets = useSafeAreaInsets()
 
   const { classroomUid, visibleTools, selectedToolUid, selectedTool, viewingHighlights, viewingFrontMatter,
           viewingOptions, viewingDashboard, myRole, hasFrontMatterDraftData, bookVersion, classroom,
@@ -339,7 +334,7 @@ const Book = React.memo(({
   const cornerSnapshotCoords = useMemo(
     () => ({
       x: 0,
-      y: height - bottomSpace,
+      y: height - safeAreaInsets.bottom,
     }),
     [ height ],
   )
@@ -1218,6 +1213,9 @@ const Book = React.memo(({
             <View
               style={[
                 wideMode ? styles.pagesWideMode : styles.pages,
+                {
+                  bottom: BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom,
+                },
                 showBottomNav ? null : styles.noBottomNav,
               ]}
             >
@@ -1232,7 +1230,7 @@ const Book = React.memo(({
                 inEditMode={inEditMode}
                 toggleInEditMode={toggleInEditMode}
                 setModeToPage={setModeToPage}
-                footerHeight={showBottomNav ? (BOTTOM_NAVIGATION_HEIGHT + bottomSpace) : 0}
+                footerHeight={showBottomNav ? (BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom) : 0}
               />
             </View>
           }
@@ -1240,6 +1238,9 @@ const Book = React.memo(({
             <View
               style={[
                 selectedTabId === 'contents' ? styles.showContents : styles.hideContents,
+                {
+                  bottom: BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom,
+                },
                 showBottomNav ? null : styles.noBottomNav,
               ]}
               onStartShouldSetResponderCapture={unselectText}
@@ -1248,7 +1249,14 @@ const Book = React.memo(({
             </View>
           }
           {selectedTabId === 'search' &&
-            <View style={wideMode ? styles.searchWideMode : styles.search}>
+            <View
+              style={[
+                styles.search,
+                {
+                  bottom: BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom,
+                },
+              ]}
+            >
               <Search
                 idpId={idpId}
                 bookId={bookId}
@@ -1258,15 +1266,32 @@ const Book = React.memo(({
             </View>
           }
           {showBottomNav &&
-            <View style={styles.bottomNavigationContainer}>
+            <View
+              style={[
+                styles.bottomNavigationContainer,
+                {
+                  height: BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom,
+                },
+              ]}
+            >
               <BottomNavigationTab
                 key="backToReading"
                 icon={BackToReadingIcon}
-                style={styles.backToReading}
+                style={[
+                  styles.backToReading,
+                  {
+                    bottom: safeAreaInsets.bottom,
+                  },
+                ]}
                 onSelect={backToReading}
               />
               <BottomNavigation
-                style={styles.bottomNavigation}
+                style={[
+                  styles.bottomNavigation,
+                  {
+                    bottom: safeAreaInsets.bottom,
+                  },
+                ]}
                 selectedIndex={selectedTabIndex}
                 onSelect={setTabsSelectedIndex}
               >
@@ -1376,6 +1401,10 @@ const Book = React.memo(({
           <View
             style={[
               styles.showContents,
+              {
+                bottom: BOTTOM_NAVIGATION_HEIGHT + safeAreaInsets.bottom,
+                marginTop: safeAreaInsets.top * -1,
+              },
               showBottomNav ? null : styles.noBottomNav,
               styles.sidePanel,
               sidePanelSettings.open ? { width: sidePanelSettings.width } : null,

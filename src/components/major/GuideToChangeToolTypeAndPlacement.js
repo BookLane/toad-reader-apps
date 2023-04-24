@@ -6,7 +6,6 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import { Select } from "@ui-kitten/components"
 
-import { statusBarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 import useDimensions from "../../hooks/useDimensions"
 
@@ -27,7 +26,7 @@ const highlightText = {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    marginTop: statusBarHeight + 26,
+    marginTop: 26,
     marginBottom: 10,
     marginHorizontal: 30,
     paddingVertical: 10,
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
   },
   selectContainer: {
     position: 'absolute',
-    top: statusBarHeight + 142,
+    top: 142,
     left: 10,
     backgroundColor: 'white',
     padding: 20,
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
   },
   toolText: {
     ...highlightText,
-    top: statusBarHeight + 260,
+    top: 260,
     right: 20,
     maxWidth: '30vw',
     width: 330,

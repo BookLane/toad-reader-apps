@@ -5,10 +5,11 @@ import { View, Platform, StyleSheet } from "react-native"
 import { i18n } from "inline-i18n"
 import usePrevious from "react-use/lib/usePrevious"
 import { useLayout } from '@react-native-community/hooks'
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { postMessage } from "../../utils/postMessage"
 // import takeSnapshot from "../../utils/takeSnapshot"
-import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr, bottomSpace,
+import { getDisplaySettingsObj, getFirstBookLinkInfo, latestLocationToStr,
          openURL, getToolCfiCounts } from "../../utils/toolbox"
 import useDidUpdate from "../../hooks/useDidUpdate"
 import useRouterState from "../../hooks/useRouterState"
@@ -28,7 +29,6 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: bottomSpace,
   },
   spin: {
     backgroundColor: 'white',
@@ -86,6 +86,7 @@ const BookPage = React.memo(props => {
   const getNoteInEdit = useInstanceValue(noteInEdit)
 
   const wideMode = useWideMode()
+  const safeAreaInsets = useSafeAreaInsets()
 
   const loaded = useRef(false)
   const doAfterLoaded = useRef([])
@@ -432,7 +433,15 @@ const BookPage = React.memo(props => {
 
   return (
     <>
-      <View style={styles.container} onLayout={onLayout}>
+      <View
+        style={[
+          styles.container,
+          {
+            marginBottom: safeAreaInsets.bottom,
+          },
+        ]}
+        onLayout={onLayout}
+      >
         <PageWebView
           key={bookId}
           bookId={bookId}

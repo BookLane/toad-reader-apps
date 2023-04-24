@@ -6,7 +6,6 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { statusBarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 
 import Guide from './Guide'
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
   },
   titleContainer: {
-    marginTop: statusBarHeight + 26,
+    marginTop: 26,
     marginBottom: 10,
     marginHorizontal: 30,
     paddingVertical: 10,

@@ -1,4 +1,7 @@
-import { isIPhoneX, statusBarHeight, statusBarHeightSafe, bottomSpace, getToolbarHeight } from "../utils/toolbox"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { StatusBar } from "react-native"
+
+import { getToolbarHeight } from "../utils/toolbox"
 
 import useDimensions from './useDimensions'
 import useWideMode from "./useWideMode"
@@ -18,13 +21,14 @@ const useAdjustedDimensions = ({
 
   const wideMode = useWideMode()
   const { width, height } = useDimensions().window
+  const safeAreaInsets = useSafeAreaInsets()
 
   if(!fullPageWidth) {
     fullPageWidth = width
-    fullPageHeight = height + (isIPhoneX ? (statusBarHeightSafe - statusBarHeight) : 0)
+    fullPageHeight = height + (safeAreaInsets.top > 30 ? 40 : 0)
 
     if(wideMode) {
-      fullPageHeight -= statusBarHeight
+      fullPageHeight -= (StatusBar.currentHeight + safeAreaInsets.top)
       fullPageHeight -= getToolbarHeight()
       if(sidePanelSettings.open && !widget) {
         fullPageWidth -= sidePanelSettings.width
@@ -36,14 +40,14 @@ const useAdjustedDimensions = ({
   }
 
   let truePageWidth = fullPageWidth
-  let truePageHeight = fullPageHeight - bottomSpace
+  let truePageHeight = fullPageHeight - safeAreaInsets.bottom
   let truePageMarginTop = 0
 
-  if(isIPhoneX && !wideMode) {
-    truePageHeight -= statusBarHeight
-    truePageMarginTop = statusBarHeight
+  if(safeAreaInsets.top > 30 && !wideMode) {
+    truePageHeight -= safeAreaInsets.top
+    truePageMarginTop = safeAreaInsets.top
   } else if(wideMode) {
-    truePageMarginTop = VERTICAL_MARGIN - statusBarHeight
+    truePageMarginTop = VERTICAL_MARGIN - (StatusBar.currentHeight + safeAreaInsets.top)
   }
 
   return {

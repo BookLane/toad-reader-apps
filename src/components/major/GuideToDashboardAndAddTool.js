@@ -5,7 +5,6 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
-import { statusBarHeight } from '../../utils/toolbox'
 import useWideMode from "../../hooks/useWideMode"
 
 import Guide from './Guide'
@@ -26,7 +25,7 @@ const highlightText = {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    marginTop: statusBarHeight + 26,
+    marginTop: 26,
     marginBottom: 10,
     marginHorizontal: 30,
     paddingVertical: 10,
@@ -51,14 +50,14 @@ const styles = StyleSheet.create({
   },
   frontMatter: {
     ...highlightText,
-    top: statusBarHeight + 66,
+    top: 66,
     left: 20,
     maxWidth: '50vw',
     width: 400,
   },
   dashboardButton: {
     position: 'absolute',
-    top: statusBarHeight + 47,
+    top: 47,
     right: 60,
     backgroundColor: 'rgb(211, 218, 230)',
     elevation: 4,
@@ -69,7 +68,7 @@ const styles = StyleSheet.create({
   },
   dashboardText: {
     ...highlightText,
-    top: statusBarHeight + 102,
+    top: 102,
     right: 30,
     maxWidth: '30vw',
     width: 380,
