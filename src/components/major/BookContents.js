@@ -293,7 +293,6 @@ const BookContents = React.memo(({
   )
 
   const safeAreaInsets = useSafeAreaInsets()
-console.log('safeAreaInsets', safeAreaInsets)
   const ListHeader = useMemo(
     () => (
       <View
