@@ -413,6 +413,7 @@ const BookPage = React.memo(props => {
 //       view,
 //       bookId: bookId,
 //       fileName: `test.jpg`,
+//       pageIndexInSpine: pageIndexInSpine.current
 //     })
 
 //     return true

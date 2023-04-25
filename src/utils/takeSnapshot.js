@@ -6,10 +6,9 @@ import { Platform } from "react-native"
 // (1) Taking a single snap shot to the spine and then splitting it up
 // (2) scaling the view down (using a transform)
 
-const START_OF_LENGTH = 1000
-let startOfLastSnapShotBase64
+let lastSnapShotBase64
 
-export default async ({ view, uri, width, height, viewWidth, viewHeight, force, stopProcessing }) => {
+export default async ({ view, uri, width, height, viewWidth, viewHeight, pageIndexInSpine, force, stopProcessing }) => {
 
   if(Platform.OS === 'web') return false
 
@@ -44,28 +43,36 @@ export default async ({ view, uri, width, height, viewWidth, viewHeight, force, 
 
   if(stopProcessing() || !snapshotBase64) return false
 
-  if(Platform.OS === 'android') {
+  for(
+    let idx=0;
+    (
+      idx<3
+      && (
+        // looks like a repeat of the last page
+        snapshotBase64 === lastSnapShotBase64
+        || (
+          // looks like just the spinner
+          pageIndexInSpine === 0
+          && snapshotBase64.length < 4000
+        )
+      )
+    );
+    idx++
+  ) {
+    await new Promise(resolve => setTimeout(resolve, 20))  // delay to allow for render of the shift
 
-    startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
+    if(stopProcessing()) return false
 
-    if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
-      await new Promise(resolve => setTimeout(resolve, 20))  // delay to allow for render of the shift
+    snapshotBase64 = await getSnapshot()
 
-      if(stopProcessing()) return false
-
-      snapshotBase64 = await getSnapshot()
-      startOfSnapshotBase64 = snapshotBase64.substr(0, START_OF_LENGTH)
-
-      if(stopProcessing() || !snapshotBase64) return false
-
-      if(startOfSnapshotBase64 === startOfLastSnapShotBase64) {
-        console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
-      }
-    }
-
-    startOfLastSnapShotBase64 = startOfSnapshotBase64
-
+    if(stopProcessing() || !snapshotBase64) return false
   }
+
+  if(snapshotBase64 === lastSnapShotBase64) {
+    console.log('Warning: There may be a duplicate snapshot due to slow WebView render.', uri)
+  }
+
+  lastSnapShotBase64 = snapshotBase64
 
   const dir = uri.replace(/[^/]+$/, '')
 

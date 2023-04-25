@@ -144,6 +144,7 @@ const PageCapture = ({
           height: pageHeight,
           viewWidth: width,
           viewHeight: height,
+          pageIndexInSpine: pageIndexInSpine.current,
           stopProcessing,
         })
 
