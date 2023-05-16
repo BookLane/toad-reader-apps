@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { StyleSheet, View, Platform, AppState, StatusBar } from "react-native"
+import { StyleSheet, View, Platform, AppState } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
-import { getPageCfisKey, getToolbarHeight,
+import { getPageCfisKey, getToolbarHeight, getStatusBarCurrentHeight,
          setStatusBarHidden, showConsent, getIdsFromAccountId,
          getToolCfiCounts } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
@@ -68,7 +68,7 @@ const {
   MAX_TOOLS_PER_SPOT=10
 } = Constants.expoConfig.extra
 
-const pageTop = Platform.OS === 'ios' ? -20 : StatusBar.currentHeight * -1
+const pageTop = Platform.OS === 'ios' ? -20 : getStatusBarCurrentHeight() * -1
 
 const pageTopInWideMode = {
   top: getToolbarHeight()

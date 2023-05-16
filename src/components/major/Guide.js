@@ -1,11 +1,12 @@
 import React, { useRef, useCallback, useEffect } from "react"
-import { View, Animated, StatusBar } from "react-native"
+import { View, Animated } from "react-native"
 import { StyleSheet } from "react-native"
 import { i18n } from "inline-i18n"
 import { BlurView } from 'expo-blur'
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import useSetTimeout from "../../hooks/useSetTimeout"
+import { getStatusBarCurrentHeight } from "../../utils/toolbox"
 
 import Button from "../basic/Button"
 import Icon from '../basic/Icon'
@@ -77,7 +78,7 @@ const Guide = ({
       style={[
         styles.container,
         {
-          top: (safeAreaInsets.top + StatusBar.currentHeight) * -1,
+          top: (safeAreaInsets.top + getStatusBarCurrentHeight()) * -1,
           opacity,
         },
       ]}
@@ -85,7 +86,7 @@ const Guide = ({
       <View
         style={{
           ...StyleSheet.absoluteFillObject,
-          top: safeAreaInsets.top + StatusBar.currentHeight,
+          top: safeAreaInsets.top + getStatusBarCurrentHeight(),
           bottom: safeAreaInsets.bottom,
         }}
       >

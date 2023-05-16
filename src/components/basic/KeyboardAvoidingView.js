@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Platform, StyleSheet, KeyboardAvoidingView as RNKeyboardAvoidingView, StatusBar } from "react-native"
+import { Platform, StyleSheet, KeyboardAvoidingView as RNKeyboardAvoidingView } from "react-native"
 import * as ScreenOrientation from 'expo-screen-orientation'
 import useCounter from 'react-use/lib/useCounter'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import useWideMode from "../../hooks/useWideMode"
 import useKeyboardSize from "../../hooks/useKeyboardSize"
+import { getStatusBarCurrentHeight } from "../../utils/toolbox"
 
 const styles = StyleSheet.create({
   view: {
@@ -34,7 +35,7 @@ const KeyboardAvoidingView = ({
         try {
           ref.current.viewRef.current.measure(
             (x, y, w, h, pageX, pageY) => {
-              setYOffset(pageY - safeAreaInsets.bottom + StatusBar.currentHeight)
+              setYOffset(pageY - safeAreaInsets.bottom + getStatusBarCurrentHeight())
             }
           )
         } catch(e) {}

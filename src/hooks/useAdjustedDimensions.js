@@ -1,7 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { StatusBar } from "react-native"
 
-import { getToolbarHeight } from "../utils/toolbox"
+import { getToolbarHeight, getStatusBarCurrentHeight } from "../utils/toolbox"
 
 import useDimensions from './useDimensions'
 import useWideMode from "./useWideMode"
@@ -28,7 +27,7 @@ const useAdjustedDimensions = ({
     fullPageHeight = height + (safeAreaInsets.top > 30 ? 40 : 0)
 
     if(wideMode) {
-      fullPageHeight -= (StatusBar.currentHeight + safeAreaInsets.top)
+      fullPageHeight -= (getStatusBarCurrentHeight() + safeAreaInsets.top)
       fullPageHeight -= getToolbarHeight()
       if(sidePanelSettings.open && !widget) {
         fullPageWidth -= sidePanelSettings.width
@@ -47,7 +46,7 @@ const useAdjustedDimensions = ({
     truePageHeight -= safeAreaInsets.top
     truePageMarginTop = safeAreaInsets.top
   } else if(wideMode) {
-    truePageMarginTop = VERTICAL_MARGIN - (StatusBar.currentHeight + safeAreaInsets.top)
+    truePageMarginTop = VERTICAL_MARGIN - (getStatusBarCurrentHeight() + safeAreaInsets.top)
   }
 
   return {

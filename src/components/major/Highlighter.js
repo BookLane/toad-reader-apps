@@ -1,11 +1,11 @@
 import React, { useRef, useCallback, useState, useEffect } from "react"
-import { StyleSheet, Platform, View, Keyboard, StatusBar } from "react-native"
+import { StyleSheet, Platform, View, Keyboard } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import useUnmount from "react-use/lib/useUnmount"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { setStatusBarHidden } from '../../utils/toolbox'
+import { setStatusBarHidden, getStatusBarCurrentHeight } from '../../utils/toolbox'
 
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
@@ -174,7 +174,7 @@ const Highlighter = React.memo(({
         ((selectionInfo.copyTooltipInLowerHalf || keyboardShowing)
           ? {
             top: safeAreaInsets.top > 30 ? (safeAreaInsets.top - 20) * -1 : 0,
-            paddingTop: Math.max(safeAreaInsets.top + StatusBar.currentHeight - 10, 0),
+            paddingTop: Math.max(safeAreaInsets.top + getStatusBarCurrentHeight() - 10, 0),
           }
           : {
             bottom: 0,

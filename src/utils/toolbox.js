@@ -108,6 +108,7 @@ export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 
 export const getFooterHeight = () => 0  // Not used now; will bring back with BookProgress
 export const getToolbarHeight = () => 56
+export const getStatusBarCurrentHeight = () => StatusBar.currentHeight || 0
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 

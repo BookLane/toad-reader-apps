@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react"
 import Constants from 'expo-constants'
-import { Animated, Easing, StyleSheet, Image, StatusBar } from "react-native"
+import { Animated, Easing, StyleSheet, Image } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { getSnapshotURI, getToolbarHeight } from '../../utils/toolbox'
+import { getSnapshotURI, getToolbarHeight, getStatusBarCurrentHeight } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -129,7 +129,7 @@ const ZoomPage = ({
 
     if(snapshotCoords) {
       const left = snapshotCoords.x
-      const top = snapshotCoords.y - (wideMode ? (safeAreaInsets.top + StatusBar.currentHeight + getToolbarHeight()) : 0)
+      const top = snapshotCoords.y - (wideMode ? (safeAreaInsets.top + getStatusBarCurrentHeight() + getToolbarHeight()) : 0)
 
       outputRangeX = left - (fullPageWidth/2 - pageWidth/2)
       outputRangeY = top - (fullPageHeight/2 - pageHeight/2) + (safeAreaInsets.top > 30 ? 20 : 0)
