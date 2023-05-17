@@ -27,6 +27,7 @@ import Button from "../basic/Button"
 import BookImporter from "../major/BookImporter"
 import AccessCodeDialog from "../major/AccessCodeDialog"
 import MetadataDialog from "../major/MetadataDialog"
+import CopyToolsDialog from "../major/CopyToolsDialog"
 import SubscriptionsDialog from "../major/SubscriptionsDialog"
 import Book from "./Book"
 import Reports from "./Reports"
@@ -139,6 +140,7 @@ const Library = ({
   const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
   const [ showMetadataDialog, setShowMetadataDialog ] = useState(false)
+  const [ showCopyToolsDialog, setShowCopyToolsDialog ] = useState(false)
   const [ showSubscriptionsDialog, setShowSubscriptionsDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
@@ -529,6 +531,14 @@ const Library = ({
     [],
   )
 
+  const openCopyToolsDialog = useCallback(
+    () => {
+      setShowCopyToolsDialog(true)
+      historyGoBackToLibrary()
+    },
+    [],
+  )
+
   const openSubscriptionsDialog = useCallback(
     () => {
       setShowSubscriptionsDialog(true)
@@ -554,6 +564,13 @@ const Library = ({
   const closeMetadataDialog = useCallback(
     () => {
       setShowMetadataDialog(false)
+    },
+    [],
+  )
+
+  const closeCopyToolsDialog = useCallback(
+    () => {
+      setShowCopyToolsDialog(false)
     },
     [],
   )
@@ -784,6 +801,7 @@ const Library = ({
               onShowEnvironmentUrls={openEnvironmentUrlsDialog}
               onOpenAccessCodeDialog={openAccessCodeDialog}
               onOpenMetadataDialog={openMetadataDialog}
+              onOpenCopyToolsDialog={openCopyToolsDialog}
               onOpenSubscriptionsDialog={openSubscriptionsDialog}
             />
           )
@@ -962,6 +980,12 @@ const Library = ({
       <MetadataDialog
         open={!!showMetadataDialog}
         onClose={closeMetadataDialog}
+        handleNewLibrary={handleNewLibrary}
+      />
+
+      <CopyToolsDialog
+        open={!!showCopyToolsDialog}
+        onClose={closeCopyToolsDialog}
         handleNewLibrary={handleNewLibrary}
       />
 

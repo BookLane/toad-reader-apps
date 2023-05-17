@@ -82,6 +82,7 @@ const AppMenu = ({
   onShowEnvironmentUrls,
   onOpenAccessCodeDialog,
   onOpenMetadataDialog,
+  onOpenCopyToolsDialog,
   onOpenSubscriptionsDialog,
 
   accounts,
@@ -101,7 +102,7 @@ const AppMenu = ({
 
   const hasNoAuth = useHasNoAuth(accounts)
   const loggedInUser = useLoggedInUser(accounts)
-  const { authMethod, devAuthMethod, accessCodeInfo } = Object.values(idps)[0] || {}
+  const { authMethod, devAuthMethod, accessCodeInfo, useEnhancedReader } = Object.values(idps)[0] || {}
   const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
   const showAll = useCallback(
@@ -408,6 +409,14 @@ const AppMenu = ({
         title: i18n("Manage subscription types", "", "admin"),
         // icon: removeIcon,
         onSelect: onOpenSubscriptionsDialog,
+        disabled: !online,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web' && useEnhancedReader) ? [] : [
+      {
+        title: i18n("Copy interactive tools to another site", "", "admin"),
+        // icon: removeIcon,
+        onSelect: onOpenCopyToolsDialog,
         disabled: !online,
       },
     ]),
