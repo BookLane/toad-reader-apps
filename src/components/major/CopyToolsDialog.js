@@ -117,7 +117,11 @@ const CopyToolsDialog = ({
           try {
 
             const { groupMembers } = await response.json()
-            setGroupMembers(cloneObj(groupMembers))
+            const modifiedGroupMembers = cloneObj(groupMembers)
+            modifiedGroupMembers.forEach(({ commonBooks }) => {
+              commonBooks.sort((a,b) => a.title.toLowerCase() < b.title.toLowerCase() ? -1 : 1)
+            })
+            setGroupMembers(modifiedGroupMembers)
             setGroupMemberIndex(0)
             setBookIndex(-1)
 
