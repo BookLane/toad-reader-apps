@@ -24,9 +24,9 @@ npm run change-tenant -- homeschool
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
 
-npm run change-tenant -- readyman
-npm run go-push-web-to-staging
-node ./scripts/pushwebstagingtoproduction.js
+# npm run change-tenant -- readyman
+# npm run go-push-web-to-staging
+# node ./scripts/pushwebstagingtoproduction.js
 
 npm run change-tenant -- biblearc
 npm run go-push-web-to-staging
@@ -37,5 +37,9 @@ npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
 
 npm run change-tenant -- langham
+npm run go-push-web-to-staging
+node ./scripts/pushwebstagingtoproduction.js
+
+npm run change-tenant -- blf
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
