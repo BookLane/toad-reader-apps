@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Dimensions, Platform } from "react-native"
 import * as ScreenOrientation from 'expo-screen-orientation'
 import { getLocale } from "inline-i18n"
-import { Video } from 'expo-av'
+import { Video, ResizeMode, VideoFullscreenUpdate } from 'expo-av'
 
 import useWideMode from "../../hooks/useWideMode"
 
@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
   webView: {
     width: '100%',
     height: '100%',
+  },
+  video: {
+    position: `relative`,
   },
 })
 
@@ -69,7 +72,7 @@ const VideoTool = React.memo(({
       if(wideModeWithEitherOrientation) return
       if(Platform.OS === 'web') return
 
-      if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
+      if(fullscreenUpdate === VideoFullscreenUpdate.PLAYER_WILL_DISMISS) {
         try {
           videoRef.current.pauseAsync()
         } catch(err) {}  // ignore as it just means the state is already what I am setting it to be
@@ -77,9 +80,9 @@ const VideoTool = React.memo(({
 
       if(Platform.OS === 'android') {
 
-        if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT) {
+        if(fullscreenUpdate === VideoFullscreenUpdate.PLAYER_DID_PRESENT) {
           ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-        } else if(fullscreenUpdate === Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS) {
+        } else if(fullscreenUpdate === VideoFullscreenUpdate.PLAYER_WILL_DISMISS) {
           ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
         }
 
@@ -265,9 +268,10 @@ const VideoTool = React.memo(({
           <Video
             ref={videoRef}
             source={{ uri: videoLink }}
-            resizeMode={Video.RESIZE_MODE_CONTAIN}
+            resizeMode={ResizeMode.CONTAIN}
             useNativeControls
             style={styles.webViewContainer}
+            videoStyle={styles.video}
             onFullscreenUpdate={onFullscreenUpdate}
             onPlaybackStatusUpdate={onPlaybackStatusUpdate}
           />
