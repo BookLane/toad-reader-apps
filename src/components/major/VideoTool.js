@@ -271,7 +271,7 @@ const VideoTool = React.memo(({
             resizeMode={ResizeMode.CONTAIN}
             useNativeControls
             style={styles.webViewContainer}
-            videoStyle={styles.video}
+            videoStyle={Platform.OS === 'web' ? styles.video : null}
             onFullscreenUpdate={onFullscreenUpdate}
             onPlaybackStatusUpdate={onPlaybackStatusUpdate}
           />
