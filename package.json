@@ -89,7 +89,7 @@
     "react-native-flip-editor": "github:educational-resources-and-services/react-native-flip-editor#68770463c4159267b5041a081367940adb9f05ab",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-reanimated": "~2.14.4",
-    "react-native-safe-area-context": "4.5.0",
+    "react-native-safe-area-context": "4.5.3",
     "react-native-simple-side-menu": "github:educational-resources-and-services/react-native-simple-side-menu#23df42cad42ccfb276d29140d853864ed1af57a3",
     "react-native-svg": "13.4.0",
     "react-native-table-component": "github:educational-resources-and-services/react-native-table-component#e32dc60c6b9ba7c9225616fdbd753d7156302246",
