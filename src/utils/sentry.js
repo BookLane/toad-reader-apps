@@ -1,6 +1,6 @@
 import * as Sentry from 'sentry-expo'
 
-let { init, captureException, captureMessage } = Sentry
+let { init, captureException, captureMessage } = Sentry.Native
 if(__DEV__) {
   init = () => {}
   captureException = err => (console.log(1) || console.log(err))
