@@ -153,7 +153,7 @@ export const fetchZipAndAssets = async ({ zipUrl, localBaseUri, cookie, progress
       if(file.dir) return
       
       numAssets++
-      relativePath = relativePath.replace(/ /g, '%20')
+      relativePath = encodeURI(relativePath)  // used to have relativePath.replace(/ /g, '%20')
 
       writeFunctions.push(
         (resolve, reject) => {
