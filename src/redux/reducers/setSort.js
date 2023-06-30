@@ -20,7 +20,12 @@ export default function(state, action) {
       const getInfo = bookId => {
         const updatedAtTime = ((newState.userDataByBookId[bookId] || {}).updated_at || -0) * -1
 
-        const titleStringForSort = ((newState.books[bookId] || {}).title || "").toUpperCase().replace(/^(?:A|AN|THE) /, '')
+        const titleStringForSort = (
+          ((newState.books[bookId] || {}).title || "")
+            .toUpperCase()
+            .replace(/^(?:A|AN|THE) /, '')
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")  // remove accents
+        )
 
         switch(newState.library.sort) {
 
@@ -39,7 +44,11 @@ export default function(state, action) {
           }
 
           case 'author': {
-            return ((newState.books[bookId] || {}).author || "").toUpperCase()
+            return (
+              ((newState.books[bookId] || {}).author || "")
+                .toUpperCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")  // remove accents
+            )
           }
 
         }
