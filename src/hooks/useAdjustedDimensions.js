@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { getToolbarHeight, getStatusBarCurrentHeight } from "../utils/toolbox"
+import { getToolbarHeight, getStatusBarCurrentHeight, getIsAndroidWithCameraWithinScreen } from "../utils/toolbox"
 
 import useDimensions from './useDimensions'
 import useWideMode from "./useWideMode"
@@ -24,7 +24,7 @@ const useAdjustedDimensions = ({
 
   if(!fullPageWidth) {
     fullPageWidth = width
-    fullPageHeight = height + (safeAreaInsets.top > 30 ? 40 : 0)
+    fullPageHeight = height + (safeAreaInsets.top > 30 ? 40 : 0) + (getIsAndroidWithCameraWithinScreen() ? getStatusBarCurrentHeight() : 0)
 
     if(wideMode) {
       fullPageHeight -= (getStatusBarCurrentHeight() + safeAreaInsets.top)

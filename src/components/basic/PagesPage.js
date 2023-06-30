@@ -5,7 +5,7 @@ import { StyleSheet, Platform, TouchableHighlight, TouchableNativeFeedback, Imag
 // import PagesBookmark from "./PagesBookmark"
 import CapturingThumbnailsInfoIcon from "./CapturingThumbnailsInfoIcon"
 
-import { getSnapshotURI, getStatusBarCurrentHeight } from '../../utils/toolbox'
+import { getSnapshotURI, getStatusBarCurrentHeight, getIsAndroidWithCameraWithinScreen } from '../../utils/toolbox'
 import useSetTimeout from '../../hooks/useSetTimeout'
 
 const {
@@ -83,7 +83,7 @@ const PagesPage = React.memo(({
         },
         snapshotCoords: {
           x,
-          y: y + (Platform.OS === 'android' ? getStatusBarCurrentHeight() : 0),
+          y: y + ((Platform.OS === 'android' && !getIsAndroidWithCameraWithinScreen()) ? getStatusBarCurrentHeight() : 0),
         },
       }))
 

@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { getSnapshotURI, getToolbarHeight, getStatusBarCurrentHeight } from '../../utils/toolbox'
+import { getSnapshotURI, getToolbarHeight, getStatusBarCurrentHeight, getIsAndroidWithCameraWithinScreen } from '../../utils/toolbox'
 
 import usePrevious from "react-use/lib/usePrevious"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -129,7 +129,7 @@ const ZoomPage = ({
 
     if(snapshotCoords) {
       const left = snapshotCoords.x
-      const top = snapshotCoords.y - (wideMode ? (safeAreaInsets.top + getStatusBarCurrentHeight() + getToolbarHeight()) : 0)
+      const top = snapshotCoords.y - (wideMode ? (safeAreaInsets.top + getStatusBarCurrentHeight() + getToolbarHeight()) : 0) + (getIsAndroidWithCameraWithinScreen() ? 20 : 0)
 
       outputRangeX = left - (fullPageWidth/2 - pageWidth/2)
       outputRangeY = top - (fullPageHeight/2 - pageHeight/2) + (safeAreaInsets.top > 30 ? 20 : 0)
@@ -175,7 +175,7 @@ const ZoomPage = ({
         styles.snapshotCont,
         zoomStyles1,
         {
-          top: (truePageMarginTop - (safeAreaInsets.top > 30 ? 20 : 0)) * -1,
+          top: (truePageMarginTop - (safeAreaInsets.top > 30 ? 20 : 0) - (getIsAndroidWithCameraWithinScreen() ? getStatusBarCurrentHeight() - 20 : 0)) * -1,
         },
       ]}
     >

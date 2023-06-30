@@ -15,7 +15,7 @@ import { refreshUserData } from "../../utils/syncUserData"
 import parseEpub from "../../utils/parseEpub"
 import { getPageCfisKey, getToolbarHeight, getStatusBarCurrentHeight,
          setStatusBarHidden, showConsent, getIdsFromAccountId,
-         getToolCfiCounts } from "../../utils/toolbox"
+         getToolCfiCounts, getIsAndroidWithCameraWithinScreen } from "../../utils/toolbox"
 import useSetTimeout from "../../hooks/useSetTimeout"
 import useRouterState from "../../hooks/useRouterState"
 import useAdjustedDimensions from "../../hooks/useAdjustedDimensions"
@@ -68,7 +68,7 @@ const {
   MAX_TOOLS_PER_SPOT=10
 } = Constants.expoConfig.extra
 
-const pageTop = Platform.OS === 'ios' ? -20 : getStatusBarCurrentHeight() * -1
+const pageTop = (getIsAndroidWithCameraWithinScreen() || Platform.OS === 'ios') ? -20 : getStatusBarCurrentHeight() * -1
 
 const pageTopInWideMode = {
   top: getToolbarHeight()
