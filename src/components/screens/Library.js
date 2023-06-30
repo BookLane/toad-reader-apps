@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
+import Constants from 'expo-constants'
 import * as ScreenOrientation from 'expo-screen-orientation'
 import * as FileSystem from 'expo-file-system'
 import { Platform, StyleSheet, View, Text, Alert } from "react-native"
@@ -47,10 +48,13 @@ import WebView from "../major/WebView"
 import Dialog from "../major/Dialog"
 import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 
-
 import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
          autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid, updateSubscriptions } from "../../redux/actions"
+
+const {
+  NOT_LOGGED_IN_MESSAGE,
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   flex1: {
@@ -71,6 +75,31 @@ const styles = StyleSheet.create({
     zIndex: 1,
     backgroundColor: 'rgb(238, 241, 245)',
     flex: 1,
+  },
+  notLoggedInOuterContainer: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    left: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  notLoggedInContainer: {
+    maxWidth: '100%',
+    width: 400,
+    backgroundColor: 'white',
+    borderColor: 'rgba(0,0,0,.1)',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+  },
+  notLoggedInMessage: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  notLoggedInButtonContainer: {
+    display: 'flex',
   },
   hiddenWebview: {
     position: 'absolute',
@@ -600,6 +629,15 @@ const Library = ({
     [],
   )
 
+  const goDoEmailLogin = useCallback(
+    () => {
+      historyReplace("/", {
+        doEmailLogin: true,
+      })
+    },
+    [],
+  )
+
   useEffect(
     () => {
       // If they have clicked on one of the links in the import
@@ -853,6 +891,25 @@ const Library = ({
                             bookList={bookList}
                             handleNewLibrary={handleNewLibrary}
                           />
+                          {!!NOT_LOGGED_IN_MESSAGE &&
+                            <View style={styles.notLoggedInOuterContainer}>
+                              <View style={styles.notLoggedInContainer}>
+                                <Text style={styles.notLoggedInMessage}>
+                                  {NOT_LOGGED_IN_MESSAGE}
+                                </Text>
+                                <View style={styles.notLoggedInButtonContainer}>
+                                  <Button
+                                    onPress={goDoEmailLogin}
+                                    size="small"
+                                    status="basic"
+                                    disabled={!online}
+                                  >
+                                    {i18n("Log in with email")}
+                                  </Button>
+                                </View>
+                              </View>
+                            </View>
+                          }
                         </View>
                       )
                   )

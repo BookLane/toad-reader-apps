@@ -10,6 +10,7 @@ import BookInfo from "../basic/BookInfo"
 
 const {
   LIBRARY_LIST_MARGIN,
+  NOT_LOGGED_IN_MESSAGE,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
@@ -18,6 +19,9 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 0,
     flex: 1,
+  },
+  flatlist: {
+    height: 200,
   },
 })
 
@@ -81,8 +85,8 @@ const LibraryList = React.memo(({
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         ref={flatListRef}
+        ListFooterComponent={NOT_LOGGED_IN_MESSAGE ? <View style={styles.flatlist} /> : null}
       />
-
     </View>
   )
 })
