@@ -20,6 +20,7 @@ import useHasNoAuth from "../../hooks/useHasNoAuth"
 import useWideMode from "../../hooks/useWideMode"
 import usePushToken from "../../hooks/usePushToken"
 import usePushNotifications from "../../hooks/usePushNotifications"
+import useLoggedInUser from "../../hooks/useLoggedInUser"
 import { setUser } from "../../utils/analytics"
 
 import { Switch, Route } from "../routers/react-router"
@@ -174,6 +175,7 @@ const Library = ({
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
+  const loggedInUser = useLoggedInUser(accounts)
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
@@ -824,6 +826,26 @@ const Library = ({
 
   const doingInitialFetch = fetchingBooks && bookList.length == 0
   const { accessCodeInfo } = Object.values(idps)[0] || {}
+  const showNotLoggedInMessage = !!(NOT_LOGGED_IN_MESSAGE && !loggedInUser)
+  const notLoggedInMessage = showNotLoggedInMessage && (
+    <View style={styles.notLoggedInOuterContainer}>
+      <View style={styles.notLoggedInContainer}>
+        <Text style={styles.notLoggedInMessage}>
+          {NOT_LOGGED_IN_MESSAGE}
+        </Text>
+        <View style={styles.notLoggedInButtonContainer}>
+          <Button
+            onPress={goDoEmailLogin}
+            size="small"
+            status="basic"
+            disabled={!online}
+          >
+            {i18n("Log in with email")}
+          </Button>
+        </View>
+      </View>
+    </View>
+  )
 
   return (
     <SideMenu
@@ -883,6 +905,7 @@ const Library = ({
                               </Button>
                             </View>
                           }
+                          {notLoggedInMessage}
                         </>
                       )
                       : (
@@ -890,26 +913,9 @@ const Library = ({
                           <LibraryViewer
                             bookList={bookList}
                             handleNewLibrary={handleNewLibrary}
+                            showNotLoggedInMessage={showNotLoggedInMessage}
                           />
-                          {!!NOT_LOGGED_IN_MESSAGE &&
-                            <View style={styles.notLoggedInOuterContainer}>
-                              <View style={styles.notLoggedInContainer}>
-                                <Text style={styles.notLoggedInMessage}>
-                                  {NOT_LOGGED_IN_MESSAGE}
-                                </Text>
-                                <View style={styles.notLoggedInButtonContainer}>
-                                  <Button
-                                    onPress={goDoEmailLogin}
-                                    size="small"
-                                    status="basic"
-                                    disabled={!online}
-                                  >
-                                    {i18n("Log in with email")}
-                                  </Button>
-                                </View>
-                              </View>
-                            </View>
-                          }
+                          {notLoggedInMessage}
                         </View>
                       )
                   )

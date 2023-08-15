@@ -15,7 +15,6 @@ const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
   LIBRARY_COVERS_VERTICAL_MARGIN,
   LIBRARY_COVERS_BOTTOM_PADDING,
-  NOT_LOGGED_IN_MESSAGE,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
@@ -40,6 +39,7 @@ const LibraryCovers = ({
   books,
   bookList=[],
   library={},
+  showNotLoggedInMessage,
 }) => {
 
   const { coverWidth, coverHeight, coversPerRow } = useCoverSize()
@@ -231,7 +231,7 @@ const LibraryCovers = ({
         showsVerticalScrollIndicator={false}
         getItemLayout={getItemLayout}
         ref={flatListRef}
-        ListFooterComponent={NOT_LOGGED_IN_MESSAGE ? <View style={styles.flatlist} /> : null}
+        ListFooterComponent={showNotLoggedInMessage ? <View style={styles.flatlist} /> : null}
       />
 
     </View>
