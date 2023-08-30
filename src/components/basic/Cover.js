@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from "react"
-import * as FileSystem from 'expo-file-system'
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Image, StyleSheet, View, Text, Platform } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
+import { Image } from 'expo-image'
 import { i18n } from "inline-i18n"
 
-import { getDataOrigin } from '../../utils/toolbox'
+import { getDataOrigin, getIDPOrigin } from '../../utils/toolbox'
 
 import { Link } from "../../hooks/useRouterState"
 import CoverAndSpin from "./CoverAndSpin"
@@ -39,11 +39,6 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 0, 0, .7)',
   },
   image: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: 'rgba(0, 0, 0, .1)',
   },
   trialContainer: {
@@ -82,49 +77,40 @@ const Cover = ({
   idps,
 }) => {
 
-  const [ imageError, setImageError ] = useState(false)
-  const imageOnError = useCallback(() => setImageError(true), [])
-  
   const { title, flags, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts } = bookInfo
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
-  const dataOriginForDev = __DEV__ ? getDataOrigin(idps[idpId]) : ``
-  const uri = Platform.OS === 'web'
-    ? `${dataOriginForDev}/epub_content/covers/book_${bookId}.png`
-    : (coverFilename && `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`)
+  const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
 
   const cover = (
-    <View
-      style={[
-        styles.cover,
-        {
-          width: bookWidth,
-          paddingTop: bookHeight,
-        },
-      ]}
-    >
-      {!!(!uri || imageError) &&
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      }
-      {!!uri &&
-        <Image
-          source={{ uri }}
-          style={styles.image}
-          resizeMode='cover'
-          onError={imageOnError}
-        />
-      }
+    <View style={styles.cover}>
+
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+
+      <Image
+        source={`${downloadOrigin}/epub_content/covers/book_${bookId}.png`}
+        style={[
+          styles.image,
+          {
+            width: bookWidth,
+            height: bookHeight,
+          },  
+        ]}
+      />
+
       {downloadStatus == 1 &&
         <CoverAndSpin
           percentage={downloadProgress}
         />
       }
+
       {downloadStatus == 2 && <CoverCheck />}
       {/* <CoverPercentage>{totalCharacterCount}</CoverPercentage> */}
       {/* <CoverSize>{epubSizeInMB}<CoverSize /> */}
+
       {(flags || []).includes("trial") && (
         <View style={styles.trialContainer}>
           <Text style={styles.trial}>
@@ -132,6 +118,7 @@ const Cover = ({
           </Text>
         </View>
       )}
+
     </View>
   )
 

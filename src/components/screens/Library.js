@@ -337,43 +337,6 @@ const Library = ({
     [],
   )
 
-  const getCovers = useCallback(
-    ({ idpId }) => {
-
-      const books = getBooks()
-      const idps = getIdps()
-
-      if(Platform.OS === 'web') return
-
-      for(let bookId in books) {
-        const book = books[bookId]
-
-        if(book.coverHref && !book.coverFilename) {
-          const idp = idps[idpId]
-
-          if(idp) {
-            const coverFilename = book.coverHref.split('/').pop()
-
-            const downloadOrigin = __DEV__ ? getDataOrigin(idp) : getIDPOrigin(idp)
-            downloadAsync(
-              `${downloadOrigin}/epub_content/covers/book_${bookId}.png`,
-              `${FileSystem.documentDirectory}covers/${bookId}/${coverFilename}`,
-            ).then(successful => {
-              if(successful) {
-                setCoverFilename({
-                  bookId,
-                  coverFilename,
-                })
-              }
-            })
-          }
-          
-        }
-      }
-    },
-    [],
-  )
-
   const handleNewLibrary = useCallback(
     async ({ response, idpId, accountId }) => {
 
@@ -402,8 +365,6 @@ const Library = ({
         hash,
       })
       reSort()
-
-      requestAnimationFrame(() => getCovers({ idpId }))
 
       console.log(`...done fetching books (accountId: ${accountId}).`)
 

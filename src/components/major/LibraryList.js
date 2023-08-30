@@ -2,8 +2,11 @@ import React, { useCallback, useRef } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { StyleSheet, FlatList, View } from "react-native"
+import { StyleSheet, View } from "react-native"
+import { FlashList } from "@shopify/flash-list"
 import usePrevious from "react-use/lib/usePrevious"
+
+import useCoverSize from "../../hooks/useCoverSize"
 
 import LibraryBook from "../basic/LibraryBook"
 import BookInfo from "../basic/BookInfo"
@@ -78,11 +81,14 @@ const LibraryList = React.memo(({
     [ books, handleNewLibrary ],
   )
 
+  const { coverHeight } = useCoverSize()
+
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         data={bookList.map(bookId => ({ key: bookId }))}
         renderItem={renderItem}
+        estimatedItemSize={coverHeight + LIBRARY_LIST_MARGIN}
         showsVerticalScrollIndicator={false}
         ref={flatListRef}
         ListFooterComponent={showNotLoggedInMessage ? <View style={styles.flatlist} /> : null}

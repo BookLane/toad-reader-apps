@@ -13,7 +13,7 @@ const MOST_RECENT_CHANGE_REQUIRING_PAGE_RECAPTURE_DATE = "2023-04-24"
 // change each time there is a modification to the apps that may change the layout
 // flow of the epubs.
 
-export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress, removeCover }) => {
+export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines, clearUserDataExceptProgress }) => {
   const localBaseUri = `${getBooksDir()}${bookId}/`
   const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
 
@@ -29,12 +29,6 @@ export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, s
     FileSystem.deleteAsync(searchIndexLocalUri, { idempotent: true }),
   ]
   
-  if(removeCover) {
-    asyncTasks.push(
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory}covers/${bookId}/${books[bookId].coverFilename}`, { idempotent: true })
-    )
-  }
-
   await Promise.all(asyncTasks)
 
   console.log(`Done removing snapshots and contents for book ${bookId}.`)
@@ -78,7 +72,7 @@ export const removeAllEPubs = async ({ books, ...otherParams }) => {
 export const removeAccountEPubs = async ({ books, ...otherParams }) => {
   await Promise.all(Object.keys(books).map(bookId => (
     books[bookId].downloadStatus > 0
-      ? removeEpub({ books, bookId, ...otherParams, removeCover: true })
+      ? removeEpub({ books, bookId, ...otherParams })
       : null
   )))
 }

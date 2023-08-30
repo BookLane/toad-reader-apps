@@ -2,9 +2,9 @@ import React, { useMemo, useRef, useCallback } from "react"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { StyleSheet, View, FlatList } from "react-native"
+import { StyleSheet, View } from "react-native"
+import { FlashList } from "@shopify/flash-list"
 import usePrevious from "react-use/lib/usePrevious"
-import useDimensions from "../../hooks/useDimensions"
 import useCoverSize from '../../hooks/useCoverSize'
 
 import LibraryBook from "../basic/LibraryBook"
@@ -188,48 +188,15 @@ const LibraryCovers = ({
     [ books, coverWidth, coverHeight ],
   )
 
-  const getItemLayout = useCallback(
-    (data, index) => {
-      // const { highlightedBookId } = data[0]
-
-      const length = LIBRARY_COVERS_VERTICAL_MARGIN + coverHeight + LIBRARY_COVERS_BOTTOM_PADDING
-      // const highlightedRowExtraLength = highlightedBookId ? length : 0
-
-      if(index === 0) {
-        return {
-          offset: 0,
-          length: length + LIBRARY_COVERS_VERTICAL_MARGIN,
-          index: 0,
-        }
-      }
-
-      return {
-        offset: LIBRARY_COVERS_VERTICAL_MARGIN + length * index,  // the distance from the top of the first row to this row
-        length,  // the height of the row
-        index,
-      }
-
-    },
-    [ coverHeight ],
-  )
-
-  const { height } = useDimensions().window
-
-  const estimatedRowsPerPage =
-    parseInt(height / (LIBRARY_COVERS_VERTICAL_MARGIN + coverHeight + LIBRARY_COVERS_BOTTOM_PADDING), 10)
-
   return (
     <View
       style={styles.container}
     >
-      <FlatList
+      <FlashList
         data={list}
         renderItem={renderItem}
-        initialNumToRender={estimatedRowsPerPage + 2}
-        maxToRenderPerBatch={estimatedRowsPerPage}
-        windowSize={11}  // i.e. 5 rows above and below rendered
+        estimatedItemSize={LIBRARY_COVERS_VERTICAL_MARGIN + coverHeight + LIBRARY_COVERS_BOTTOM_PADDING}
         showsVerticalScrollIndicator={false}
-        getItemLayout={getItemLayout}
         ref={flatListRef}
         ListFooterComponent={showNotLoggedInMessage ? <View style={styles.flatlist} /> : null}
       />
