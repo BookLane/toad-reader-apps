@@ -109,7 +109,11 @@ export const getSnapshotsDir = () => `${FileSystem.documentDirectory}snapshots/`
 export const getFooterHeight = () => 0  // Not used now; will bring back with BookProgress
 export const getToolbarHeight = () => 56
 export const getStatusBarCurrentHeight = () => StatusBar.currentHeight || 0
-export const getIsAndroidWithCameraWithinScreen = () => Platform.OS === 'android' && getStatusBarCurrentHeight() >= 40
+export const getIsAndroidWithCameraWithinScreen = () => Platform.OS === 'android' && getStatusBarCurrentHeight() > 20
+// I'm not sure about this previous line. See here (https://stackoverflow.com/questions/3407256/height-of-status-bar-in-android).
+// I previously tested it to be >= 40, but it was incorrectly returning false for OnePlus Nord 2T.
+// Given the link above, it is clear that it will be treated as a camera within screen for some where that is not true,
+// but this might be an okay solution since it just means more padding at the top.
 
 export const getFullName = user => user ? `${user.fullname || ''}`.trim() : ``
 
