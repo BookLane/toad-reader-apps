@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   subversion: {
     fontSize: 9,
     textAlign: 'center',
-    color: '#ccc',
+    color: '#aaa',
     paddingBottom: 20,
   },
 })
