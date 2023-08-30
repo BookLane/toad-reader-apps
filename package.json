@@ -13,6 +13,7 @@
     "build-ios-staging": "(node ./scripts/echoActionToPerform.js --action build-ios-staging && npm run remind -s && ((npm run pre-push-swap && eas build --platform ios --profile staging) || npm run post-push-restore)) || true",
     "build-ios-beta": "(node ./scripts/echoActionToPerform.js --action build-ios-beta && npm run remind -s && ((npm run pre-push-swap && eas build --platform ios --profile beta) || npm run post-push-restore)) || true",
     "build-ios-production": "(node ./scripts/echoActionToPerform.js --action build-ios-production && npm run remind -s && ((npm run pre-push-swap && eas build --platform ios --profile production) || npm run post-push-restore)) || true",
+    "build-apps-production": "(node ./scripts/echoActionToPerform.js --action build-apps-production && npm run remind -s && ((npm run pre-push-swap && eas build --platform all --profile production) || npm run post-push-restore)) || true",
     "submit-android-production": "echo '\n\nINSTRUCTIONS: Download the latest Android build from Expo and upload it to the Play Store.\n'",
     "submit-ios-production": "(node ./scripts/echoActionToPerform.js --action submit-ios-production && npm run confirm -s && (eas submit --platform ios --profile production --latest)) || true",
     "change-tenant": "./scripts/changeTenant.sh",
