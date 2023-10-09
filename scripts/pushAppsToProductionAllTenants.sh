@@ -26,3 +26,6 @@ npm run go-push-apps-to-production
 
 npm run change-tenant -- blf
 npm run go-push-apps-to-production
+
+npm run change-tenant -- kmk
+npm run go-push-apps-to-production

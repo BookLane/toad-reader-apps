@@ -43,3 +43,7 @@ node ./scripts/pushwebstagingtoproduction.js
 npm run change-tenant -- blf
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
+
+npm run change-tenant -- kmk
+npm run go-push-web-to-staging
+node ./scripts/pushwebstagingtoproduction.js
