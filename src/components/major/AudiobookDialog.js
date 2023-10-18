@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import useToggle from "react-use/lib/useToggle"
 import { Image } from 'expo-image'
 
-import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj } from '../../utils/toolbox'
+import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj, openURL } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
 
 import Dialog from "./Dialog"
@@ -18,6 +18,7 @@ import FileImporter from "./FileImporter"
 const keyOptionButton = {
   paddingHorizontal: 0,
   borderRadius: 17,
+  height: 34,
 }
 
 const defaultBook = {
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   dialog:  {
-    width: 350,
+    width: 450,
     maxWidth: 'calc(100vw - 20px)',
   },
   line: {
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   upload: {
-    marginTop: 15,
+    marginTop: 5,
     alignItems: 'flex-start',
   },
   input: {
@@ -84,6 +85,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, .1)',
     width: 100,
     height: 100,
+  },
+  coverContainer: {
+    marginBottom: 15,
+    marginRight: 'auto',
+  },
+  spineLabelInput: {
+    flex: 1,
+    marginRight: 5,
   },
   coverEditIconContainer: {
     position: 'absolute',
@@ -144,6 +153,18 @@ const AudiobookDialog = ({
       })
     },
     [],
+  )
+
+  const updateSpineLabel = useCallback(
+    ({ id, value }) => {
+      const audiobookInfo = cloneObj(getAudiobookInfo())
+      audiobookInfo.spines[parseInt(id)].label = value
+      updateEditedBook({
+        id: `audiobookInfo`,
+        value: audiobookInfo,
+      })
+    },
+    [ updateEditedBook ],
   )
 
   const onConfirm = useCallback(
@@ -228,9 +249,30 @@ const AudiobookDialog = ({
     [ updateEditedBook ],
   )
 
+  const onUploadSpinesSuccess = useCallback(
+    files => {
+      updateEditedBook({
+        id: `audiobookInfo`,
+        value: {
+          ...getAudiobookInfo(),
+          spines: [
+            ...getAudiobookInfo().spines,
+            ...files.map(({ name, result: { filename } }) => ({
+              filename,
+              label: name.replace(/\.[^.]+$/, ``),
+            }))
+          ],
+        },
+      })
+    },
+    [ updateEditedBook ],
+  )
+
   const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
-  const EditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.editIcon, style ]} />, [])
+  const PlayIcon = useCallback(({ style }) => <Icon name='md-play' style={[ styles.playIcon, style ]} />, [])
   const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
+  const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
+  const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
 
   const hasChange = JSON.stringify(book) !== JSON.stringify(editedBook)
 
@@ -305,98 +347,105 @@ const AudiobookDialog = ({
               </>
             }
 
-            {/* {audiobookInfo.chapters.map(({ id, name, options }, idx) => {
-              const upDisabled = idx === 0 || submitting
-              const downDisabled = idx === editedMetadataKeys.length - 1 || submitting
-            
-              return (
-                <View key={idx} style={styles.line}>
-                  <View style={styles.keyLine}>
-                    <Text
-                      style={styles.key}
-                      numberOfLines={1}
-                    >
-                      {name}
-                    </Text>
-                    <Button
-                      style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
-                      size="small"
-                      appearance="ghost"
-                      accessoryLeft={EditIcon}
-                      onPress={() => setEditIndex(idx)}
-                      disabled={submitting}
-                    />
-                    <Button
-                      style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
-                      size="small"
-                      appearance="ghost"
-                      accessoryLeft={TrashIcon}
-                      onPress={() => {
-                        const newEditedMetadataKeys = cloneObj(editedMetadataKeys)
-                        newEditedMetadataKeys.splice(idx, 1)
-                        setEditedMetadataKeys(newEditedMetadataKeys)
-                      }}
-                      disabled={submitting}
-                    />
-                    <Button
-                      style={upDisabled ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
-                      size="small"
-                      appearance="ghost"
-                      accessoryLeft={ArrowUpIcon}
-                      onPress={() => {
-                        const newEditedMetadataKeys = cloneObj(editedMetadataKeys)
-                        newEditedMetadataKeys.splice(idx - 1, 0, newEditedMetadataKeys.splice(idx, 1)[0])
-                        setEditedMetadataKeys(newEditedMetadataKeys)
-                      }}
-                      disabled={upDisabled}
-                    />
-                    <Button
-                      style={downDisabled ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
-                      size="small"
-                      appearance="ghost"
-                      accessoryLeft={ArrowDownIcon}
-                      onPress={() => {
-                        const newEditedMetadataKeys = cloneObj(editedMetadataKeys)
-                        newEditedMetadataKeys.splice(idx + 1, 0, newEditedMetadataKeys.splice(idx, 1)[0])
-                        setEditedMetadataKeys(newEditedMetadataKeys)
-                      }}
-                      disabled={downDisabled}
-                    />
-                  </View>
-                  <Text style={styles.optionLabel}>
-                    {!options
-                      ? i18n("Free form text", "", "admin")
-                      : i18n("Predefined list", "", "admin")
-                    }
-                  </Text>
-                  {!!options &&
-                    <Text key={idx} style={styles.options}>
-                      {combineItems(...(options || []).map((option, idx) => option))}
-                    </Text>
-                  }
-                </View>
-              )
-            })} */}
+            {!!bookId &&
+              <>
 
-            {/* <View style={styles.upload}>
-              <Button
-                onPress={toggleUploadCover}
-                size="tiny"
-                status="basic"
-                disabled={!bookId || submitting}
-              >
-                {i18n("Upload square cover image", "", "admin")}
-              </Button>
-            </View>
-            <FileImporter
-              open={!!fileImportInfo.open}
-              fileType={fileImportInfo.fileType}
-              multiple={!!fileImportInfo.multiple}
-              accountId={accountId}
-              relativePath={`/importfile/${classroomUid}`}
-              onClose={onDoneImportingFile}
-              onSuccess={fileImportInfo.onSuccess}
-            /> */}
+                <Text style={styles.label}>
+                  {i18n("Chapters", "", "admin")}
+                </Text>
+
+                {spines.map(({ filename, label }, idx) => {
+                  const upDisabled = idx === 0 || submitting
+                  const downDisabled = idx === spines.length - 1 || submitting
+                
+                  return (
+                    <View key={idx} style={styles.line}>
+                      <View style={styles.keyLine}>
+                        <Input
+                          id={idx}
+                          size="small"
+                          value={label}
+                          onChangeInfo={updateSpineLabel}
+                          style={styles.spineLabelInput}
+                          maxLength={100}
+                        />
+                        <Button
+                          style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
+                          size="small"
+                          appearance="ghost"
+                          accessoryLeft={PlayIcon}
+                          onPress={() => openURL({ url: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`, newTab: true })}
+                          disabled={submitting}
+                        />
+                        <Button
+                          style={upDisabled ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
+                          size="small"
+                          appearance="ghost"
+                          accessoryLeft={ArrowUpIcon}
+                          onPress={() => {
+                            const spines = cloneObj(audiobookInfo.spines)
+                            spines.splice(idx - 1, 0, spines.splice(idx, 1)[0])
+                            updateEditedBook({
+                              id: `audiobookInfo`,
+                              value: {
+                                ...audiobookInfo,
+                                spines,
+                              },
+                            })
+                          }}
+                          disabled={upDisabled}
+                        />
+                        <Button
+                          style={downDisabled ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
+                          size="small"
+                          appearance="ghost"
+                          accessoryLeft={ArrowDownIcon}
+                          onPress={() => {
+                            const spines = cloneObj(audiobookInfo.spines)
+                            spines.splice(idx + 1, 0, spines.splice(idx, 1)[0])
+                            updateEditedBook({
+                              id: `audiobookInfo`,
+                              value: {
+                                ...audiobookInfo,
+                                spines,
+                              },
+                            })
+                          }}
+                          disabled={downDisabled}
+                        />
+                        <Button
+                          style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
+                          size="small"
+                          appearance="ghost"
+                          accessoryLeft={TrashIcon}
+                          onPress={() => {
+                            const value = cloneObj(audiobookInfo)
+                            value.spines.splice(idx, 1)
+                            updateEditedBook({
+                              id: `audiobookInfo`,
+                              value,
+                            })
+                          }}
+                          disabled={submitting}
+                        />
+                      </View>
+                    </View>
+                  )
+                })}
+
+                <View style={styles.upload}>
+                  <Button
+                    onPress={toggleUploadSpines}
+                    size="small"
+                    status="basic"
+                    disabled={!bookId || submitting}
+                  >
+                    {i18n("Upload audio files for chapters", "", "admin")}
+                  </Button>
+                </View>
+
+              </>
+            }
 
           </View>
         }
@@ -419,6 +468,7 @@ const AudiobookDialog = ({
         accountId={accountId}
         relativePath={`/audiobookfile/${bookId}`}
         onClose={toggleUploadSpines}
+        onSuccess={onUploadSpinesSuccess}
       />
 
     </>
