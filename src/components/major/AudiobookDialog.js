@@ -274,7 +274,11 @@ const AudiobookDialog = ({
   const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
   const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
 
-  const hasChange = JSON.stringify(book) !== JSON.stringify(editedBook)
+  const bookWithoutEpubSizeInMB = cloneObj(book)
+  delete bookWithoutEpubSizeInMB.epubSizeInMB
+  const editedBookWithoutEpubSizeInMB = cloneObj(editedBook)
+  delete editedBookWithoutEpubSizeInMB.epubSizeInMB
+  const hasChange = JSON.stringify(bookWithoutEpubSizeInMB) !== JSON.stringify(editedBookWithoutEpubSizeInMB)
 
   return (
     <>
