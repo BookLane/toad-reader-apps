@@ -1,16 +1,19 @@
 import React, { useState, useCallback, useEffect } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
+import useToggle from "react-use/lib/useToggle"
+import { Image } from 'expo-image'
 
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj } from '../../utils/toolbox'
+import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
 
 import Dialog from "./Dialog"
 import Button from "../basic/Button"
 import Icon from "../basic/Icon"
 import Input from "../basic/Input"
+import FileImporter from "./FileImporter"
 
 const keyOptionButton = {
   paddingHorizontal: 0,
@@ -23,8 +26,21 @@ const defaultBook = {
   isbn: ``,
   audiobookInfo: {
     spines: [],
+    coverFilename: ``,
   },
 }
+
+const coverFileTypes = [
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+]
+
+const spineFileTypes = [
+  'audio/aac',
+  'audio/mpeg',
+]
 
 const styles = StyleSheet.create({
   error:  {
@@ -52,9 +68,34 @@ const styles = StyleSheet.create({
     ...keyOptionButton,
     backgroundColor: 'white',
   },
-  addNewLine: {
+  upload: {
     marginTop: 15,
     alignItems: 'flex-start',
+  },
+  input: {
+    marginBottom: 10,
+  },
+  label: {
+    color: 'rgb(143, 155, 179)',
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  image: {
+    backgroundColor: 'rgba(0, 0, 0, .1)',
+    width: 100,
+    height: 100,
+  },
+  coverEditIconContainer: {
+    position: 'absolute',
+    left: 30,
+    top: 30,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, .6)',
+    borderRadius: 100,
+  },
+  coverEditIcon: {
+    width: 20,
+    height: 20,
   },
 })
 
@@ -73,12 +114,18 @@ const AudiobookDialog = ({
   const [ submitting, setSubmitting ] = useState(false)
   const [ errorMessage, setErrorMessage ] = useState()
   const [ editedBook, setEditedBook ] = useState({})
+  const [ uploadCover, toggleUploadCover ] = useToggle()
+  const [ uploadSpines, toggleUploadSpines ] = useToggle()
 
   const getEditedBook = useInstanceValue(editedBook)
 
   const accountId = Object.keys(accounts)[0]
+  const { idpId } = getIdsFromAccountId(accountId)
   const book = books[bookId] || defaultBook
   const { title=``, author=``, isbn=``, audiobookInfo={} } = editedBook
+  const { coverFilename=``, spines=[] } = audiobookInfo
+  const getAudiobookInfo = useInstanceValue(audiobookInfo)
+  const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
 
   useEffect(
     () => {
@@ -102,9 +149,6 @@ const AudiobookDialog = ({
   const onConfirm = useCallback(
     async () => {
       try {
-
-        const { idpId } = getIdsFromAccountId(accountId)
-
         console.log(`Submit update to audiobook (idpId: ${idpId}, bookId: ${bookId})...`)
 
         setSubmitting(true)
@@ -163,7 +207,7 @@ const AudiobookDialog = ({
 
       }
     },
-    [ idps, accounts, accountId, bookId ],
+    [ idps, idpId, accounts, accountId, bookId ],
   )
 
   const onCancel = useCallback(
@@ -171,6 +215,20 @@ const AudiobookDialog = ({
     [ book ],
   )
 
+  const onUploadCoverSuccess = useCallback(
+    ([{ result }]) => {
+      updateEditedBook({
+        id: `audiobookInfo`,
+        value: {
+          ...getAudiobookInfo(),
+          coverFilename: result.filename,
+        },
+      })
+    },
+    [ updateEditedBook ],
+  )
+
+  const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
   const EditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.editIcon, style ]} />, [])
   const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
 
@@ -186,7 +244,9 @@ const AudiobookDialog = ({
         onClose={onClose}
         onCancel={onCancel}
         onConfirm={onConfirm}
+        closeButtonText={bookId ? i18n("Done") : i18n("Cancel")}
         confirmButtonText={bookId ? i18n("Update") : i18n("Create")}
+        cancelButtonText={bookId ? i18n("Cancel") : i18n("Clear")}
         confirmButtonDisabled={!title.trim()}
         type={hasChange ? "confirm" : "info"}
         submitting={submitting}
@@ -204,7 +264,7 @@ const AudiobookDialog = ({
               id="title"
               value={title}
               onChangeInfo={updateEditedBook}
-              style={styles.labelInput}
+              style={styles.input}
             />
 
             <Input
@@ -212,7 +272,7 @@ const AudiobookDialog = ({
               id="author"
               value={author}
               onChangeInfo={updateEditedBook}
-              style={styles.labelInput}
+              style={styles.input}
             />
 
             <Input
@@ -220,22 +280,30 @@ const AudiobookDialog = ({
               id="isbn"
               value={isbn}
               onChangeInfo={updateEditedBook}
-              style={styles.labelInput}
+              style={styles.input}
               maxLength={150}
             />
 
-            <Text>cover image</Text>
-            <Text>chapters</Text>
-
-            {/* <FileImporter
-              open={!!fileImportInfo.open}
-              fileType={fileImportInfo.fileType}
-              multiple={!!fileImportInfo.multiple}
-              accountId={accountId}
-              relativePath={`/importfile/${classroomUid}`}
-              onClose={onDoneImportingFile}
-              onSuccess={fileImportInfo.onSuccess}
-            /> */}
+            {!!bookId &&
+              <>
+                <Text style={styles.label}>
+                  {i18n("Cover Image", "", "admin")}
+                </Text>
+                <TouchableOpacity
+                  style={styles.coverContainer}
+                  onPress={submitting ? null : toggleUploadCover}
+                >
+                  <Image
+                    source={`${downloadOrigin}/epub_content/covers/${coverFilename}`}
+                    contentFit="cover"
+                    style={styles.image}
+                  />
+                  <View style={styles.coverEditIconContainer}>
+                    <CoverEditIcon />
+                  </View>
+                </TouchableOpacity>
+              </>
+            }
 
             {/* {audiobookInfo.chapters.map(({ id, name, options }, idx) => {
               const upDisabled = idx === 0 || submitting
@@ -310,19 +378,47 @@ const AudiobookDialog = ({
               )
             })} */}
 
-            {/* <View style={styles.addNewLine}>
+            {/* <View style={styles.upload}>
               <Button
-                onPress={addNew}
+                onPress={toggleUploadCover}
                 size="tiny"
                 status="basic"
-                disabled={submitting}
+                disabled={!bookId || submitting}
               >
-                {i18n("Add a new metadata key", "", "admin")}
+                {i18n("Upload square cover image", "", "admin")}
               </Button>
-            </View> */}
+            </View>
+            <FileImporter
+              open={!!fileImportInfo.open}
+              fileType={fileImportInfo.fileType}
+              multiple={!!fileImportInfo.multiple}
+              accountId={accountId}
+              relativePath={`/importfile/${classroomUid}`}
+              onClose={onDoneImportingFile}
+              onSuccess={fileImportInfo.onSuccess}
+            /> */}
 
           </View>
         }
+      />
+
+      <FileImporter
+        open={uploadCover}
+        fileType={coverFileTypes}
+        multiple={false}
+        accountId={accountId}
+        relativePath={`/audiobookfile/${bookId}`}
+        onClose={toggleUploadCover}
+        onSuccess={onUploadCoverSuccess}
+      />
+
+      <FileImporter
+        open={uploadSpines}
+        fileType={spineFileTypes}
+        multiple={true}
+        accountId={accountId}
+        relativePath={`/audiobookfile/${bookId}`}
+        onClose={toggleUploadSpines}
       />
 
     </>
