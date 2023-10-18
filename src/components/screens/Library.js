@@ -8,7 +8,6 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import usePrevious from "react-use/lib/usePrevious"
 
-import downloadAsync from "../../utils/downloadAsync"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
@@ -29,6 +28,7 @@ import Button from "../basic/Button"
 import BookImporter from "../major/BookImporter"
 import AccessCodeDialog from "../major/AccessCodeDialog"
 import MetadataDialog from "../major/MetadataDialog"
+import AudiobookDialog from "../major/AudiobookDialog"
 import CopyToolsDialog from "../major/CopyToolsDialog"
 import SubscriptionsDialog from "../major/SubscriptionsDialog"
 import Book from "./Book"
@@ -170,6 +170,8 @@ const Library = ({
   const [ showEnvironmentUrlsDialog, setShowEnvironmentUrlsDialog ] = useState(false)
   const [ showAccessCodeDialog, setShowAccessCodeDialog ] = useState(false)
   const [ showMetadataDialog, setShowMetadataDialog ] = useState(false)
+  const [ showAudiobookDialog, setShowAudiobookDialog ] = useState(false)
+  const [ audiobookId, setAudiobookId ] = useState()
   const [ showCopyToolsDialog, setShowCopyToolsDialog ] = useState(false)
   const [ showSubscriptionsDialog, setShowSubscriptionsDialog ] = useState(false)
   const [ replaceExisting, setReplaceExisting ] = useState(false)
@@ -352,11 +354,11 @@ const Library = ({
         return
       }
 
-      const { books: newBooks, hash, noChange } = await response.json()
+      const { books: newBooks, hash, noChange, newBookId } = await response.json()
 
       if(noChange) {
         console.log(`...done fetching books (accountId: ${accountId}) - no change.`)
-        return { noChange }
+        return { noChange, newBookId }
       }
 
       addBooks({
@@ -368,7 +370,7 @@ const Library = ({
 
       console.log(`...done fetching books (accountId: ${accountId}).`)
 
-      return {}
+      return { newBookId }
 
     },
     [],
@@ -523,6 +525,15 @@ const Library = ({
     [],
   )
 
+  const openCreateAudiobookDialog = useCallback(
+    () => {
+      setAudiobookId()
+      setShowAudiobookDialog(true)
+      historyGoBackToLibrary()
+    },
+    [],
+  )
+
   const openCopyToolsDialog = useCallback(
     () => {
       setShowCopyToolsDialog(true)
@@ -556,6 +567,13 @@ const Library = ({
   const closeMetadataDialog = useCallback(
     () => {
       setShowMetadataDialog(false)
+    },
+    [],
+  )
+
+  const closeAudiobookDialog = useCallback(
+    () => {
+      setShowAudiobookDialog(false)
     },
     [],
   )
@@ -819,6 +837,7 @@ const Library = ({
             <AppMenu
               onImportBooks={openImportBooks}
               onReplaceExisting={openConfirmReplaceExisting}
+              onCreateAudiobook={openCreateAudiobookDialog}
               onShowEnvironmentUrls={openEnvironmentUrlsDialog}
               onOpenAccessCodeDialog={openAccessCodeDialog}
               onOpenMetadataDialog={openMetadataDialog}
@@ -1004,6 +1023,14 @@ const Library = ({
       <MetadataDialog
         open={!!showMetadataDialog}
         onClose={closeMetadataDialog}
+        handleNewLibrary={handleNewLibrary}
+      />
+
+      <AudiobookDialog
+        open={!!showAudiobookDialog}
+        bookId={audiobookId}
+        setAudiobookId={setAudiobookId}
+        onClose={closeAudiobookDialog}
         handleNewLibrary={handleNewLibrary}
       />
 

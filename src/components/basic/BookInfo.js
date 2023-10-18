@@ -19,6 +19,7 @@ import Dialog from "../major/Dialog"
 import CheckBox from "./CheckBox"
 import CoverAndSpin from "./CoverAndSpin"
 import BookMetadataDialog from "../major/BookMetadataDialog"
+import AudiobookDialog from "../major/AudiobookDialog"
 import BookSubscriptionsDialog from "../major/BookSubscriptionsDialog"
 import useToggle from "react-use/lib/useToggle"
 
@@ -116,13 +117,15 @@ const BookInfo = ({
   setSubscriptions,
 }) => {
 
-  const { title, author, flags, metadataValues, isbn, epubSizeInMB } = bookInfo
+  const { title, author, flags, metadataValues, isbn, epubSizeInMB, audiobookInfo } = bookInfo
+  const isAudiobook = !!audiobookInfo
 
   const { historyPush } = useRouterState()
 
   const [ deleteStatus, setDeleteStatus ] = useState('none')
   const [ updatingSubscriptions, setUpdatingSubscriptions ] = useState(false)
   const [ editingMetadata, toggleEditingMetadata ] = useToggle(false)
+  const [ editingAudiobook, toggleEditingAudiobook ] = useToggle(false)
   const [ editingSubscriptions, toggleEditingSubscriptions ] = useToggle(false)
 
   const adminInfo = useMemo(
@@ -309,6 +312,19 @@ const BookInfo = ({
                   </CheckBox>
                 </View>
                 <View style={styles.buttonContainer}>
+                  {isAudiobook &&
+                    <>
+                      <Button
+                        onPress={toggleEditingAudiobook}
+                        size="tiny"
+                        status="primary"
+                        appearance="filled"
+                      >
+                        {i18n("Edit")}
+                      </Button>
+                      <View style={styles.buttonSpacer} />
+                    </>
+                  }
                   <Button
                     onPress={toggleEditingMetadata}
                     size="tiny"
@@ -381,6 +397,13 @@ const BookInfo = ({
         bookId={bookId}
         bookTitle={title}
         onClose={toggleEditingMetadata}
+        handleNewLibrary={handleNewLibrary}
+      />
+
+      <AudiobookDialog
+        open={editingAudiobook}
+        bookId={bookId}
+        onClose={toggleEditingAudiobook}
         handleNewLibrary={handleNewLibrary}
       />
 

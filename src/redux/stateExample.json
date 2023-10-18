@@ -84,6 +84,7 @@
         }
       ],
       "epubSizeInMB": 3,
+      "audiobookInfo": null,
       "isbn": "978-0-310-49218-3",
       "version": "PUBLISHER",
       "totalCharacterCount": 938004,
@@ -112,6 +113,7 @@
       "title": "God is the Gospel",
       "author": "John Piper",
       "epubSizeInMB": 5,
+      "audiobookInfo": null,
       "isbn": "978-0-31493",
       "version": "BASE",
       "totalCharacterCount": 231004,
@@ -132,6 +134,7 @@
       "title": "Bloodlines",
       "author": "John Piper",
       "epubSizeInMB": 10,
+      "audiobookInfo": null,
       "isbn": "9120-31493",
       "version": "INSTRUCTOR",
       "totalCharacterCount": 383021,

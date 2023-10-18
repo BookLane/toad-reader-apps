@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
 const AppMenu = ({
   onImportBooks,
   onReplaceExisting,
+  onCreateAudiobook,
   onShowEnvironmentUrls,
   onOpenAccessCodeDialog,
   onOpenMetadataDialog,
@@ -105,6 +106,11 @@ const AppMenu = ({
   const { authMethod, devAuthMethod, accessCodeInfo, useEnhancedReader } = Object.values(idps)[0] || {}
   const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
+  const accountId = Object.keys(accounts)[0] || ""
+  const { idpId } = getIdsFromAccountId(accountId)
+  const { useAudiobooks } = idps[idpId] || {}
+  const allowLogOut = !!(idpId && idps[idpId])
+
   const showAll = useCallback(
     () => {
       changeLibraryScope({ scope: "all" })
@@ -123,10 +129,7 @@ const AppMenu = ({
 
   const confirmLogOut = useCallback(
     () => {
-      const accountId = Object.keys(accounts)[0] || ""
-      const { idpId } = getIdsFromAccountId(accountId)
-
-      if(!idpId || !idps[idpId]) return
+      if(!allowLogOut) return
 
       const doLogOut = () => {
         logEvent({ eventName: `Log out` })
@@ -180,7 +183,7 @@ const AppMenu = ({
         { cancelable: false }
       )
     },
-    [ accounts, idps, books ],
+    [ accounts, allowLogOut, books ],
   )
 
   const doEmailLogin = useCallback(
@@ -393,6 +396,14 @@ const AppMenu = ({
         title: i18n("Replace an existing EPUB", "", "admin"),
         // icon: onDeviceIcon,
         onSelect: onReplaceExisting,
+        disabled: !online,
+      },
+    ]),
+    ...(!(isAdmin && Platform.OS === 'web' && useAudiobooks) ? [] : [
+      {
+        title: i18n("Create a new audiobook", "", "admin"),
+        // icon: onDeviceIcon,
+        onSelect: onCreateAudiobook,
         disabled: !online,
       },
     ]),

@@ -43,6 +43,7 @@ export default function(state = initialState, action) {
           flags: book.flags,
           metadataValues: book.metadataValues,
           epubSizeInMB: book.epubSizeInMB,
+          audiobookInfo: book.audiobookInfo,
           isbn: book.isbn,
           version: book.version,
           totalCharacterCount: book.totalCharacterCount,
