@@ -950,6 +950,7 @@ const Library = ({
                           <LibraryViewer
                             bookList={bookList}
                             handleNewLibrary={handleNewLibrary}
+                            viewingAudiobooks={useAudiobooks && selectedBookTypeIndex === 1}
                           />
 
                           {notLoggedInMessage}

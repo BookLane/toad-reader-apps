@@ -17,6 +17,9 @@ const styles = StyleSheet.create({
     height: 130,
     backgroundColor: 'rgba(0, 0, 0, .1)'
   },
+  imageAudiobook: {
+    width: 130,
+  },
 })
 
 const BookInfoCover = ({
@@ -26,7 +29,9 @@ const BookInfoCover = ({
   idps,
 }) => {
 
-  const { downloadStatus, accounts } = bookInfo
+  const { downloadStatus, accounts, audiobookInfo } = bookInfo
+  const isAudiobook = !!audiobookInfo
+  const { coverFilename } = audiobookInfo || {}
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
@@ -35,8 +40,11 @@ const BookInfoCover = ({
     <View style={styles.container}>
 
       <Image
-        source={`${downloadOrigin}/epub_content/covers/book_${bookId}.png`}
-        style={styles.image}
+        source={`${downloadOrigin}/epub_content/covers/${isAudiobook ? coverFilename : `book_${bookId}.png`}`}
+        style={[
+          styles.image,
+          (!!audiobookInfo && styles.imageAudiobook),
+        ]}
       />
 
       {downloadStatus == 1 &&

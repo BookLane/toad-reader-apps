@@ -39,9 +39,10 @@ const LibraryCovers = ({
   books,
   bookList=[],
   library={},
+  viewingAudiobooks,
 }) => {
 
-  const { coverWidth, coverHeight, coversPerRow } = useCoverSize()
+  const { coverWidth, coverHeight, coversPerRow } = useCoverSize({ viewingAudiobooks })
 
   const doBookHighlight = (
     library.sort == 'recent'

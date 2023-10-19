@@ -47,6 +47,9 @@ const styles = StyleSheet.create({
     width: 100,
     marginRight: 10,
   },
+  coverAudiobook: {
+    width: 130,
+  },
   info: {
     flexGrow: 1,
     flexShrink: 1,
@@ -265,7 +268,12 @@ const BookInfo = ({
       isFirstRow ? styles.containerFirstRow : {},
     ]}>
 
-      <View style={styles.cover}>
+      <View
+        style={[
+          styles.cover,
+          (isAudiobook && styles.coverAudiobook),
+        ]}
+      >
         <BookInfoCover bookId={bookId} bookInfo={bookInfo} />
       </View>
 

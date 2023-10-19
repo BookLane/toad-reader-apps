@@ -32,6 +32,7 @@ const LibraryList = React.memo(({
   bookList=[],
   library={},
   handleNewLibrary,
+  viewingAudiobooks,
 }) => {
 
   const flatListRef = useRef()
@@ -80,7 +81,7 @@ const LibraryList = React.memo(({
     [ books, handleNewLibrary ],
   )
 
-  const { coverHeight } = useCoverSize()
+  const { coverHeight } = useCoverSize({ viewingAudiobooks })
 
   return (
     <View style={styles.container}>

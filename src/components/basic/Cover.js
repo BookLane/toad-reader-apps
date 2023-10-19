@@ -77,7 +77,9 @@ const Cover = ({
   idps,
 }) => {
 
-  const { title, flags, coverFilename, downloadStatus, epubSizeInMB, totalCharacterCount, accounts } = bookInfo
+  const { title, flags, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, audiobookInfo } = bookInfo
+  const isAudiobook = !!audiobookInfo
+  const { coverFilename } = audiobookInfo || {}
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = downloadProgressByBookId[bookId]
 
@@ -91,7 +93,7 @@ const Cover = ({
       </View>
 
       <Image
-        source={`${downloadOrigin}/epub_content/covers/book_${bookId}.png`}
+        source={`${downloadOrigin}/epub_content/covers/${isAudiobook ? coverFilename : `book_${bookId}.png`}`}
         style={[
           styles.image,
           {
