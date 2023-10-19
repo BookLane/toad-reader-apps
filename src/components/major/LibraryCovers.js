@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatlist: {
-    height: 200,
+    height: 270,
   },
   normalCoversRow1InHighlightedRow: {
     flexDirection: 'row',
@@ -39,7 +39,6 @@ const LibraryCovers = ({
   books,
   bookList=[],
   library={},
-  showNotLoggedInMessage,
 }) => {
 
   const { coverWidth, coverHeight, coversPerRow } = useCoverSize()
@@ -198,7 +197,7 @@ const LibraryCovers = ({
         estimatedItemSize={LIBRARY_COVERS_VERTICAL_MARGIN + coverHeight + LIBRARY_COVERS_BOTTOM_PADDING}
         showsVerticalScrollIndicator={false}
         ref={flatListRef}
-        ListFooterComponent={showNotLoggedInMessage ? <View style={styles.flatlist} /> : null}
+        ListFooterComponent={<View style={styles.flatlist} />}
       />
 
     </View>

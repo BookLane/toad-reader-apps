@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from "react"
 import Constants from 'expo-constants'
 import * as ScreenOrientation from 'expo-screen-orientation'
-import * as FileSystem from 'expo-file-system'
 import { Platform, StyleSheet, View, Text, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import usePrevious from "react-use/lib/usePrevious"
+import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
 
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
@@ -48,6 +48,7 @@ import Login from "../major/Login"
 import WebView from "../major/WebView"
 import Dialog from "../major/Dialog"
 import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
+import Icon from "../basic/Icon"
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     backgroundColor: 'rgb(238, 241, 245)',
     flex: 1,
+    overflow: 'hidden',
   },
   notLoggedInOuterContainer: {
     position: 'absolute',
@@ -85,6 +87,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  notLoggedInOuterContainerWithAudiobooks: {
+    bottom: 75,
   },
   notLoggedInContainer: {
     maxWidth: '100%',
@@ -134,7 +139,43 @@ const styles = StyleSheet.create({
   },
   flex1View: {
     flex: 1,
-  }
+  },
+  bookTypeSelectorContainer: {
+    position: 'absolute',
+    bottom: -50,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  bookTypeSelector: {
+    top: -65,
+    padding: 4,
+    overflow: 'hidden',
+    borderRadius: 100,
+    backgroundColor: 'white',
+    shadowOffset: { width: 1, height: 1 },
+    shadowColor: "black",
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+  },
+  bottomNavigation: {
+    paddingVertical: 0,
+    minHeight: 40,
+  },
+  bottomNavigationTab: {
+    marginHorizontal: 10,
+    width: 40,
+  },
+  typeSelectorIndicator: {
+    backgroundColor: 'rgb(238, 241, 245)',
+    height: 40,
+    borderRadius: 20,
+  },
+  readIcon: {
+    position: 'relative',
+    top: -1,
+  },
 })
 
 const Library = ({
@@ -177,6 +218,7 @@ const Library = ({
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
+  const [ selectedBookTypeIndex, setSelectedBookTypeIndex ] = useState(0)
   const loggedInUser = useLoggedInUser(accounts)
 
   const wideModeWithEitherOrientation = useWideMode(true)
@@ -185,10 +227,12 @@ const Library = ({
 
   const getBooks = useInstanceValue(books)
   const getIdps = useInstanceValue(idps)
-
+  
   const previousPathname = usePrevious(pathname)
   const accountIds = Object.keys(accounts).join(',')
   const previousAccountIds = usePrevious(accountIds)
+
+  const { useAudiobooks } = Object.values(idps)[0] || {}
 
   useEffect(
     () => {
@@ -619,6 +663,9 @@ const Library = ({
     [],
   )
 
+  const ReadIcon = useCallback(({ style }) => <Icon name='menu-book' pack='material' style={[ styles.readIcon, style ]} />, [])
+  const ListenIcon = useCallback(({ style }) => <Icon name='headphones' pack='materialCommunity' style={[ styles.listenIcon, style ]} />, [])
+
   useEffect(
     () => {
       // If they have clicked on one of the links in the import
@@ -748,6 +795,10 @@ const Library = ({
     ))
   }
 
+  if(useAudiobooks) {
+    bookList = bookList.filter(bookId => !!books[bookId].audiobookInfo === (selectedBookTypeIndex === 1))
+  }
+
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
 
   if(showLoading || (logOutAccountId && Platform.OS === 'web')) {
@@ -807,7 +858,12 @@ const Library = ({
   const { accessCodeInfo } = Object.values(idps)[0] || {}
   const showNotLoggedInMessage = !!(NOT_LOGGED_IN_MESSAGE && !loggedInUser)
   const notLoggedInMessage = showNotLoggedInMessage && (
-    <View style={styles.notLoggedInOuterContainer}>
+    <View
+      style={[
+        styles.notLoggedInOuterContainer,
+        (useAudiobooks && styles.notLoggedInOuterContainerWithAudiobooks),
+      ]}
+    >
       <View style={styles.notLoggedInContainer}>
         <Text style={styles.notLoggedInMessage}>
           {NOT_LOGGED_IN_MESSAGE}
@@ -869,7 +925,7 @@ const Library = ({
                     </View>
                   )
                   : (
-                    bookList.length == 0
+                    validLibraryBookList.length == 0
                       ? (
                         <>
                           <Text style={styles.noBooks}>{i18n("No books found.")}</Text>
@@ -890,12 +946,36 @@ const Library = ({
                       )
                       : (
                         <View style={styles.content}>
+
                           <LibraryViewer
                             bookList={bookList}
                             handleNewLibrary={handleNewLibrary}
-                            showNotLoggedInMessage={showNotLoggedInMessage}
                           />
+
                           {notLoggedInMessage}
+
+                          {useAudiobooks &&
+                            <View style={styles.bookTypeSelectorContainer}>
+                              <View style={styles.bookTypeSelector}>
+                                <BottomNavigation
+                                  style={styles.bottomNavigation}
+                                  indicatorStyle={styles.typeSelectorIndicator}
+                                  selectedIndex={selectedBookTypeIndex}
+                                  onSelect={setSelectedBookTypeIndex}
+                                >
+                                  <BottomNavigationTab
+                                    style={styles.bottomNavigationTab}
+                                    icon={ReadIcon}
+                                  />
+                                  <BottomNavigationTab
+                                    style={styles.bottomNavigationTab}
+                                    icon={ListenIcon}
+                                  />
+                                </BottomNavigation>
+                              </View>
+                            </View>
+                          }
+
                         </View>
                       )
                   )

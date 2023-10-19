@@ -103,12 +103,11 @@ const AppMenu = ({
 
   const hasNoAuth = useHasNoAuth(accounts)
   const loggedInUser = useLoggedInUser(accounts)
-  const { authMethod, devAuthMethod, accessCodeInfo, useEnhancedReader } = Object.values(idps)[0] || {}
+  const { authMethod, devAuthMethod, accessCodeInfo, useEnhancedReader, useAudiobooks } = Object.values(idps)[0] || {}
   const isNoneOrEmail = ['NONE_OR_EMAIL'].includes((__DEV__ && devAuthMethod) || authMethod)
 
   const accountId = Object.keys(accounts)[0] || ""
   const { idpId } = getIdsFromAccountId(accountId)
-  const { useAudiobooks } = idps[idpId] || {}
   const allowLogOut = !!(idpId && idps[idpId])
 
   const showAll = useCallback(

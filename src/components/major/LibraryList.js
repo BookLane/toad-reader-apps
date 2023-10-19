@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flatlist: {
-    height: 200,
+    height: 270,
   },
 })
 
@@ -32,7 +32,6 @@ const LibraryList = React.memo(({
   bookList=[],
   library={},
   handleNewLibrary,
-  showNotLoggedInMessage,
 }) => {
 
   const flatListRef = useRef()
@@ -91,7 +90,7 @@ const LibraryList = React.memo(({
         estimatedItemSize={coverHeight + LIBRARY_LIST_MARGIN}
         showsVerticalScrollIndicator={false}
         ref={flatListRef}
-        ListFooterComponent={showNotLoggedInMessage ? <View style={styles.flatlist} /> : null}
+        ListFooterComponent={<View style={styles.flatlist} />}
       />
     </View>
   )
