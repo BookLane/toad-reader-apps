@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { Audio } from 'expo-av'
 
-import useInstanceValue from "../../hooks/useInstanceValue"
+import useRefState from "../../hooks/useRefState"
 
 import CoverAndSpin from "../basic/CoverAndSpin"
 import Icon from "../basic/Icon"
@@ -87,16 +87,11 @@ const AudioPlayer = ({
   logUsageEvent,
 }) => {
 
-  const [ loading, setLoading ] = useState(true)
+  const [ loading, setLoading, getLoading ] = useRefState(true)
   const [ error, setError ] = useState()
-  const [ playing, setPlaying ] = useState(false)
-  const [ positionMS, setPositionMS ] = useState(0)
-  const [ durationMS, setDurationMS ] = useState(0)
-
-  const getLoading = useInstanceValue(loading)
-  const getPlaying = useInstanceValue(playing)
-  const getPositionMS = useInstanceValue(positionMS)
-  const getDurationMS = useInstanceValue(durationMS)
+  const [ playing, setPlaying, getPlaying ] = useRefState(false)
+  const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
+  const [ durationMS, setDurationMS, getDurationMS ] = useRefState(0)
 
   const soundObj = useRef()
   const totalTimePlayed = useRef(0)
