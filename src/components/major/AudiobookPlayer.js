@@ -26,6 +26,7 @@ const AudiobookPlayer = ({
 }) => {
 
   const [ loading, setLoading, getLoading ] = useRefState(true)
+  const [ pseudoLoading, setPseudoLoading ] = useState(false)
   const [ error, setError ] = useState()
   const [ playing, setPlaying, getPlaying ] = useRefState(false)
   const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
@@ -41,6 +42,9 @@ const AudiobookPlayer = ({
   const currentPlaybackStartTime = useRef(null)
 
   const { width, height } = useDimensions().window
+
+  const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
+  const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
   const onPlaybackStatusUpdate = useCallback(
     ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
@@ -59,6 +63,7 @@ const AudiobookPlayer = ({
         setPlaying(isPlaying)
 
         if(isPlaying) {
+          setPseudoLoading(false)
           currentPlaybackStartTime.current = Date.now()
         } else if(currentPlaybackStartTime.current) {
           totalTimePlayed.current += Math.round((Date.now() - currentPlaybackStartTime.current) / 1000)
@@ -85,9 +90,12 @@ const AudiobookPlayer = ({
 
         try {
 
+          const isFirstLoad = !soundObj.current
+
+          if(getPlaying()) await pause()
+          if(!isFirstLoad) setPseudoLoading(true)
           setLoading(true)
           setError()
-          setPlaying(false)
           setPositionMS(0)
           setDurationMS(0)
 
@@ -105,6 +113,8 @@ const AudiobookPlayer = ({
 
           soundObj.current = sound
 
+          if(!isFirstLoad) await play()
+
         } catch (error) {
           setError(error.message)
         }
@@ -113,9 +123,6 @@ const AudiobookPlayer = ({
     },
     [ source ],
   )
-
-  const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
-  const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
   useEffect(() => pause, [])  // pause on unload
 
@@ -171,7 +178,7 @@ const AudiobookPlayer = ({
         playing={playing}
         play={play}
         pause={pause}
-        loading={loading}
+        loading={loading || pseudoLoading}
         error={error}
       />
 

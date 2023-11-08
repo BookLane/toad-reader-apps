@@ -4,6 +4,7 @@ import { i18n } from "inline-i18n"
 
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
+import Spin from "../basic/Spin"
 
 const button = {
 }
@@ -116,7 +117,15 @@ const AudiobookPlayerButtonRow = ({
           loading && styles.disabled,
         ]}
         appearance="ghost"
-        accessoryLeft={playing ? PauseIcon : PlayIcon}
+        accessoryLeft={
+          loading
+            ? <Spin />
+            : (
+              playing
+                ? PauseIcon
+                : PlayIcon
+            )
+        }
         onPress={playing ? pause : play}
         disabled={loading}
       />
