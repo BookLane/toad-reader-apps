@@ -1,9 +1,19 @@
 import React, { useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 // import { i18n } from "inline-i18n"
+import { Modal } from "@ui-kitten/components"
+import useToggle from 'react-use/lib/useToggle'
+
+import useDimensions from "../../hooks/useDimensions"
 
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
+import AudiobookPlayerChapterChooserLine from "./AudiobookPlayerChapterChooserLine"
+
+const line = {
+  paddingHorizontal: 17,
+  paddingVertical: 10,
+}
 
 const styles = StyleSheet.create({
   chapter: {
@@ -28,16 +38,58 @@ const styles = StyleSheet.create({
   icon: {
     height: 18,
   },
+  chapters: {
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: 'rgba(0, 0, 0, .1)',
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    overflowY: 'auto',
+  },
+  line: {
+    ...line,
+  },
+  selectedLine: {
+    ...line,
+    fontWeight: 'bold',
+  },
+  chaptersBackdrop: {
+    backgroundColor: `rgba(0,0,0,.3)`,
+  },
 })
 
 const AudiobookPlayerChapterLine = ({
-  label,
+  spines,
+  currentSpineIndex,
+  setCurrentSpineIndex,
 }) => {
+
+  const [ showChapters, toggleShowChapters ] = useToggle(false)
+  const { width, height } = useDimensions().window
+
+  const { label=`` } = spines[currentSpineIndex] || spines[0] || {}
 
   const ChaptersIcon = useCallback(({ style }) => <Icon name='text' pack="materialCommunity" style={styles.icon} />, [])
 
+  const selectChapter = useCallback(
+    index => {
+
+      setCurrentSpineIndex(index)
+      toggleShowChapters(false)
+
+      // logEvent({
+      //   eventName: `Library: Set sort`,
+      //   properties: {
+      //     sort,
+      //   },
+      // })
+    },
+    [ setCurrentSpineIndex, toggleShowChapters ],
+  )
+
   return (
     <View style={styles.chapter}>
+
       <Text style={styles.chapterText}>
         {label}
       </Text>
@@ -46,8 +98,31 @@ const AudiobookPlayerChapterLine = ({
         status="basic"
         appearance="ghost"
         accessoryLeft={ChaptersIcon}
-        // onPress={backTen}
+        onPress={toggleShowChapters}
       />
+
+      <Modal
+        visible={showChapters}
+        onBackdropPress={toggleShowChapters}
+        backdropStyle={styles.chaptersBackdrop}
+        style={[
+          styles.chapters,
+          {
+            maxWidth: width - 80,
+            maxHeight: height - 80,
+          }
+        ]}
+      >
+        {spines.map(({ label }, idx) => (
+          <AudiobookPlayerChapterChooserLine
+            index={idx}
+            label={label}
+            onPress={selectChapter}
+            status={idx === currentSpineIndex ? `selected` : `unselected`}
+          />
+        ))}
+      </Modal>
+
     </View>
   )
 }

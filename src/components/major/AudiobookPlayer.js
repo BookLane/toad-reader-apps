@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useDimensions from "../../hooks/useDimensions"
-import { getDataOrigin, getIDPOrigin, getIdsFromAccountId } from '../../utils/toolbox'
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
 import AudiobookPlayerProgressBar from "./AudiobookPlayerProgressBar"
@@ -26,9 +23,6 @@ const AudiobookPlayer = ({
   epubSizeInMB,
   title,
   // logUsageEvent,
-
-  idps,
-  accounts,
 }) => {
 
   const [ loading, setLoading ] = useState(true)
@@ -36,13 +30,10 @@ const AudiobookPlayer = ({
   const [ playing, setPlaying ] = useState(false)
   const [ positionMS, setPositionMS ] = useState(0)
   const [ durationMS, setDurationMS ] = useState(0)
-  const [ currentSpineIndex ] = useState(0)
+  const [ currentSpineIndex, setCurrentSpineIndex ] = useState(0)
 
-  const accountId = Object.keys(accounts)[0]
-  const { idpId } = getIdsFromAccountId(accountId)
-  const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { spines=[] } = audiobookInfo || {}
-  const { filename, label=`` } = spines[currentSpineIndex] || spines[0] || {}
+  const { filename } = spines[currentSpineIndex] || spines[0] || {}
   const source = `${sourceBase}${filename}`
 
   const getLoading = useInstanceValue(loading)
@@ -168,7 +159,9 @@ const AudiobookPlayer = ({
     >
 
       <AudiobookPlayerChapterLine
-        label={label}
+        spines={spines}
+        currentSpineIndex={currentSpineIndex}
+        setCurrentSpineIndex={setCurrentSpineIndex}
       />
 
       <AudiobookPlayerProgressBar
@@ -196,34 +189,15 @@ const AudiobookPlayer = ({
   )
 }
 
-const mapStateToProps = ({ idps, accounts }) => ({
-  idps,
-  accounts,
-})
+export default AudiobookPlayer
 
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(AudiobookPlayer)
-
-
-  // Artwork
-  // Chapter name
-  // Chapter outline button (floating to the right of the chapter name)
-  //   Shows a tappable chapter listing
-  // Chapter progress bar with current time spot and time remaining
-  // Main button row
-  //   Playback speed adjustment
-  //   Skip back 10s
-  //   Play/pause button
-  //   Skip forward 10s
-  //   Download button
-  //     (Prior to full download, streams the audio)
-  //     Tapping this will open up an option to download for offline listening
-  //     Tapping again will open up an option to removed downloaded audio
 
 // TODOs
+  // Move chapter progress bar handle
+  // Playback speed adjustment
+  // Check native
+  // Download button (native only)
+  //   Tapping this will download for offline listening
+  //   Tapping again will open up an option to removed downloaded audio
+  //   Listening library would show current download status and progress for each book
   // report to analytics
-  // download option for native
-    // Listening library would show current download status and progress for each book
-    // Long tap will give an option to remove the downloaded audio

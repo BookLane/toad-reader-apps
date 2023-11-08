@@ -370,6 +370,29 @@ const mapping = {
       },
     },
     {
+      component: 'AudiobookPlayerChapterChooserLine',
+      variantGroups: {
+        status: {
+          unselected: {
+            state: {
+              hover: {
+                backgroundColor: 'color-primary-100',
+                cursor: 'pointer',
+              },
+            },
+          },
+          selected: {
+            backgroundColor: 'color-primary-200',
+            state: {
+              hover: {
+                cursor: 'pointer',
+              },
+            },
+          },
+        },
+      },
+    },
+    {
       component: 'InstructorsHighlightLabel',
       parameters: {
         iconTintColor: 'color-warning-400',
