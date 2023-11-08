@@ -166,6 +166,9 @@ const mapping = {
       component: 'HeaderIcon',
       variantGroups: {
         uiStatus: {
+          selected: {
+            iconColor: "color-primary-600",
+          },
           faded: {
             iconColor: "color-basic-1100",
             iconOpacity: .4,

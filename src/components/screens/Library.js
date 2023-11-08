@@ -31,7 +31,7 @@ import MetadataDialog from "../major/MetadataDialog"
 import AudiobookDialog from "../major/AudiobookDialog"
 import CopyToolsDialog from "../major/CopyToolsDialog"
 import SubscriptionsDialog from "../major/SubscriptionsDialog"
-import Book from "./Book"
+import BookWrapper from "./BookWrapper"
 import Reports from "./Reports"
 import DeleteMyAccount from "./DeleteMyAccount"
 import Users from "./Users"
@@ -907,7 +907,7 @@ const Library = ({
       <KeyboardAvoidingView>
         <Switch>
           <Route path="/error" component={ErrorMessage} />
-          {!doingInitialFetch && <Route path="/book/:bookId" render={() => <Book redirectCheckComplete={redirectCheckComplete} />} />}
+          {!doingInitialFetch && <Route path="/book/:bookId" render={() => <BookWrapper redirectCheckComplete={redirectCheckComplete} />} />}
           {!doingInitialFetch && <Route path="/reports" component={Reports} />}
           {!doingInitialFetch && <Route path="/delete-my-account" component={DeleteMyAccount} />}
           {!doingInitialFetch && <Route path="/users" component={Users} />}

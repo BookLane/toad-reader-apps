@@ -3,6 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Platform } from "react-native"
 import { Image } from 'expo-image'
+
 import { Link } from "../../hooks/useRouterState"
 
 import CoverAndSpin from "./CoverAndSpin"
