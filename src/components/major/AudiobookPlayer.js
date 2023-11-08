@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
 
-import useInstanceValue from "../../hooks/useInstanceValue"
 import useDimensions from "../../hooks/useDimensions"
+import useRefState from "../../hooks/useRefState"
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
 import AudiobookPlayerProgressBar from "./AudiobookPlayerProgressBar"
@@ -25,21 +25,16 @@ const AudiobookPlayer = ({
   // logUsageEvent,
 }) => {
 
-  const [ loading, setLoading ] = useState(true)
+  const [ loading, setLoading, getLoading ] = useRefState(true)
   const [ error, setError ] = useState()
-  const [ playing, setPlaying ] = useState(false)
-  const [ positionMS, setPositionMS ] = useState(0)
-  const [ durationMS, setDurationMS ] = useState(0)
+  const [ playing, setPlaying, getPlaying ] = useRefState(false)
+  const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
+  const [ durationMS, setDurationMS, getDurationMS ] = useRefState(0)
   const [ currentSpineIndex, setCurrentSpineIndex ] = useState(0)
 
   const { spines=[] } = audiobookInfo || {}
   const { filename } = spines[currentSpineIndex] || spines[0] || {}
   const source = `${sourceBase}${filename}`
-
-  const getLoading = useInstanceValue(loading)
-  const getPlaying = useInstanceValue(playing)
-  const getPositionMS = useInstanceValue(positionMS)
-  const getDurationMS = useInstanceValue(durationMS)
 
   const soundObj = useRef()
   const totalTimePlayed = useRef(0)
