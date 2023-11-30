@@ -7,6 +7,7 @@ import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 import usePrevious from "react-use/lib/usePrevious"
 import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components'
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
@@ -221,6 +222,7 @@ const Library = ({
   const [ showLoading, setShowLoading ] = useState(false)
   const [ selectedBookTypeIndex, setSelectedBookTypeIndex ] = useState(0)
   const loggedInUser = useLoggedInUser(accounts)
+  const safeAreaInsets = useSafeAreaInsets()
 
   const wideModeWithEitherOrientation = useWideMode(true)
   const hasNoAuth = useHasNoAuth(accounts)
@@ -958,7 +960,14 @@ const Library = ({
 
                           {useAudiobooks &&
                             <View style={styles.bookTypeSelectorContainer}>
-                              <View style={styles.bookTypeSelector}>
+                              <View
+                                style={[
+                                  styles.bookTypeSelector,
+                                  {
+                                    marginBottom: safeAreaInsets.bottom,
+                                  },
+                                ]}
+                              >
                                 <BottomNavigation
                                   style={styles.bottomNavigation}
                                   indicatorStyle={styles.typeSelectorIndicator}
