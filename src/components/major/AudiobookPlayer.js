@@ -189,6 +189,10 @@ const AudiobookPlayer = ({
         loading={loading}
         positionMS={positionMS}
         durationMS={durationMS}
+        setPosition={setPosition}
+        getPlaying={getPlaying}
+        pause={pause}
+        play={play}
       />
 
       <AudiobookPlayerButtonRow
@@ -214,8 +218,8 @@ export default AudiobookPlayer
 
 
 // TODOs
-  // Move chapter progress bar handle
   // Playback speed adjustment
+    // await sound.setRateAsync(2, true)
   // Check native
   // Download button (native only)
   //   Tapping this will download for offline listening

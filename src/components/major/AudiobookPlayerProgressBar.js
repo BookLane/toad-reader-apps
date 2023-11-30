@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useRef, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 // import { i18n } from "inline-i18n"
+import { useLayout } from '@react-native-community/hooks'
 
 const styles = StyleSheet.create({
   bottom: {
@@ -23,17 +24,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     opacity: .5,
   },
+  progressLineContainer: {
+    paddingVertical: 15,
+    marginVertical: -15,
+    position: 'relative',
+    zIndex: 1,
+  },
   durationLine: {
     height: 1,
     backgroundColor: 'rgba(0,0,0,.2)',
-    position: 'relative',
   },
   positionLine: {
+    top: 15,
     position: 'absolute',
     height: 1,
     backgroundColor: 'rgb(51, 102, 255)',
-  }
+  },
 })
+
+const onStartShouldSetResponder = () => true
 
 const getTimeStringFromMS = ms => {
   const seconds = parseInt(ms/1000, 10) || 0
@@ -46,13 +55,58 @@ const AudiobookPlayerProgressBar = ({
   loading,
   positionMS,
   durationMS,
+  setPosition,
+  getPlaying,
+  pause,
+  play,
 }) => {
+
+  const { onLayout, width } = useLayout()
+  const wasPlayingWhenPositionChangeBegan = useRef(null)
 
   const percentage = Math.min(positionMS / (durationMS || 1), 1) * 100
 
+  const onResponderMove = useCallback(
+    ({ nativeEvent }) => {
+
+      if(typeof wasPlayingWhenPositionChangeBegan.current !== `boolean`) {
+        wasPlayingWhenPositionChangeBegan.current = getPlaying()
+        if(wasPlayingWhenPositionChangeBegan.current) {
+          pause()
+        }
+      }
+
+      const newPercentage = nativeEvent.locationX / width
+      const newPositionMS = Math.max(Math.min(parseInt(newPercentage * (durationMS || 0), 10), durationMS), 0)
+      setPosition(newPositionMS)
+    },
+    [ width, durationMS, getPlaying, play, pause ],
+  )
+
+  const onResponderRelease = useCallback(
+    () => {
+      if(typeof wasPlayingWhenPositionChangeBegan.current === `boolean`) {
+        wasPlayingWhenPositionChangeBegan.current && play()
+        !wasPlayingWhenPositionChangeBegan.current && pause()
+        wasPlayingWhenPositionChangeBegan.current = null
+      }
+    },
+    [],
+  )
+
   return (
     <View style={styles.bottom}>
-      <View style={styles.durationLine}>
+      <View
+        style={styles.progressLineContainer}
+        onLayout={onLayout}
+        onStartShouldSetResponderCapture={onStartShouldSetResponder}
+        onStartShouldSetResponder={onStartShouldSetResponder}
+        onResponderGrant={onResponderMove}
+        onResponderMove={onResponderMove}
+        onResponderRelease={onResponderRelease}
+        onResponderTerminate={onResponderRelease}
+      >
+        <View style={styles.durationLine} />
         <View
           style={[
             styles.positionLine,
