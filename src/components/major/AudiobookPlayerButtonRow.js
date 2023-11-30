@@ -6,6 +6,8 @@ import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import Spin from "../basic/Spin"
 
+const PLAYBACK_SPEEDS = [ .8, 1, 1.2, 1.5, 2, 2.5 ]
+
 const button = {
 }
 
@@ -62,6 +64,9 @@ const AudiobookPlayerButtonRow = ({
   playing,
   play,
   pause,
+  playbackSpeed,
+  getPlaybackSpeed,
+  setPlaybackSpeed,
   loading,
   error,
 }) => {
@@ -69,14 +74,20 @@ const AudiobookPlayerButtonRow = ({
   const backTen = useCallback(() => setPosition(positionMS - 10000), [ positionMS, setPosition ])
   const forwardTen = useCallback(() => setPosition(positionMS + 10000), [ positionMS, setPosition ])
 
+  const toggleSpeed = useCallback(
+    () => {
+      const newPlaybackSpeed = PLAYBACK_SPEEDS[(PLAYBACK_SPEEDS.indexOf(getPlaybackSpeed()) + 1) % PLAYBACK_SPEEDS.length]
+      setPlaybackSpeed(newPlaybackSpeed)
+    },
+    [ getPlaybackSpeed, setPlaybackSpeed ],
+  )
+
   const BackTenIcon = useCallback(({ style }) => <Icon name='replay-10' pack="material" style={styles.icon} />, [])
   const ForwardTenIcon = useCallback(({ style }) => <Icon name='forward-10' pack="material" style={styles.icon} />, [])
   const PlayIcon = useCallback(({ style }) => <Icon name='play-sharp' style={styles.playIcon} />, [])
   const PauseIcon = useCallback(({ style }) => <Icon name='pause-sharp' style={styles.pauseIcon} />, [])
   const DownloadIcon = useCallback(({ style }) => <Icon name='file-download' pack="material" style={styles.icon} />, [])
   const DownloadedIcon = useCallback(({ style }) => <Icon name='file-download-done' pack="material" style={styles.icon} />, [])
-
-  const playbackSpeed = 1
 
   if(error) return null
 
@@ -89,7 +100,7 @@ const AudiobookPlayerButtonRow = ({
         ]}
         status="basic"
         appearance="ghost"
-        // onPress={}
+        onPress={toggleSpeed}
         disabled={loading}
       >
         <Text>

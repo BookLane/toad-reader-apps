@@ -32,6 +32,7 @@ const AudiobookPlayer = ({
   const [ playing, setPlaying, getPlaying ] = useRefState(false)
   const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
   const [ durationMS, setDurationMS, getDurationMS ] = useRefState(0)
+  const [ playbackSpeed, setPlaybackSpeed, getPlaybackSpeed ] = useRefState(1)
   const [ currentSpineIndex, setCurrentSpineIndex ] = useState(0)
 
   const { spines=[] } = audiobookInfo || {}
@@ -118,7 +119,7 @@ const AudiobookPlayer = ({
             source,
             {
               progressUpdateIntervalMillis: 500,  // this does not actually work, so I have it set to the default that it will always use
-              rate: 1,
+              rate: getPlaybackSpeed(),
               shouldCorrectPitch: true,
               volume: 1,
             },
@@ -144,6 +145,16 @@ const AudiobookPlayer = ({
   )
 
   useEffect(() => pause, [])  // pause on unload
+
+  useEffect(
+    () => {
+      ;(async () => {
+        if(!soundObj.current) return
+        await soundObj.current.setRateAsync(playbackSpeed, true)
+      })()
+    },
+    [ playbackSpeed ],
+  )
 
   // useEffect(
   //   () => (
@@ -201,6 +212,9 @@ const AudiobookPlayer = ({
         playing={playing}
         play={play}
         pause={pause}
+        playbackSpeed={playbackSpeed}
+        getPlaybackSpeed={getPlaybackSpeed}
+        setPlaybackSpeed={setPlaybackSpeed}
         loading={loading || pseudoLoading}
         error={error}
       />
