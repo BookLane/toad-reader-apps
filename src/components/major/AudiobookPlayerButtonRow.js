@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: `black`,
     fontSize: 12,
+    fontWeight: 'bold',
   },
   disabled: {
     backgroundColor: `transparent`,
@@ -45,6 +46,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     height: 24,
+  },
+  icon2: {
+    height: 28,
   },
   playIcon: {
     height: 42,
@@ -82,8 +86,8 @@ const AudiobookPlayerButtonRow = ({
     [ getPlaybackSpeed, setPlaybackSpeed ],
   )
 
-  const BackTenIcon = useCallback(({ style }) => <Icon name='replay-10' pack="material" style={styles.icon} />, [])
-  const ForwardTenIcon = useCallback(({ style }) => <Icon name='forward-10' pack="material" style={styles.icon} />, [])
+  const BackTenIcon = useCallback(({ style }) => <Icon name='replay-10' pack="material" style={styles.icon2} />, [])
+  const ForwardTenIcon = useCallback(({ style }) => <Icon name='forward-10' pack="material" style={styles.icon2} />, [])
   const PlayIcon = useCallback(({ style }) => <Icon name='play-sharp' style={styles.playIcon} />, [])
   const PauseIcon = useCallback(({ style }) => <Icon name='pause-sharp' style={styles.pauseIcon} />, [])
   const DownloadIcon = useCallback(({ style }) => <Icon name='file-download' pack="material" style={styles.icon} />, [])
@@ -103,13 +107,15 @@ const AudiobookPlayerButtonRow = ({
         onPress={toggleSpeed}
         disabled={loading}
       >
-        <Text>
-          <Text style={styles.buttonText}>
+        {() => (
+          <Text
+            style={styles.buttonText}
+          >
             {i18n("{{speed}}x", {
               speed: playbackSpeed.toFixed(1),
             })}
           </Text>
-        </Text>
+        )}
       </Button>
       <Button
         style={[

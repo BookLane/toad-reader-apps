@@ -115,6 +115,7 @@ const AudiobookPlayerChapterLine = ({
       >
         {spines.map(({ label }, idx) => (
           <AudiobookPlayerChapterChooserLine
+            key={idx}
             index={idx}
             label={label}
             onPress={selectChapter}

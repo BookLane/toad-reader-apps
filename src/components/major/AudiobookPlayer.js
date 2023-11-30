@@ -47,8 +47,8 @@ const AudiobookPlayer = ({
 
   const [ setPositionUpdateInterval, clearPositionUpdateInterval ] = useSetInterval()
 
-  const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
-  const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
+  const play = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: true }), [])
+  const pause = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
   const onPlaybackStatusUpdate = useCallback(
     ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
@@ -116,7 +116,9 @@ const AudiobookPlayer = ({
           setDurationMS(0)
 
           const { sound, status } = await Audio.Sound.createAsync(
-            source,
+            {
+              uri: source,
+            },
             {
               progressUpdateIntervalMillis: 500,  // this does not actually work, so I have it set to the default that it will always use
               rate: getPlaybackSpeed(),
@@ -172,6 +174,7 @@ const AudiobookPlayer = ({
 
   const setPosition = useCallback(
     async ms => {
+      if(!soundObj.current) return
       await soundObj.current.setStatusAsync({
         positionMillis: Math.max(0, Math.min((durationMS || 1000*60*60) - 10, ms)),
       })
@@ -232,8 +235,6 @@ export default AudiobookPlayer
 
 
 // TODOs
-  // Playback speed adjustment
-    // await sound.setRateAsync(2, true)
   // Check native
   // Download button (native only)
   //   Tapping this will download for offline listening
