@@ -34,6 +34,7 @@ const AudiobookPlayer = ({
   const [ durationMS, setDurationMS, getDurationMS ] = useRefState(0)
   const [ playbackSpeed, setPlaybackSpeed, getPlaybackSpeed ] = useRefState(1)
   const [ currentSpineIndex, setCurrentSpineIndex ] = useState(0)
+  const [ scanIconToShow, setScanIconToShow ] = useState()  // this makes things more fluid looking when scanning
 
   const { spines=[] } = audiobookInfo || {}
   const { filename } = spines[currentSpineIndex] || spines[0] || {}
@@ -207,12 +208,14 @@ const AudiobookPlayer = ({
         getPlaying={getPlaying}
         pause={pause}
         play={play}
+        setScanIconToShow={setScanIconToShow}
       />
 
       <AudiobookPlayerButtonRow
         positionMS={positionMS}
         setPosition={setPosition}
         playing={playing}
+        scanIconToShow={scanIconToShow}
         play={play}
         pause={pause}
         playbackSpeed={playbackSpeed}

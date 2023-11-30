@@ -66,6 +66,7 @@ const AudiobookPlayerButtonRow = ({
   positionMS,
   setPosition,
   playing,
+  scanIconToShow,
   play,
   pause,
   playbackSpeed,
@@ -135,13 +136,19 @@ const AudiobookPlayerButtonRow = ({
         ]}
         appearance="ghost"
         accessoryLeft={
-          loading
-            ? <Spin />
-            : (
-              playing
-                ? PauseIcon
-                : PlayIcon
-            )
+          {
+            play: PlayIcon,
+            pause: PauseIcon,
+          }[scanIconToShow]
+          || (
+            loading
+              ? <Spin />
+              : (
+                playing
+                  ? PauseIcon
+                  : PlayIcon
+              )
+          )
         }
         onPress={playing ? pause : play}
         disabled={loading}

@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 // import { i18n } from "inline-i18n"
 import { useLayout } from '@react-native-community/hooks'
+import useSetTimeout from "../../hooks/useSetTimeout"
 
 const styles = StyleSheet.create({
   bottom: {
@@ -59,10 +60,12 @@ const AudiobookPlayerProgressBar = ({
   getPlaying,
   pause,
   play,
+  setScanIconToShow,
 }) => {
 
   const { onLayout, width } = useLayout()
   const wasPlayingWhenPositionChangeBegan = useRef(null)
+  const [ setClearScanIconToShowTimeout ] = useSetTimeout()
 
   const percentage = Math.min(positionMS / (durationMS || 1), 1) * 100
 
@@ -73,6 +76,9 @@ const AudiobookPlayerProgressBar = ({
         wasPlayingWhenPositionChangeBegan.current = getPlaying()
         if(wasPlayingWhenPositionChangeBegan.current) {
           pause()
+          setScanIconToShow(`pause`)
+        } else {
+          setScanIconToShow(`play`)
         }
       }
 
@@ -80,7 +86,7 @@ const AudiobookPlayerProgressBar = ({
       const newPositionMS = Math.max(Math.min(parseInt(newPercentage * (durationMS || 0), 10), durationMS), 0)
       setPosition(newPositionMS)
     },
-    [ width, durationMS, getPlaying, play, pause ],
+    [ width, durationMS, getPlaying, play, pause, setScanIconToShow ],
   )
 
   const onResponderRelease = useCallback(
@@ -90,8 +96,9 @@ const AudiobookPlayerProgressBar = ({
         !wasPlayingWhenPositionChangeBegan.current && pause()
         wasPlayingWhenPositionChangeBegan.current = null
       }
+      setClearScanIconToShowTimeout(setScanIconToShow, 500)
     },
-    [],
+    [ play, pause, setScanIconToShow ],
   )
 
   return (
