@@ -4,6 +4,7 @@ import { Audio } from 'expo-av'
 
 import useDimensions from "../../hooks/useDimensions"
 import useRefState from "../../hooks/useRefState"
+import useSetInterval from "../../hooks/useSetInterval"
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
 import AudiobookPlayerProgressBar from "./AudiobookPlayerProgressBar"
@@ -43,6 +44,8 @@ const AudiobookPlayer = ({
 
   const { width, height } = useDimensions().window
 
+  const [ setPositionUpdateInterval, clearPositionUpdateInterval ] = useSetInterval()
+
   const play = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
@@ -50,6 +53,7 @@ const AudiobookPlayer = ({
     ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
 
       if(error) {
+        clearPositionUpdateInterval()
         setError(error)
         return
       }
@@ -74,6 +78,17 @@ const AudiobookPlayer = ({
       const newPositionMS = didJustFinish ? 0 : positionMillis
       if(newPositionMS !== getPositionMS()) {
         setPositionMS(newPositionMS)
+      }
+
+      if(isPlaying) {
+        // Doing this since progressUpdateIntervalMillis doesn't work (it will not change from 500ms)
+        const intervalMS = 50
+        setPositionUpdateInterval(
+          () => setPositionMS(getPositionMS() + intervalMS),
+          intervalMS,
+        )
+      } else {
+        clearPositionUpdateInterval()
       }
 
       if(durationMillis !== getDurationMS()) {
@@ -102,7 +117,7 @@ const AudiobookPlayer = ({
           const { sound, status } = await Audio.Sound.createAsync(
             source,
             {
-              progressUpdateIntervalMillis: 16,
+              progressUpdateIntervalMillis: 500,  // this does not actually work, so I have it set to the default that it will always use
               rate: 1,
               shouldCorrectPitch: true,
               volume: 1,
@@ -110,6 +125,10 @@ const AudiobookPlayer = ({
             onPlaybackStatusUpdate,
             true,
           )
+
+          // These don't work either
+          // await sound.setProgressUpdateIntervalAsync(16)
+          // await sound.setStatusAsync({ progressUpdateIntervalMillis: 16 })
 
           soundObj.current = sound
 

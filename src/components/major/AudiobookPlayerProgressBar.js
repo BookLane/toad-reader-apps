@@ -48,7 +48,7 @@ const AudiobookPlayerProgressBar = ({
   durationMS,
 }) => {
 
-  const percentage = Math.ceil(Math.min(positionMS / (durationMS || 1), 1) * 100)
+  const percentage = Math.min(positionMS / (durationMS || 1), 1) * 100
 
   return (
     <View style={styles.bottom}>
