@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: 0.3,
     shadowRadius: 15,
+    width: 128,
   },
   bottomNavigation: {
     paddingVertical: 0,
