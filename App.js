@@ -80,6 +80,7 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducers)
 const store = createStore(persistedReducer, applyMiddleware(patchMiddleware))
 const persistor = persistStore(store)
+// persistor.purge()  // uncomment this momentarily to clear out phone cache on dev
 setStore(store)
 
 if(Platform.OS === 'android') StatusBar.setTranslucent(false)  // This line shouldn't be needed after I push new apps out to the app stores for all clients

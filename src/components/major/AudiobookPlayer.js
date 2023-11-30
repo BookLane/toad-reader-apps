@@ -92,7 +92,7 @@ const AudiobookPlayer = ({
         clearPositionUpdateInterval()
       }
 
-      if(durationMillis !== getDurationMS()) {
+      if(durationMillis != null && durationMillis !== getDurationMS()) {
         setDurationMS(durationMillis)
       }
 
@@ -236,8 +236,10 @@ export default AudiobookPlayer
 
 // TODOs
   // Check native
+    // show same button when seeking with your finger
   // Download button (native only)
   //   Tapping this will download for offline listening
   //   Tapping again will open up an option to removed downloaded audio
   //   Listening library would show current download status and progress for each book
+  // iOS
   // report to analytics
