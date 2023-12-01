@@ -5,6 +5,7 @@ import { Audio } from 'expo-av'
 import useDimensions from "../../hooks/useDimensions"
 import useRefState from "../../hooks/useRefState"
 import useSetInterval from "../../hooks/useSetInterval"
+import useInstanceValue from "../../hooks/useInstanceValue"
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
 import AudiobookPlayerProgressBar from "./AudiobookPlayerProgressBar"
@@ -36,14 +37,16 @@ const AudiobookPlayer = ({
   const [ error, setError ] = useState()
   const [ playing, setPlaying, getPlaying ] = useRefState(false)
   const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
-  // const [ durationMS, setDurationMS, getDurationMS ] = useRefState(0)
   const [ playbackSpeed, setPlaybackSpeed, getPlaybackSpeed ] = useRefState(1)
-  const [ currentSpineIndex, setCurrentSpineIndex ] = useState(0)
+  const [ currentSpineIndex, setCurrentSpineIndex, getCurrentSpineIndex ] = useRefState(0)
   const [ scanIconToShow, setScanIconToShow ] = useState()  // this makes things more fluid looking when scanning
 
   const { spines=[] } = audiobookInfo || {}
-  const { filename, durationMS } = spines[currentSpineIndex] || spines[0] || {}
+  const { filename, durationMS: durationMSFromInfo } = spines[currentSpineIndex] || spines[0] || {}
+  const getSpines = useInstanceValue(spines)
   const source = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : sourceBase}${filename}`
+
+  const [ durationMS, setDurationMS, getDurationMS ] = useRefState(durationMSFromInfo)
 
   const soundObj = useRef()
   const totalTimePlayed = useRef(0)
@@ -82,6 +85,10 @@ const AudiobookPlayer = ({
         }
       }
 
+      if(didJustFinish && getCurrentSpineIndex() < getSpines().length - 1) {
+        setCurrentSpineIndex(getCurrentSpineIndex() + 1)
+      }
+
       const newPositionMS = didJustFinish ? 0 : positionMillis
       if(newPositionMS !== getPositionMS()) {
         setPositionMS(newPositionMS)
@@ -98,9 +105,9 @@ const AudiobookPlayer = ({
         clearPositionUpdateInterval()
       }
 
-      // if(durationMillis != null && durationMillis !== getDurationMS()) {
-      //   setDurationMS(durationMillis)
-      // }
+      if(durationMillis != null && durationMillis !== getDurationMS()) {
+        setDurationMS(durationMillis)
+      }
 
     },
     [],
@@ -119,7 +126,7 @@ const AudiobookPlayer = ({
           setLoading(true)
           setError()
           setPositionMS(0)
-          // setDurationMS(0)
+          setDurationMS(durationMSFromInfo)
 
           const { sound, status } = await Audio.Sound.createAsync(
             {
@@ -246,6 +253,7 @@ export default AudiobookPlayer
 
 // TODOs
   // iOS
+  // latest location!
   // test on TR production: audiobook files locked down so that they are inaccessible when not logged in?
   // report to analytics
   // remember last eBook / audiobook toggle position (if it doesn't already)
