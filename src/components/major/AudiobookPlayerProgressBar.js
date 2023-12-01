@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 
 const onStartShouldSetResponder = () => true
 
-const getTimeStringFromMS = ms => {
+export const getTimeStringFromMS = ms => {
   const seconds = parseInt(ms/1000, 10) || 0
   const min = Math.floor(seconds / 60)
   const sec = Math.floor(seconds % 60)

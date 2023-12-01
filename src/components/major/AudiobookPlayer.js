@@ -244,7 +244,8 @@ export default AudiobookPlayer
 
 
 // TODOs
-  // list audibook size in library
+  // disabled download button look-and-feel
+  // padding on phone
   // iOS
   // test on TR production: audiobook files locked down so that they are inaccessible when not logged in?
   // report to analytics

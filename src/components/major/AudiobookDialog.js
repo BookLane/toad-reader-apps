@@ -8,6 +8,7 @@ import { Image } from 'expo-image'
 
 import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj, openURL } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
+import { getTimeStringFromMS } from "./AudiobookPlayerProgressBar"
 
 import Dialog from "./Dialog"
 import Button from "../basic/Button"
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   dialog:  {
-    width: 450,
+    width: 550,
     maxWidth: 'calc(100vw - 20px)',
   },
   line: {
@@ -105,6 +106,19 @@ const styles = StyleSheet.create({
   coverEditIcon: {
     width: 20,
     height: 20,
+  },
+  size: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    width: 30,
+    textAlign: 'center',
+    marginLeft: 5,
+  },
+  duration: {
+    fontSize: 11,
+    fontWeight: '300',
+    width: 30,
+    textAlign: 'center',
   },
 })
 
@@ -360,7 +374,7 @@ const AudiobookDialog = ({
                   {i18n("Chapters", "", "admin")}
                 </Text>
 
-                {spines.map(({ filename, label }, idx) => {
+                {spines.map(({ filename, label, fileSizeInMB, durationMS }, idx) => {
                   const upDisabled = idx === 0 || submitting
                   const downDisabled = idx === spines.length - 1 || submitting
                 
@@ -374,14 +388,6 @@ const AudiobookDialog = ({
                           onChangeInfo={updateSpineLabel}
                           style={styles.spineLabelInput}
                           maxLength={100}
-                        />
-                        <Button
-                          style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
-                          size="small"
-                          appearance="ghost"
-                          accessoryLeft={PlayIcon}
-                          onPress={() => openURL({ url: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`, newTab: true })}
-                          disabled={submitting}
                         />
                         <Button
                           style={upDisabled ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
@@ -419,6 +425,16 @@ const AudiobookDialog = ({
                           }}
                           disabled={downDisabled}
                         />
+                        <Button
+                          style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
+                          size="small"
+                          appearance="ghost"
+                          accessoryLeft={PlayIcon}
+                          onPress={() => openURL({ url: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`, newTab: true })}
+                          disabled={submitting}
+                        />
+                        <Text style={styles.duration}>{getTimeStringFromMS(durationMS)}</Text>
+                        <Text style={styles.size}>{i18n("{{mb}} mb", { mb: fileSizeInMB })}</Text>
                         <Button
                           style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
                           size="small"
