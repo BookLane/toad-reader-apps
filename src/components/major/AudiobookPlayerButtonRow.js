@@ -176,7 +176,7 @@ const AudiobookPlayerButtonRow = ({
         <Button
           style={[
             styles.button,
-            loading && styles.disabled,
+            (loading || Platform.OS === 'web') && styles.disabled,
           ]}
           status="basic"
           appearance="ghost"
