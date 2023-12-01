@@ -11,7 +11,7 @@ import { removeEpub } from "../../utils/removeEpub"
 import { setStatusBarHidden, showConsent, getBooksDir } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
 import useWideMode from "../../hooks/useWideMode"
-import useBookCookies from "../../hooks/useBookCookies"
+import useBookCookies, { getBookCookie } from "../../hooks/useBookCookies"
 import useDimensions from "../../hooks/useDimensions"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
          setTocAndSpines, setBookCookies, setDownloadStatus, pushToBookDownloadQueue,
@@ -72,6 +72,7 @@ const Audiobook = React.memo(({
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { width, height } = useDimensions().window
   const imageSize = Math.min(400, width - 70, height - 56 - 200)
+  const [ cookie, setCookie ] = useState()
 
   const toggleDownloaded = useCallback(
     () => {
@@ -147,6 +148,27 @@ const Audiobook = React.memo(({
   useEffect(
     () => showConsent({ idps, setConsentShown }),
     [],
+  )
+
+  useEffect(
+    () => {
+      ;(async () => {
+
+        if(bookCookiesReady) {
+          setCookie(
+            await getBookCookie({
+              books,
+              accounts,
+              idp: idps[idpId],
+              setBookCookies,
+              bookId,
+            })
+          )
+        }
+
+      })()
+    },
+    [ bookCookiesReady ],
   )
 
   // useEffect(
@@ -229,7 +251,8 @@ const Audiobook = React.memo(({
         />
 
         <AudiobookPlayer
-          sourceBase={`${downloadOrigin}/epub_content/book_${bookId}/`}
+          uriBase={`${downloadOrigin}/epub_content/book_${bookId}/`}
+          cookie={cookie}
           localSourceBase={`${getBooksDir()}${bookId}/`}
           downloadProgressByFilename={downloadProgressByBookId[bookId] || {}}
           toggleDownloaded={toggleDownloaded}

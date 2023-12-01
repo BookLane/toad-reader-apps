@@ -6,6 +6,7 @@ import useDimensions from "../../hooks/useDimensions"
 import useRefState from "../../hooks/useRefState"
 import useSetInterval from "../../hooks/useSetInterval"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import { getReqOptionsWithAdditions } from "../../utils/toolbox"
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
 import AudiobookPlayerProgressBar from "./AudiobookPlayerProgressBar"
@@ -19,10 +20,11 @@ const styles = StyleSheet.create({
 })
 
 const AudiobookPlayer = ({
-  sourceBase,
+  uriBase,
   localSourceBase,
   downloadProgressByFilename,
   toggleDownloaded,
+  cookie,
 
   audiobookInfo,
   author,
@@ -44,7 +46,7 @@ const AudiobookPlayer = ({
   const { spines=[] } = audiobookInfo || {}
   const { filename, durationMS: durationMSFromInfo } = spines[currentSpineIndex] || spines[0] || {}
   const getSpines = useInstanceValue(spines)
-  const source = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : sourceBase}${filename}`
+  const uri = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : uriBase}${filename}`
 
   const [ durationMS, setDurationMS, getDurationMS ] = useRefState(durationMSFromInfo)
 
@@ -128,9 +130,16 @@ const AudiobookPlayer = ({
           setPositionMS(0)
           setDurationMS(durationMSFromInfo)
 
+          if(!cookie) return
+
           const { sound, status } = await Audio.Sound.createAsync(
             {
-              uri: source,
+              uri,
+              ...(downloadProgressByFilename[filename] === 1 ? {} : getReqOptionsWithAdditions({
+                headers: {
+                  cookie,
+                },
+              })),
             },
             {
               progressUpdateIntervalMillis: 500,  // this does not actually work, so I have it set to the default that it will always use
@@ -156,7 +165,7 @@ const AudiobookPlayer = ({
   
       })()
     },
-    [ source ],
+    [ uri, !!cookie ],
   )
 
   useEffect(() => pause, [])  // pause on unload
