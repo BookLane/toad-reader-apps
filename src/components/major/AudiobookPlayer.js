@@ -13,6 +13,7 @@ import AudiobookPlayerButtonRow from "./AudiobookPlayerButtonRow"
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    marginBottom: 40,
   },
 })
 
@@ -193,7 +194,7 @@ const AudiobookPlayer = ({
       style={[
         styles.container,
         {
-          width: Math.min(400, width - 20),
+          width: Math.min(400, width - 70),
         },
       ]}
     >

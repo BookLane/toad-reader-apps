@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   content: {
     ...StyleSheet.absoluteFillObject,
     top: 56,
-    maxHeight: 550,
+    maxHeight: 750,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
@@ -71,7 +71,7 @@ const Audiobook = React.memo(({
   const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { width, height } = useDimensions().window
-  const imageSize = Math.min(400, width - 20, height - 56 - 200)
+  const imageSize = Math.min(400, width - 70, height - 56 - 200)
 
   const toggleDownloaded = useCallback(
     () => {
