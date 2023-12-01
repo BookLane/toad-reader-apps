@@ -2,7 +2,7 @@ import { Platform } from "react-native"
 import * as FileSystem from 'expo-file-system'
 import { safeFetch } from "./toolbox"
 
-export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
+export default async (remoteUri, localUri, { skipIfExists, headers }={}, doSafeFetch) => {
 
   if(Platform.OS === 'web') return
 
@@ -22,7 +22,7 @@ export default async (remoteUri, localUri, { skipIfExists, headers }={}) => {
   } catch(e) {}
 
   let success
-  if((headers || {}).cookie) {
+  if((headers || {}).cookie && doSafeFetch) {
     const response = await safeFetch(remoteUri, { headers, credentials: 'omit' })
     if(response.status < 400) {
       await FileSystem.writeAsStringAsync(localUri, await response.text())

@@ -83,6 +83,7 @@ export const loadIndex = async ({ idp, bookId, cookie, books, accounts, setBookC
       skipIfExists: true,
       headers,
     },
+    true,
   )
 
   if(success === false) return true  // download failed, presumedly because the search index is too large for offline usage and so unavailable.
