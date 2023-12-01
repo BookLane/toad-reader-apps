@@ -390,6 +390,11 @@ export const setSyncStatus = syncStatus => ({
   syncStatus,
 })
 
+export const setSelectedBookTypeIndex = selectedBookTypeIndex => ({
+  type: "SET_SELECTED_BOOK_TYPE_INDEX",
+  selectedBookTypeIndex,
+})
+
 export const startRecordReading = ({ bookId, spineIdRef }) => ({
   type: "START_RECORD_READING",
   bookId,

@@ -327,5 +327,6 @@
     "middle-tap"
   ],
   "readerStatus": "ready",
-  "syncStatus": "synced"
+  "syncStatus": "synced",
+  "selectedBookTypeIndex": 0
 }

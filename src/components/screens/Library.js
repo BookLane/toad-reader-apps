@@ -52,7 +52,7 @@ import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 import Icon from "../basic/Icon"
 
 import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
-         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis,
+         removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, setSelectedBookTypeIndex,
          autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid, updateSubscriptions } from "../../redux/actions"
 
 const {
@@ -187,6 +187,7 @@ const Library = ({
   books,
   library,
   fetchingBooks,
+  selectedBookTypeIndex,
 
   addBooks,
   setCoverFilename,
@@ -201,6 +202,7 @@ const Library = ({
   setCurrentClassroom,
   setSelectedToolUid,
   updateSubscriptions,
+  setSelectedBookTypeIndex,
 
 }) => {
 
@@ -220,7 +222,6 @@ const Library = ({
   const [ replaceExisting, setReplaceExisting ] = useState(false)
   const [ redirectCheckComplete, setRedirectCheckComplete ] = useState(!(widget && parent_domain))
   const [ showLoading, setShowLoading ] = useState(false)
-  const [ selectedBookTypeIndex, setSelectedBookTypeIndex ] = useState(0)
   const loggedInUser = useLoggedInUser(accounts)
   const safeAreaInsets = useSafeAreaInsets()
 
@@ -1141,12 +1142,13 @@ const Library = ({
   )
 }
 
-const mapStateToProps = ({ accounts, idps, books, library, fetchingBooks }) => ({
+const mapStateToProps = ({ accounts, idps, books, library, fetchingBooks, selectedBookTypeIndex }) => ({
   accounts,
   idps,
   books,
   library,
   fetchingBooks,
+  selectedBookTypeIndex,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -1163,6 +1165,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setCurrentClassroom,
   setSelectedToolUid,
   updateSubscriptions,
+  setSelectedBookTypeIndex,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Library)

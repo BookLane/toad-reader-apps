@@ -17,6 +17,7 @@ import library from "./reducers/library"
 import readerStatus from "./reducers/readerStatus"
 import completedGuides from "./reducers/completedGuides"
 import syncStatus from "./reducers/syncStatus"
+import selectedBookTypeIndex from "./reducers/selectedBookTypeIndex"
 import userDataByBookId from "./reducers/userDataByBookId"
 import currentReadingRecord from "./reducers/currentReadingRecord"
 import readingRecordsByAccountId from "./reducers/readingRecordsByAccountId"
@@ -42,6 +43,7 @@ const slicedReducers = combineReducers({
   readerStatus,
   completedGuides,
   syncStatus,
+  selectedBookTypeIndex,
   userDataByBookId,
   currentReadingRecord,
   readingRecordsByAccountId,

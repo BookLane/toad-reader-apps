@@ -254,19 +254,9 @@ export default AudiobookPlayer
 // TODOs
   // iOS
   // latest location!
-  // test on TR production: audiobook files locked down so that they are inaccessible when not logged in?
-  // report to analytics
-  // remember last eBook / audiobook toggle position (if it doesn't already)
 
 
-
-// Long tap will give an option to remove the downloaded audio
-// Download button
-//   (Prior to full download, streams the audio)
-//   Tapping this will open up an option to download for offline listening
-//   Tapping again will open up an option to removed downloaded audio
-
-
+// report to analytics
 // warn of downloading over cell data?
   // include audibook size in warning
 // what happens when an audio files is added or changed after user has downloaded it?
