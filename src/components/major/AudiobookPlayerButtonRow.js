@@ -176,7 +176,7 @@ const AudiobookPlayerButtonRow = ({
         <Button
           style={[
             styles.button,
-            (loading || Platform.OS === 'web') && styles.disabled,
+            Platform.OS === 'web' && styles.disabled,
           ]}
           status="basic"
           appearance="ghost"
@@ -186,7 +186,7 @@ const AudiobookPlayerButtonRow = ({
             "2": DownloadedIcon,
           }[downloadStatus]}
           onPress={toggleDownloaded}
-          disabled={loading || Platform.OS === 'web'}
+          disabled={Platform.OS === 'web'}
         />
       </View>
     </View>

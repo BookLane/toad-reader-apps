@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   chapterText: {
+    flex: 1,
     fontSize: 15,
   },
   button: {
