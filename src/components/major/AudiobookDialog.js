@@ -257,8 +257,10 @@ const AudiobookDialog = ({
           ...getAudiobookInfo(),
           spines: [
             ...getAudiobookInfo().spines,
-            ...files.map(({ name, result: { filename } }) => ({
+            ...files.map(({ name, result: { filename, fileSizeInMB, durationMS } }) => ({
               filename,
+              fileSizeInMB,
+              durationMS,
               label: name.replace(/\.[^.]+$/, ``),
             }))
           ],
