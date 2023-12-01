@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
     height: 18,
   },
   chapters: {
-    borderWidth: 1,
+    borderWidth: 6,
     borderRadius: 5,
-    borderColor: 'rgba(0, 0, 0, .1)',
+    borderColor: 'rgba(0, 0, 0, .4)',
     backgroundColor: 'white',
     paddingVertical: 10,
     overflowY: 'auto',
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   chaptersBackdrop: {
-    backgroundColor: `rgba(0,0,0,.3)`,
+    backgroundColor: `transparent`,
   },
 })
 

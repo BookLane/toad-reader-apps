@@ -245,7 +245,6 @@ export default AudiobookPlayer
 
 
 // TODOs
-  // padding on phone
   // iOS
   // test on TR production: audiobook files locked down so that they are inaccessible when not logged in?
   // report to analytics
