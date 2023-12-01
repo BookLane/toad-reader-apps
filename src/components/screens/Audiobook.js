@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
-import { StyleSheet, View, Text, Platform, AppState } from "react-native"
+import React, { useState, useEffect, useCallback } from "react"
+import { StyleSheet, View, Platform, AppState, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { useParams } from "react-router-dom"
-// import { i18n } from "inline-i18n"
+import { i18n } from "inline-i18n"
 import { Image } from 'expo-image'
 
 import { refreshUserData } from "../../utils/syncUserData"
-import { setStatusBarHidden, showConsent } from "../../utils/toolbox"
+import { removeEpub } from "../../utils/removeEpub"
+import { setStatusBarHidden, showConsent, getBooksDir } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
 import useWideMode from "../../hooks/useWideMode"
 import useBookCookies from "../../hooks/useBookCookies"
 import useDimensions from "../../hooks/useDimensions"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
-         setTocAndSpines, setBookCookies } from "../../redux/actions"
+         setTocAndSpines, setBookCookies, setDownloadStatus, pushToBookDownloadQueue,
+         removeFromBookDownloadQueue, clearUserDataExceptProgress } from "../../redux/actions"
 import { logEvent } from "../../utils/analytics"
 import { getDataOrigin, getIDPOrigin } from '../../utils/toolbox'
 
@@ -43,13 +45,17 @@ const Audiobook = React.memo(({
   accounts,
   books,
   userDataByBookId,
+  downloadProgressByBookId,
 
   setLatestLocation,
   startRecordReading,
   endRecordReading,
   setConsentShown,
-  setTocAndSpines,
   setBookCookies,
+  setDownloadStatus,
+  pushToBookDownloadQueue,
+  removeFromBookDownloadQueue,
+  clearUserDataExceptProgress,
 
 }) => {
 
@@ -66,6 +72,62 @@ const Audiobook = React.memo(({
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { width, height } = useDimensions().window
   const imageSize = Math.min(400, width - 20, height - 56 - 200)
+
+  const toggleDownloaded = useCallback(
+    () => {
+
+      if(book.downloadStatus !== 0) {
+
+        Alert.alert(
+          i18n("Remove from device"),
+          i18n("Are you sure you want to remove “{{book_title}}” from this device?", {
+            book_title: book.title,
+          }),
+          [
+            {
+              text: i18n("Cancel"),
+              style: 'cancel',
+            },
+            {
+              text: i18n("Remove"),
+              onPress: async () => {
+                await removeEpub({
+                  bookId,
+                  removeFromBookDownloadQueue,
+                  setDownloadStatus,
+                  clearUserDataExceptProgress,
+                })
+
+                logEvent({
+                  eventName: `Remove book`,
+                  properties: {
+                    title: book.title || `Book id: ${bookId}`,
+                  },
+                })
+              },
+              // style: 'destructive',
+            },
+          ],
+          { cancelable: false }
+        )
+
+      } else {
+
+        setDownloadStatus({ bookId, downloadStatus: 1 })
+        pushToBookDownloadQueue({ bookId })
+
+        logEvent({
+          eventName: `Download book`,
+          properties: {
+            title: book.title || `Book id: ${bookId}`,
+          },
+        })
+
+      }
+
+    },
+    [ setDownloadStatus, pushToBookDownloadQueue, removeFromBookDownloadQueue, clearUserDataExceptProgress, bookId, book ],
+  )
 
   useEffect(
     () => {
@@ -168,6 +230,9 @@ const Audiobook = React.memo(({
 
         <AudiobookPlayer
           sourceBase={`${downloadOrigin}/epub_content/book_${bookId}/`}
+          localSourceBase={`${getBooksDir()}${bookId}/`}
+          downloadProgressByFilename={downloadProgressByBookId[bookId] || {}}
+          toggleDownloaded={toggleDownloaded}
           {...book}
         />
 
@@ -177,11 +242,12 @@ const Audiobook = React.memo(({
   )
 })
 
-const mapStateToProps = ({ idps, accounts, books, userDataByBookId }) => ({
+const mapStateToProps = ({ idps, accounts, books, userDataByBookId, downloadProgressByBookId }) => ({
   idps,
   accounts,
   books,
   userDataByBookId,
+  downloadProgressByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
@@ -191,6 +257,10 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   setConsentShown,
   setTocAndSpines,
   setBookCookies,
+  setDownloadStatus,
+  pushToBookDownloadQueue,
+  removeFromBookDownloadQueue,
+  clearUserDataExceptProgress,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(Audiobook)

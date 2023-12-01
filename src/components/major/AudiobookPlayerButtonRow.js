@@ -1,10 +1,11 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import Spin from "../basic/Spin"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const PLAYBACK_SPEEDS = [ .8, 1, 1.2, 1.5, 2, 2.5 ]
 
@@ -60,6 +61,10 @@ const styles = StyleSheet.create({
     left: 1,
     position: `relative`,
   },
+  spin: {
+    backgroundColor: 'transparent',
+    opacity: .1,
+  },
 })
 
 const AudiobookPlayerButtonRow = ({
@@ -72,6 +77,8 @@ const AudiobookPlayerButtonRow = ({
   playbackSpeed,
   getPlaybackSpeed,
   setPlaybackSpeed,
+  downloadStatus,
+  toggleDownloaded,
   loading,
   error,
 }) => {
@@ -164,17 +171,24 @@ const AudiobookPlayerButtonRow = ({
         onPress={forwardTen}
         disabled={loading}
       />
-      <Button
-        style={[
-          styles.button,
-          loading && styles.disabled,
-        ]}
-        status="basic"
-        appearance="ghost"
-        accessoryLeft={DownloadIcon}
-        // onPress={forwardTen}
-        disabled={loading}
-      />
+      <View style={styles.buttonContainer2}>
+        {downloadStatus === 1 && <CoverAndSpin style={styles.spin} />}
+        <Button
+          style={[
+            styles.button,
+            loading && styles.disabled,
+          ]}
+          status="basic"
+          appearance="ghost"
+          accessoryLeft={{
+            "0": DownloadIcon,
+            "1": DownloadIcon,
+            "2": DownloadedIcon,
+          }[downloadStatus]}
+          onPress={toggleDownloaded}
+          disabled={loading || Platform.OS === 'web'}
+        />
+      </View>
     </View>
   )
 }

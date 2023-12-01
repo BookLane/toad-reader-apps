@@ -1,7 +1,8 @@
 import React from "react"
-import { Ionicons } from '@expo/vector-icons'
 import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
+
+import Icon from "./Icon"
 
 const styles = StyleSheet.create({
   container: {
@@ -11,7 +12,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   icon: {
-    fontSize: 19,
+    height: 19,
     paddingRight: 4,
   },
   details: {
@@ -22,18 +23,21 @@ const styles = StyleSheet.create({
 
 const BookInfoDetails = ({
   bookInfo: {
+    audiobookInfo,
     downloadStatus,
     // epubSizeInMB,
     // totalCharacterCount,
   },
 }) => {
 
+  const isAudiobook = !!audiobookInfo
+
   if(Platform.OS === 'web') return null
 
   if(downloadStatus == 2) {
     return (
       <View style={styles.container}>
-        <Ionicons name='md-checkmark' style={styles.icon} />
+        <Icon name='md-checkmark' style={styles.icon} />
         <Text style={styles.details}>{i18n("On device")}</Text>
       </View>
     )
@@ -49,8 +53,26 @@ const BookInfoDetails = ({
 
   return (
     <View style={styles.container}>
-      <Ionicons name='md-cloud-download' style={styles.icon} />
-      <Text style={styles.details}>{i18n("Tap to download")}</Text>
+      <Icon
+        name={
+          isAudiobook
+            ? 'book-music'
+            : 'md-cloud-download'
+        }
+        pack={
+          isAudiobook
+            ? 'materialCommunity'
+            : 'ion'
+        }
+        style={styles.icon}
+      />
+      <Text style={styles.details}>
+        {
+          isAudiobook
+            ? i18n("Tap to open")
+            : i18n("Tap to download")
+        }
+      </Text>
     </View>
   )
 }

@@ -10,6 +10,7 @@ import { getIdsFromAccountId, textToReactNative } from "../../utils/toolbox"
 import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from '../../hooks/useRouterState'
+import useDownloadProgress from '../../hooks/useDownloadProgress'
 
 import LinkLikeText from "../basic/LinkLikeText"
 import AppHeader from "../basic/AppHeader"
@@ -43,6 +44,7 @@ const LibraryHeader = ({
   const [ showSearch, toggleShowSearch ] = useToggle(false)
   const [ bookIdToDownload, setBookIdToDownload ] = useState()
   const [ goToInfo, setGoToInfo ] = useState()
+  const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo: books[bookIdToDownload], bookId: bookIdToDownload })
 
   const onPressToggleView = useCallback(toggleView, [])
 
@@ -247,7 +249,7 @@ const LibraryHeader = ({
         onCancel={onCancelDownload}
         onConfirm={onConfirmDownload}
         submitting={downloadStatus === 1}
-        submittingPercentage={downloadProgressByBookId[bookIdToDownload]}
+        submittingPercentage={downloadProgress}
       />
 
     </>

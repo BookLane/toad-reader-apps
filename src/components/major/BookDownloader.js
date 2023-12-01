@@ -10,6 +10,7 @@ import { getBookCookie } from '../../hooks/useBookCookies'
 import { getBooksDir, getDataOrigin, getIdsFromAccountId, getIDPOrigin } from "../../utils/toolbox"
 import { fetchZipAndAssets } from "../../utils/zipDownloader"
 import parseEpub from "../../utils/parseEpub"
+import downloadAsync from "../../utils/downloadAsync"
 
 import { setBookCookies, removeFromBookDownloadQueue, setDownloadProgress,
          setDownloadStatus, setTocAndSpines, updateAccount } from "../../redux/actions"
@@ -20,6 +21,7 @@ const BookDownloader = ({
   accounts,
   bookDownloadQueue,
   books,
+  downloadProgressByBookId,
 
   setBookCookies,
   removeFromBookDownloadQueue,
@@ -33,6 +35,7 @@ const BookDownloader = ({
 
   const [ setThrottleTimeout ] = useSetTimeout()
   const getDownloadPaused = useInstanceValue(downloadPaused)
+  const getDownloadProgressByBookId = useInstanceValue(downloadProgressByBookId)
   const getBooks = useInstanceValue(books)
   const { historyPush } = useRouterState()
 
@@ -42,7 +45,13 @@ const BookDownloader = ({
 
         if(currentDownloadBookId) return
         if(!getBooks() || !bookDownloadQueue || !bookDownloadQueue[0]) return
-        if(getDownloadPaused()) return
+
+        const bookId = bookDownloadQueue[0]
+        const { downloadStatus, title, audiobookInfo } = getBooks()[bookId] || {}
+        const isAudiobook = !!audiobookInfo
+        const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
+
+        if(getDownloadPaused() && !audiobookInfo) return
 
         const downloadWasCanceled = bookId => {
           const { downloadStatus } = (getBooks() || {})[bookId] || {}
@@ -54,10 +63,6 @@ const BookDownloader = ({
 
           return false
         }
-
-        const bookId = bookDownloadQueue[0]
-        const { downloadStatus, title } = getBooks()[bookId] || {}
-        const accountId = Object.keys((getBooks()[bookId] || {}).accounts || {})[0]
 
         if(downloadStatus === 2 || !accountId) {
           removeFromBookDownloadQueue({ bookId })
@@ -90,6 +95,58 @@ const BookDownloader = ({
               bookId,
             })
         )
+
+        if(isAudiobook) {
+
+          const { spines } = audiobookInfo
+
+          for(let spine of spines) {
+
+            if((getDownloadProgressByBookId()[bookId] || {})[spine.filename] === 1) continue
+
+            const uri = `${downloadOrigin}/epub_content/book_${bookId}/${spine.filename}`
+
+            const success = await downloadAsync(
+              uri,
+              `${getBooksDir()}${bookId}/${spine.filename}`,
+              {
+                headers: {
+                  [__DEV__ ? "x-cookie-override" : "cookie"]: cookie,
+                },
+              },
+            )
+
+            if(success) {
+
+              setDownloadProgress({
+                bookId,
+                downloadProgress: {
+                  ...(getDownloadProgressByBookId()[bookId] || {}),
+                  [spine.filename]: 1,
+                },
+              })
+
+            } else {
+
+              console.log(`Could not download audiobook spine from ${uri}. (Could be bad internet connection.)`)
+              sentry(`Could not download audiobook spine from ${uri}. (Could be bad internet connection.)`)
+              historyPush("/error", {
+                title: i18n("Connection error"),
+                message: i18n("You are probbably not connected to the internet. Please check your connection and try again."),
+              })
+              markDownloadComplete(0)
+              return
+
+            }
+
+          }
+
+          markDownloadComplete(2)
+          console.log(`Done downloading audiobook with bookId ${bookId}`)
+          return
+
+        }
+
         const zipFetchInfo = await fetchZipAndAssets({
           zipUrl: `${downloadOrigin}/epub_content/book_${bookId}/book.epub`,
           localBaseUri: `${getBooksDir()}${bookId}/`,
@@ -159,11 +216,12 @@ const BookDownloader = ({
   return null
 }
 
-const mapStateToProps = ({ idps, accounts, bookDownloadQueue, books }) => ({
+const mapStateToProps = ({ idps, accounts, bookDownloadQueue, books, downloadProgressByBookId }) => ({
   idps,
   accounts,
   bookDownloadQueue,
   books,
+  downloadProgressByBookId,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

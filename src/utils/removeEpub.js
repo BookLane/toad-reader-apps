@@ -20,7 +20,7 @@ export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, s
   removeFromBookDownloadQueue({ bookId })
   cancelFetch({ localBaseUri })
   setDownloadStatus({ bookId, downloadStatus: 0 })
-  clearTocAndSpines({ bookId })
+  clearTocAndSpines && clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
 
   const asyncTasks = [

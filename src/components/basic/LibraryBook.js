@@ -27,17 +27,15 @@ const LibraryBook = ({
 
   const { historyPush } = useRouterState()
 
-  const getDownloadStatus = useCallback(
-    bookId => books[bookId].downloadStatus,
-    [ books ],
-  )
+  const getBookInfo = useCallback(bookId => books[bookId], [ books, bookId ])
 
   const onPress = useCallback(
     async () => {
-      const downloadStatus = getDownloadStatus(bookId)
+      const { downloadStatus, audiobookInfo } = getBookInfo(bookId)
+      const isAudiobook = !!audiobookInfo
       // const accountId = Object.keys(books[bookId].accounts)[0]
 
-      if(downloadStatus == 2 || Platform.OS === 'web') {
+      if(downloadStatus == 2 || Platform.OS === 'web' || isAudiobook) {
         historyPush(`/book/${bookId}`)
 
       } else if(downloadStatus == 0) {
@@ -57,7 +55,9 @@ const LibraryBook = ({
   
   const onLongPress = useCallback(
     () => {
-      if(getDownloadStatus(bookId) == 0) {
+      const { downloadStatus } = getBookInfo(bookId)
+
+      if(downloadStatus == 0) {
         onPress()
       } else {
         Alert.alert(

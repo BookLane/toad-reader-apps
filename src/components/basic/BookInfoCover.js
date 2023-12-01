@@ -5,6 +5,7 @@ import { StyleSheet, View, Platform } from "react-native"
 import { Image } from 'expo-image'
 
 import { Link } from "../../hooks/useRouterState"
+import useDownloadProgress from "../../hooks/useDownloadProgress"
 
 import CoverAndSpin from "./CoverAndSpin"
 
@@ -34,7 +35,7 @@ const BookInfoCover = ({
   const isAudiobook = !!audiobookInfo
   const { coverFilename } = audiobookInfo || {}
   const idpId = Object.keys(accounts)[0].split(':')[0]
-  const downloadProgress = downloadProgressByBookId[bookId]
+  const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo, bookId })
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
 
   const cover = (

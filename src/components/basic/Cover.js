@@ -7,6 +7,7 @@ import { Image } from 'expo-image'
 import { i18n } from "inline-i18n"
 
 import { getDataOrigin, getIDPOrigin } from '../../utils/toolbox'
+import useDownloadProgress from "../../hooks/useDownloadProgress"
 
 import { Link } from "../../hooks/useRouterState"
 import CoverAndSpin from "./CoverAndSpin"
@@ -81,7 +82,7 @@ const Cover = ({
   const isAudiobook = !!audiobookInfo
   const { coverFilename } = audiobookInfo || {}
   const idpId = Object.keys(accounts)[0].split(':')[0]
-  const downloadProgress = downloadProgressByBookId[bookId]
+  const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo, bookId })
 
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
 

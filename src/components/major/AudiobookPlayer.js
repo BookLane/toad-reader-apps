@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
 
 const AudiobookPlayer = ({
   sourceBase,
+  localSourceBase,
+  downloadProgressByFilename,
+  toggleDownloaded,
+
   audiobookInfo,
   author,
   downloadStatus,
@@ -38,8 +42,9 @@ const AudiobookPlayer = ({
 
   const { spines=[] } = audiobookInfo || {}
   const { filename } = spines[currentSpineIndex] || spines[0] || {}
-  const source = `${sourceBase}${filename}`
+  const source = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : sourceBase}${filename}`
 
+console.log('source', source)
   const soundObj = useRef()
   const totalTimePlayed = useRef(0)
   const currentPlaybackStartTime = useRef(null)
@@ -221,6 +226,8 @@ const AudiobookPlayer = ({
         playbackSpeed={playbackSpeed}
         getPlaybackSpeed={getPlaybackSpeed}
         setPlaybackSpeed={setPlaybackSpeed}
+        downloadStatus={downloadStatus}
+        toggleDownloaded={toggleDownloaded}
         loading={loading || pseudoLoading}
         error={error}
       />
@@ -242,5 +249,22 @@ export default AudiobookPlayer
   //   Tapping this will download for offline listening
   //   Tapping again will open up an option to removed downloaded audio
   //   Listening library would show current download status and progress for each book
+  // durationMS and file sizes in audiobookInfo
+  // list audibook size in library
   // iOS
+  // test on TR production: audiobook files locked down so that they are inaccessible when not logged in?
   // report to analytics
+  // remember last eBook / audiobook toggle position (if it doesn't already)
+
+
+
+// Long tap will give an option to remove the downloaded audio
+// Download button
+//   (Prior to full download, streams the audio)
+//   Tapping this will open up an option to download for offline listening
+//   Tapping again will open up an option to removed downloaded audio
+
+
+// warn of downloading over cell data?
+  // include audibook size in warning
+// what happens when an audio files is added or changed after user has downloaded it?
