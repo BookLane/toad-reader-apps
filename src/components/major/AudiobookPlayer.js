@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
-import usePrevious from "react-use/lib/usePrevious"
 import useUpdateEffect from "react-use/lib/useUpdateEffect"
 import { i18n } from "inline-i18n"
 
@@ -60,7 +59,6 @@ const AudiobookPlayer = ({
   const [ scanIconToShow, setScanIconToShow ] = useState()  // this makes things more fluid looking when scanning
 
   const { filename, durationMS: durationMSFromInfo } = spines[currentSpineIndex] || spines[0] || {}
-  const previousFilename = usePrevious(filename)
   const getFilename = useInstanceValue(filename)
   const getSpines = useInstanceValue(spines)
   const uri = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : uriBase}${filename}`
@@ -72,6 +70,8 @@ const AudiobookPlayer = ({
   const totalTimePlayed = useRef(0)
   const currentPlaybackStartTime = useRef(null)
   const lastLLPositionAtPrevTimeout = useRef(0)
+  const previousFilename = useRef()
+  const isUnmounted = useRef(false)
 
   const { width, height } = useDimensions().window
 
@@ -90,7 +90,7 @@ const AudiobookPlayer = ({
     [ updateLatestLocation, getFilename, getPositionMS ],
   )
 
-  const play = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: true }), [])
+  const play = useCallback(() => soundObj.current && !isUnmounted.current && soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
   const updateSpot = useCallback(
@@ -162,7 +162,7 @@ const AudiobookPlayer = ({
         clearPositionUpdateInterval()
       }
 
-      if(durationMillis != null && durationMillis !== getDurationMS()) {
+      if(durationMillis && durationMillis !== getDurationMS()) {
         setDurationMS(durationMillis)
       }
 
@@ -185,7 +185,7 @@ const AudiobookPlayer = ({
           setLoading(true)
           setBuffering(true)
           setError()
-          if(filename !== previousFilename) setPositionMS(0)
+          if(filename !== previousFilename.current) setPositionMS(0)
           setDurationMS(durationMSFromInfo)
 
           if(!cookie && !__DEV__) return
@@ -208,18 +208,27 @@ const AudiobookPlayer = ({
               rate: getPlaybackSpeed(),
               shouldCorrectPitch: true,
               volume: 1,
-              positionMillis: filename === previousFilename ? getPositionMS() : (llFilename === filename ? llPositionMS : 0),
+              positionMillis: (
+                filename === previousFilename.current
+                  ? getPositionMS()  // it was just downloaded; don't change the spot
+                  : (
+                    llFilename === filename
+                      ? llPositionMS
+                      : 0
+                  )
+              ),
             },
             onPlaybackStatusUpdate,
             true,
           )
+          previousFilename.current = filename
 
           // These don't work either
           // await sound.setProgressUpdateIntervalAsync(16)
           // await sound.setStatusAsync({ progressUpdateIntervalMillis: 16 })
 
           soundObj.current = sound
-
+          
           if(!isFirstLoad) await play()
 
         } catch (error) {
@@ -235,7 +244,13 @@ const AudiobookPlayer = ({
     [ uri, !!cookie ],
   )
 
-  useEffect(() => pause, [])  // pause on unload
+  useEffect(
+    () => () => {
+      pause()  // pause on unload
+      isUnmounted.current = true
+    },
+    [],
+  )
 
   useEffect(
     () => {
@@ -323,11 +338,3 @@ const AudiobookPlayer = ({
 }
 
 export default AudiobookPlayer
-
-
-// latest location from another device doesn't update the user's spot
-// play in background for iOS needs updated app
-// report to analytics
-// warn of downloading over cell data? (include audibook size in warning)
-// what happens when an audio files is added or changed after user has downloaded it?
-  // that chapter requires user to be online
