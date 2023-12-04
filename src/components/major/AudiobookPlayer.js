@@ -130,8 +130,9 @@ const AudiobookPlayer = ({
           setPositionMS(0)
           setDurationMS(durationMSFromInfo)
 
-          if(!cookie) return
+          if(!cookie && !__DEV__) return
 
+          await Audio.setAudioModeAsync({ playsInSilentModeIOS: true })
           const { sound, status } = await Audio.Sound.createAsync(
             {
               uri,
@@ -261,11 +262,17 @@ export default AudiobookPlayer
 
 
 // TODOs
+  // fix jitter on progressMS when scanning (android)
   // iOS
+    // await Audio.setAudioModeAsync({ playsInSilentModeIOS: true }) ?
+    // app.json permissions ?
   // latest location!
+  // better error message when no internet connection and not downloaded
+
+  // play in background
 
 
 // report to analytics
-// warn of downloading over cell data?
-  // include audibook size in warning
+// warn of downloading over cell data? (include audibook size in warning)
 // what happens when an audio files is added or changed after user has downloaded it?
+  // that chapter requires user to be online

@@ -146,6 +146,7 @@ const AudioPlayer = ({
           setPositionMS(0)
           setDurationMS(0)
 
+          await Audio.setAudioModeAsync({ playsInSilentModeIOS: true })
           const { sound, status } = await Audio.Sound.createAsync(
             source,
             {
