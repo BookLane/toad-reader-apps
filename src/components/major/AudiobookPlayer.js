@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
+import usePrevious from "react-use/lib/usePrevious"
 
 import useDimensions from "../../hooks/useDimensions"
 import useRefState from "../../hooks/useRefState"
@@ -46,6 +47,7 @@ const AudiobookPlayer = ({
 
   const { spines=[] } = audiobookInfo || {}
   const { filename, durationMS: durationMSFromInfo } = spines[currentSpineIndex] || spines[0] || {}
+  const previousFilename = usePrevious(filename)
   const getSpines = useInstanceValue(spines)
   const uri = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : uriBase}${filename}`
 
@@ -127,7 +129,7 @@ const AudiobookPlayer = ({
           setLoading(true)
           setBuffering(true)
           setError()
-          setPositionMS(0)
+          if(filename !== previousFilename) setPositionMS(0)
           setDurationMS(durationMSFromInfo)
 
           if(!cookie && !__DEV__) return
@@ -150,6 +152,7 @@ const AudiobookPlayer = ({
               rate: getPlaybackSpeed(),
               shouldCorrectPitch: true,
               volume: 1,
+              positionMillis: filename === previousFilename ? getPositionMS() : 0,
             },
             onPlaybackStatusUpdate,
             true,
