@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
 import usePrevious from "react-use/lib/usePrevious"
+import { i18n } from "inline-i18n"
 
 import useDimensions from "../../hooks/useDimensions"
 import useRefState from "../../hooks/useRefState"
 import useSetInterval from "../../hooks/useSetInterval"
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useSetTimeout from "../../hooks/useSetTimeout"
 import { getReqOptionsWithAdditions } from "../../utils/toolbox"
 
 import AudiobookPlayerChapterLine from "./AudiobookPlayerChapterLine"
@@ -18,13 +20,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
+  error: {
+    height: 70,
+    justifyContent: 'center',
+    color: 'red',
+  },
 })
 
 const AudiobookPlayer = ({
   uriBase,
   localSourceBase,
+  latestLocation,
   downloadProgressByFilename,
   toggleDownloaded,
+  updateLatestLocation,
   cookie,
 
   audiobookInfo,
@@ -35,6 +44,8 @@ const AudiobookPlayer = ({
   // logUsageEvent,
 }) => {
 
+  const { spines=[] } = audiobookInfo || {}
+
   const [ loading, setLoading, getLoading ] = useRefState(true)
   const [ buffering, setBuffering, getBuffering ] = useRefState(true)
   const [ pseudoLoading, setPseudoLoading ] = useState(false)
@@ -42,27 +53,54 @@ const AudiobookPlayer = ({
   const [ playing, setPlaying, getPlaying ] = useRefState(false)
   const [ positionMS, setPositionMS, getPositionMS ] = useRefState(0)
   const [ playbackSpeed, setPlaybackSpeed, getPlaybackSpeed ] = useRefState(1)
-  const [ currentSpineIndex, setCurrentSpineIndex, getCurrentSpineIndex ] = useRefState(0)
+  const { filename: llFilename, positionMS: llPositionMS } = latestLocation || {}
+  const llCurrentSpineIndex = spines.findIndex(({ filename }) => filename === llFilename)
+  const [ currentSpineIndex, setCurrentSpineIndex, getCurrentSpineIndex ] = useRefState(llCurrentSpineIndex === -1 ? 0 : llCurrentSpineIndex)
   const [ scanIconToShow, setScanIconToShow ] = useState()  // this makes things more fluid looking when scanning
 
-  const { spines=[] } = audiobookInfo || {}
   const { filename, durationMS: durationMSFromInfo } = spines[currentSpineIndex] || spines[0] || {}
   const previousFilename = usePrevious(filename)
+  const getFilename = useInstanceValue(filename)
   const getSpines = useInstanceValue(spines)
   const uri = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : uriBase}${filename}`
+  const [ setUpdateLatestLocationTimeout ] = useSetTimeout()
 
   const [ durationMS, setDurationMS, getDurationMS ] = useRefState(durationMSFromInfo)
 
   const soundObj = useRef()
   const totalTimePlayed = useRef(0)
   const currentPlaybackStartTime = useRef(null)
+  const lastLLPositionAtPrevTimeout = useRef(0)
 
   const { width, height } = useDimensions().window
 
   const [ setPositionUpdateInterval, clearPositionUpdateInterval ] = useSetInterval()
 
+  const goUpdateLatestLocation = useCallback(
+    () => {
+      const positionMS = getPositionMS()
+      if(positionMS != null) {
+        updateLatestLocation({
+          filename: getFilename(),
+          positionMS: positionMS,
+        })
+      }
+    },
+    [ updateLatestLocation, getFilename, getPositionMS ],
+  )
+
   const play = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: false }), [])
+
+  const pauseAndUpdateLatestLocation = useCallback(
+    () => {
+      if(soundObj.current) {
+        pause()
+        goUpdateLatestLocation()
+      }
+    },
+    [ pause, goUpdateLatestLocation ],
+  )
 
   const onPlaybackStatusUpdate = useCallback(
     ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
@@ -93,8 +131,16 @@ const AudiobookPlayer = ({
       }
 
       const newPositionMS = didJustFinish ? 0 : positionMillis
-      if(newPositionMS !== getPositionMS()) {
+      if(newPositionMS !== getPositionMS() && newPositionMS != null) {
         setPositionMS(newPositionMS)
+
+        if(
+          Math.abs(newPositionMS - lastLLPositionAtPrevTimeout.current) > 5000  // if position has changed by more than five seconds
+          || !isPlaying
+        ) {
+          setUpdateLatestLocationTimeout(goUpdateLatestLocation, 500)
+          lastLLPositionAtPrevTimeout.current = newPositionMS
+        }
       }
 
       if(isPlaying) {
@@ -113,8 +159,10 @@ const AudiobookPlayer = ({
       }
 
     },
-    [],
+    [ goUpdateLatestLocation ],
   )
+
+  useEffect(goUpdateLatestLocation, [ currentSpineIndex ])
 
   useEffect(
     () => {
@@ -152,7 +200,7 @@ const AudiobookPlayer = ({
               rate: getPlaybackSpeed(),
               shouldCorrectPitch: true,
               volume: 1,
-              positionMillis: filename === previousFilename ? getPositionMS() : 0,
+              positionMillis: filename === previousFilename ? getPositionMS() : (llFilename === filename ? llPositionMS : 0),
             },
             onPlaybackStatusUpdate,
             true,
@@ -167,7 +215,11 @@ const AudiobookPlayer = ({
           if(!isFirstLoad) await play()
 
         } catch (error) {
-          setError(error.message)
+          if(/Unable to resolve host/.test(error.message)) {
+            setError(i18n("Internet connection error"))
+            return
+          }
+          setError(error.message.replace(/^.*Exception: /))
         }
   
       })()
@@ -245,7 +297,7 @@ const AudiobookPlayer = ({
         playing={playing}
         scanIconToShow={scanIconToShow}
         play={play}
-        pause={pause}
+        pause={pauseAndUpdateLatestLocation}
         playbackSpeed={playbackSpeed}
         getPlaybackSpeed={getPlaybackSpeed}
         setPlaybackSpeed={setPlaybackSpeed}
@@ -255,9 +307,7 @@ const AudiobookPlayer = ({
         error={error}
       />
 
-      <Text style={styles.error}>
-        {error}
-      </Text>
+      {!!error && <Text style={styles.error}>{error}</Text>}
 
     </View>
 
@@ -267,12 +317,7 @@ const AudiobookPlayer = ({
 export default AudiobookPlayer
 
 
-// TODOs
-  // do not restart chapter when it is downloaded
-  // do NOT keep it from going to sleep if listening to audiobook
-  // latest location!
-  // better error message when no internet connection and not downloaded
-
+// latest location from another device doesn't update the user's spot
 // play in background for iOS needs updated app
 // report to analytics
 // warn of downloading over cell data? (include audibook size in warning)

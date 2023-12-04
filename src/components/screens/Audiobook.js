@@ -74,6 +74,11 @@ const Audiobook = React.memo(({
   const imageSize = Math.min(400, width - 70, height - 56 - 200)
   const [ cookie, setCookie ] = useState()
 
+  let latestLocation = {}
+  try {
+    latestLocation = JSON.parse(latest_location)
+  } catch(e) {}
+
   const toggleDownloaded = useCallback(
     () => {
 
@@ -128,6 +133,16 @@ const Audiobook = React.memo(({
 
     },
     [ setDownloadStatus, pushToBookDownloadQueue, removeFromBookDownloadQueue, clearUserDataExceptProgress, bookId, book ],
+  )
+
+  const updateLatestLocation = useCallback(
+    latestLocation => {
+      setLatestLocation({
+        bookId,
+        latestLocation,
+      })
+    },
+    [ bookId, setLatestLocation ],
   )
 
   useEffect(
@@ -254,8 +269,10 @@ const Audiobook = React.memo(({
           uriBase={`${downloadOrigin}/epub_content/book_${bookId}/`}
           cookie={cookie}
           localSourceBase={`${getBooksDir()}${bookId}/`}
+          latestLocation={latestLocation}
           downloadProgressByFilename={downloadProgressByBookId[bookId] || {}}
           toggleDownloaded={toggleDownloaded}
+          updateLatestLocation={updateLatestLocation}
           {...book}
         />
 

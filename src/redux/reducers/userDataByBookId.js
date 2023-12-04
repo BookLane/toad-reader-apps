@@ -258,7 +258,13 @@ export default function(state = initialState, action) {
 
     case "SET_LATEST_LOCATION": {
     // In the case there is no latest location data, do not update
-      if(typeof action.latestLocation !== 'object' || action.latestLocation.spineIdRef == null) {
+      if(
+        typeof action.latestLocation !== 'object'
+        || (
+          action.latestLocation.spineIdRef == null
+          && action.latestLocation.filename == null
+        )
+      ) {
         return state
       }
 

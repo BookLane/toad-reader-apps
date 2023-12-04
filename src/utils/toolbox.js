@@ -66,9 +66,11 @@ export const getPageIndexInSpine = ({ pageCfis, cfi }) => {
 }
 
 export const latestLocationToStr = latestLocation => {
+  const { spineIdRef: idref, cfi: elementCfi, ...other } = latestLocation
   return JSON.stringify({
-    idref: latestLocation.spineIdRef,
-    ...(latestLocation.cfi != null ? { elementCfi: latestLocation.cfi } : {}),
+    ...other,
+    ...(idref != null ? { idref } : {}),
+    ...(elementCfi != null ? { elementCfi } : {}),
   })
 }
 
