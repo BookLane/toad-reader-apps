@@ -132,7 +132,10 @@ const AudiobookPlayer = ({
 
           if(!cookie && !__DEV__) return
 
-          await Audio.setAudioModeAsync({ playsInSilentModeIOS: true })
+          await Audio.setAudioModeAsync({
+            playsInSilentModeIOS: true,
+            staysActiveInBackground: true,
+          })
           const { sound, status } = await Audio.Sound.createAsync(
             {
               uri,
@@ -263,9 +266,8 @@ export default AudiobookPlayer
 
 // TODOs
   // fix jitter on progressMS when scanning (android)
-  // iOS
-    // await Audio.setAudioModeAsync({ playsInSilentModeIOS: true }) ?
-    // app.json permissions ?
+  // do not restart chapter when it is downloaded
+  // do NOT keep it from going to sleep if listening to audiobook
   // latest location!
   // better error message when no internet connection and not downloaded
 
