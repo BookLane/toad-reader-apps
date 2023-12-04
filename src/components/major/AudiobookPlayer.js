@@ -35,6 +35,7 @@ const AudiobookPlayer = ({
 }) => {
 
   const [ loading, setLoading, getLoading ] = useRefState(true)
+  const [ buffering, setBuffering, getBuffering ] = useRefState(true)
   const [ pseudoLoading, setPseudoLoading ] = useState(false)
   const [ error, setError ] = useState()
   const [ playing, setPlaying, getPlaying ] = useRefState(false)
@@ -70,10 +71,8 @@ const AudiobookPlayer = ({
         return
       }
 
-      const isLoadingOrBuffering = !isLoaded || isBuffering
-      if(isLoadingOrBuffering !== getLoading()) {
-        setLoading(isLoadingOrBuffering)
-      }
+      if(!isLoaded !== getLoading()) setLoading(!isLoaded)
+      if(isBuffering !== getBuffering()) setBuffering(isBuffering)
 
       if(isPlaying !== getPlaying()) {
         setPlaying(isPlaying)
@@ -126,6 +125,7 @@ const AudiobookPlayer = ({
           if(getPlaying()) await pause()
           if(!isFirstLoad) setPseudoLoading(true)
           setLoading(true)
+          setBuffering(true)
           setError()
           setPositionMS(0)
           setDurationMS(durationMSFromInfo)
@@ -248,7 +248,7 @@ const AudiobookPlayer = ({
         setPlaybackSpeed={setPlaybackSpeed}
         downloadStatus={downloadStatus}
         toggleDownloaded={toggleDownloaded}
-        loading={loading || pseudoLoading}
+        loading={loading || buffering || pseudoLoading}
         error={error}
       />
 
@@ -265,15 +265,12 @@ export default AudiobookPlayer
 
 
 // TODOs
-  // fix jitter on progressMS when scanning (android)
   // do not restart chapter when it is downloaded
   // do NOT keep it from going to sleep if listening to audiobook
   // latest location!
   // better error message when no internet connection and not downloaded
 
-  // play in background
-
-
+// play in background for iOS needs updated app
 // report to analytics
 // warn of downloading over cell data? (include audibook size in warning)
 // what happens when an audio files is added or changed after user has downloaded it?
