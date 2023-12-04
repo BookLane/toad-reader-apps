@@ -62,6 +62,7 @@ const AudiobookPlayer = ({
   const getFilename = useInstanceValue(filename)
   const getSpines = useInstanceValue(spines)
   const uri = `${downloadProgressByFilename[filename] === 1 ? localSourceBase : uriBase}${filename}`
+  const getUri = useInstanceValue(uri)
   const [ setUpdateLatestLocationTimeout ] = useSetTimeout()
 
   const [ durationMS, setDurationMS, getDurationMS ] = useRefState(durationMSFromInfo)
@@ -112,7 +113,7 @@ const AudiobookPlayer = ({
   )
 
   const onPlaybackStatusUpdate = useCallback(
-    ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish }) => {
+    ({ isLoaded, error, isPlaying, isBuffering, positionMillis, durationMillis, didJustFinish, uri }) => {
 
       if(error) {
         clearPositionUpdateInterval()
@@ -128,6 +129,7 @@ const AudiobookPlayer = ({
 
         if(isPlaying) {
           setPseudoLoading(false)
+          setError()
           currentPlaybackStartTime.current = Date.now()
         } else if(currentPlaybackStartTime.current) {
           totalTimePlayed.current += Math.round((Date.now() - currentPlaybackStartTime.current) / 1000)
@@ -190,10 +192,16 @@ const AudiobookPlayer = ({
 
           if(!cookie && !__DEV__) return
 
+          if(soundObj.current) {
+            if(getPlaying) await pause()
+            await soundObj.current.unloadAsync()
+          }
+
           await Audio.setAudioModeAsync({
             playsInSilentModeIOS: true,
             staysActiveInBackground: true,
           })
+
           const { sound, status } = await Audio.Sound.createAsync(
             {
               uri,
