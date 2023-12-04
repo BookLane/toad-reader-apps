@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { Audio } from 'expo-av'
 import usePrevious from "react-use/lib/usePrevious"
+import useUpdateEffect from "react-use/lib/useUpdateEffect"
 import { i18n } from "inline-i18n"
 
 import useDimensions from "../../hooks/useDimensions"
@@ -92,14 +93,22 @@ const AudiobookPlayer = ({
   const play = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: true }), [])
   const pause = useCallback(() => soundObj.current && soundObj.current.setStatusAsync({ shouldPlay: false }), [])
 
+  const updateSpot = useCallback(
+    () => {
+      setUpdateLatestLocationTimeout(goUpdateLatestLocation, 500)
+      lastLLPositionAtPrevTimeout.current = getPositionMS()
+    },
+    [ setUpdateLatestLocationTimeout, goUpdateLatestLocation, getPositionMS ],
+  )
+
   const pauseAndUpdateLatestLocation = useCallback(
     () => {
       if(soundObj.current) {
         pause()
-        goUpdateLatestLocation()
+        updateSpot()
       }
     },
-    [ pause, goUpdateLatestLocation ],
+    [ pause, updateSpot ],
   )
 
   const onPlaybackStatusUpdate = useCallback(
@@ -138,8 +147,7 @@ const AudiobookPlayer = ({
           Math.abs(newPositionMS - lastLLPositionAtPrevTimeout.current) > 5000  // if position has changed by more than five seconds
           || !isPlaying
         ) {
-          setUpdateLatestLocationTimeout(goUpdateLatestLocation, 500)
-          lastLLPositionAtPrevTimeout.current = newPositionMS
+          updateSpot()
         }
       }
 
@@ -159,10 +167,10 @@ const AudiobookPlayer = ({
       }
 
     },
-    [ goUpdateLatestLocation ],
+    [ updateSpot ],
   )
 
-  useEffect(goUpdateLatestLocation, [ currentSpineIndex ])
+  useUpdateEffect(updateSpot, [ currentSpineIndex ])
 
   useEffect(
     () => {
