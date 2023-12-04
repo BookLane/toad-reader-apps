@@ -951,6 +951,13 @@ const Library = ({
                       : (
                         <View style={styles.content}>
 
+                          {useAudiobooks && bookList.length === 0 &&
+                            <Text style={styles.noBooks}>
+                              {selectedBookTypeIndex === 0 && i18n("No e-books found.")}
+                              {selectedBookTypeIndex === 1 && i18n("No audiobooks found.")}
+                            </Text>
+                          }
+
                           <LibraryViewer
                             bookList={bookList}
                             handleNewLibrary={handleNewLibrary}
