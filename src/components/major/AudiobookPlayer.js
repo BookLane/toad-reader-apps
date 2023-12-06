@@ -164,9 +164,9 @@ const AudiobookPlayer = ({
         clearPositionUpdateInterval()
       }
 
-      if(durationMillis && durationMillis !== getDurationMS()) {
-        setDurationMS(durationMillis)
-      }
+      // if(durationMillis && durationMillis !== getDurationMS()) {
+      //   setDurationMS(durationMillis)
+      // }
 
     },
     [ updateSpot ],
