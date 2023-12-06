@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, ScrollView } from "react-native"
 // import { i18n } from "inline-i18n"
 import { Modal } from "@ui-kitten/components"
 import useToggle from 'react-use/lib/useToggle'
@@ -44,8 +44,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: 'rgba(0, 0, 0, .4)',
     backgroundColor: 'white',
-    paddingVertical: 10,
-    overflowY: 'auto',
+  },
+  spacer: {
+    height: 10,
   },
   line: {
     ...line,
@@ -114,15 +115,19 @@ const AudiobookPlayerChapterLine = ({
           }
         ]}
       >
-        {spines.map(({ label }, idx) => (
-          <AudiobookPlayerChapterChooserLine
-            key={idx}
-            index={idx}
-            label={label}
-            onPress={selectChapter}
-            status={idx === currentSpineIndex ? `selected` : `unselected`}
-          />
-        ))}
+        <ScrollView>
+          <View style={styles.spacer} />
+          {spines.map(({ label }, idx) => (
+            <AudiobookPlayerChapterChooserLine
+              key={idx}
+              index={idx}
+              label={label}
+              onPress={selectChapter}
+              status={idx === currentSpineIndex ? `selected` : `unselected`}
+            />
+          ))}
+          <View style={styles.spacer} />
+        </ScrollView>
       </Modal>
 
     </View>
