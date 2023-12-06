@@ -1,14 +1,18 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useCallback, useEffect, useRef } from "react"
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
 import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import useToggle from "react-use/lib/useToggle"
 import { Image } from 'expo-image'
+import { Audio } from 'expo-av'
 
 import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj, openURL } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
+import useRefState from "../../hooks/useRefState"
+import useBookCookies, { getBookCookie } from "../../hooks/useBookCookies"
 import { getTimeStringFromMS } from "./AudiobookPlayerProgressBar"
+import { setBookCookies } from "../../redux/actions"
 
 import Dialog from "./Dialog"
 import Button from "../basic/Button"
@@ -139,6 +143,8 @@ const AudiobookDialog = ({
   const [ editedBook, setEditedBook ] = useState({})
   const [ uploadCover, toggleUploadCover ] = useToggle()
   const [ uploadSpines, toggleUploadSpines ] = useToggle()
+  const [ playingFilename, setPlayingFilename, getPlayingFilename ] = useRefState()
+  const soundObj = useRef()
 
   const getEditedBook = useInstanceValue(editedBook)
 
@@ -149,6 +155,8 @@ const AudiobookDialog = ({
   const { coverFilename=``, spines=[] } = audiobookInfo
   const getAudiobookInfo = useInstanceValue(audiobookInfo)
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
+  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
+  const [ cookie, setCookie ] = useState()
 
   useEffect(
     () => {
@@ -284,8 +292,53 @@ const AudiobookDialog = ({
     [ updateEditedBook ],
   )
 
+  const togglePlay = useCallback(
+    async filename => {
+
+      const playingFilename = getPlayingFilename()
+
+      if(soundObj.current) {
+        await soundObj.current.setStatusAsync({ shouldPlay: false })
+        await soundObj.current.unloadAsync()
+        soundObj.current = undefined
+      }
+
+      if(bookCookiesReady && filename && filename !== playingFilename) {
+
+        setPlayingFilename(filename)
+
+        const { sound } = await Audio.Sound.createAsync(
+          {
+            uri: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`,
+            ...getReqOptionsWithAdditions({
+              headers: {
+                cookie,
+              },
+            }),
+          },
+          {},
+          null,
+          true,
+        )
+
+        if(getPlayingFilename() === filename) {  // make sure it wasn't subsequently paused
+          soundObj.current = sound
+          await soundObj.current.setStatusAsync({ shouldPlay: true })
+        }
+
+      } else {
+
+        setPlayingFilename()
+
+      }
+
+    },
+    [ getPlayingFilename, bookCookiesReady, setPlayingFilename, downloadOrigin, bookId ],
+  )
+
   const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
   const PlayIcon = useCallback(({ style }) => <Icon name='md-play' style={[ styles.playIcon, style ]} />, [])
+  const PauseIcon = useCallback(({ style }) => <Icon name='pause-sharp' style={[ styles.pauseIcon, style ]} />, [])
   const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
   const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
   const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
@@ -295,6 +348,29 @@ const AudiobookDialog = ({
   const editedBookWithoutEpubSizeInMB = cloneObj(editedBook)
   delete editedBookWithoutEpubSizeInMB.epubSizeInMB
   const hasChange = JSON.stringify(bookWithoutEpubSizeInMB) !== JSON.stringify(editedBookWithoutEpubSizeInMB)
+
+  useEffect(
+    () => {
+      ;(async () => {
+
+        if(bookCookiesReady) {
+          setCookie(
+            await getBookCookie({
+              books,
+              accounts,
+              idp: idps[idpId],
+              setBookCookies,
+              bookId,
+            })
+          )
+        }
+
+      })()
+    },
+    [ bookCookiesReady ],
+  )
+
+  useEffect(() => togglePlay, [ open ])
 
   return (
     <>
@@ -429,9 +505,9 @@ const AudiobookDialog = ({
                           style={submitting ? styles.keyOptionButtonDisabled : styles.keyOptionButton}
                           size="small"
                           appearance="ghost"
-                          accessoryLeft={PlayIcon}
-                          onPress={() => openURL({ url: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`, newTab: true })}
-                          disabled={submitting}
+                          accessoryLeft={filename === playingFilename ? PauseIcon : PlayIcon}
+                          onPress={() => togglePlay(filename)}
+                          disabled={!bookCookiesReady || submitting}
                         />
                         <Text style={styles.duration}>{getTimeStringFromMS(durationMS)}</Text>
                         <Text style={styles.size}>{i18n("{{mb}} mb", { mb: fileSizeInMB })}</Text>
@@ -504,6 +580,7 @@ const mapStateToProps = ({ idps, accounts, books }) => ({
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+  setBookCookies,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(AudiobookDialog)
