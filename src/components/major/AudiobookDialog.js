@@ -159,8 +159,8 @@ const AudiobookDialog = ({
   const { coverFilename=``, spines=[] } = audiobookInfo
   const getAudiobookInfo = useInstanceValue(audiobookInfo)
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
-  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
-  const [ cookie, setCookie ] = useState()
+  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId, skip: !open })
+  const [ bookCookie, setBookCookie ] = useState()
 
   useEffect(
     () => {
@@ -316,7 +316,7 @@ const AudiobookDialog = ({
             uri: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`,
             ...getReqOptionsWithAdditions({
               headers: {
-                cookie,
+                cookie: bookCookie,
               },
             }),
           },
@@ -337,7 +337,7 @@ const AudiobookDialog = ({
       }
 
     },
-    [ getPlayingFilename, bookCookiesReady, setPlayingFilename, downloadOrigin, bookId ],
+    [ getPlayingFilename, bookCookiesReady, setPlayingFilename, downloadOrigin, bookId, bookCookie ],
   )
 
   const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
@@ -357,8 +357,8 @@ const AudiobookDialog = ({
     () => {
       ;(async () => {
 
-        if(bookCookiesReady) {
-          setCookie(
+        if(bookCookiesReady && open) {
+          setBookCookie(
             await getBookCookie({
               books,
               accounts,
@@ -371,7 +371,7 @@ const AudiobookDialog = ({
 
       })()
     },
-    [ bookCookiesReady ],
+    [ bookCookiesReady, open ],
   )
 
   useEffect(() => togglePlay, [ open ])

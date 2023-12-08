@@ -4,6 +4,7 @@ import { Platform } from "react-native"
 import useRouterState from "./useRouterState"
 import { safeFetch, getReqOptionsWithAdditions, getDataOrigin, bookCookiesToCookieStr } from "../utils/toolbox"
 import useSetTimeout from './useSetTimeout'
+import useInstanceValue from './useInstanceValue'
 
 const getNeedsFreshCookies = book => book && (!book.bookCookies || book.bookCookies.expireAt < Date.now() + 1000*60*5)
 
@@ -60,11 +61,12 @@ export const getBookCookie = async ({ books, accounts, idp, setBookCookies, book
   return false
 }
 
-const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId }) => {
+const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) => {
 
   const { historyPush } = useRouterState()
   const [ ready, setReady ] = useState(!!__DEV__)
   const [ setRefreshCookiesTimeout ] = useSetTimeout()
+  const getSkip = useInstanceValue(skip)
 
   const book = (books || {})[bookId]
 
@@ -72,6 +74,7 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId }) => {
     (async () => {
       if(__DEV__) return
       if(!book) return
+      if(getSkip()) return
 
       setReady(false)
 
@@ -92,7 +95,7 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId }) => {
 
   useEffect(
     checkAndGet,
-    [ !!books, bookId ],
+    [ !!books, bookId, skip ],
   )
 
   useEffect(

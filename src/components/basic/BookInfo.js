@@ -408,12 +408,14 @@ const BookInfo = ({
         handleNewLibrary={handleNewLibrary}
       />
 
-      <AudiobookDialog
-        open={editingAudiobook}
-        bookId={bookId}
-        onClose={toggleEditingAudiobook}
-        handleNewLibrary={handleNewLibrary}
-      />
+      {isAudiobook &&
+        <AudiobookDialog
+          open={editingAudiobook}
+          bookId={bookId}
+          onClose={toggleEditingAudiobook}
+          handleNewLibrary={handleNewLibrary}
+        />
+      }
 
       <BookSubscriptionsDialog
         open={editingSubscriptions}
