@@ -137,8 +137,12 @@ const AudiobookPlayer = ({
         }
       }
 
-      if(didJustFinish && getCurrentSpineIndex() < getSpines().length - 1) {
-        setCurrentSpineIndex(getCurrentSpineIndex() + 1)
+      if(didJustFinish) {
+        if(getCurrentSpineIndex() < getSpines().length - 1) {
+          setCurrentSpineIndex(getCurrentSpineIndex() + 1)
+        } else {
+          pause()
+        }
       }
 
       const newPositionMS = didJustFinish ? 0 : positionMillis
@@ -193,7 +197,7 @@ const AudiobookPlayer = ({
           if(!cookie && !__DEV__) return
 
           if(soundObj.current) {
-            if(getPlaying) await pause()
+            if(getPlaying()) await pause()
             await soundObj.current.unloadAsync()
           }
 
