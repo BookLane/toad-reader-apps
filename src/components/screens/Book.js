@@ -316,7 +316,7 @@ const Book = React.memo(({
     sidePanelSettings,
     spineInlineToolsHash,
   })
-  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
+  const bookCookiesReady = !!useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
   const classroomQueryString = useClassroomQueryString({ userDataByBookId, accounts, idp: idps[idpId], setClassroomQueryString, bookId, classroomUid })
 
   const getToolMoveInfo = useInstanceValue(toolMoveInfo)

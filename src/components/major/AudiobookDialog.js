@@ -10,7 +10,7 @@ import { Audio } from 'expo-av'
 import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj, openURL } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useRefState from "../../hooks/useRefState"
-import useBookCookies, { getBookCookie } from "../../hooks/useBookCookies"
+import useBookCookies from "../../hooks/useBookCookies"
 import { getTimeStringFromMS } from "./AudiobookPlayerProgressBar"
 import { setBookCookies } from "../../redux/actions"
 
@@ -159,8 +159,7 @@ const AudiobookDialog = ({
   const { coverFilename=``, spines=[] } = audiobookInfo
   const getAudiobookInfo = useInstanceValue(audiobookInfo)
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
-  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId, skip: !open })
-  const [ bookCookie, setBookCookie ] = useState()
+  const bookCookies = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId, skip: !open })
 
   useEffect(
     () => {
@@ -307,7 +306,7 @@ const AudiobookDialog = ({
         soundObj.current = undefined
       }
 
-      if(bookCookiesReady && filename && filename !== playingFilename) {
+      if(bookCookies && filename && filename !== playingFilename) {
 
         setPlayingFilename(filename)
 
@@ -316,7 +315,7 @@ const AudiobookDialog = ({
             uri: `${downloadOrigin}/epub_content/book_${bookId}/${filename}`,
             ...getReqOptionsWithAdditions({
               headers: {
-                cookie: bookCookie,
+                cookie: bookCookies,
               },
             }),
           },
@@ -337,7 +336,7 @@ const AudiobookDialog = ({
       }
 
     },
-    [ getPlayingFilename, bookCookiesReady, setPlayingFilename, downloadOrigin, bookId, bookCookie ],
+    [ getPlayingFilename, setPlayingFilename, downloadOrigin, bookId, bookCookies ],
   )
 
   const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
@@ -352,27 +351,6 @@ const AudiobookDialog = ({
   const editedBookWithoutEpubSizeInMB = cloneObj(editedBook)
   delete editedBookWithoutEpubSizeInMB.epubSizeInMB
   const hasChange = JSON.stringify(bookWithoutEpubSizeInMB) !== JSON.stringify(editedBookWithoutEpubSizeInMB)
-
-  useEffect(
-    () => {
-      ;(async () => {
-
-        if(bookCookiesReady && open) {
-          setBookCookie(
-            await getBookCookie({
-              books,
-              accounts,
-              idp: idps[idpId],
-              setBookCookies,
-              bookId,
-            })
-          )
-        }
-
-      })()
-    },
-    [ bookCookiesReady, open ],
-  )
 
   useEffect(() => togglePlay, [ open ])
 
@@ -511,7 +489,7 @@ const AudiobookDialog = ({
                           appearance="ghost"
                           accessoryLeft={filename === playingFilename ? PauseIcon : PlayIcon}
                           onPress={() => togglePlay(filename)}
-                          disabled={!bookCookiesReady || submitting}
+                          disabled={!bookCookies || submitting}
                         />
                         <Text style={styles.duration}>{getTimeStringFromMS(durationMS)}</Text>
                         <Text style={styles.size}>{i18n("{{mb}} mb", { mb: fileSizeInMB })}</Text>

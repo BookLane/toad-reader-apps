@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useEffect, useCallback } from "react"
 import { StyleSheet, View, Platform, AppState, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -11,7 +11,7 @@ import { removeEpub } from "../../utils/removeEpub"
 import { setStatusBarHidden, showConsent, getBooksDir } from "../../utils/toolbox"
 import useRouterState from "../../hooks/useRouterState"
 import useWideMode from "../../hooks/useWideMode"
-import useBookCookies, { getBookCookie } from "../../hooks/useBookCookies"
+import useBookCookies from "../../hooks/useBookCookies"
 import useDimensions from "../../hooks/useDimensions"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
          setTocAndSpines, setBookCookies, setDownloadStatus, pushToBookDownloadQueue,
@@ -68,11 +68,10 @@ const Audiobook = React.memo(({
   const book = (books || {})[bookId]
   const latest_location = (userDataByBookId[bookId] || {}).latest_location
   const wideMode = useWideMode()
-  const bookCookiesReady = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
+  const bookCookies = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId })
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { width, height } = useDimensions().window
   const imageSize = Math.min(400, width - 70, height - 56 - 200)
-  const [ cookie, setCookie ] = useState()
 
   let latestLocation = {}
   try {
@@ -165,27 +164,6 @@ const Audiobook = React.memo(({
     [],
   )
 
-  useEffect(
-    () => {
-      ;(async () => {
-
-        if(bookCookiesReady) {
-          setCookie(
-            await getBookCookie({
-              books,
-              accounts,
-              idp: idps[idpId],
-              setBookCookies,
-              bookId,
-            })
-          )
-        }
-
-      })()
-    },
-    [ bookCookiesReady ],
-  )
-
   // useEffect(
   //   () => {
   //     const handleAppStateChange = nextAppState => {
@@ -233,7 +211,7 @@ const Audiobook = React.memo(({
   const { title, audiobookInfo } = book || {}
   const { coverFilename, spines } = audiobookInfo || {}
 
-  if(Platform.OS === 'web' && !bookCookiesReady) {
+  if(Platform.OS === 'web' && !bookCookies) {
     return (
       <SafeLayout>
         <CoverAndSpin />
@@ -267,7 +245,7 @@ const Audiobook = React.memo(({
 
         <AudiobookPlayer
           uriBase={`${downloadOrigin}/epub_content/book_${bookId}/`}
-          cookie={cookie}
+          cookie={bookCookies}
           localSourceBase={`${getBooksDir()}${bookId}/`}
           latestLocation={latestLocation}
           downloadProgressByFilename={downloadProgressByBookId[bookId] || {}}

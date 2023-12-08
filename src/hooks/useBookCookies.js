@@ -76,14 +76,11 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) 
       if(!book) return
       if(getSkip()) return
 
-      setReady(false)
-
       const bookCookies = await getBookCookie({ books, accounts, idp, setBookCookies, bookId })
 
-      if(bookCookies) {
-        setReady(true)
+      setReady(!!bookCookies)
 
-      } else if(Platform.OS === 'web') {
+      if(!bookCookies && Platform.OS === 'web') {
         historyPush("/error", {
           message: "Internet connection error",
           critical: true,
@@ -111,7 +108,7 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) 
     [ !!books, bookId, ready ],
   )
 
-  return ready
+  return ready && !!book && book.bookCookies
 }
 
 export default useBookCookies
