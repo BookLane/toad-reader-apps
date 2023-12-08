@@ -46,6 +46,10 @@ const coverFileTypes = [
 const spineFileTypes = [
   'audio/aac',
   'audio/mpeg',
+  'audio/m4a',
+  'audio/mp4',
+  'audio/x-m4a',
+  'audio/mp4a-latm',
 ]
 
 const styles = StyleSheet.create({
