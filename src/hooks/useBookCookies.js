@@ -108,7 +108,12 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) 
     [ !!books, bookId, ready ],
   )
 
-  return ready && !!book && book.bookCookies
+  return (
+    ready
+    && !!book
+    && book.bookCookies
+    && bookCookiesToCookieStr(book.bookCookies)
+  )
 }
 
 export default useBookCookies
