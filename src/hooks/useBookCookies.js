@@ -64,7 +64,7 @@ export const getBookCookie = async ({ books, accounts, idp, setBookCookies, book
 const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) => {
 
   const { historyPush } = useRouterState()
-  const [ ready, setReady ] = useState(!!__DEV__)
+  const [ ready, setReady ] = useState()
   const [ setRefreshCookiesTimeout ] = useSetTimeout()
   const getSkip = useInstanceValue(skip)
 
@@ -107,6 +107,8 @@ const useBookCookies = ({ books, accounts, idp, setBookCookies, bookId, skip }) 
     },
     [ !!books, bookId, ready ],
   )
+
+  if(__DEV__) return true
 
   return (
     ready

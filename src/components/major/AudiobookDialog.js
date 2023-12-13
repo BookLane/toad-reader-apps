@@ -44,12 +44,13 @@ const coverFileTypes = [
 ]
 
 const spineFileTypes = [
-  'audio/aac',
+  // 'audio/aac',
   'audio/mpeg',
   'audio/m4a',
   'audio/mp4',
   'audio/x-m4a',
   'audio/mp4a-latm',
+  // 'audio/x-hx-aac-adts',
 ]
 
 const styles = StyleSheet.create({

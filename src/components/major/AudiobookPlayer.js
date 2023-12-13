@@ -206,6 +206,16 @@ const AudiobookPlayer = ({
             staysActiveInBackground: true,
           })
 
+          const positionMillis = (
+            filename === previousFilename.current
+              ? getPositionMS()  // it was just downloaded; don't change the spot
+              : (
+                llFilename === filename
+                  ? llPositionMS
+                  : 0
+              )
+          )
+
           const { sound, status } = await Audio.Sound.createAsync(
             {
               uri,
@@ -220,15 +230,7 @@ const AudiobookPlayer = ({
               rate: getPlaybackSpeed(),
               shouldCorrectPitch: true,
               volume: 1,
-              positionMillis: (
-                filename === previousFilename.current
-                  ? getPositionMS()  // it was just downloaded; don't change the spot
-                  : (
-                    llFilename === filename
-                      ? llPositionMS
-                      : 0
-                  )
-              ),
+              positionMillis,
             },
             onPlaybackStatusUpdate,
             true,
@@ -239,8 +241,11 @@ const AudiobookPlayer = ({
           // await sound.setProgressUpdateIntervalAsync(16)
           // await sound.setStatusAsync({ progressUpdateIntervalMillis: 16 })
 
+          // The following needed??
+          // if(positionMillis) await sound.setStatusAsync({ positionMillis })
+
           soundObj.current = sound
-          
+
           if(!isFirstLoad) await play()
 
         } catch (error) {
