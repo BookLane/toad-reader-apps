@@ -83,7 +83,7 @@ const WebView = ({
 
       const onMessageWrapper = nativeEvent => {
         // check that it is the same origin
-        if(nativeEvent.origin !== (source.uri || "").replace(/^(https?:\/\/[^\/]+).*$/, '$1')) return
+        if(source.uri && nativeEvent.origin !== (source.uri || "").replace(/^(https?:\/\/[^\/]+).*$/, '$1')) return
 
         // check that it is the right iframe sending the postmessage
         if(frameRef.current.contentWindow !== nativeEvent.source) return

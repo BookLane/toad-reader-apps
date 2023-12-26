@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
 const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) => {
   const highlights = ((userDataByBookId[bookId] || {}).highlights || [])
     .filter(({ _delete }) => !_delete)
-    .map(({ spineIdRef, cfi, note, color }) => ({
+    .map(({ spineIdRef, cfi, note, sketch, color }) => ({
       spineIdRef,
       cfi,
-      hasNote: !!(note || "").trim(),
+      hasNote: !!(note || "").trim() || !!sketch,
       type: `user${color || 1}`,
     }))
 
@@ -42,16 +42,16 @@ const getHighlightsArray = ({ userDataByBookId, bookId, instructorHighlights }) 
     highlightsByKey[`${highlight.spineIdRef}\n${highlight.cfi}`] = highlight
   })
 
-  ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note }) => {
+  ;(instructorHighlights || []).forEach(({ spineIdRef, cfi, note, sketch }) => {
     if(highlightsByKey[`${spineIdRef}\n${cfi}`]) {
       highlightsByKey[`${spineIdRef}\n${cfi}`].type = `${highlightsByKey[`${spineIdRef}\n${cfi}`].type}-instructor`
-      highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote = highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote || !!(note || "").trim()
+      highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote = highlightsByKey[`${spineIdRef}\n${cfi}`].hasNote || !!(note || "").trim() || !!sketch
 
     } else {
       highlightsByKey[`${spineIdRef}\n${cfi}`] = {
         spineIdRef,
         cfi,
-        hasNote: !!(note || "").trim(),
+        hasNote: !!(note || "").trim() || !!sketch,
         type: "instructor",
       }
       highlights.push(highlightsByKey[`${spineIdRef}\n${cfi}`])

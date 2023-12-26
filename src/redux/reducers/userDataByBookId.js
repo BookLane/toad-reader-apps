@@ -287,12 +287,13 @@ export default function(state = initialState, action) {
     case "SET_HIGHLIGHT": {
       const { bookId, bookInfoForAnalytics } = action
 
-      let noChange, highlightShareInfo = {}, isNewHighlight = true, isNewAnnotation = !!action.note
+      let noChange, highlightShareInfo = {}, isNewHighlight = true, isNewAnnotation = !!(action.note || action.sketch)
       highlights = highlights.filter(highlight => {
         if(highlight.spineIdRef === action.spineIdRef && highlight.cfi === action.cfi) {
           if(
             highlight.color === action.color
             && highlight.note === action.note
+            && highlight.sketch === action.sketch
             && !!highlight.forcePatch === !!action.forcePatch
             && !highlight._delete
             && !!highlight.share_quote
@@ -308,7 +309,7 @@ export default function(state = initialState, action) {
               }
             }
             isNewHighlight = false
-            isNewAnnotation = !highlight.note && !!action.note
+            isNewAnnotation = !highlight.note && !highlight.sketch && !!(action.note || action.sketch)
             return false
           }
         }
@@ -341,6 +342,7 @@ export default function(state = initialState, action) {
         cfi: action.cfi,
         color: action.color,
         note: action.note,
+        sketch: action.sketch,
         ...highlightShareInfo,
         updated_at: now,
       })

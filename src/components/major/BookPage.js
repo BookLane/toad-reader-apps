@@ -84,6 +84,8 @@ const BookPage = React.memo(props => {
 
   const [ noteInEdit, setNoteInEdit ] = useState(null)
   const getNoteInEdit = useInstanceValue(noteInEdit)
+  const [ sketchInEdit, setSketchInEdit ] = useState(undefined)
+  const getSketchInEdit = useInstanceValue(sketchInEdit)
 
   const wideMode = useWideMode()
   const safeAreaInsets = useSafeAreaInsets()
@@ -360,6 +362,7 @@ const BookPage = React.memo(props => {
 
         case 'textUnselected':
           if(getNoteInEdit() != null) break
+          if(getSketchInEdit() != null) break
         case 'textSelected': {
           setSelectionInfo(data.payload)
           indicateRecordReadingActivity()
@@ -476,7 +479,9 @@ const BookPage = React.memo(props => {
           idpId={idpId}
           selectionInfo={selectionInfo}
           noteInEdit={noteInEdit}
+          sketchInEdit={sketchInEdit}
           updateNoteInEdit={setNoteInEdit}
+          updateSketchInEdit={setSketchInEdit}
           setSelectionText={setSelectionText}
         />
       }

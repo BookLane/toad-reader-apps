@@ -14,6 +14,7 @@ import useNonBlurringOnPress from "../../hooks/useNonBlurringOnPress"
 import HighlighterShareIcon from "./HighlighterShareIcon"
 import HighlighterColorSwitcher from "./HighlighterColorSwitcher"
 import HighlighterEmbedIcon from "./HighlighterEmbedIcon"
+import Icon from "./Icon"
 
 import { setHighlight, deleteHighlight } from "../../redux/actions"
 
@@ -85,9 +86,19 @@ const styles = StyleSheet.create({
   // },
   // doneButton: {
   // },
+  draw: {
+    paddingHorizontal: 2,
+    paddingVertical: 5,
+    marginTop: 2,
+    fontSize: 21,
+    lineHeight: 21,
+    height: 28,
+    maxHeight: 28,
+  },
 })
 
 const notesForUndo = {}
+const sketchesForUndo = {}
 
 const HighlighterLabel = React.memo(({
   selectionInfo,
@@ -96,7 +107,9 @@ const HighlighterLabel = React.memo(({
   idpId,
   highlight,
   isEditingNote,
+  setEditingSketch,
 
+  idps,
   books,
   userDataByBookId,
   accounts,
@@ -106,6 +119,7 @@ const HighlighterLabel = React.memo(({
 }) => {
 
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
+  const { sketchingOn } = Object.values(idps)[0] || {}
 
   const [ showDeletedMsgAndUndoColor, setShowDeletedMsgAndUndoColor ] = useState()
   const { bookVersion, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
@@ -136,6 +150,7 @@ const HighlighterLabel = React.memo(({
     color => {
       const { spineIdRef, cfi, text: share_quote } = selectionInfo || {}
       const note = (highlight || {}).note || notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || ""
+      const sketch = (highlight || {}).sketch || sketchesForUndo[`${bookId} ${spineIdRef} ${cfi}`] || null
 
       if(highlight) {
 
@@ -155,6 +170,9 @@ const HighlighterLabel = React.memo(({
         if(note) {
           notesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = note
         }
+        if(sketch) {
+          sketchesForUndo[`${bookId} ${spineIdRef} ${cfi}`] = sketch
+        }
 
         deleteHighlight({
           bookId,
@@ -172,6 +190,7 @@ const HighlighterLabel = React.memo(({
           cfi,
           color,
           note,
+          sketch,
           share_quote,
           bookInfoForAnalytics: books[bookId],
         })
@@ -264,19 +283,30 @@ const HighlighterLabel = React.memo(({
           selectionInfo={selectionInfo}
         />
       }
-      {!!(highlight && !isEditingNote) &&
+      {!!(highlight && !isEditingNote && sketchingOn) &&
         <>
           <HighlighterColorSwitcher
             bookId={bookId}
             selectionInfo={selectionInfo}
             highlight={highlight}
           />
-          <HighlighterShareIcon
-            bookId={bookId}
-            selectionInfo={selectionInfo}
-            highlight={highlight}
-          />
+          <TouchableOpacity
+            onPress={() => setEditingSketch(true)}
+          >
+            <Icon
+              name="draw"
+              pack="materialCommunity"
+              style={styles.draw}
+            />
+          </TouchableOpacity>
         </>
+      }
+      {!!(highlight && !isEditingNote) &&
+        <HighlighterShareIcon
+          bookId={bookId}
+          selectionInfo={selectionInfo}
+          highlight={highlight}
+        />
       }
       {!!isEditingNote &&
         <Button
@@ -301,8 +331,9 @@ const HighlighterLabel = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, userDataByBookId, accounts }) => ({
+const mapStateToProps = ({ idps, books, userDataByBookId, accounts }) => ({
   userDataByBookId,
+  idps,
   books,
   accounts,
 })

@@ -347,13 +347,14 @@ export const setLatestLocation = ({ bookId, latestLocation }) => ({
   doPatch: true,
 })
 
-export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, share_quote, forceNewShareCode, bookInfoForAnalytics }) => ({
+export const setHighlight = ({ bookId, spineIdRef, cfi, color, note, sketch, share_quote, forceNewShareCode, bookInfoForAnalytics }) => ({
   type: "SET_HIGHLIGHT",
   bookId,
   spineIdRef,
   cfi,
   color,
   note,
+  sketch,
   share_quote,
   forceNewShareCode,
   bookInfoForAnalytics,

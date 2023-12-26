@@ -14,6 +14,7 @@ import { setHighlight } from "../../redux/actions"
 
 import HighlighterLabel from '../basic/HighlighterLabel'
 import HighlighterNotes from '../basic/HighlighterNotes'
+import HighlighterSketch from '../basic/HighlighterSketch'
 import BackFunction from '../basic/BackFunction'
 import HighlighterInstructorHighlightSection from "./HighlighterInstructorHighlightSection"
 
@@ -44,11 +45,13 @@ const styles = StyleSheet.create({
 
 const Highlighter = React.memo(({
   noteInEdit,
+  sketchInEdit,
   selectionInfo,  // Eg: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
   bookId,
   idpId,
   setSelectionText,
   updateNoteInEdit,
+  updateSketchInEdit,
   
   books,
   userDataByBookId,
@@ -61,8 +64,9 @@ const Highlighter = React.memo(({
   // not change from the previous value.
   const highlight = useRef()
   const isEditingNote = noteInEdit != null 
+  const isEditingSketch = sketchInEdit !== undefined 
 
-  if(noteInEdit == null) {
+  if(noteInEdit == null && sketchInEdit == null) {
 
     const thisBooksHighlights = (userDataByBookId[bookId] || {}).highlights || []
 
@@ -147,12 +151,50 @@ const Highlighter = React.memo(({
         }
       }
     },
-    [ books, bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText, highlight.current ],
+    [ books, bookId, noteInEdit, isEditingNote, selectionInfo, updateNoteInEdit, setSelectionText ],
   )
 
   const endEditingNote = Keyboard.dismiss
 
-  useUnmount(() => setEditingNote(false, true))
+  const setEditingSketch = useCallback(
+    (editingSketch, skipSetSelectionText) => {
+      const { spineIdRef, cfi } = selectionInfo || {}
+
+      if(editingSketch) {
+        updateSketchInEdit(highlight.current.sketch || null)
+
+      } else if(isEditingSketch) {
+        const sketch = (
+          (JSON.parse(sketchInEdit || `{}`).objects || []).length === 0
+            ? null
+            : sketchInEdit
+        )
+        setHighlight({
+          ...highlight.current,
+          bookId,
+          sketch,
+          bookInfoForAnalytics: books[bookId],
+        })
+
+        updateSketchInEdit(undefined)
+
+        if(!skipSetSelectionText) {
+          setSelectionText({
+            spineIdRef,
+            cfi,
+          })
+        }
+      }
+    },
+    [ books, bookId, sketchInEdit, isEditingSketch, selectionInfo, updateSketchInEdit, setSelectionText ],
+  )
+
+  useUnmount(
+    () => {
+      setEditingNote(false, true)
+      setEditingSketch(false, true)
+    }
+  )
 
   const windowTooShortToShowNotes = useDimensions().window.height < 350
 
@@ -166,7 +208,7 @@ const Highlighter = React.memo(({
 
   return [
     ...(isEditingNote ? [ <View key="cover" style={styles.clearCover} /> ] : []),
-    <BackFunction key="back" func={isEditingNote ? endEditingNote : setSelectionText} />,
+    <BackFunction key="back" func={isEditingNote ? endEditingNote : (isEditingSketch ? setEditingSketch : setSelectionText)} />,
     <View
       key="container"
       style={[
@@ -198,6 +240,7 @@ const Highlighter = React.memo(({
         // setSelectionText={setSelectionText}
         endEditingNote={endEditingNote}
         isEditingNote={isEditingNote}
+        setEditingSketch={setEditingSketch}
       />
       {!!highlight.current && !windowTooShortToShowNotes &&
         <HighlighterNotes
@@ -207,7 +250,16 @@ const Highlighter = React.memo(({
           isEditingNote={isEditingNote}
         />
       }
-    </View>
+    </View>,
+    ...(!isEditingSketch ? [] : [
+      <HighlighterSketch
+        key="sketch"
+        sketch={sketchInEdit}
+        updateSketchInEdit={updateSketchInEdit}
+        setEditingSketch={setEditingSketch}
+        isEditingSketch={isEditingSketch}
+      />
+    ]),
   ]
 })
 
