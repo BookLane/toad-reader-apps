@@ -1,10 +1,8 @@
-import React, { useRef, useCallback, useMemo } from "react"
+import React, { useCallback } from "react"
 import { StyleSheet, View } from "react-native"
 // import { i18n } from "inline-i18n"
 
-import WebView from "../major/WebView"
-import getSketchCode from "../../../getSketchCode"
-import Button from "./Button"
+import SketchPad from "./SketchPad"
 
 const styles = StyleSheet.create({
   container: {
@@ -16,57 +14,23 @@ const styles = StyleSheet.create({
     // backgroundColor: 'white',
     zIndex: 5,
   },
-  button: {
-    // margin: 100,
-  },
-  sketchCanvasContainer: {
-    flex: 1,
-  },
 })
 
 const HighlighterSketch = React.memo(({
   sketch,
   updateSketchInEdit,
   setEditingSketch,
-  isEditingSketch,
 }) => {
 
-  const webView = useRef()
-
-  const onMessageEvent = useCallback(
-    async event => {
-      const data = JSON.parse(event.nativeEvent.data)
-      updateSketchInEdit(data.sketch)
-    },
-    [ updateSketchInEdit ],
-  )
-
-  const html = useMemo(() => getSketchCode({ sketch, scale: 3 }), [])
+  const onDone = useCallback(() => setEditingSketch(false), [ setEditingSketch ])
 
   return (
     <View style={styles.container}>
-      <WebView
-        style={styles.sketchCanvasContainer}
-        source={{ html }}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        onMessage={onMessageEvent}
-        // onError={onError}
-        // onLoad={setRenderedOnceTrue}
-        forwardRef={webView}
-
-        // The rest of the props are ignored when on web platform
-        originWhitelist={['*']}
-        mixedContentMode="always"
-        bounces={false}
-        injectedJavaScript={`window.isReactNativeWebView = true;`}
+      <SketchPad
+        initialSketch={sketch}
+        updateSketchInEdit={updateSketchInEdit}
+        onDone={onDone}
       />
-      <Button
-        style={styles.button}
-        onPress={() => setEditingSketch(false)}
-      >
-        Done
-      </Button>
     </View>
   )
 })
@@ -82,7 +46,7 @@ export default HighlighterSketch
   // Give tenants an opt-in opt-out option
   // commit
   // Fix pressing button on web-touch
-// Make sketch component that can be used for highlights and interactive tools 
+  // Make sketch component that can be used for highlights and interactive tools 
 // Add utensil + color options
 // Save last utensil and color for that drawing
 // Save canvas size

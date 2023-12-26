@@ -257,7 +257,6 @@ const Highlighter = React.memo(({
         sketch={sketchInEdit}
         updateSketchInEdit={updateSketchInEdit}
         setEditingSketch={setEditingSketch}
-        isEditingSketch={isEditingSketch}
       />
     ]),
   ]
