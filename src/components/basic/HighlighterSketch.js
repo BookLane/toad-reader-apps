@@ -80,8 +80,8 @@ export default HighlighterSketch
   // test on natives
   // android: slow (see Optimizing performance tab)
   // Give tenants an opt-in opt-out option
-// commit
-// Fix pressing button on web-touch
+  // commit
+  // Fix pressing button on web-touch
 // Make sketch component that can be used for highlights and interactive tools 
 // Add utensil + color options
 // Save last utensil and color for that drawing

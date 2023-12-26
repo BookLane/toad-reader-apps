@@ -6,12 +6,12 @@ import { Ionicons } from "@expo/vector-icons"
 import { i18n } from "inline-i18n"
 
 import { getDataOrigin, isStaging } from '../../utils/toolbox'
+import useClassroomInfo from "../../hooks/useClassroomInfo"
+import useNonBlurringOnPress from "../../hooks/useNonBlurringOnPress"
+import { getAccountIdIsNoAuth } from "../../hooks/useHasNoAuth"
 
 import WebView from '../major/WebView'
 import Dialog from "../major/Dialog"
-
-import useClassroomInfo from "../../hooks/useClassroomInfo"
-import { getAccountIdIsNoAuth } from "../../hooks/useHasNoAuth"
 
 const styles = StyleSheet.create({
   share: {
@@ -50,7 +50,7 @@ const HighlighterShareIcon = React.memo(({
 
   const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://q.toadreader.com`}/q/${highlight.share_code || ''}`
 
-  const goShare = useCallback(() => setShowShare(true), [])
+  const goShareOnPressProps = useNonBlurringOnPress(() => setShowShare(true), [])
 
   useEffect(
     () => {
@@ -90,7 +90,7 @@ const HighlighterShareIcon = React.memo(({
   return (
     <>
       <TouchableOpacity
-        onPress={goShare}
+        {...goShareOnPressProps}
       >
         <Ionicons
           name="md-share"

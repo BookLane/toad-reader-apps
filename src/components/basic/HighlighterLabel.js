@@ -210,6 +210,13 @@ const HighlighterLabel = React.memo(({
 
   const endEditingNoteOnPressProps = useNonBlurringOnPress(endEditingNote)
 
+  const goSketchOnPressProps = useNonBlurringOnPress(
+    () => {
+      setEditingSketch(true)
+    },
+    [ setEditingSketch ]
+  )
+
   const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity
 
   const color = Math.max(1, Math.min(parseInt((highlight || {}).color, 10), NUM_COLOR_OPTIONS)) || 1
@@ -283,30 +290,30 @@ const HighlighterLabel = React.memo(({
           selectionInfo={selectionInfo}
         />
       }
-      {!!(highlight && !isEditingNote && sketchingOn) &&
+      {!!(highlight && !isEditingNote) &&
         <>
           <HighlighterColorSwitcher
             bookId={bookId}
             selectionInfo={selectionInfo}
             highlight={highlight}
           />
-          <TouchableOpacity
-            onPress={() => setEditingSketch(true)}
-          >
-            <Icon
-              name="draw"
-              pack="materialCommunity"
-              style={styles.draw}
-            />
-          </TouchableOpacity>
+          {!!sketchingOn &&
+            <TouchableOpacity
+              {...goSketchOnPressProps}
+            >
+              <Icon
+                name="draw"
+                pack="materialCommunity"
+                style={styles.draw}
+              />
+            </TouchableOpacity>
+          }
+          <HighlighterShareIcon
+            bookId={bookId}
+            selectionInfo={selectionInfo}
+            highlight={highlight}
+          />
         </>
-      }
-      {!!(highlight && !isEditingNote) &&
-        <HighlighterShareIcon
-          bookId={bookId}
-          selectionInfo={selectionInfo}
-          highlight={highlight}
-        />
       }
       {!!isEditingNote &&
         <Button
