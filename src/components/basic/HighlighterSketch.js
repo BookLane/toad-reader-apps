@@ -27,7 +27,7 @@ const HighlighterSketch = React.memo(({
   return (
     <View style={styles.container}>
       <SketchPad
-        initialSketch={sketch}
+        sketch={sketch}
         updateSketchInEdit={updateSketchInEdit}
         onDone={onDone}
       />

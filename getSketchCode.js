@@ -10,7 +10,7 @@ const insertEscape = str => (
         .replace(/\$\{/g, "$\\{")
 )
 
-const getSketchCode = ({ sketch, scale=1 }) => `
+const getSketchCode = ({ sketchData, scale=1 }) => `
 <!DOCTYPE html>
 <html>
     <head>
@@ -39,7 +39,7 @@ const getSketchCode = ({ sketch, scale=1 }) => `
         </div>
 
         <script>
-            ;(function() {
+            ;(() => {
 
                 const $ = id => document.getElementById(id)
 
@@ -51,55 +51,69 @@ const getSketchCode = ({ sketch, scale=1 }) => `
                     renderOnAddRemove: false,
                 })
 
-                fabric.Object.prototype.transparentCorners = false;
-                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                fabric.Object.prototype.transparentCorners = false
+                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
 
-                const goSave = () => {
-                    const sketch = JSON.stringify(canvas)
-
+                const postMessage = data => {
                     if(!window.isReactNativeWebView) {
-                        parent.postMessage(JSON.stringify({ sketch }), window.parentOriginForPostMessage)
+                        parent.postMessage(JSON.stringify(data), window.parentOriginForPostMessage)
                     } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
-                        window.ReactNativeWebView.postMessage(JSON.stringify({ sketch }))
+                        window.ReactNativeWebView.postMessage(JSON.stringify(data))
                     }
                 }
 
-                canvas.freeDrawingBrush.color = '#FF0000AA';
-                canvas.freeDrawingBrush.width = 1 / ${insertEscape(scale)};
+                const goSave = () => {
+                    const sketchData = JSON.stringify(canvas)
+                    postMessage({ identifier: "save", sketchData })
+                }
 
-                if(${sketch ? `true` : `false`}) {
-                    canvas.loadFromJSON(${insertEscape(sketch)})
+                if(${sketchData ? `true` : `false`}) {
+                    canvas.loadFromJSON(${insertEscape(sketchData)})
                 }
 
                 // canvas.loadFromJSON()
                 // use toDatalessJSON to not include the background image in the user data
 
-                canvas.on('path:created', goSave);
-                // setInterval(() => console.log('>>JSON', parseInt(JSON.stringify(canvas).length / 1000)), 3000)
-                // setInterval(() => console.log('>>DATA', canvas.toDataURL().length), 3000)
-                // setInterval(() => console.log('>>SVG', canvas.toSVG().length), 3000)
+                canvas.on('path:created', goSave)
 
-                // const drawingColorEl = $('drawing-color'),
-                //     drawingLineWidthEl = $('drawing-line-width'),
-                //     clearEl = $('clear-canvas');
+                window.ReactNativeToWebView = message => {
+                    switch(message.identifier) {
+                        case "clear": {
+                            canvas.clear()
+                            goSave()
+                            break
+                        }
+                        case "load": {
+                            canvas.loadFromJSON(message.payload)
+                            goSave()
+                            break
+                        }
+                        case "set": {
+                            const { color, size } = message.payload
+                            canvas.freeDrawingBrush.color = color
+                            canvas.freeDrawingBrush.width = size / ${insertEscape(scale)}
+                            break
+                        }
+                    }
+                }
 
-                // drawingColorEl.onchange = function() {
-                //     canvas.freeDrawingBrush.color = this.value;
-                // };
-                // drawingLineWidthEl.onchange = function() {
-                //     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
-                //     this.previousSibling.innerHTML = this.value;
-                // };
+                // We also need a postMessage route for react native web
+                window.addEventListener('message', event => {
+                    if(
+                        event.origin
+                        && window.location.origin
+                        && window.location.origin !== "null"  // This is the value on Chrome
+                        && event.origin !== window.location.origin
+                    ) return  // only allow from the the apps or the same origin
 
-                // clearEl.onclick = function() { canvas.clear() };
+                    if(event.data.action === 'injectJS') {
+                        eval(event.data.jsStr)
+                    }
+                })
 
-                // if (canvas.freeDrawingBrush) {
-                //     canvas.freeDrawingBrush.color = drawingColorEl.value;
-                //     canvas.freeDrawingBrush.width = parseInt(drawingLineWidthEl.value, 10) || 1;
-                // }
+                window.addEventListener('load', event => postMessage({ identifier: "loaded" }))
 
-
-            }());
+            })();
         </script>
     </body>
 </html>

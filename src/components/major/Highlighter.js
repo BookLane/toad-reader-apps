@@ -164,11 +164,7 @@ const Highlighter = React.memo(({
         updateSketchInEdit(highlight.current.sketch || null)
 
       } else if(isEditingSketch) {
-        const sketch = (
-          (JSON.parse(sketchInEdit || `{}`).objects || []).length === 0
-            ? null
-            : sketchInEdit
-        )
+        const sketch = sketchInEdit || null
         setHighlight({
           ...highlight.current,
           bookId,
