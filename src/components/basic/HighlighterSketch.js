@@ -37,26 +37,29 @@ const HighlighterSketch = React.memo(({
 
 export default HighlighterSketch
 
-  // Create sketch column for highlights table
-  // Update backend to allow this
-  // Save data ({} save as null)
-  // Push out server
-  // test on natives
-  // android: slow (see Optimizing performance tab)
-  // Give tenants an opt-in opt-out option
-  // commit
-  // Fix pressing button on web-touch
-  // Make sketch component that can be used for highlights and interactive tools 
-// Add utensil + color options
-// Save last utensil and color for that drawing
-// Save canvas size
-  // on open
-    // if bigger canvas now available
-      //
-    // if smaller canvas now available
-      //
-// When viewing a highlight, visually indicate whether it has a sketch or not
-// Viewable from Highlights
+// HERE: Save canvas size
+  // on size of container
+    // if no size set or no objects, save size
+      // then set scale to 1
+    // else 
+      // if bigger canvas now available
+        // set scale to 1
+        // move to middle
+      // if smaller canvas now available
+        // set scale based on bigger difference (w vs h)
+        // for other direction, move to middle
+// Performance scaling
+  // Have max dimension for each platform
+    // if max(width, height) / scale is too big...
+      // figure out what scale needs to be and the factor difference
+      // reduce by that factor...
+        // strokeWidth
+        // left
+        // top
+        // width
+        // height
+        // path values
+      // only save if something has changed!
 // Make an interactive tool
 // Allow tool to have bg image
 // Allow tool to require tablet size

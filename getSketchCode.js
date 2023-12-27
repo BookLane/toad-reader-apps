@@ -10,7 +10,7 @@ const insertEscape = str => (
         .replace(/\$\{/g, "$\\{")
 )
 
-const getSketchCode = ({ sketchData, scale=1 }) => `
+const getSketchCode = ({ sketchData, scale=1, mode="edit" }) => `
 <!DOCTYPE html>
 <html>
     <head>
@@ -43,7 +43,7 @@ const getSketchCode = ({ sketchData, scale=1 }) => `
 
                 const $ = id => document.getElementById(id)
 
-                const canvas = this.__canvas = new fabric.Canvas('canvas', {
+                const canvas = this.__canvas = new fabric["${mode === `edit` ? `Canvas` : `StaticCanvas`}"]('canvas', {
                     isDrawingMode: true,
                     width: window.innerWidth,
                     height: window.innerHeight,

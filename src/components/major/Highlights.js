@@ -15,6 +15,7 @@ import useRouterState from "../../hooks/useRouterState"
 import FAB from '../basic/FAB'
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
+import SketchPad from "../basic/SketchPad"
 
 const MAX_EXPORT_QUOTE_CHARACTER_LENGTH = 100
 
@@ -179,6 +180,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginVertical: 'auto',
   },
+  sketchPadContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
 })
 
 const Highlights = React.memo(({
@@ -194,6 +202,7 @@ const Highlights = React.memo(({
 
   const { book, spines, instructorHighlights, enhancedIsOff, isDefaultClassroom, idpId } = useClassroomInfo({ books, bookId, userDataByBookId })
   const { historyReplace } = useRouterState()
+  const [ sketchToShow, setSketchToShow ] = useState()
 
   const wideMode = useWideMode()
 
@@ -247,11 +256,11 @@ const Highlights = React.memo(({
       ]
 
       // function to make objs
-      const addHighlightSpot = ({ spineIdRef, cfi, share_quote }) => {
+      const addHighlightSpot = ({ spineIdRef, cfi, share_quote, sketch }) => {
         if(!highlightsByLoc[spineIdRef]) {
           highlightsByLoc[spineIdRef] = {
             spineIdRef,
-            highlightsByCfi: {}
+            highlightsByCfi: {},
           }
         }
         if(!highlightsByLoc[spineIdRef].highlightsByCfi[cfi]) {
@@ -260,6 +269,7 @@ const Highlights = React.memo(({
             types: [],
             text: share_quote,
             notes: [],
+            sketch,
             instructorHighlightersWithoutNotes: [],
           }
         }
@@ -270,8 +280,8 @@ const Highlights = React.memo(({
         // put in user
         ;((userDataByBookId[bookId] || {}).highlights || [])
           .filter(({ _delete }) => !_delete)
-          .forEach(({ spineIdRef, cfi, share_quote, color, note }) => {
-            const highlightToShow = addHighlightSpot({ spineIdRef, cfi, share_quote })
+          .forEach(({ spineIdRef, cfi, share_quote, color, note, sketch }) => {
+            const highlightToShow = addHighlightSpot({ spineIdRef, cfi, share_quote, sketch })
             highlightToShow.color = color
             if(note) {
               highlightToShow.notes.push({
@@ -354,7 +364,10 @@ const Highlights = React.memo(({
   )
 
   const ReadIcon = useCallback(({ style }) => <Icon name="book-open-variant" pack="materialCommunity" style={style} />, [])
+  const DrawIcon = useCallback(({ style }) => <Icon name="draw" pack="materialCommunity" style={style} />, [])
   // const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
+
+  const showSketch = useCallback(({ info: { sketch } }) => setSketchToShow(sketch), [])
 
   const goRead = useCallback(
     ({ info }) => {
@@ -415,7 +428,7 @@ const Highlights = React.memo(({
                   {spineLabelsByIdRef[spineIdRef]}
                 </Text>
               </View>
-              {highlights.map(({ cfi, types, text, notes, instructorHighlightersWithoutNotes }) => (
+              {highlights.map(({ cfi, types, text, notes, sketch, instructorHighlightersWithoutNotes }) => (
                 <View style={styles.highlight} key={cfi}>
                   <View style={styles.types}>
                     {types.map(type => (
@@ -427,6 +440,19 @@ const Highlights = React.memo(({
                       </Text>
                     ))}
                     <View style={styles.buttons}>
+                      {!!sketch &&
+                        <Button
+                          style={styles.button}
+                          size="small"
+                          status="basic"
+                          accessoryLeft={DrawIcon}
+                          appearance="ghost"
+                          onPress={showSketch}
+                          info={{
+                            sketch,
+                          }}
+                        />
+                      }
                       <Button
                         style={styles.button}
                         size="small"
@@ -524,6 +550,15 @@ const Highlights = React.memo(({
             status="primary"
           />
         </CSVLink>
+      }
+      {!!sketchToShow &&
+        <View style={styles.sketchPadContainer}>
+          <SketchPad
+            sketch={sketchToShow}
+            mode="view"
+            onDone={() => setSketchToShow()}
+          />
+        </View>
       }
     </View>
   )
