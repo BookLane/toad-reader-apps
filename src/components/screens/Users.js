@@ -594,6 +594,7 @@ const Users = ({
                                   QUIZ: i18n("Took a quiz", "", "enhanced"),
                                   QUESTION: i18n("Answered a reflection question", "", "enhanced"),
                                   DISCUSSION_QUESTION: i18n("Added a comment to a discussion question", "", "enhanced"),
+                                  SKETCH: i18n("Drew on a sketch component", "", "enhanced"),
                                 }[isDiscussion ? `DISCUSSION_QUESTION` : toolType]}
                               </Text>
 
@@ -605,6 +606,7 @@ const Users = ({
                                     POLL: i18n("Poll"),
                                     QUIZ: i18n("Quiz"),
                                     QUESTION: i18n("Question"),
+                                    SKETCH: i18n("Sketch"),
                                   }[toolType]}
                                 </Text>
                               </Text>
@@ -632,12 +634,13 @@ const Users = ({
                                 </Text>
                                 {` `}
                                 <Text style={styles.userInfoActivityClassroomValue}>
-                                  {classroom_name || i18n("[No classroom]", "", "enhanced")}                                  {` `}
+                                  {classroom_name || i18n("[No classroom]", "", "enhanced")}
+                                  {` `}
                                 </Text>
 
                               </Text>
 
-                              {toolType !== 'POLL' &&
+                              {![ 'POLL', 'SKETCH' ].includes(toolType) &&
                                 <Text style={styles.userInfoActivityExtra}>
                                   {{
                                     QUIZ: i18n("Score: {{score}}", "", "enhanced", { score }),

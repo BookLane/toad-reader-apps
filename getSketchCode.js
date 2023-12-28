@@ -10,13 +10,13 @@ const insertEscape = str => (
         .replace(/\$\{/g, "$\\{")
 )
 
-const getSketchCode = ({ sketchData, scale=1, mode="edit" }) => `
+const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) => `
 <!DOCTYPE html>
 <html>
     <head>
         <meta name="viewport" content="minimum-scale=${insertEscape(scale)},initial-scale=${insertEscape(scale)},width=device-width">
         <script>${getFabricCode()}</script>
-        <script>window.parentOriginForPostMessage = ${JSON.stringify(origin)};</script>
+        <script>window.parentOriginForPostMessage = ${JSON.stringify(origin)}</script>
         <style>
             body {
                 margin: 0;
@@ -51,6 +51,30 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit" }) => `
                     renderOnAddRemove: false,
                 })
 
+                const setBackground = () => {
+                    ${!backgroundImage ? `` : `
+                        const img = new Image()
+                        img.onload = () => {
+                            const adjustedInnerHeight = window.innerHeight - 60
+                            const widthScale = window.innerWidth / img.width
+                            const heightScale = adjustedInnerHeight / img.height
+                            const scale = Math.min(widthScale, heightScale)
+                            canvas.setBackgroundImage(
+                                ${JSON.stringify(backgroundImage)},
+                                canvas.renderAll.bind(canvas),
+                                {
+                                    scaleX: scale,
+                                    scaleY: scale,
+                                    left: scale !== widthScale ? ((window.innerWidth - img.width * scale) / 2) : 0,
+                                    top: scale !== heightScale ? ((adjustedInnerHeight - img.height * scale) / 2) : 0,
+                                },
+                            )
+                        }
+                        img.src = ${JSON.stringify(backgroundImage)}
+                    `}
+                }
+                setBackground()
+
                 fabric.Object.prototype.transparentCorners = false
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
 
@@ -63,7 +87,9 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit" }) => `
                 }
 
                 const goSave = () => {
-                    const sketchData = JSON.stringify(canvas)
+                    const canvasObj = canvas.toDatalessJSON(canvas)
+                    delete canvasObj.backgroundImage
+                    const sketchData = JSON.stringify(canvasObj)
                     postMessage({ identifier: "save", sketchData })
                 }
 
@@ -71,20 +97,25 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit" }) => `
                     canvas.loadFromJSON(${insertEscape(sketchData)})
                 }
 
-                // canvas.loadFromJSON()
-                // use toDatalessJSON to not include the background image in the user data
-
                 canvas.on('path:created', goSave)
 
                 window.ReactNativeToWebView = message => {
                     switch(message.identifier) {
                         case "clear": {
-                            canvas.clear()
+                            canvas.remove(...canvas.getObjects().concat())
+                            canvas.renderAll()
+                            goSave()
+                            break
+                        }
+                        case "undo": {
+                            canvas.remove(canvas.getObjects().pop())
+                            canvas.renderAll()
                             goSave()
                             break
                         }
                         case "load": {
                             canvas.loadFromJSON(message.payload)
+                            setBackground()
                             goSave()
                             break
                         }

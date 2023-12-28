@@ -93,6 +93,12 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: .2,
   },
+  spacer: {
+    width: 1,
+    height: 30,
+    backgroundColor: `rgb(200, 200, 200)`,
+    marginHorizontal: 30,
+  },
 })
 
 const SketchPad = React.memo(({
@@ -100,6 +106,7 @@ const SketchPad = React.memo(({
   updateSketchInEdit,
   mode=`edit`,  // edit OR view
   onDone,
+  backgroundImage,
   style,
 }) => {
 
@@ -156,15 +163,13 @@ const SketchPad = React.memo(({
 //     [ !width ],
 //   )
 
-  const undoSketchValue = useMemo(
+  const hasUndo = useMemo(
     () => {
       try {
         const sketchObj = JSON.parse(sketchData)
-        if(sketchObj.objects.length > 0) {
-          sketchObj.objects.pop()
-          return JSON.stringify(sketchObj)
-        }
+        return sketchObj.objects.length > 0
       } catch (err) {}
+      return false
     },
     [ sketchData ],
   )
@@ -200,24 +205,27 @@ const SketchPad = React.memo(({
     [ goUpdateSketchInEdit ],
   )
 
-  const html = useMemo(() => getSketchCode({ sketchData, scale, mode }), [ scale ])
+  const html = useMemo(() => getSketchCode({ sketchData, scale, mode, backgroundImage }), [ scale ])
 
   const clearOnPressProps = useNonBlurringOnPress(
     () => {
-      if(!undoSketchValue) return
+      if(!hasUndo) return
       setSketchValueBeforeClear(sketchData)
       postMessage(webView.current, 'clear')
     },
-    [ undoSketchValue, sketchData, setSketchValueBeforeClear ],
+    [ hasUndo, sketchData, setSketchValueBeforeClear ],
   )
 
   const undoOnPressProps = useNonBlurringOnPress(
     () => {
-      if(!undoSketchValue && !sketchValueBeforeClear) return
-      postMessage(webView.current, 'load', undoSketchValue || sketchValueBeforeClear)
+      if(hasUndo) {
+        postMessage(webView.current, 'undo')
+      } else if(sketchValueBeforeClear) {
+        postMessage(webView.current, 'load', sketchValueBeforeClear)
+      }
       setSketchValueBeforeClear()
     },
-    [ undoSketchValue, sketchValueBeforeClear ],
+    [ hasUndo, sketchValueBeforeClear ],
   )
 
   const switchUtensilOnPressProps = useNonBlurringOnPress(
@@ -244,7 +252,7 @@ const SketchPad = React.memo(({
     [ color, utensil ],
   )
 
-  const undoDisabled = !undoSketchValue && !sketchValueBeforeClear
+  const undoDisabled = !hasUndo && !sketchValueBeforeClear
 
   return (
     <View
@@ -281,13 +289,13 @@ const SketchPad = React.memo(({
 
             <TouchableOpacity
               {...clearOnPressProps}
-              disabled={!undoSketchValue}
+              disabled={!hasUndo}
             >
               <Icon
-                name="close"
+                name="trash"
                 style={[
                   styles.clear,
-                  !undoSketchValue ? styles.disabled : null,
+                  !hasUndo ? styles.disabled : null,
                 ]}
               />
             </TouchableOpacity>
@@ -309,15 +317,20 @@ const SketchPad = React.memo(({
           </View>
         }
 
-        <Button
-          style={styles.button}
-          onPress={onDone}
-          size="small"
-          status="basic"
-        >
-          {i18n("Done")}
-        </Button>
+        {!!onDone &&
+          <Button
+            style={styles.button}
+            onPress={onDone}
+            size="small"
+            status="basic"
+          >
+            {i18n("Done")}
+          </Button>
+        }
 
+        {!onDone &&
+          <View style={styles.spacer} />
+        }
 
         {mode === `edit` &&
           <View style={styles.side2}>

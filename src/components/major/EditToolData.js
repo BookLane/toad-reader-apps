@@ -443,7 +443,7 @@ const EditToolData = React.memo(({
                       })
                     }}
                   >
-                    {i18n("Upload file", "", "enhanced")}
+                    {label || i18n("Upload file", "", "enhanced")}
                   </Button>
                 </View>
               }

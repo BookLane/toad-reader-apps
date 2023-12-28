@@ -346,6 +346,39 @@ export const getToolInfo = () => {
         || validUrl(audioLink)
       ),
     },
+    {
+      toolType: 'SKETCH',
+      icon: {
+        name: 'draw',
+        pack: 'materialCommunity',
+      },
+      text: i18n("Sketch", "", "enhanced"),
+      dataStructure: [
+        {
+          name: 'instructions',
+          type: 'string',
+          label: i18n("Instructions (optional)", "", "enhanced"),
+        },
+        {
+          name: 'background',
+          label: i18n("Add sketch pad background", "", "enhanced"),
+          type: 'file',
+          fileTypes: [
+            'image/png',
+            'image/jpeg',
+            'image/gif',
+            'image/svg+xml',
+            'image/webp',
+          ],
+        },
+        {
+          name: 'requireTabletSize',
+          type: 'boolean',
+          label: i18n("Require tablet size or larger", "", "enhanced"),
+        },
+      ],
+      readyToPublish: () => true,
+    },
   ]
 
   const toolInfoByType = {}

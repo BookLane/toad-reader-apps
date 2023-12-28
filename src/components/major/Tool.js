@@ -12,6 +12,7 @@ import DiscussionQuestionTool from './DiscussionQuestionTool'
 import QuizTool from './QuizTool'
 import EditTool from "./EditTool"
 import LTITool from "./LTITool"
+import SketchTool from "./SketchTool"
 import PollTool from "./PollTool"
 import DocumentTool from "./DocumentTool"
 import ImagesTool from "./ImagesTool"
@@ -162,6 +163,10 @@ const Tool = React.memo(({
     }
     case 'LTI': {
       ToolComponent = LTITool
+      break
+    }
+    case 'SKETCH': {
+      ToolComponent = SketchTool
       break
     }
   }
