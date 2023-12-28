@@ -60,12 +60,10 @@ export default HighlighterSketch
         // height
         // path values
       // only save if something has changed!
-// Make an interactive tool
-// Allow tool to have bg image
-// Allow tool to require tablet size
 
 // do "Feature 1" (limitation on # logged in devices)
 
 // Extras
+  // Give instructor ability to see the person's sketch (after "Reflection questions")
   // including sketch in a highlight share page
   // instructor able to share sketch

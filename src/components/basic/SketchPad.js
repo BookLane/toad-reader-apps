@@ -106,6 +106,7 @@ const SketchPad = React.memo(({
   updateSketchInEdit,
   mode=`edit`,  // edit OR view
   onDone,
+  doneButtonLabel,
   backgroundImage,
   style,
 }) => {
@@ -324,7 +325,7 @@ const SketchPad = React.memo(({
             size="small"
             status="basic"
           >
-            {i18n("Done")}
+            {doneButtonLabel || i18n("Done")}
           </Button>
         }
 

@@ -176,6 +176,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     borderRadius: 18,
   },
+  sketchButton: {
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    marginLeft: 35,
+  },
   retrieveButton: {
     marginLeft: 10,
     marginVertical: 'auto',
@@ -440,19 +445,6 @@ const Highlights = React.memo(({
                       </Text>
                     ))}
                     <View style={styles.buttons}>
-                      {!!sketch &&
-                        <Button
-                          style={styles.button}
-                          size="small"
-                          status="basic"
-                          accessoryLeft={DrawIcon}
-                          appearance="ghost"
-                          onPress={showSketch}
-                          info={{
-                            sketch,
-                          }}
-                        />
-                      }
                       <Button
                         style={styles.button}
                         size="small"
@@ -528,6 +520,19 @@ const Highlights = React.memo(({
                       </View>
                     }
                   </View>
+                  {!!sketch &&
+                    <Button
+                      style={styles.sketchButton}
+                      size="small"
+                      status="basic"
+                      onPress={showSketch}
+                      info={{
+                        sketch,
+                      }}
+                    >
+                      {i18n("View sketch")}
+                    </Button>
+                  }
                 </View>
               ))}
             </View>
@@ -557,6 +562,7 @@ const Highlights = React.memo(({
             sketch={sketchToShow}
             mode="view"
             onDone={() => setSketchToShow()}
+            doneButtonLabel={i18n("Close")}
           />
         </View>
       }
