@@ -167,6 +167,7 @@ const Tool = React.memo(({
     }
     case 'SKETCH': {
       ToolComponent = SketchTool
+      editableByStudent = true
       break
     }
   }
