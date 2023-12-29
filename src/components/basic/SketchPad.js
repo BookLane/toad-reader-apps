@@ -122,7 +122,7 @@ const SketchPad = React.memo(({
   const [ sketchValueBeforeClear, setSketchValueBeforeClear ] = useState()
   const safeAreaInsets = useSafeAreaInsets()
 
-  let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, leftAdjustment, topAdjustment, bgScale } = sketch || {}
+  let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, bgScale } = sketch || {}
   color = Math.max(1, Math.min(parseInt(color, 10), defaultColorOptions.length)) || 1
   utensil = Math.max(1, Math.min(parseInt(utensil, 10), UTENSILS.length)) || 1
   const scale = useRef()
@@ -156,15 +156,20 @@ const SketchPad = React.memo(({
         const horizontalScale = width / canvasWidth
         const verticalScale = height / canvasHeight
         scale.current = Math.min(horizontalScale, verticalScale)
-        const newLeftAdjustment = scale.current === verticalScale ? (((width / scale.current) - canvasWidth) / 2) : 0
-        const newTopAdjustment = scale.current !== verticalScale ? (((height / scale.current) - canvasHeight) / 2) : 0
+        const leftAdjustment = scale.current === verticalScale ? (((width / scale.current) - canvasWidth) / 2) : 0
+        const topAdjustment = scale.current !== verticalScale ? (((height / scale.current) - canvasHeight) / 2) : 0
         sketchObj.objects.forEach(obj => {
-          obj.left += newLeftAdjustment - (leftAdjustment || 0)
-          obj.top += newTopAdjustment - (topAdjustment || 0)
+          obj.left += leftAdjustment
+          obj.top += topAdjustment
         })
-        newSketchInfo.current = {
-          leftAdjustment: newLeftAdjustment,
-          topAdjustment: newTopAdjustment,
+        if(scale.current === verticalScale) {
+          newSketchInfo.current = {
+            canvasWidth: canvasWidth + leftAdjustment * 2
+          }
+        } else {
+          newSketchInfo.current = {
+            canvasHeight: canvasHeight + topAdjustment * 2
+          }
         }
         sketchData = JSON.stringify(sketchObj)
         prevBgScale.current = bgScale
@@ -175,7 +180,7 @@ const SketchPad = React.memo(({
       const minScale = {
         android: 2,
         ios: 1,
-        web: .5,
+        web: 1,
       }[Platform.OS]
 
       if(scale.current < minScale) {
