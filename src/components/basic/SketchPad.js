@@ -119,7 +119,7 @@ const SketchPad = React.memo(({
 
   const webView = useRef()
   let { onLayout, width, height } = useLayout()
-  const [ sketchValueBeforeClear, setSketchValueBeforeClear ] = useState()
+  const [ wasJustCleared, setWasJustCleared ] = useState(false)
   const safeAreaInsets = useSafeAreaInsets()
 
   let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, bgScale } = sketch || {}
@@ -180,7 +180,7 @@ const SketchPad = React.memo(({
       const minScale = {
         android: 2,
         ios: 1,
-        web: 1,
+        web: 2,
       }[Platform.OS]
 
       if(scale.current < minScale) {
@@ -269,22 +269,18 @@ const SketchPad = React.memo(({
   const clearOnPressProps = useNonBlurringOnPress(
     () => {
       if(!hasUndo) return
-      setSketchValueBeforeClear(sketchData)
+      setWasJustCleared(true)
       postMessage(webView.current, 'clear')
     },
-    [ hasUndo, sketchData, setSketchValueBeforeClear ],
+    [ hasUndo, sketchData, setWasJustCleared ],
   )
 
   const undoOnPressProps = useNonBlurringOnPress(
     () => {
-      if(hasUndo) {
-        postMessage(webView.current, 'undo')
-      } else if(sketchValueBeforeClear) {
-        postMessage(webView.current, 'load', sketchValueBeforeClear)
-      }
-      setSketchValueBeforeClear()
+      postMessage(webView.current, 'undo')
+      setWasJustCleared(false)
     },
-    [ hasUndo, sketchValueBeforeClear ],
+    [ hasUndo, setWasJustCleared ],
   )
 
   const switchUtensilOnPressProps = useNonBlurringOnPress(
@@ -314,7 +310,7 @@ const SketchPad = React.memo(({
 
   useEffect(setColorAndUtensil, [ color, utensil ])
 
-  const undoDisabled = !hasUndo && !sketchValueBeforeClear
+  const undoDisabled = !hasUndo && !wasJustCleared
 
   return (
     <View

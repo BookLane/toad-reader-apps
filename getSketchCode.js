@@ -60,6 +60,7 @@ const getSketchCode = ({ sketchData, scale=1, scaleAdjustment=1, prevBgScale=0, 
                 const innerWidth = window.innerWidth / ${scale}
                 const innerHeight = window.innerHeight / ${scale}
                 let bgScale = 0
+                let objsBeforeClear = []
 
                 const canvas = this.__canvas = new fabric["${mode === `edit` ? `Canvas` : `StaticCanvas`}"]('canvas', {
                     isDrawingMode: true,
@@ -112,20 +113,20 @@ const getSketchCode = ({ sketchData, scale=1, scaleAdjustment=1, prevBgScale=0, 
                 window.ReactNativeToWebView = message => {
                     switch(message.identifier) {
                         case "clear": {
-                            canvas.remove(...canvas.getObjects().concat())
+                            objsBeforeClear = canvas.getObjects().concat()
+                            canvas.remove(...objsBeforeClear)
                             canvas.renderAll()
                             goSave()
                             break
                         }
                         case "undo": {
-                            canvas.remove(canvas.getObjects().pop())
+                            const objs = canvas.getObjects()
+                            if(objs.length > 0) {
+                                canvas.remove(canvas.getObjects().pop())
+                            } else {
+                                canvas.add(...objsBeforeClear)
+                            }
                             canvas.renderAll()
-                            goSave()
-                            break
-                        }
-                        case "load": {
-                            canvas.loadFromJSON(message.payload)
-                            setBackground()
                             goSave()
                             break
                         }
