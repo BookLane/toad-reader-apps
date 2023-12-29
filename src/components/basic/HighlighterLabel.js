@@ -94,6 +94,17 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     height: 28,
     maxHeight: 28,
+    position: 'relative',
+  },
+  sketchIconContainer: {
+    position: 'relative',
+  },
+  check: {
+    fontSize: 5,
+    position: 'absolute',
+    bottom: 16,
+    right: 13,
+    color: 'rgba(28, 96, 171, .7)',
   },
   hiddenTextInput: {
     display: 'none',
@@ -110,6 +121,7 @@ const HighlighterLabel = React.memo(({
   idpId,
   highlight,
   isEditingNote,
+  hasSketch,
   setEditingSketch,
 
   idps,
@@ -308,7 +320,15 @@ const HighlighterLabel = React.memo(({
             <View>
               <TouchableOpacity
                 {...goSketchOnPressProps}
+                style={styles.sketchIconContainer}
               >
+                {hasSketch &&
+                  <Icon
+                    name="check"
+                    pack="materialCommunity"
+                    style={styles.check}
+                  />
+                }
                 <Icon
                   name="draw"
                   pack="materialCommunity"

@@ -240,6 +240,7 @@ const Highlighter = React.memo(({
         // setSelectionText={setSelectionText}
         endEditingNote={endEditingNote}
         isEditingNote={isEditingNote}
+        hasSketch={!!(highlight.current || {}).sketch}
         setEditingSketch={setEditingSketch}
       />
       {!!highlight.current && !windowTooShortToShowNotes &&
