@@ -309,6 +309,8 @@ const SketchPad = React.memo(({
           // onError={onError}
           onLoad={setColorAndUtensil}
           forwardRef={webView}
+          onStartShouldSetResponderCapture={() => true}
+          onResponderTerminationRequest={() => false}
 
           // The rest of the props are ignored when on web platform
           originWhitelist={['*']}
