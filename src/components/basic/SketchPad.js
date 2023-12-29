@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useMemo, useState, useEffect } from "react"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 import { useLayout } from '@react-native-community/hooks'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -126,8 +126,9 @@ const SketchPad = React.memo(({
   color = Math.max(1, Math.min(parseInt(color, 10), defaultColorOptions.length)) || 1
   utensil = Math.max(1, Math.min(parseInt(utensil, 10), UTENSILS.length)) || 1
   const scale = useRef()
+  const scaleAdjustment = useRef(1)
   const prevBgScale = useRef()
-  const newCanvasWidthAndHeight = useRef({ canvasWidth, canvasHeight })
+  const newSketchInfo = useRef({ canvasWidth, canvasHeight })
 
   useMemo(
     () => {
@@ -145,12 +146,12 @@ const SketchPad = React.memo(({
 
       if(!canvasWidth || sketchObj.objects.length === 0) {
         scale.current = 1
-        newCanvasWidthAndHeight.current = {
+        newSketchInfo.current = {
           canvasWidth: width,
           canvasHeight: height,
         }
 
-      } else if(width < canvasWidth || height < canvasHeight) {
+      } else {
         // set scale based on bigger difference (w vs h)
         const horizontalScale = width / canvasWidth
         const verticalScale = height / canvasHeight
@@ -161,31 +162,36 @@ const SketchPad = React.memo(({
           obj.left += newLeftAdjustment - (leftAdjustment || 0)
           obj.top += newTopAdjustment - (topAdjustment || 0)
         })
-        newCanvasWidthAndHeight.current = {
+        newSketchInfo.current = {
           leftAdjustment: newLeftAdjustment,
           topAdjustment: newTopAdjustment,
         }
         sketchData = JSON.stringify(sketchObj)
         prevBgScale.current = bgScale
 
-      } else if(width > canvasWidth || height > canvasHeight) {
-        scale.current = 1
-        newCanvasWidthAndHeight.current = {
-          canvasWidth: width,
-          canvasHeight: height,
-        }
-        // move to middle
+      }
+
+      // figure out what further device-specific scale needs to be
+      const minScale = {
+        android: 2,
+        ios: 1,
+        web: .5,
+      }[Platform.OS]
+
+      if(scale.current < minScale) {
+        scaleAdjustment.current = scale.current / minScale
+        scale.current = minScale
+
         sketchObj.objects.forEach(obj => {
-          obj.left += Math.max(width - canvasWidth, 0) / 2
-          obj.top += Math.max(height - canvasHeight, 0) / 2
+          obj.strokeWidth *= scaleAdjustment.current
+          obj.left *= scaleAdjustment.current
+          obj.top *= scaleAdjustment.current
+          obj.width *= scaleAdjustment.current
+          obj.height *= scaleAdjustment.current
+          obj.path = obj.path.map(step => step.map(num => typeof num === 'number' ? num * scaleAdjustment.current : num))
         })
         sketchData = JSON.stringify(sketchObj)
-        prevBgScale.current = bgScale
-
-
-      } else {
-        scale.current = 1
-        prevBgScale.current = bgScale
+        prevBgScale.current = (prevBgScale.current || 1) * scaleAdjustment.current
       }
 
     },
@@ -220,17 +226,31 @@ const SketchPad = React.memo(({
 
   const onMessageEvent = useCallback(
     async event => {
-      const { identifier, sketchData, bgScale } = JSON.parse(event.nativeEvent.data)
+      let { identifier, sketchData, bgScale } = JSON.parse(event.nativeEvent.data)
       switch(identifier) {
         case "loaded": {
           webView.current.loaded = true
           break
         }
         case "save": {
+          if(scaleAdjustment.current !== 1) {
+            const sketchObj = JSON.parse(sketchData) || {}
+            sketchObj.objects.forEach(obj => {
+              obj.strokeWidth /= scaleAdjustment.current
+              obj.left /= scaleAdjustment.current
+              obj.top /= scaleAdjustment.current
+              obj.width /= scaleAdjustment.current
+              obj.height /= scaleAdjustment.current
+              obj.path = obj.path.map(step => step.map(num => typeof num === 'number' ? num / scaleAdjustment.current : num))
+            })
+            sketchData = JSON.stringify(sketchObj)
+            bgScale /= scaleAdjustment.current
+          }
+  
           goUpdateSketchInEdit({
             sketchData,
             bgScale,
-            ...newCanvasWidthAndHeight.current,
+            ...newSketchInfo.current,
           })
           break
         }
@@ -239,7 +259,7 @@ const SketchPad = React.memo(({
     [ goUpdateSketchInEdit ],
   )
 
-  const html = useMemo(() => getSketchCode({ sketchData, scale: scale.current, prevBgScale: prevBgScale.current, mode, backgroundImage }), [ scale.current ])
+  const html = useMemo(() => getSketchCode({ sketchData, scale: scale.current, scaleAdjustment: scaleAdjustment.current, prevBgScale: prevBgScale.current, mode, backgroundImage }), [ scale.current ])
 
   const clearOnPressProps = useNonBlurringOnPress(
     () => {

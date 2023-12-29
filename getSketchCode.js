@@ -10,7 +10,7 @@ const insertEscape = str => (
         .replace(/\$\{/g, "$\\{")
 )
 
-const getSketchCode = ({ sketchData, scale=1, prevBgScale=0, mode="edit", backgroundImage }) => `
+const getSketchCode = ({ sketchData, scale=1, scaleAdjustment=1, prevBgScale=0, mode="edit", backgroundImage }) => `
 <!DOCTYPE html>
 <html>
     <head>
@@ -132,7 +132,7 @@ const getSketchCode = ({ sketchData, scale=1, prevBgScale=0, mode="edit", backgr
                         case "set": {
                             const { color, size } = message.payload
                             canvas.freeDrawingBrush.color = color
-                            canvas.freeDrawingBrush.width = size
+                            canvas.freeDrawingBrush.width = size * ${scaleAdjustment}
                             break
                         }
                     }
