@@ -139,9 +139,9 @@ const SketchPad = React.memo(({
         height -= HEIGHT_OF_CONTROLS
       }
 
-      let sketchObj = {}
+      let sketchObj = { objects: [] }
       try {
-        sketchObj = JSON.parse(sketchData) || {}
+        sketchObj = JSON.parse(sketchData) || sketchObj
       } catch (err) {}
 
       if(!canvasWidth || sketchObj.objects.length === 0) {
@@ -239,7 +239,7 @@ const SketchPad = React.memo(({
         }
         case "save": {
           if(scaleAdjustment.current !== 1) {
-            const sketchObj = JSON.parse(sketchData) || {}
+            const sketchObj = JSON.parse(sketchData) || { objects: [] }
             sketchObj.objects.forEach(obj => {
               obj.strokeWidth /= scaleAdjustment.current
               obj.left /= scaleAdjustment.current
