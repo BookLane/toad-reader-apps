@@ -362,7 +362,7 @@ const BookPage = React.memo(props => {
 
         case 'textUnselected':
           if(getNoteInEdit() != null) break
-          if(getSketchInEdit() != null) break
+          if(getSketchInEdit() !== undefined) break
         case 'textSelected': {
           setSelectionInfo(data.payload)
           indicateRecordReadingActivity()

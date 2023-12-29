@@ -1,6 +1,6 @@
-import React, { useState, useLayoutEffect, useCallback } from "react"
+import React, { useState, useLayoutEffect, useCallback, useRef } from "react"
 import Constants from 'expo-constants'
-import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View, Alert } from "react-native"
+import { StyleSheet, TouchableNativeFeedback, TouchableOpacity, Platform, Text, View, Alert, TextInput } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
@@ -95,6 +95,9 @@ const styles = StyleSheet.create({
     height: 28,
     maxHeight: 28,
   },
+  hiddenTextInput: {
+    display: 'none',
+  },
 })
 
 const notesForUndo = {}
@@ -120,6 +123,7 @@ const HighlighterLabel = React.memo(({
 
   // selectionInfo example: {"text":"Crossway","spineIdRef":"info","cfi":"/4/2/4,/1:16,/1:24","copyTooltipInLowerHalf":false}
   const { sketchingOn } = Object.values(idps)[0] || {}
+  const hiddenTextInput = useRef()
 
   const [ showDeletedMsgAndUndoColor, setShowDeletedMsgAndUndoColor ] = useState()
   const { bookVersion, classrooms } = useClassroomInfo({ books, bookId, userDataByBookId })
@@ -213,6 +217,9 @@ const HighlighterLabel = React.memo(({
   const goSketchOnPressProps = useNonBlurringOnPress(
     () => {
       setEditingSketch(true)
+      // the following two lines take the focus off the webview
+      hiddenTextInput.current.focus()
+      hiddenTextInput.current.blur()
     },
     [ setEditingSketch ]
   )
@@ -298,15 +305,21 @@ const HighlighterLabel = React.memo(({
             highlight={highlight}
           />
           {!!sketchingOn &&
-            <TouchableOpacity
-              {...goSketchOnPressProps}
-            >
-              <Icon
-                name="draw"
-                pack="materialCommunity"
-                style={styles.draw}
+            <View>
+              <TouchableOpacity
+                {...goSketchOnPressProps}
+              >
+                <Icon
+                  name="draw"
+                  pack="materialCommunity"
+                  style={styles.draw}
+                />
+              </TouchableOpacity>
+              <TextInput
+                ref={hiddenTextInput}
+                style={styles.hiddenTextInput}
               />
-            </TouchableOpacity>
+            </View>
           }
           <HighlighterShareIcon
             bookId={bookId}

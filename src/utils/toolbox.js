@@ -80,7 +80,7 @@ export const getDisplaySettingsObj = displaySettings => ({
 })
 
 export const getPageCfisKey = ({ displaySettings, width, height, spineInlineToolsHash }) => {
-  const { textSize, textSpacing } = displaySettings
+  const { textSize, textSpacing } = displaySettings || {}
 
   return `${width}x${height}_${textSize}_${textSpacing}_${spineInlineToolsHash}${ENABLE_WIDE_TABLE_BEHAVIOR ? `_wtb` : ``}`
 }
