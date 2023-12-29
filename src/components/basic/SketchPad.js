@@ -57,6 +57,9 @@ const styles = StyleSheet.create({
   sketchCanvasContainer: {
     flex: 1,
   },
+  sketchCanvasContainerBottomSpace: {
+    marginBottom: 60,
+  },
   buttons: {
     position: 'absolute',
     left: 0,
@@ -112,7 +115,7 @@ const SketchPad = React.memo(({
 }) => {
 
   const webView = useRef()
-  const { onLayout, width, height } = useLayout()
+  let { onLayout, width, height } = useLayout()
   const [ sketchValueBeforeClear, setSketchValueBeforeClear ] = useState()
 
   let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, leftAdjustment, topAdjustment, bgScale } = sketch || {}
@@ -126,6 +129,10 @@ const SketchPad = React.memo(({
     () => {
       if(!width) return
       if(scale.current) return
+
+      if(backgroundImage) {
+        height -= 60
+      }
 
       let sketchObj = {}
       try {
@@ -291,7 +298,10 @@ const SketchPad = React.memo(({
 
       {!!scale.current &&
         <WebView
-          style={styles.sketchCanvasContainer}
+          style={[
+            styles.sketchCanvasContainer,
+            backgroundImage ? styles.sketchCanvasContainerBottomSpace : null,
+          ]}
           source={{ html }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
