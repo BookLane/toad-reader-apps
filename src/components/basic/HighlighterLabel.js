@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
   check: {
     fontSize: 5,
     position: 'absolute',
-    bottom: 16,
-    right: 13,
+    bottom: 18,
+    right: 12,
     color: 'rgba(28, 96, 171, .7)',
   },
   hiddenTextInput: {
