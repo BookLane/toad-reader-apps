@@ -14,6 +14,7 @@ const getSketchCode = ({ sketchData, scale=1, prevBgScale=0, mode="edit", backgr
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <script>${getFabricCode()}</script>
         <script>window.parentOriginForPostMessage = ${JSON.stringify(origin)}</script>
         <style>

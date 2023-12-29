@@ -13,6 +13,8 @@ import Button from "./Button"
 import ColorSwitcher, { defaultColorOptions } from "./ColorSwitcher"
 import Icon from "./Icon"
 
+const HEIGHT_OF_CONTROLS = 60
+
 const UTENSILS = [
   {
     icon: {
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sketchCanvasContainerBottomSpace: {
-    marginBottom: 60,
+    marginBottom: HEIGHT_OF_CONTROLS,
   },
   buttons: {
     position: 'absolute',
@@ -133,7 +135,7 @@ const SketchPad = React.memo(({
       if(scale.current) return
 
       if(backgroundImage) {
-        height -= 60
+        height -= HEIGHT_OF_CONTROLS
       }
 
       let sketchObj = {}
