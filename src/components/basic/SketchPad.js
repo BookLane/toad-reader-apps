@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useMemo, useState, useEffect } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { i18n } from "inline-i18n"
 import { useLayout } from '@react-native-community/hooks'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import getSketchCode from "../../../getSketchCode"
 import { postMessage } from "../../utils/postMessage"
@@ -117,6 +118,7 @@ const SketchPad = React.memo(({
   const webView = useRef()
   let { onLayout, width, height } = useLayout()
   const [ sketchValueBeforeClear, setSketchValueBeforeClear ] = useState()
+  const safeAreaInsets = useSafeAreaInsets()
 
   let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, leftAdjustment, topAdjustment, bgScale } = sketch || {}
   color = Math.max(1, Math.min(parseInt(color, 10), defaultColorOptions.length)) || 1
@@ -292,6 +294,9 @@ const SketchPad = React.memo(({
       style={[
         styles.container,
         style,
+        {
+          marginBottom: safeAreaInsets.bottom,
+        },
       ]}
       onLayout={onLayout}
     >
