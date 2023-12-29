@@ -10,21 +10,26 @@ const insertEscape = str => (
         .replace(/\$\{/g, "$\\{")
 )
 
-const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) => `
+const getSketchCode = ({ sketchData, scale=1, prevBgScale=0, mode="edit", backgroundImage }) => `
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="minimum-scale=${insertEscape(scale)},initial-scale=${insertEscape(scale)},width=device-width">
         <script>${getFabricCode()}</script>
         <script>window.parentOriginForPostMessage = ${JSON.stringify(origin)}</script>
         <style>
+            html {
+                width: ${100 / scale}%;
+                height: ${100 / scale}%;
+                transform: scale(${scale});
+                transform-origin: top left;
+            }
             body {
                 margin: 0;
                 overflow: hidden;
                 overscroll-behavior-y: none;
             }
             #container {
-                height: 100vh;
+                height: 100%;
                 overflow: hidden;
                 background-color: white;
                 display: flex;
@@ -41,12 +46,22 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) =>
         <script>
             ;(() => {
 
-                const $ = id => document.getElementById(id)
+                const postMessage = data => {
+                    if(!window.isReactNativeWebView) {
+                        parent.postMessage(JSON.stringify(data), window.parentOriginForPostMessage)
+                    } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+                        window.ReactNativeWebView.postMessage(JSON.stringify(data))
+                    }
+                }
+
+                const innerWidth = window.innerWidth / ${scale}
+                const innerHeight = window.innerHeight / ${scale}
+                let bgScale = 0
 
                 const canvas = this.__canvas = new fabric["${mode === `edit` ? `Canvas` : `StaticCanvas`}"]('canvas', {
                     isDrawingMode: true,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
+                    width: innerWidth,
+                    height: innerHeight,
                     selection: false,
                     renderOnAddRemove: false,
                 })
@@ -55,18 +70,18 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) =>
                     ${!backgroundImage ? `` : `
                         const img = new Image()
                         img.onload = () => {
-                            const adjustedInnerHeight = window.innerHeight - 60
-                            const widthScale = window.innerWidth / img.width
+                            const adjustedInnerHeight = innerHeight
+                            const widthScale = innerWidth / img.width
                             const heightScale = adjustedInnerHeight / img.height
-                            const scale = Math.min(widthScale, heightScale)
+                            bgScale = ${prevBgScale} || Math.min(widthScale, heightScale)
                             canvas.setBackgroundImage(
                                 ${JSON.stringify(backgroundImage)},
                                 canvas.renderAll.bind(canvas),
                                 {
-                                    scaleX: scale,
-                                    scaleY: scale,
-                                    left: scale !== widthScale ? ((window.innerWidth - img.width * scale) / 2) : 0,
-                                    top: scale !== heightScale ? ((adjustedInnerHeight - img.height * scale) / 2) : 0,
+                                    scaleX: bgScale,
+                                    scaleY: bgScale,
+                                    left: ((innerWidth - img.width * bgScale) / 2),
+                                    top: ((adjustedInnerHeight - img.height * bgScale) / 2),
                                 },
                             )
                         }
@@ -78,19 +93,11 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) =>
                 fabric.Object.prototype.transparentCorners = false
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
 
-                const postMessage = data => {
-                    if(!window.isReactNativeWebView) {
-                        parent.postMessage(JSON.stringify(data), window.parentOriginForPostMessage)
-                    } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
-                        window.ReactNativeWebView.postMessage(JSON.stringify(data))
-                    }
-                }
-
                 const goSave = () => {
                     const canvasObj = canvas.toDatalessJSON(canvas)
                     delete canvasObj.backgroundImage
                     const sketchData = JSON.stringify(canvasObj)
-                    postMessage({ identifier: "save", sketchData })
+                    postMessage({ identifier: "save", sketchData, bgScale })
                 }
 
                 if(${sketchData ? `true` : `false`}) {
@@ -122,7 +129,7 @@ const getSketchCode = ({ sketchData, scale=1, mode="edit", backgroundImage }) =>
                         case "set": {
                             const { color, size } = message.payload
                             canvas.freeDrawingBrush.color = color
-                            canvas.freeDrawingBrush.width = size / ${insertEscape(scale)}
+                            canvas.freeDrawingBrush.width = size
                             break
                         }
                     }

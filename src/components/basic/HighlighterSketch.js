@@ -37,17 +37,6 @@ const HighlighterSketch = React.memo(({
 
 export default HighlighterSketch
 
-// HERE: Save canvas size
-  // on size of container
-    // if no size set or no objects, save size
-      // then set scale to 1
-    // else 
-      // if bigger canvas now available
-        // set scale to 1
-        // move to middle
-      // if smaller canvas now available
-        // set scale based on bigger difference (w vs h)
-        // for other direction, move to middle
 // Performance scaling
   // Have max dimension for each platform
     // if max(width, height) / scale is too big...
@@ -62,8 +51,3 @@ export default HighlighterSketch
       // only save if something has changed!
 
 // do "Feature 1" (limitation on # logged in devices)
-
-// Extras
-  // Give instructor ability to see the person's sketch (after "Reflection questions")
-  // including sketch in a highlight share page
-  // instructor able to share sketch

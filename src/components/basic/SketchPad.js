@@ -115,54 +115,71 @@ const SketchPad = React.memo(({
   const { onLayout, width, height } = useLayout()
   const [ sketchValueBeforeClear, setSketchValueBeforeClear ] = useState()
 
-  let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight } = sketch || {}
+  let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, leftAdjustment, topAdjustment, bgScale } = sketch || {}
   color = Math.max(1, Math.min(parseInt(color, 10), defaultColorOptions.length)) || 1
   utensil = Math.max(1, Math.min(parseInt(utensil, 10), UTENSILS.length)) || 1
-  let scale = 1
+  const scale = useRef()
+  const prevBgScale = useRef()
+  const newCanvasWidthAndHeight = useRef({ canvasWidth, canvasHeight })
 
-//   useMemo(
-//     () => {
-//       if(!width) return
+  useMemo(
+    () => {
+      if(!width) return
+      if(scale.current) return
 
-//       let sketchObj = {}
-//       try {
-//         sketchObj = JSON.parse(sketchData) || {}
-//       } catch (err) {}
+      let sketchObj = {}
+      try {
+        sketchObj = JSON.parse(sketchData) || {}
+      } catch (err) {}
 
-// console.log('ready...')
-//       if(!canvasWidth || sketchObj.objects.length === 0) {
-// console.log('>>>1')
-//         canvasWidth = width
-//         canvasHeight = height
-//         scale = 1
+      if(!canvasWidth || sketchObj.objects.length === 0) {
+        scale.current = 1
+        newCanvasWidthAndHeight.current = {
+          canvasWidth: width,
+          canvasHeight: height,
+        }
 
-//       } else if(width > canvasWidth || height > canvasHeight) {
-// console.log('>>>2')
-//         scale = 1
-//         // move to middle
-//         sketchObj.objects.forEach(obj => {
-//           obj.left += Math.max(width - canvasWidth, 0) / 2
-//           obj.top += Math.max(height - canvasHeight, 0) / 2
-//         })
-//         sketchData = JSON.stringify(sketchObj)
+      } else if(width < canvasWidth || height < canvasHeight) {
+        // set scale based on bigger difference (w vs h)
+        const horizontalScale = width / canvasWidth
+        const verticalScale = height / canvasHeight
+        scale.current = Math.min(horizontalScale, verticalScale)
+        const newLeftAdjustment = scale.current === verticalScale ? (((width / scale.current) - canvasWidth) / 2) : 0
+        const newTopAdjustment = scale.current !== verticalScale ? (((height / scale.current) - canvasHeight) / 2) : 0
+        sketchObj.objects.forEach(obj => {
+          obj.left += newLeftAdjustment - (leftAdjustment || 0)
+          obj.top += newTopAdjustment - (topAdjustment || 0)
+        })
+        newCanvasWidthAndHeight.current = {
+          leftAdjustment: newLeftAdjustment,
+          topAdjustment: newTopAdjustment,
+        }
+        sketchData = JSON.stringify(sketchObj)
+        prevBgScale.current = bgScale
 
-//       } else if(width < canvasWidth || height < canvasHeight) {
-//         // set scale based on bigger difference (w vs h)
-//         const horizontalReduction = canvasWidth / width
-//         const verticalReduction = canvasHeight / height
-//         scale = Math.max(horizontalReduction, verticalReduction)
-// console.log('>>>3', width, canvasWidth, horizontalReduction, height, canvasHeight, verticalReduction)
-//         // for other direction, move to middle
-//         // sketchObj.objects.forEach(obj => {
-//         //   obj.left += Math.max(width - canvasWidth / scale, 0) / 2
-//         //   obj.top += Math.max(height - canvasHeight, 0) / 2
-//         // })
-//         // sketchData = JSON.stringify(sketchObj)
-//       }
+      } else if(width > canvasWidth || height > canvasHeight) {
+        scale.current = 1
+        newCanvasWidthAndHeight.current = {
+          canvasWidth: width,
+          canvasHeight: height,
+        }
+        // move to middle
+        sketchObj.objects.forEach(obj => {
+          obj.left += Math.max(width - canvasWidth, 0) / 2
+          obj.top += Math.max(height - canvasHeight, 0) / 2
+        })
+        sketchData = JSON.stringify(sketchObj)
+        prevBgScale.current = bgScale
 
-//     },
-//     [ !width ],
-//   )
+
+      } else {
+        scale.current = 1
+        prevBgScale.current = bgScale
+      }
+
+    },
+    [ !width ],
+  )
 
   const hasUndo = useMemo(
     () => {
@@ -183,22 +200,27 @@ const SketchPad = React.memo(({
         color,
         canvasWidth,
         canvasHeight,
+        bgScale,
         ...update,
       })
     },
-    [ sketchData, utensil, color, canvasWidth, canvasHeight ],
+    [ sketchData, utensil, color, canvasWidth, canvasHeight, bgScale ],
   )
 
   const onMessageEvent = useCallback(
     async event => {
-      const { identifier, sketchData } = JSON.parse(event.nativeEvent.data)
+      const { identifier, sketchData, bgScale } = JSON.parse(event.nativeEvent.data)
       switch(identifier) {
         case "loaded": {
           webView.current.loaded = true
           break
         }
         case "save": {
-          goUpdateSketchInEdit({ sketchData })
+          goUpdateSketchInEdit({
+            sketchData,
+            bgScale,
+            ...newCanvasWidthAndHeight.current,
+          })
           break
         }
       }
@@ -206,7 +228,7 @@ const SketchPad = React.memo(({
     [ goUpdateSketchInEdit ],
   )
 
-  const html = useMemo(() => getSketchCode({ sketchData, scale, mode, backgroundImage }), [ scale ])
+  const html = useMemo(() => getSketchCode({ sketchData, scale: scale.current, prevBgScale: prevBgScale.current, mode, backgroundImage }), [ scale.current ])
 
   const clearOnPressProps = useNonBlurringOnPress(
     () => {
@@ -239,19 +261,22 @@ const SketchPad = React.memo(({
     [ goUpdateSketchInEdit ],
   )
 
-  useEffect(
+  const setColorAndUtensil = useCallback(
     () => {
       const { size, transparency } = UTENSILS[utensil - 1]
       postMessage(
         webView.current,
         'set',
-          {
-          color: `${defaultColorOptions[color - 1]}${transparency}`, size,
+        {
+          color: `${defaultColorOptions[color - 1]}${transparency}`,
+          size,
         },
       )
     },
     [ color, utensil ],
   )
+
+  useEffect(setColorAndUtensil, [ color, utensil ])
 
   const undoDisabled = !hasUndo && !sketchValueBeforeClear
 
@@ -264,7 +289,7 @@ const SketchPad = React.memo(({
       onLayout={onLayout}
     >
 
-      {!!scale &&
+      {!!scale.current &&
         <WebView
           style={styles.sketchCanvasContainer}
           source={{ html }}
@@ -272,7 +297,7 @@ const SketchPad = React.memo(({
           showsHorizontalScrollIndicator={false}
           onMessage={onMessageEvent}
           // onError={onError}
-          // onLoad={onLoad}
+          onLoad={setColorAndUtensil}
           forwardRef={webView}
 
           // The rest of the props are ignored when on web platform
