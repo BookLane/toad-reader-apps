@@ -47,10 +47,12 @@ const getSketchCode = ({ sketchData, scale=1, prevBgScale=0, mode="edit", backgr
             ;(() => {
 
                 const postMessage = data => {
-                    if(!window.isReactNativeWebView) {
+                    if(${Platform.OS === `web` ? `true` : `false`}) {
                         parent.postMessage(JSON.stringify(data), window.parentOriginForPostMessage)
                     } else if(window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
                         window.ReactNativeWebView.postMessage(JSON.stringify(data))
+                    } else {
+                        setTimeout(() => postMessage(data), 100)
                     }
                 }
 
