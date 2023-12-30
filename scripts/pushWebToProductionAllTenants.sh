@@ -12,9 +12,9 @@ npm run change-tenant -- zondervan
 npm run go-push-web-to-staging
 node ./scripts/pushwebstagingtoproduction.js
 
-npm run change-tenant -- g12
-npm run go-push-web-to-staging
-node ./scripts/pushwebstagingtoproduction.js
+# npm run change-tenant -- g12
+# npm run go-push-web-to-staging
+# node ./scripts/pushwebstagingtoproduction.js
 
 # npm run change-tenant -- proyectonehemias
 # npm run go-push-web-to-staging

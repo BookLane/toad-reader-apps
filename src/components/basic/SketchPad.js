@@ -180,7 +180,7 @@ const SketchPad = React.memo(({
       const minScale = {
         android: 2,
         ios: 1,
-        web: 2,
+        web: 1,
       }[Platform.OS]
 
       if(scale.current < minScale) {
