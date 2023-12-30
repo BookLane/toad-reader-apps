@@ -74,6 +74,7 @@ const EmailLogin = ({
   const { accessCode } = routerState
 
   const [ stage, setStage ] = useState(accessCode ? 'AWAITING_CODE' : 'AWAITING_EMAIL')
+  const [ numSessionsThisWillLogOut, setNumSessionsThisWillLogOut ] = useState(0)
   const [ email, setEmail ] = useState("")
   const [ code, setCode ] = useState(accessCode || "")
   const [ error, setError ] = useState()
@@ -99,13 +100,15 @@ const EmailLogin = ({
         response.status = 500
       }
 
+      const json = response.json && await response.json()
+
       if(response.status >= 400) {
-        const json = response.json && await response.json()
         setError((json || {}).error || response.statusText)
         setStage('AWAITING_EMAIL')
         return
       }
 
+      setNumSessionsThisWillLogOut((json || {}).numSessionsThisWillLogOut || 0)
       setStage('AWAITING_CODE')
 
     },
@@ -254,6 +257,11 @@ const EmailLogin = ({
                 </Text>
               </Text>
             </>
+          }
+          {numSessionsThisWillLogOut > 0 &&
+            <Text style={styles.error}>
+              {i18n("Warning: You are already logged into the maximum of number of devices ({{num}} devices). Continuing to log in here will log you out elsewhere.", { num: numSessionsThisWillLogOut })}
+            </Text>
           }
           {error &&
             <Text style={styles.error}>
