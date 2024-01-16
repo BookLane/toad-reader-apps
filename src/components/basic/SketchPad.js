@@ -1,8 +1,13 @@
 import React, { useRef, useCallback, useMemo, useState, useEffect } from "react"
 import { StyleSheet, TouchableOpacity, View, Platform } from "react-native"
+import Constants from 'expo-constants'
 import { i18n } from "inline-i18n"
 import { useLayout } from '@react-native-community/hooks'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
+const {
+  SKETCH_COLOR_OPTIONS,
+} = Constants.expoConfig.extra
 
 import getSketchCode from "../../../getSketchCode"
 import { postMessage } from "../../utils/postMessage"
@@ -12,6 +17,8 @@ import WebView from "../major/WebView"
 import Button from "./Button"
 import ColorSwitcher, { defaultColorOptions } from "./ColorSwitcher"
 import Icon from "./Icon"
+
+const colorOptions = SKETCH_COLOR_OPTIONS || defaultColorOptions
 
 const HEIGHT_OF_CONTROLS = 60
 
@@ -123,7 +130,7 @@ const SketchPad = React.memo(({
   const safeAreaInsets = useSafeAreaInsets()
 
   let { sketchData, utensil=1, color=1, canvasWidth, canvasHeight, bgScale } = sketch || {}
-  color = Math.max(1, Math.min(parseInt(color, 10), defaultColorOptions.length)) || 1
+  color = Math.max(1, Math.min(parseInt(color, 10), colorOptions.length)) || 1
   utensil = Math.max(1, Math.min(parseInt(utensil, 10), UTENSILS.length)) || 1
   const scale = useRef()
   const scaleAdjustment = useRef(1)
@@ -300,7 +307,7 @@ const SketchPad = React.memo(({
         webView.current,
         'set',
         {
-          color: `${defaultColorOptions[color - 1]}${transparency}`,
+          color: `${colorOptions[color - 1]}${transparency}`,
           size,
         },
       )
@@ -403,6 +410,7 @@ const SketchPad = React.memo(({
 
             <ColorSwitcher
               color={color}
+              colorOptions={colorOptions}
               update={updateColor}
             />
 

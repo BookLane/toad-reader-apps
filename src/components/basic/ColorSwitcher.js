@@ -11,6 +11,11 @@ export const defaultColorOptions = [
   '#93c58e',
 ]
 
+export const isDark = color => {
+  const [ r=0, g=0, b=0 ] = (`${color.replace(/^#/, ``)}`.match(/../g) || []).map(n => parseInt(n, 16))
+  return r + g + b < 382
+}
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -34,6 +39,9 @@ const styles = StyleSheet.create({
     height: 17,
     marginVertical: 5,
     marginHorizontal: 7,
+  },
+  whiteCheck: {
+    tintColor: 'white',
   },
 })
 
@@ -74,7 +82,13 @@ const ColorSwitcher = React.memo(({
               ]}
             >
               {idx+1 === color &&
-                <Icon name='md-checkmark' style={styles.icon} />
+                <Icon
+                  name='md-checkmark'
+                  style={[
+                    styles.icon,
+                    (isDark(colorOptions[idx]) && styles.whiteCheck),
+                  ]}
+                />
               }
             </View>
           </View>
