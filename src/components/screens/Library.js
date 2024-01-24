@@ -453,13 +453,54 @@ const Library = ({
     [ idps, accounts, handleNewLibrary ],
   )
 
+  const onLoginSuccess = useCallback(
+    () => {
+      setShowLogin(false)
+      clearKeyFromRouterState('doEmailLogin')
+    },
+    [],
+  )
+
+  const logOutOnLoad = useCallback(
+    async ({ accountId=logOutAccountId }={}) => {
+
+      const { idpId } = getIdsFromAccountId(accountId)
+      const idp = idps[idpId]
+      const dataOrigin = getDataOrigin(idp)
+
+      // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
+      const logOutCallbackUrl = `${dataOrigin}/logout/callback?noredirect=1`
+      await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
+        headers: {
+          "x-cookie-override": accounts[accountId].cookie,
+        },
+      }))
+
+      removeAccount({ accountId })
+      historyReplace()
+    },
+    [ idps, accounts, logOutAccountId ],
+  )
+
   useEffect(  // fetch books
     () => {
 
-      const account = Object.values(accounts)[0]
-      if(!account || account.needToLogInAgain) {
-        // when I move to multiple accounts, this will instead need to go to the Accounts screen
+      const accountId = Object.keys(accounts)[0]
+      const account = accounts[accountId]
+      if(!account) {
         setShowLogin(true)
+        return
+      } else if(account.needToLogInAgain) {
+        // when I move to multiple accounts, this will instead need to go to the Accounts screen
+        (async () => {
+          setShowLoading(true)
+          try {
+            await logOutOnLoad({ accountId })
+            historyGoBackToLibrary()
+          } catch(err) {}
+          setShowLogin(true)
+          setShowLoading(false)
+        })()
         return
       }
 
@@ -504,35 +545,6 @@ const Library = ({
       }
     },
     [ idps, accounts, pathname ],
-  )
-
-  const onLoginSuccess = useCallback(
-    () => {
-      setShowLogin(false)
-      clearKeyFromRouterState('doEmailLogin')
-    },
-    [],
-  )
-
-  const logOutOnLoad = useCallback(
-    async () => {
-
-      const { idpId } = getIdsFromAccountId(logOutAccountId)
-      const idp = idps[idpId]
-      const dataOrigin = getDataOrigin(idp)
-
-      // make sure the logout callback gets called (safari wasn't doing so; might be a race condition)
-      const logOutCallbackUrl = `${dataOrigin}/logout/callback?noredirect=1`
-      await safeFetch(logOutCallbackUrl, getReqOptionsWithAdditions({
-        headers: {
-          "x-cookie-override": accounts[logOutAccountId].cookie,
-        },
-      }))
-
-      removeAccount({ accountId: logOutAccountId })
-      historyReplace()
-    },
-    [ idps, accounts, logOutAccountId ],
   )
 
   const openImportBooks = useCallback(

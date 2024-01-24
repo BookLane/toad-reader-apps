@@ -512,7 +512,7 @@ export const refreshUserData = ({ accountId, bookId }) => new Promise(resolve =>
 
   const { idps, accounts, books } = store.getState()
   
-  if(!accountId || !bookId) return resolve()
+  if(!accountId || !bookId || !books[bookId]) return resolve()
   if(currentlyRefreshingBookAccountCombo[`${accountId} ${bookId}`]) return resolve()
   if(!books[bookId].accounts[accountId]) return resolve()
 
