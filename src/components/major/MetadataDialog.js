@@ -190,7 +190,7 @@ const MetadataDialog = ({
 
       <Dialog
         open={open}
-        title={i18n("Book metadata categories", "", "admin")}
+        title={i18n("Custom metadata categories", "", "admin")}
         style={styles.dialog}
         onClose={onClose}
         onCancel={onCancel}
@@ -211,10 +211,10 @@ const MetadataDialog = ({
             {editedMetadataKeys.length === 0 &&
               <>
                 <Text style={styles.none}>
-                  {i18n("There are currently no metadata categories.", "", "admin")}
+                  {i18n("There are currently no custom metadata categories for books.", "", "admin")}
                 </Text>
                 <Text style={styles.noneExpl}>
-                  {i18n("Tell your users more about your books with metadata categories. Add metadata categories like “Description” in order to present more information about each book. You may also use metadata categories like “Genre” or “Reading Level” with predefined option lists in order to group your books.", "", "admin")}
+                  {i18n("Tell your users more about your books with custom metadata categories. Add custom metadata categories like “Description” in order to present more information about each book. You may also use custom metadata categories like “Genre” or “Reading Level” with predefined option lists in order to group your books.", "", "admin")}
                 </Text>
               </>
             }

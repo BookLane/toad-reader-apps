@@ -51,7 +51,7 @@ import Dialog from "../major/Dialog"
 import KeyboardAvoidingView from "../basic/KeyboardAvoidingView"
 import Icon from "../basic/Icon"
 
-import { addBooks, setCoverFilename, reSort, setFetchingBooks, updateMetadataKeys,
+import { addBooks, reSort, setFetchingBooks, updateMetadataKeys,
          removeAccount, updateAccount, setReaderStatus, clearAllSpinePageCfis, setSelectedBookTypeIndex,
          autoUpdateCoreIdps, setCurrentClassroom, setSelectedToolUid, updateSubscriptions } from "../../redux/actions"
 
@@ -190,7 +190,6 @@ const Library = ({
   selectedBookTypeIndex,
 
   addBooks,
-  setCoverFilename,
   reSort,
   setFetchingBooks,
   updateMetadataKeys,
@@ -1172,7 +1171,6 @@ const mapStateToProps = ({ accounts, idps, books, library, fetchingBooks, select
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   addBooks,
-  setCoverFilename,
   reSort,
   setFetchingBooks,
   updateMetadataKeys,

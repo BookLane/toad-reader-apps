@@ -408,7 +408,7 @@ const AppMenu = ({
     ]),
     ...(!(isAdmin && Platform.OS === 'web') ? [] : [
       {
-        title: i18n("Manage book metadata categories", "", "admin"),
+        title: i18n("Manage custom metadata categories", "", "admin"),
         // icon: removeIcon,
         onSelect: onOpenMetadataDialog,
         disabled: !online,

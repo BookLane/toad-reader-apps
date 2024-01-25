@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useCallback, useEffect, useMemo } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
@@ -12,6 +12,7 @@ import { cloneObj, getIdsFromAccountId, getDataOrigin, safeFetch, getReqOptionsW
 import Dialog from "./Dialog"
 import Input from "../basic/Input"
 import Select from "../basic/Select"
+import BookCoverEditor from "./BookCoverEditor"
 
 const styles = StyleSheet.create({
   dialog:  {
@@ -24,13 +25,22 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 12,
   },
-  status: {
+  manage: {
     marginTop: 10,
     color: 'rgba(0, 0, 0, .5)',
+    fontStyle: 'italic',
   },
-  error:  {
+  status: {
+    marginTop: 10,
+  },
+  error: {
     marginBottom: 15,
     color: 'red',
+  },
+  image: {
+    backgroundColor: 'rgba(0, 0, 0, .1)',
+    width: 82,
+    height: 110,
   },
 })
 
@@ -38,7 +48,7 @@ const BookMetadataDialog = ({
   open,
   metadataValues,
   bookId,
-  bookTitle,
+  isAudiobook,
   onClose,
   handleNewLibrary,
 
@@ -56,6 +66,31 @@ const BookMetadataDialog = ({
   const getEditedMetadataValuesByKeyId = useInstanceValue(editedMetadataValuesByKeyId)
 
   const accountId = Object.keys(accounts)[0]
+  const { idpId } = getIdsFromAccountId(accountId)
+
+  const metadataKeysWithCoreItems = useMemo(
+    () => ([
+      {
+        id: `title`,
+        name: i18n("Title", "", "admin"),
+      },
+      {
+        id: `author`,
+        name: i18n("Author", "", "admin"),
+      },
+      {
+        id: `isbn`,
+        name: i18n("ISBN", "", "admin"),
+      },
+      {
+        id: `coverHref`,
+        name: i18n("Cover Image", "", "admin"),
+        isFile: true,
+      },
+      ...(metadataKeys || []),
+    ]),
+    [ metadataKeys ],
+  )
 
   useEffect(
     () => {
@@ -92,11 +127,19 @@ const BookMetadataDialog = ({
     [],
   )
 
+  const updateCoverHref = useCallback(
+    value => {
+      onChangeInput({
+        id: `coverHref`,
+        value,
+      })
+    },
+    [ onChangeInput ],
+  )
+
   const onConfirm = useCallback(
     async () => {
       try {
-
-        const { idpId } = getIdsFromAccountId(accountId)
 
         console.log(`Submit update to metadata value for book id: ${bookId}, idpId: ${idpId}...`)
 
@@ -159,7 +202,7 @@ const BookMetadataDialog = ({
       }
 
     },
-    [ accountId, accounts ],
+    [ accountId, idpId, accounts ],
   )
 
   const onCancel = useCallback(
@@ -173,9 +216,7 @@ const BookMetadataDialog = ({
 
     <Dialog
       open={open}
-      title={i18n("Edit metadata for “{{book_title}}”", "", "admin", {
-        book_title: bookTitle,
-      })}
+      title={i18n("Edit metadata", "", "admin")}
       style={styles.dialog}
       onClose={onClose}
       onCancel={onCancel}
@@ -187,49 +228,67 @@ const BookMetadataDialog = ({
       message={
         <View style={styles.container}>
 
-        {!!errorMessage &&
-          <Text style={styles.error}>
-            {errorMessage}
-          </Text>
-        }
+          {!!errorMessage &&
+            <Text style={styles.error}>
+              {errorMessage}
+            </Text>
+          }
 
-          {metadataKeys.map(({ id, name, options }) => (
-            options
+          {metadataKeysWithCoreItems.map(({ id, name, options, isFile }) => (
+            isFile
               ? (
-                <View key={id}>
-
-                  <Select
-                    id={id}
-                    label={name}
-                    info={options}
-                    style={styles.select}
-                    value={editedMetadataValuesByKeyId[id] || " "}
-                    selectedIndex={new IndexPath(options.indexOf(editedMetadataValuesByKeyId[id]) + 1)}
-                    onSelect={onSelect}
-                  >
-                    <SelectItem title=" " />
-                    {options.map(option => (
-                      <SelectItem
-                        key={option}
-                        title={option}
-                      />
-                    ))}
-                  </Select>
-
-                </View>
+                <BookCoverEditor
+                  key={id}
+                  accounts={accounts}
+                  idps={idps}
+                  bookId={bookId}
+                  coverHref={editedMetadataValuesByKeyId[id]}
+                  updateCoverHref={updateCoverHref}
+                  submitting={submitting}
+                  imageStyle={!isAudiobook && styles.image}
+                />
               )
               : (
-                <Input
-                  key={id}
-                  id={id}
-                  label={name}
-                  value={editedMetadataValuesByKeyId[id] || ""}
-                  onChangeInfo={onChangeInput}
-                  style={styles.input}
-                />
+                options
+                  ? (
+                    <View key={id}>
+    
+                      <Select
+                        id={id}
+                        label={name}
+                        info={options}
+                        style={styles.select}
+                        value={editedMetadataValuesByKeyId[id] || " "}
+                        selectedIndex={new IndexPath(options.indexOf(editedMetadataValuesByKeyId[id]) + 1)}
+                        onSelect={onSelect}
+                      >
+                        <SelectItem title=" " />
+                        {options.map(option => (
+                          <SelectItem
+                            key={option}
+                            title={option}
+                          />
+                        ))}
+                      </Select>
+    
+                    </View>
+                  )
+                  : (
+                    <Input
+                      key={id}
+                      id={id}
+                      label={name}
+                      value={editedMetadataValuesByKeyId[id] || ""}
+                      onChangeInfo={onChangeInput}
+                      style={styles.input}
+                    />
+                  )
               )
           ))}
 
+          <Text style={styles.manage}>
+            {i18n("Manage custom metadata categories by clicking that option under the main menu.", "", "admin")}
+          </Text>
 
           <Text style={styles.status}>
             {hasChange

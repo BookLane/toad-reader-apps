@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react"
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
 import { StyleSheet, View, Text, Platform } from "react-native"
 import { i18n } from "inline-i18n"
 import { getDataOrigin, getReqOptionsWithAdditions, cloneObj, getMBSizeStr, getIdsFromAccountId, safeFetch } from "../../utils/toolbox"
@@ -48,7 +46,6 @@ const FileImporter = ({
   getSuccessText,
   onSuccess,
   onClose,
-
   accounts,
   idps,
 }) => {
@@ -213,12 +210,4 @@ const FileImporter = ({
   )
 }
 
-const mapStateToProps = ({ accounts, idps }) => ({
-  accounts,
-  idps,
-})
-
-const matchDispatchToProps = (dispatch, x) => bindActionCreators({
-}, dispatch)
-
-export default connect(mapStateToProps, matchDispatchToProps)(FileImporter)
+export default FileImporter

@@ -1,16 +1,16 @@
 import React, { useState, useCallback, useEffect, useRef } from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import useToggle from "react-use/lib/useToggle"
-import { Image } from 'expo-image'
 import { Audio } from 'expo-av'
 
-import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj, openURL } from '../../utils/toolbox'
+import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, cloneObj } from '../../utils/toolbox'
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useRefState from "../../hooks/useRefState"
 import useBookCookies from "../../hooks/useBookCookies"
+import useCoverHref from "../../hooks/useCoverHref"
 import { getTimeStringFromMS } from "./AudiobookPlayerProgressBar"
 import { setBookCookies } from "../../redux/actions"
 
@@ -19,6 +19,7 @@ import Button from "../basic/Button"
 import Icon from "../basic/Icon"
 import Input from "../basic/Input"
 import FileImporter from "./FileImporter"
+import BookCoverEditor from "./BookCoverEditor"
 
 const keyOptionButton = {
   paddingHorizontal: 0,
@@ -32,7 +33,6 @@ const defaultBook = {
   isbn: ``,
   audiobookInfo: {
     spines: [],
-    coverFilename: ``,
   },
 }
 
@@ -96,21 +96,9 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  coverContainer: {
-    marginBottom: 15,
-    marginRight: 'auto',
-  },
   spineLabelInput: {
     flex: 1,
     marginRight: 5,
-  },
-  coverEditIconContainer: {
-    position: 'absolute',
-    left: 30,
-    top: 30,
-    padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, .6)',
-    borderRadius: 100,
   },
   coverEditIcon: {
     width: 20,
@@ -157,7 +145,8 @@ const AudiobookDialog = ({
   const { idpId } = getIdsFromAccountId(accountId)
   const book = books[bookId] || defaultBook
   const { title=``, author=``, isbn=``, audiobookInfo={} } = editedBook
-  const { coverFilename=``, spines=[] } = audiobookInfo
+  const { spines=[] } = audiobookInfo
+  const coverHref = useCoverHref({ bookInfo: editedBook, bookId })
   const getAudiobookInfo = useInstanceValue(audiobookInfo)
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const bookCookies = useBookCookies({ books, accounts, idp: idps[idpId], setBookCookies, bookId, skip: !open })
@@ -216,6 +205,7 @@ const AudiobookDialog = ({
               title: editedBook.title,
               author: editedBook.author,
               isbn: editedBook.isbn,
+              coverHref: editedBook.coverHref,
               audiobookInfo: editedBook.audiobookInfo,
             },
           }),
@@ -265,11 +255,8 @@ const AudiobookDialog = ({
   const onUploadCoverSuccess = useCallback(
     ([{ result }]) => {
       updateEditedBook({
-        id: `audiobookInfo`,
-        value: {
-          ...getAudiobookInfo(),
-          coverFilename: result.filename,
-        },
+        id: `coverHref`,
+        value: `epub_content/covers/${result.filename}`,
       })
     },
     [ updateEditedBook ],
@@ -340,12 +327,21 @@ const AudiobookDialog = ({
     [ getPlayingFilename, setPlayingFilename, downloadOrigin, bookId, bookCookies ],
   )
 
-  const CoverEditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.coverEditIcon, style ]} />, [])
   const PlayIcon = useCallback(({ style }) => <Icon name='md-play' style={[ styles.playIcon, style ]} />, [])
   const PauseIcon = useCallback(({ style }) => <Icon name='pause-sharp' style={[ styles.pauseIcon, style ]} />, [])
   const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
   const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
   const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
+
+  const updateCoverHref = useCallback(
+    value => {
+      updateEditedBook({
+        id: `coverHref`,
+        value,
+      })
+    },
+    [ updateEditedBook ],
+  )
 
   const bookWithoutEpubSizeInMB = cloneObj(book)
   delete bookWithoutEpubSizeInMB.epubSizeInMB
@@ -360,7 +356,11 @@ const AudiobookDialog = ({
 
       <Dialog
         open={open}
-        title={i18n("Audiobook details", "", "admin")}
+        title={
+          bookId
+            ? i18n("Audiobook chapters", "", "admin")
+            : i18n("Basic audiobook metadata", "", "admin")
+        }
         style={styles.dialog}
         onClose={onClose}
         onCancel={onCancel}
@@ -380,49 +380,42 @@ const AudiobookDialog = ({
               </Text>
             }
 
-            <Input
-              label={i18n("Title", "", "admin")}
-              id="title"
-              value={title}
-              onChangeInfo={updateEditedBook}
-              style={styles.input}
-            />
-
-            <Input
-              label={i18n("Author", "", "admin")}
-              id="author"
-              value={author}
-              onChangeInfo={updateEditedBook}
-              style={styles.input}
-            />
-
-            <Input
-              label={i18n("ISBN", "", "admin")}
-              id="isbn"
-              value={isbn}
-              onChangeInfo={updateEditedBook}
-              style={styles.input}
-              maxLength={150}
-            />
-
-            {!!bookId &&
+            {!bookId &&
               <>
-                <Text style={styles.label}>
-                  {i18n("Cover Image", "", "admin")}
-                </Text>
-                <TouchableOpacity
-                  style={styles.coverContainer}
-                  onPress={submitting ? null : toggleUploadCover}
-                >
-                  <Image
-                    source={`${downloadOrigin}/epub_content/covers/${coverFilename}`}
-                    contentFit="cover"
-                    style={styles.image}
-                  />
-                  <View style={styles.coverEditIconContainer}>
-                    <CoverEditIcon />
-                  </View>
-                </TouchableOpacity>
+
+                <Input
+                  label={i18n("Title", "", "admin")}
+                  id="title"
+                  value={title}
+                  onChangeInfo={updateEditedBook}
+                  style={styles.input}
+                />
+
+                <Input
+                  label={i18n("Author", "", "admin")}
+                  id="author"
+                  value={author}
+                  onChangeInfo={updateEditedBook}
+                  style={styles.input}
+                />
+
+                <Input
+                  label={i18n("ISBN", "", "admin")}
+                  id="isbn"
+                  value={isbn}
+                  onChangeInfo={updateEditedBook}
+                  style={styles.input}
+                  maxLength={150}
+                />
+
+                <BookCoverEditor
+                  accounts={accounts}
+                  idps={idps}
+                  coverHref={coverHref}
+                  updateCoverHref={updateCoverHref}
+                  submitting={submitting}
+                />
+
               </>
             }
 
@@ -533,6 +526,8 @@ const AudiobookDialog = ({
       />
 
       <FileImporter
+        accounts={accounts}
+        idps={idps}
         open={uploadCover}
         fileType={coverFileTypes}
         multiple={false}
@@ -543,6 +538,8 @@ const AudiobookDialog = ({
       />
 
       <FileImporter
+        accounts={accounts}
+        idps={idps}
         open={uploadSpines}
         fileType={spineFileTypes}
         multiple={true}

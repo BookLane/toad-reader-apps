@@ -77,16 +77,6 @@ export default function(state = initialState, action) {
       // the book.accounts[accountId] and only delete the book if book.accounts is thus emptied.
       return newState
 
-    case "SET_COVER_FILENAME":
-      if(newState[action.bookId]) {
-        newState[action.bookId] = {
-          ...state[action.bookId],
-          coverFilename: action.coverFilename,
-        }
-        return newState
-      }
-      return state
-
     case "ADD_ACCOUNT": {
       // const noLoginAccountId = `${action.idpId}:-${action.idpId}`
       // removeAccount({ accountId: noLoginAccountId })

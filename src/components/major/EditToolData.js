@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { Button } from '@ui-kitten/components'
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import { cloneObj, getMBSizeStr, nonEmpty } from '../../utils/toolbox'
 import useInstanceValue from '../../hooks/useInstanceValue'
@@ -125,6 +127,9 @@ const EditToolData = React.memo(({
   transformData,
   data,
   goUpdateTool,
+
+  accounts,
+  idps,
 }) => {
 
   const wideMode = useWideMode()
@@ -621,6 +626,8 @@ const EditToolData = React.memo(({
     <View style={wideMode ? styles.containerWideMode : styles.container}>
       {getDataStructureSet({ dataStructure, dataSegment: dataInEdit })}
       <FileImporter
+        accounts={accounts}
+        idps={idps}
         open={!!fileImportInfo.open}
         fileType={fileImportInfo.fileType}
         multiple={!!fileImportInfo.multiple}
@@ -634,4 +641,12 @@ const EditToolData = React.memo(({
 
 })
 
-export default EditToolData
+const mapStateToProps = ({ accounts, idps }) => ({
+  accounts,
+  idps,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(EditToolData)

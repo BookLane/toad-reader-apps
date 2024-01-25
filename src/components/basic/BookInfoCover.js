@@ -6,6 +6,7 @@ import { Image } from 'expo-image'
 
 import { Link } from "../../hooks/useRouterState"
 import useDownloadProgress from "../../hooks/useDownloadProgress"
+import useCoverHref from "../../hooks/useCoverHref"
 
 import CoverAndSpin from "./CoverAndSpin"
 
@@ -32,8 +33,7 @@ const BookInfoCover = ({
 }) => {
 
   const { downloadStatus, accounts, audiobookInfo } = bookInfo
-  const isAudiobook = !!audiobookInfo
-  const { coverFilename } = audiobookInfo || {}
+  const coverHref = useCoverHref({ bookInfo, bookId })
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo, bookId })
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
@@ -42,7 +42,7 @@ const BookInfoCover = ({
     <View style={styles.container}>
 
       <Image
-        source={`${downloadOrigin}/epub_content/covers/${isAudiobook ? coverFilename : `book_${bookId}.png`}`}
+        source={`${downloadOrigin}/${coverHref}`}
         style={[
           styles.image,
           (!!audiobookInfo && styles.imageAudiobook),

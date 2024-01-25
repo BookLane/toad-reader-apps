@@ -2,6 +2,8 @@ import React, { useCallback } from "react"
 import { StyleSheet, Text } from "react-native"
 import { i18n } from "inline-i18n"
 import { Link } from "../../hooks/useRouterState"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 
 import FileImporter from "./FileImporter"
 
@@ -23,6 +25,9 @@ const BookImporter = ({
   updateBooks,
   onClose,
   replaceExisting,
+
+  accounts,
+  idps,
 }) => {
 
   const getFileLink = useCallback(
@@ -83,6 +88,8 @@ const BookImporter = ({
 
   return (
     <FileImporter
+      accounts={accounts}
+      idps={idps}
       open={open}
       title={replaceExisting ? i18n("Replacing EPUB", "", "admin") : i18n("Importing books", "", "admin")}
       fileType='application/epub+zip'
@@ -97,4 +104,12 @@ const BookImporter = ({
   )
 }
 
-export default BookImporter
+const mapStateToProps = ({ accounts, idps }) => ({
+  accounts,
+  idps,
+})
+
+const matchDispatchToProps = (dispatch, x) => bindActionCreators({
+}, dispatch)
+
+export default connect(mapStateToProps, matchDispatchToProps)(BookImporter)

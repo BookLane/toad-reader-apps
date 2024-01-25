@@ -6,6 +6,10 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
 
+import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, getVersionString } from '../../utils/toolbox'
+import useRouterState from "../../hooks/useRouterState"
+import useCoverHref from "../../hooks/useCoverHref"
+
 import BookInfoCover from "./BookInfoCover"
 import BookInfoTitle from "./BookInfoTitle"
 import BookInfoAuthor from "./BookInfoAuthor"
@@ -22,9 +26,6 @@ import BookMetadataDialog from "../major/BookMetadataDialog"
 import AudiobookDialog from "../major/AudiobookDialog"
 import BookSubscriptionsDialog from "../major/BookSubscriptionsDialog"
 import useToggle from "react-use/lib/useToggle"
-
-import { getDataOrigin, getReqOptionsWithAdditions, getIdsFromAccountId, safeFetch, getVersionString } from '../../utils/toolbox'
-import useRouterState from "../../hooks/useRouterState"
 
 import { deleteBook, setSubscriptions } from "../../redux/actions"
 
@@ -122,6 +123,7 @@ const BookInfo = ({
 
   const { title, author, flags, metadataValues, isbn, epubSizeInMB, audiobookInfo } = bookInfo
   const isAudiobook = !!audiobookInfo
+  const coverHref = useCoverHref({ bookInfo, bookId })
 
   const { historyPush } = useRouterState()
 
@@ -130,6 +132,21 @@ const BookInfo = ({
   const [ editingMetadata, toggleEditingMetadata ] = useToggle(false)
   const [ editingAudiobook, toggleEditingAudiobook ] = useToggle(false)
   const [ editingSubscriptions, toggleEditingSubscriptions ] = useToggle(false)
+
+  const metadataValuesWithCoreItems = useMemo(
+    () => ([
+      ...(metadataValues || []),
+      ...[ 'title', 'author', 'isbn' ].map(metadata_key_id => ({
+        metadata_key_id,
+        value: bookInfo[metadata_key_id] || ``,
+      })),
+      {
+        metadata_key_id: `coverHref`,
+        value: coverHref || ``,
+      },
+    ]),
+    [ metadataValues, title, author, isbn, coverHref ],
+  )
 
   const adminInfo = useMemo(
     () => {
@@ -328,7 +345,7 @@ const BookInfo = ({
                         status="primary"
                         appearance="filled"
                       >
-                        {i18n("Edit")}
+                        {i18n("Edit chapters")}
                       </Button>
                       <View style={styles.buttonSpacer} />
                     </>
@@ -401,9 +418,9 @@ const BookInfo = ({
 
       <BookMetadataDialog
         open={editingMetadata}
-        metadataValues={metadataValues}
+        metadataValues={metadataValuesWithCoreItems}
         bookId={bookId}
-        bookTitle={title}
+        isAudiobook={isAudiobook}
         onClose={toggleEditingMetadata}
         handleNewLibrary={handleNewLibrary}
       />

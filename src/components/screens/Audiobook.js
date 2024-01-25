@@ -13,6 +13,7 @@ import useRouterState from "../../hooks/useRouterState"
 import useWideMode from "../../hooks/useWideMode"
 import useBookCookies from "../../hooks/useBookCookies"
 import useDimensions from "../../hooks/useDimensions"
+import useCoverHref from "../../hooks/useCoverHref"
 import { setLatestLocation, startRecordReading, endRecordReading, setConsentShown,
          setTocAndSpines, setBookCookies, setDownloadStatus, pushToBookDownloadQueue,
          removeFromBookDownloadQueue, clearUserDataExceptProgress } from "../../redux/actions"
@@ -72,6 +73,7 @@ const Audiobook = React.memo(({
   const downloadOrigin = __DEV__ ? getDataOrigin(idps[idpId]) : getIDPOrigin(idps[idpId])
   const { width, height } = useDimensions().window
   const imageSize = Math.min(400, width - 70, height - 56 - 200)
+  const coverHref = useCoverHref({ bookInfo: book, bookId })
 
   let latestLocation = {}
   try {
@@ -208,9 +210,6 @@ const Audiobook = React.memo(({
     [ wideMode ],
   )
 
-  const { title, audiobookInfo } = book || {}
-  const { coverFilename, spines } = audiobookInfo || {}
-
   if(Platform.OS === 'web' && !bookCookies) {
     return (
       <SafeLayout>
@@ -232,7 +231,7 @@ const Audiobook = React.memo(({
         <View />
 
         <Image
-          source={`${downloadOrigin}/epub_content/covers/${coverFilename}`}
+          source={`${downloadOrigin}/${coverHref}`}
           style={[
             styles.image,
             {

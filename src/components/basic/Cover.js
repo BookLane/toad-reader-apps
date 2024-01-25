@@ -8,6 +8,7 @@ import { i18n } from "inline-i18n"
 
 import { getDataOrigin, getIDPOrigin } from '../../utils/toolbox'
 import useDownloadProgress from "../../hooks/useDownloadProgress"
+import useCoverHref from "../../hooks/useCoverHref"
 
 import { Link } from "../../hooks/useRouterState"
 import CoverAndSpin from "./CoverAndSpin"
@@ -79,8 +80,7 @@ const Cover = ({
 }) => {
 
   const { title, flags, downloadStatus, epubSizeInMB, totalCharacterCount, accounts, audiobookInfo } = bookInfo
-  const isAudiobook = !!audiobookInfo
-  const { coverFilename } = audiobookInfo || {}
+  const coverHref = useCoverHref({ bookInfo, bookId })
   const idpId = Object.keys(accounts)[0].split(':')[0]
   const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo, bookId })
 
@@ -94,7 +94,7 @@ const Cover = ({
       </View>
 
       <Image
-        source={`${downloadOrigin}/epub_content/covers/${isAudiobook ? coverFilename : `book_${bookId}.png`}`}
+        source={`${downloadOrigin}/${coverHref}`}
         style={[
           styles.image,
           {
