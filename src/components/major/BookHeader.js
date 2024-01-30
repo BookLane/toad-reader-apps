@@ -99,6 +99,7 @@ const BookHeader = React.memo(({
                 eventName: `Remove book`,
                 properties: {
                   title: books[bookId].title || `Book id: ${bookId}`,
+                  type: `ebook`,
                 },
               })
             },

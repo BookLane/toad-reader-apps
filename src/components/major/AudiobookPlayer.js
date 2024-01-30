@@ -35,13 +35,13 @@ const AudiobookPlayer = ({
   toggleDownloaded,
   updateLatestLocation,
   cookie,
-
+  goStartRecordReading,
+  endRecordReading,
   audiobookInfo,
   author,
   downloadStatus,
   epubSizeInMB,
   title,
-  // logUsageEvent,
 }) => {
 
   const { spines=[] } = audiobookInfo || {}
@@ -204,6 +204,10 @@ const AudiobookPlayer = ({
           await Audio.setAudioModeAsync({
             playsInSilentModeIOS: true,
             staysActiveInBackground: true,
+            // playThroughEarpieceAndroid: true,
+            // interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+            // interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+            // shouldDuckAndroid: true,
           })
 
           const positionMillis = (
@@ -279,19 +283,17 @@ const AudiobookPlayer = ({
     [ playbackSpeed ],
   )
 
-  // useEffect(
-  //   () => (
-  //     () => {
-  //       if(logUsageEvent && totalTimePlayed.current) {
-  //         logUsageEvent({
-  //           usageType: `Audio playback`,
-  //           'total playback time in seconds': totalTimePlayed.current,
-  //         })
-  //       }
-  //     }
-  //   ),
-  //   [],
-  // )
+  useEffect(
+    () => {
+      if(playing) {
+        endRecordReading()
+        goStartRecordReading({ currentSpineIndex })
+      } else {
+        endRecordReading()
+      }
+    },
+    [ playing, currentSpineIndex ],
+  )
 
   const setPosition = useCallback(
     async ms => {

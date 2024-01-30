@@ -109,6 +109,7 @@ const Audiobook = React.memo(({
                   eventName: `Remove book`,
                   properties: {
                     title: book.title || `Book id: ${bookId}`,
+                    type: `audiobook`,
                   },
                 })
               },
@@ -127,6 +128,7 @@ const Audiobook = React.memo(({
           eventName: `Download book`,
           properties: {
             title: book.title || `Book id: ${bookId}`,
+            type: `audiobook`,
           },
         })
 
@@ -144,6 +146,16 @@ const Audiobook = React.memo(({
       })
     },
     [ bookId, setLatestLocation ],
+  )
+
+  const goStartRecordReading = useCallback(
+    ({ currentSpineIndex }) => {
+      startRecordReading({
+        bookId,
+        currentSpineIndex,
+      })
+    },
+    [ startRecordReading, bookId ],
   )
 
   useEffect(
@@ -165,42 +177,6 @@ const Audiobook = React.memo(({
     () => showConsent({ idps, setConsentShown }),
     [],
   )
-
-  // useEffect(
-  //   () => {
-  //     const handleAppStateChange = nextAppState => {
-  //       if(mode === 'page') {
-  //         if(currentAppState === 'active' && nextAppState !== 'active') {
-  //           endRecordReading()
-      
-  //         } else if(currentAppState !== 'active' && nextAppState === 'active') {
-  //           startRecordReading({
-  //             bookId,
-  //             spineIdRef,
-  //           })
-  //         }
-  //       }
-    
-  //       setCurrentAppState(nextAppState)
-  //     }
-    
-  //     const subscription = AppState.addEventListener('change', handleAppStateChange)
-
-  //     startRecordReading({
-  //       bookId,
-  //       spineIdRef,
-  //     })
-
-  //     return () => {
-  //       if(mode === 'page') {
-  //         endRecordReading()
-  //       }
-    
-  //       subscription.remove()
-  //     }
-  //   },
-  //   [ spineIdRef, currentAppState, mode ],
-  // )
 
   useEffect(
     () => {
@@ -250,6 +226,8 @@ const Audiobook = React.memo(({
           downloadProgressByFilename={downloadProgressByBookId[bookId] || {}}
           toggleDownloaded={toggleDownloaded}
           updateLatestLocation={updateLatestLocation}
+          goStartRecordReading={goStartRecordReading}
+          endRecordReading={endRecordReading}
           {...book}
         />
 

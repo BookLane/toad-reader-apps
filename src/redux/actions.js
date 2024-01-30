@@ -390,10 +390,11 @@ export const setSelectedBookTypeIndex = selectedBookTypeIndex => ({
   selectedBookTypeIndex,
 })
 
-export const startRecordReading = ({ bookId, spineIdRef }) => ({
+export const startRecordReading = ({ bookId, spineIdRef, currentSpineIndex }) => ({
   type: "START_RECORD_READING",
   bookId,
   spineIdRef,
+  currentSpineIndex,
 })
 
 export const endRecordReading = () => ({

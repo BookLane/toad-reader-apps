@@ -12,9 +12,10 @@ export default function(state, action) {
 
   const goEndRecordReading = () => {
 
-    const { bookId, spineIdRef, startTime, lastActivityTime } = state.currentReadingRecord
+    const { bookId, spineIdRef, currentSpineIndex, startTime, lastActivityTime } = state.currentReadingRecord
+    const isAudiobook = currentSpineIndex != null
     const book = state.books[bookId]
-    const endTime = Math.min(Date.now(), lastActivityTime + maxInactivityMs)
+    const endTime = Math.min(Date.now(), !isAudiobook ? (lastActivityTime + maxInactivityMs) : Infinity)
 
     if(book && endTime - startTime > 5*1000) {
       Object.keys(book.accounts || {}).forEach(accountId => {
@@ -39,6 +40,9 @@ export default function(state, action) {
           return true
         }
       })
+      if(isAudiobook) {
+        spineLabel = (((book.audiobookInfo || {}).spines || [])[currentSpineIndex] || {}).label || ``
+      }
 
       const properties = {
         'book title': book.title || `Book id: ${bookId}`,
@@ -47,6 +51,7 @@ export default function(state, action) {
         'book id': bookId,
         'spine label': spineLabel,
         'spine id ref': spineIdRef,
+        'spine index': currentSpineIndex,
         'duration in seconds': parseInt((endTime - startTime) / 1000, 10),
       }
 
@@ -70,7 +75,7 @@ export default function(state, action) {
       }
 
       logEvent({
-        eventName: `Read book`,
+        eventName: isAudiobook ? `Listen to audiobook` : `Read book`,
         properties,
       })
     }
@@ -86,11 +91,11 @@ export default function(state, action) {
         return state
       }
 
-      const { bookId, spineIdRef, startTime, lastActivityTime } = state.currentReadingRecord
+      const { bookId, spineIdRef, currentSpineIndex, startTime, lastActivityTime } = state.currentReadingRecord
 
       if(
         !bookId
-        || !spineIdRef
+        || (!spineIdRef && currentSpineIndex == null)
         || !startTime
         || !lastActivityTime
       ) {

@@ -170,6 +170,7 @@ const LibraryHeader = ({
         eventName: `Download book`,
         properties: {
           title: bookTitle || `Book id: ${bookIdToDownload}`,
+          type: `ebook`,
         },
       })
     },

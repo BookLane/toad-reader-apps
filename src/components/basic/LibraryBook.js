@@ -46,6 +46,7 @@ const LibraryBook = ({
           eventName: `Download book`,
           properties: {
             title: books[bookId].title || `Book id: ${bookId}`,
+            type: `ebook`,
           },
         })
       }
@@ -55,7 +56,8 @@ const LibraryBook = ({
   
   const onLongPress = useCallback(
     () => {
-      const { downloadStatus } = getBookInfo(bookId)
+      const { audiobookInfo } = getBookInfo(bookId)
+      const isAudiobook = !!audiobookInfo
 
       if(downloadStatus == 0) {
         onPress()
@@ -85,6 +87,7 @@ const LibraryBook = ({
                   eventName: `Remove book`,
                   properties: {
                     title: books[bookId].title || `Book id: ${bookId}`,
+                    type: isAudiobook ? `audiobook` : `ebook`,
                   },
                 })
               },

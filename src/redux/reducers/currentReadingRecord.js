@@ -10,15 +10,16 @@ export default function(state = initialState, action) {
         console.log('ERROR: Reading record unended.', state)
       }
 
-      const { bookId, spineIdRef } = action
+      const { bookId, spineIdRef, currentSpineIndex } = action
 
-      if(!bookId || !spineIdRef) {
+      if(!bookId || (!spineIdRef && currentSpineIndex == null)) {
         console.log('ERROR: Invalid reading record prevented.', action)
       }
 
       const newState = {
         bookId,
         spineIdRef,
+        currentSpineIndex,
         startTime: Date.now(),
         lastActivityTime: Date.now(),
       }
