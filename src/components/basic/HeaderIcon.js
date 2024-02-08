@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 8,
     justifyContent: 'center',
+    position: 'relative',
   },
   icon: {
     height: 22,
@@ -32,6 +33,7 @@ const HeaderIcon = React.forwardRef(({
     dispatch,
   }={},
 
+  children,
   ...otherProps
 }, ref) => {
 
@@ -66,6 +68,7 @@ const HeaderIcon = React.forwardRef(({
         name={iconName}
         pack={iconPack}
       />
+      {children}
     </TouchableOpacity>
   )
 })

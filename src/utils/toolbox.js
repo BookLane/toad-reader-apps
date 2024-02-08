@@ -425,7 +425,7 @@ export const createShareCode = () => createAccessCode({
 })
 
 export const getIdsFromAccountId = accountId => {
-  const [ idpId, userId ] = accountId.split(':').map(Number)
+  const [ idpId, userId ] = (accountId || ``).split(':').map(Number)
 
   return {
     idpId,

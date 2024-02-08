@@ -17,6 +17,7 @@ import AppHeader from "../basic/AppHeader"
 import HeaderIcon from "../basic/HeaderIcon"
 import HeaderSearch from "../basic/HeaderSearch"
 import Dialog from "./Dialog"
+import Icon from "../basic/Icon"
 
 import { setSort, toggleView, pushToBookDownloadQueue, changeLibraryFilter } from "../../redux/actions"
 
@@ -25,9 +26,25 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '400',
   },
+  refreshIcon: {
+    position: 'absolute',
+    top: 6,
+    left: 2,
+    tintColor: 'black',
+    lineHeight: 14,
+    height: 14,
+    backgroundColor: 'white',
+    borderRadius: 15,
+  },
+  refreshIconReady: {
+    tintColor: 'rgb(51, 102, 255)',
+  },
 })
 
 const LibraryHeader = ({
+  isUpdatePending,
+  isUpdateAvailable,
+
   idps,
   accounts,
   books,
@@ -186,7 +203,17 @@ const LibraryHeader = ({
           <HeaderIcon
             iconName="menu-sharp"
             path="/drawer"
-          />
+          >
+            {isUpdateAvailable &&
+              <Icon
+                style={[
+                  styles.refreshIcon,
+                  (isUpdatePending && styles.refreshIconReady),
+                ]}
+                name="refresh-circle"
+              />
+            }
+          </HeaderIcon>
         }
         rightControls={[
           <HeaderIcon

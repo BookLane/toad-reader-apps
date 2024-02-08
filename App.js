@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import Constants from 'expo-constants'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Updates from 'expo-updates'
-import { Platform, StatusBar } from "react-native"
+import { Platform, StatusBar, AppState } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
@@ -28,6 +28,9 @@ import { getDataOrigin, setStatusBarHidden, getQueryString } from './src/utils/t
 import { loadIconFonts } from "./src/components/basic/Icon"
 import useSetTimeout from './src/hooks/useSetTimeout'
 import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
+import useInstanceValue from "./src/hooks/useInstanceValue"
+import useSetInterval from "./src/hooks/useSetInterval"
+import useUpdates from "./src/hooks/useUpdates"
 import * as Sentry from "./src/utils/sentry"
 import { logEvent } from "./src/utils/analytics"
 
@@ -91,14 +94,72 @@ const App = () => {
   const [ isFirstRender, setIsFirstRender ] = useState(true)
   const [ showDelayText, setShowDelayText ] = useState(false)
   const [ isLoaded, setIsLoaded ] = useState(false)
-  const [ updateExists, setUpdateExists ] = useState(false)
   const [ isReady, setIsReady ] = useState(false)
 
   const colorScheme = 'light' // useColorScheme()
 
   const [ setInitialOpenTimeout ] = useSetTimeout()
+  const appState = useRef(`active`)
 
   usePushNotificationsSetup()
+
+  const { isUpdateAvailable, isUpdatePending, isChecking, isDownloading, setUpdates } = useUpdates() // TODO: replace with Updates.useUpdates() and get rid of setUpdates func
+
+  const getIsChecking = useInstanceValue(isChecking)
+  const [ setIsCheckingInterval ] = useSetInterval()
+  const [ setDownloadUpdateRedoTimeout ] = useSetTimeout()
+
+  useEffect(
+    () => {
+      if(isUpdateAvailable) {
+        const getUpdate = async () => {
+          try {
+            setUpdates({ isDownloading: true })
+            await Updates.fetchUpdateAsync()
+            setUpdates({
+              isUpdatePending: true,
+              isDownloading: false,
+            })
+          } catch(err) {
+            setUpdates({ isDownloading: false })
+            setDownloadUpdateRedoTimeout(getUpdate, 100*60)  // try again after a minute
+          }
+        }
+        getUpdate()
+      }
+    },
+    [ isUpdateAvailable ],
+  )
+
+  useEffect(
+    () => {
+      if(isUpdateAvailable) return
+
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if(
+          appState.current.match(/inactive|background/)
+          && nextAppState === 'active'
+          && Platform.OS !== 'web'
+          && !__DEV__
+        ) {
+          // native app just came to foreground
+          ;(async () => {
+            try {
+              const { isAvailable } = await Updates.checkForUpdateAsync()
+              if(isAvailable) setUpdates({ isUpdateAvailable: true })
+            } catch(err) {}
+          })()
+        }
+
+        appState.current = nextAppState
+      })
+
+      return () => {
+        subscription.remove()
+      }
+    },
+    [ isUpdateAvailable ],
+  )
 
   useEffect(() => { logEvent({ eventName: `Open app` }) }, [])
 
@@ -141,25 +202,13 @@ const App = () => {
         }
 
         if(Platform.OS !== 'web' && !__DEV__) {
-          // listen for a new version
-          Updates.addListener(
-            ({ type }) => {
-              if(type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-                setUpdateExists(true)
-              }
-
-              if(
-                [
-                  Updates.UpdateEventType.NO_UPDATE_AVAILABLE,
-                  Updates.UpdateEventType.ERROR,
-                  Updates.UpdateEventType.UPDATE_AVAILABLE,
-                ].includes(type)
-              ) {
-                newVersionCheckComplete = true
-                setIsReadyIfReady()
-              }
+          // listen for update check to complete
+          setIsCheckingInterval(() => {
+            if(!getIsChecking()) {
+              newVersionCheckComplete = true
+              setIsReadyIfReady()
             }
-          )
+          }, 100)
         }
 
         const query = getQueryString()
@@ -248,7 +297,11 @@ const App = () => {
             <SafeAreaProvider>
               <Provider store={store}>
                 <PersistGate persistor={persistor}>
-                  <Library />
+                  <Library
+                    isUpdatePending={isUpdatePending}
+                    isUpdateAvailable={isUpdateAvailable}
+                    isDownloading={isDownloading}
+                  />
                 </PersistGate>
               </Provider>
             </SafeAreaProvider>
@@ -259,7 +312,7 @@ const App = () => {
         <Splash
           showDelayText={showDelayText}
           isReady={isReady}
-          updateExists={updateExists}
+          isUpdateAvailable={isUpdateAvailable}
         />
       }
       {Platform.OS === 'web' && !isLoaded &&

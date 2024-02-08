@@ -181,6 +181,9 @@ const styles = StyleSheet.create({
 })
 
 const Library = ({
+  isUpdatePending,
+  isUpdateAvailable,
+  isDownloading,
 
   accounts,
   idps,
@@ -914,6 +917,9 @@ const Library = ({
               onOpenMetadataDialog={openMetadataDialog}
               onOpenCopyToolsDialog={openCopyToolsDialog}
               onOpenSubscriptionsDialog={openSubscriptionsDialog}
+              isUpdatePending={isUpdatePending}
+              isUpdateAvailable={isUpdateAvailable}
+              isDownloading={isDownloading}
             />
           )
       }
@@ -932,6 +938,8 @@ const Library = ({
               <View style={styles.flex1View}>
                 <LibraryHeader
                   scope={scope}
+                  isUpdatePending={isUpdatePending}
+                  isUpdateAvailable={isUpdateAvailable}
                 />
                 {doingInitialFetch
                   ? (

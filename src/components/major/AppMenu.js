@@ -7,6 +7,7 @@ import { Image, StyleSheet, Platform, TouchableOpacity, View, Text, Alert } from
 // import { Ionicons } from "@expo/vector-icons"
 import { Layout, Drawer, DrawerItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
+import * as Updates from 'expo-updates'
 
 import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
 import { logEvent } from "../../utils/analytics"
@@ -21,6 +22,8 @@ import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
          clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions"
+import Spin from "../basic/Spin"
+import Button from "../basic/Button"
 
 const {
   LINK_TO_TOAD_READER_MARKETING_SITE,
@@ -74,6 +77,47 @@ const styles = StyleSheet.create({
     color: '#aaa',
     paddingBottom: 20,
   },
+  downloading: {
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    fontStyle: 'italic',
+  },
+  downloadingContainer: {
+    borderBottomColor: '#e8e8e8',
+    borderBottomWidth: 24,
+    display: "flex",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  updateContainer: {
+    borderBottomColor: '#e8e8e8',
+    borderBottomWidth: 24,
+    display: "flex",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  errorContainer: {
+    borderBottomColor: '#e8e8e8',
+    borderBottomWidth: 24,
+    display: "flex",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  error: {
+    paddingTop: 10,
+    color: "red",
+  },
+  apply: {
+    color: "red",
+  },
+  willTryAgain: {
+    paddingBottom: 10,
+
+  },
 })
 
 const AppMenu = ({
@@ -85,6 +129,9 @@ const AppMenu = ({
   onOpenMetadataDialog,
   onOpenCopyToolsDialog,
   onOpenSubscriptionsDialog,
+  isUpdatePending,
+  isUpdateAvailable,
+  isDownloading,
 
   accounts,
   idps,
@@ -253,12 +300,43 @@ const AppMenu = ({
 
   const renderHeader = useCallback(
     () => (
-      <Image
-        source={require('../../../assets/images/drawer.png')}
-        style={styles.image}
-      />
+      <>
+        <Image
+          source={require('../../../assets/images/drawer.png')}
+          style={styles.image}
+        />
+        {!isUpdatePending && isUpdateAvailable && isDownloading &&
+          <View style={styles.downloadingContainer}>
+            <Spin size="small" />
+            <Text style={styles.downloading}>
+              {i18n("Downloading app update...")}
+            </Text>
+          </View>
+        }
+        {!isUpdatePending && isUpdateAvailable && !isDownloading &&
+          <View style={styles.errorContainer}>
+            <Text style={styles.error}>
+              {i18n("Error downloading app update")}
+            </Text>
+            <Text style={styles.willTryAgain}>
+              {i18n("Will reattempt periodically")}
+            </Text>
+          </View>
+        }
+        {isUpdatePending &&
+          <View style={styles.updateContainer}>
+            <Button
+              onPress={Updates.reloadAsync}
+              size="small"
+              status="primary"
+            >
+              {i18n("Apply app update")}
+            </Button>
+          </View>
+        }
+      </>
     ),
-    [],
+    [ isUpdatePending, isUpdateAvailable, isDownloading ],
   )
 
   const goToLookupUser = useCallback(

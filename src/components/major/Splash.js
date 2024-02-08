@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
 const Splash = ({
   isReady,
   showDelayText,
-  updateExists,
+  isUpdateAvailable,
 }) => {
 
   const splashAnimation = useRef(new Animated.Value(0)).current
@@ -74,7 +74,7 @@ const Splash = ({
     () => {
       if(isReady && (!showDelayText || textAnimationComplete)) {
 
-        if(updateExists) {
+        if(isUpdateAvailable) {
           Updates.reloadAsync()
         } else {
           Animated.timing(splashAnimation, {
