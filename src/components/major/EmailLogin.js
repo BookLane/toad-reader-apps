@@ -312,7 +312,7 @@ const EmailLogin = ({
             <>
               <Input
                 label={i18n("Login code")}
-                placeholder={i18n("Eg. {{example}}", { example: "U876TV" })}
+                placeholder={i18n("Eg. {{example}}", { example: "182773" })}
                 value={code}
                 onChangeText={setCode}
                 disabled={stage === 'SENDING_CODE'}
@@ -339,11 +339,11 @@ const EmailLogin = ({
               <Text style={styles.instructions}>
                 {i18n("Email sent. Check your inbox and enter the code from that email.")}
               </Text>
-              <Text style={styles.linkContainer}>
+              <View style={styles.linkContainer}>
                 <Text style={styles.link} onPress={sendAnotherEmail}>
                   {i18n("Send another email")}
                 </Text>
-              </Text>
+              </View>
             </>
           }
           {numSessionsThisWillLogOut > 0 &&
