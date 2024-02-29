@@ -106,9 +106,8 @@ const FileImporter = ({
         setMode('uploading')
         setFiles(cloneObj(files))
 
-        for(let idx in files) {
+        for(let fileInfo of files) {
 
-          const fileInfo = files[idx]
           const body = new FormData()
           body.append("file", fileInfo.file)
 
