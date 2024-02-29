@@ -59,7 +59,7 @@ const Login = ({
   const askedForLoginInfoAtLeastOnce = useRef()
 
   const { online } = useNetwork()
-  const { historyPush, routerState } = useRouterState()
+  const { historyPush, historyReplace, routerState } = useRouterState()
   const { embedAuthJWT } = routerState
   const hasNoAuth = useHasNoAuth(accounts)
 
@@ -114,8 +114,13 @@ const Login = ({
       if(query.loginInfo) {
         try {
           if(logIn(JSON.parse(query.loginInfo))) {
-            window.history.replaceState({}, document.title, `/`)
-            window.history.pushState({}, document.title, `${window.location.pathname}${query.hash || `#/`}`)
+            let [ x, path=`/`, state={} ] = query.hash.match(/^(?:#([^#]+))?#(.*)$/) || []
+            try {
+              state = JSON.parse(decodeURIComponent(state))
+            } catch(e) {}
+
+            historyReplace(`/`)
+            historyPush(path, state)
           }
         } catch(err) {
           historyPush("/error", {
