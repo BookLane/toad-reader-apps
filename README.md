@@ -1,4 +1,20 @@
-### [Demo](https://toadreader.com/demo/)
+# Installation
+
+1. `npm i` (using Node 14)
+2. Add tenant > toadreader from the zip file
+3. `npm run change-tenant toadreader`
+
+# Development
+
+`npm start`
+
+# Updating Staging, Beta, and Production
+
+See `package.json` scripts.
+
+# Demo
+
+[toadreader.com/demo](https://toadreader.com/demo/)
 
 # License
 
