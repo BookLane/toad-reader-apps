@@ -39,6 +39,13 @@ const styles = StyleSheet.create({
   bookSuggestion: {
     paddingHorizontal: 20,
     paddingVertical: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  bookSuggestionMain: {
+    flex: 1,
+    width: "100%",
   },
   bookSuggestionTitle: {
     fontWeight: 'bold',
@@ -395,7 +402,7 @@ const Search = ({
             keyboardShouldPersistTaps="handled"
           >
             {/* {(normalizedSearchStr ? allSuggestions : (recentSearchesByBookId[bookId || 'all'] || [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => ( */}
-            {(normalizedSearchStr ? allSuggestions : (bookId ? (recentSearchesByBookId[bookId || 'all'] || []) : [])).map(({ bookId, title, author, isbn, suggestion, str }, idx) => (  // TEMP
+            {(normalizedSearchStr ? allSuggestions : (bookId ? (recentSearchesByBookId[bookId || 'all'] || []) : [])).map(({ bookId, title, author, isbn, suggestion, str, audiobookInfo }, idx) => (  // TEMP
               <TouchableOpacity
                 key={idx}
                 onPress={() => {
@@ -410,12 +417,18 @@ const Search = ({
               >
                 {!!bookId &&
                   <View style={styles.bookSuggestion}>
-                    <Text style={styles.bookSuggestionTitle}>
-                      {title}
-                    </Text>
-                    <Text style={styles.bookSuggestionInfo}>
-                      {`${author} / ${isbn}`}
-                    </Text>
+                    {audiobookInfo
+                      ? <Icon name='headphones' pack='materialCommunity' size={20} />
+                      : <Icon name='menu-book' pack='material' size={20} />
+                    }
+                    <View style={styles.bookSuggestionMain}>
+                      <Text style={styles.bookSuggestionTitle}>
+                        {title}
+                      </Text>
+                      <Text style={styles.bookSuggestionInfo}>
+                        {`${author} / ${isbn}`}
+                      </Text>
+                    </View>
                   </View>
                 }
                 {!bookId &&
