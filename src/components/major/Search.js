@@ -417,9 +417,10 @@ const Search = ({
               >
                 {!!bookId &&
                   <View style={styles.bookSuggestion}>
-                    {audiobookInfo ?
-                      <Icon name='headphones' pack='materialCommunity' size={20} /> :
-                      <Icon name='menu-book' pack='material' size={20} />}
+                    {audiobookInfo
+                      ? <Icon name='headphones' pack='materialCommunity' size={20} />
+                      : <Icon name='menu-book' pack='material' size={20} />
+                    }
                     <View style={styles.bookSuggestionMain}>
                       <Text style={styles.bookSuggestionTitle}>
                         {title}
