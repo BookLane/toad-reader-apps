@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useRef, useState, useEffect } from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Text } from "react-native"
 import { OverflowMenu, MenuItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import { CSVLink } from "react-csv"
@@ -11,6 +11,7 @@ import { combineItems } from '../../utils/toolbox'
 
 import FAB from '../basic/FAB'
 import SketchPad from "../basic/SketchPad"
+import CoverAndSpin from "../basic/CoverAndSpin"
 
 const MAX_EXPORT_QUOTE_CHARACTER_LENGTH = 100
 
@@ -30,9 +31,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '100%',
     left: 0,
-  },
-  disabled: {
-    opacity: .5,
   },
 })
 
@@ -303,12 +301,20 @@ const HighlightsDownloadFAB = React.memo(({
           target="_blank"
         >
           <MenuItem
-            title={i18n("Spreadsheet (csv)")}
+            title={
+              <Text>
+                {i18n("Spreadsheet (csv)")}
+              </Text>
+            }
           />
         </CSVLink>
         <MenuItem
-          title={i18n("Document (pdf)")}
-          style={sketchesReady ? null: styles.disabled}
+          title={
+              <Text>
+                {i18n("Document (pdf)")}
+                {!sketchesReady && <CoverAndSpin size="small" />}
+              </Text>
+          }
         />
       </OverflowMenu>
 
