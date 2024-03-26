@@ -3,7 +3,6 @@ import { StyleSheet, View, ScrollView, Text, Platform } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
-import { CSVLink } from "react-csv"
 import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
 
 import { orderSpineIdRefKeyedObj, orderCfiKeyedObj, combineItems, getIDPOrigin } from '../../utils/toolbox'
@@ -12,12 +11,10 @@ import { setSelectedToolUid } from "../../redux/actions"
 import useWideMode from "../../hooks/useWideMode"
 import useRouterState from "../../hooks/useRouterState"
 
-import FAB from '../basic/FAB'
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import SketchPad from "../basic/SketchPad"
-
-const MAX_EXPORT_QUOTE_CHARACTER_LENGTH = 100
+import HighlightsDownloadFAB from "./HighlightsDownloadFAB"
 
 const owner = {
   paddingVertical: 3,
@@ -246,19 +243,9 @@ const Highlights = React.memo(({
     [ spines ],
   )
 
-  const { highlightGroupsToShow, csvData } = useMemo(
+  const highlightGroupsToShow = useMemo(
     () => {
       const highlightsByLoc = {}
-      const csvData = [
-        [
-          i18n("Chapter", "", "enhanced"),
-          i18n("Location", "", "enhanced"),
-          i18n("Highlight snippet", "", "enhanced"),
-          i18n("Highlighter", "", "enhanced"),
-          i18n("My notes", "", "enhanced"),
-          i18n("Instructor’s Notes", "", "enhanced"),
-        ],
-      ]
 
       // function to make objs
       const addHighlightSpot = ({ spineIdRef, cfi, share_quote, sketch }) => {
@@ -323,41 +310,11 @@ const Highlights = React.memo(({
       const highlightGroupsToShow = orderSpineIdRefKeyedObj({ obj: highlightsByLoc, spines })
       highlightGroupsToShow.forEach(highlightGroupToShow => {
         highlightGroupToShow.highlights = orderCfiKeyedObj({ obj: highlightGroupToShow.highlightsByCfi })
-
-        // set up csv data
-        highlightGroupToShow.highlights.forEach(({ cfi, text, types, notes, instructorHighlightersWithoutNotes }) => {
-
-          const latestLocation = {
-            spineIdRef: highlightGroupToShow.spineIdRef,
-            cfi,
-          }
-
-          text = text || ""
-
-          if(text.length > MAX_EXPORT_QUOTE_CHARACTER_LENGTH) {
-            text = `${text.substr(0, MAX_EXPORT_QUOTE_CHARACTER_LENGTH - 3)}...`
-          }
-  
-          csvData.push([
-            spineLabelsByIdRef[highlightGroupToShow.spineIdRef] || "",
-            `${getIDPOrigin({ ...idps[idpId], noBeta: true })}/#/book/${bookId}#{"latestLocation":${JSON.stringify(latestLocation)}}`,
-            text,
-            combineItems(...[
-              ...(!types.includes('user') ? [] : [
-                i18n("Me", "", "enhanced"),
-              ]),
-              ...notes.map(({ author_fullname }) => author_fullname).filter(Boolean),
-              ...instructorHighlightersWithoutNotes,
-            ]),
-            (notes.filter(({ author_fullname }) => !author_fullname)[0] || {}).note || "",
-            notes.filter(({ author_fullname }) => author_fullname).map(({ note }) => note).join("\n\n"),
-          ].map(col => col.replace(/"/g, '""')))
-        })
       })
 
-      return { highlightGroupsToShow, csvData }
+      return highlightGroupsToShow
     },
-    [ bookId, (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedIndexes, spines, idps[idpId], spineLabelsByIdRef ],
+    [ bookId, (userDataByBookId[bookId] || {}).highlights, instructorHighlights, selectedIndexes, spines ],
   )
 
   const typeStrings = useMemo(
@@ -369,7 +326,7 @@ const Highlights = React.memo(({
   )
 
   const ReadIcon = useCallback(({ style }) => <Icon name="book-open-variant" pack="materialCommunity" style={style} />, [])
-  const DrawIcon = useCallback(({ style }) => <Icon name="draw" pack="materialCommunity" style={style} />, [])
+  // const DrawIcon = useCallback(({ style }) => <Icon name="draw" pack="materialCommunity" style={style} />, [])
   // const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
 
   const showSketch = useCallback(({ info: { sketch } }) => setSketchToShow(sketch), [])
@@ -539,22 +496,14 @@ const Highlights = React.memo(({
           ))}
         </ScrollView>
       }
-      {Platform.OS === 'web' &&
-        <CSVLink
-          data={csvData}
-          filename={
-            i18n("Highlights")
-            + " - "
-            + book.title
-            + ".csv"
-          }
-          target="_blank"
-        >
-          <FAB
-            iconName="md-cloud-download"
-            status="primary"
-          />
-        </CSVLink>
+      {Platform.OS === 'web' && highlightGroupsToShow.length > 0 &&
+        <HighlightsDownloadFAB
+          filename={`${i18n("Highlights")} - ${book.title}`}
+          highlightGroupsToShow={highlightGroupsToShow}
+          spineLabelsByIdRef={spineLabelsByIdRef}
+          bookUrl={`${getIDPOrigin({ ...idps[idpId], noBeta: true })}/#/book/${bookId}`}
+          typeStrings={typeStrings}
+        />
       }
       {!!sketchToShow &&
         <View style={styles.sketchPadContainer}>

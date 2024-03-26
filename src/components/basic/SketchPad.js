@@ -119,6 +119,7 @@ const SketchPad = React.memo(({
   updateSketchInEdit,
   mode=`edit`,  // edit OR view
   onDone,
+  onDataURLReady,
   doneButtonLabel,
   backgroundImage,
   style,
@@ -238,10 +239,14 @@ const SketchPad = React.memo(({
 
   const onMessageEvent = useCallback(
     async event => {
-      let { identifier, sketchData, bgScale } = JSON.parse(event.nativeEvent.data)
+      let { identifier, sketchData, bgScale, dataURL } = JSON.parse(event.nativeEvent.data)
       switch(identifier) {
         case "loaded": {
           webView.current.loaded = true
+          break
+        }
+        case "dataURL": {
+          onDataURLReady(dataURL)
           break
         }
         case "save": {

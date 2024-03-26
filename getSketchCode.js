@@ -153,7 +153,16 @@ const getSketchCode = ({ sketchData, scale=1, scaleAdjustment=1, prevBgScale=0, 
                     }
                 })
 
-                window.addEventListener('load', event => postMessage({ identifier: "loaded" }))
+                window.addEventListener('load', event => {
+                    postMessage({ identifier: "loaded" })
+
+                    if(${JSON.stringify(mode)} === "toDataURL") {
+                        postMessage({
+                            identifier: "dataURL",
+                            dataURL: canvas.toDataURL("image/png"),
+                        })
+                    }
+                })
 
             })();
         </script>
