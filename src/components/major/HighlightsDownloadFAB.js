@@ -138,6 +138,7 @@ const HighlightsDownloadFAB = React.memo(({
           horizontalPadding=0,
           leftLineColor,
         }) => {
+          if(!text) return
           let lineTop = currentTop
           let textLineHeight = 0
           const lineLeft = marginLeft
