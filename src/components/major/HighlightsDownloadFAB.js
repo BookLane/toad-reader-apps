@@ -34,6 +34,8 @@ const styles = StyleSheet.create({
   },
 })
 
+const getTotalSketches = highlightGroupsToShow => highlightGroupsToShow.map(({ highlights }) => highlights.map(({ sketch }) => ((sketch || {}).sketchData ? true : false))).flat().filter(Boolean).length
+
 const HighlightsDownloadFAB = React.memo(({
   filename,
   highlightGroupsToShow,
@@ -270,7 +272,7 @@ const HighlightsDownloadFAB = React.memo(({
 
   useEffect(
     () => {
-      setSketchesReady(false)
+      setSketchesReady(getTotalSketches(highlightGroupsToShow) === 0)
       dataURLs.current = {}
     },
     [ highlightGroupsToShow ],
@@ -338,8 +340,7 @@ const HighlightsDownloadFAB = React.memo(({
                   onDataURLReady={dataURL => {
                     dataURLs.current[`${idx1} ${idx2}`] = dataURL
 
-                    const totalSketches = highlightGroupsToShow.map(({ highlights }) => highlights.map(({ sketch }) => ((sketch || {}).sketchData ? true : false))).flat().filter(Boolean).length
-                    if(Object.values(dataURLs.current).length === totalSketches) {
+                    if(Object.values(dataURLs.current).length === getTotalSketches(highlightGroupsToShow)) {
                       setSketchesReady(true)
                     }
                   }}
