@@ -17,5 +17,7 @@ module.exports = async function(env, argv) {
         },
     })
 
+    config.resolve.alias['crypto'] = require.resolve('crypto-browserify');
+
     return config;
 };
