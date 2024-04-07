@@ -58,7 +58,7 @@
     "babel-preset-expo": "^9.3.0",
     "copy-to-clipboard": "^3.3.3",
     "deepmerge": "4.2.2",
-    "expo": "^48.0.9",
+    "expo": "^49.0.23",
     "expo-application": "~5.1.1",
     "expo-asset": "~8.9.1",
     "expo-av": "~13.2.1",
