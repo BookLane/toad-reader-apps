@@ -195,7 +195,7 @@ const DeleteMyAccount = ({
         title={i18n("Delete my account")}
         leftControl={
           <HeaderIcon
-            iconName="md-arrow-back"
+            iconName="arrow-back"
             onPress={historyGoBackToLibrary}
             disabled={accountDeleted}
           />

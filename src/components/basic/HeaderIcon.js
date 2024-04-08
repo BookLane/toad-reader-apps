@@ -20,6 +20,22 @@ const styles = StyleSheet.create({
   },
 })
 
+/**
+ * Header icon component
+ * @param {string} iconName - Icon name
+ * @param {string} iconPack - Icon pack to use (ion, material, materialCommunity, fontAwesome)
+ * @param {string} path - Path to navigate to
+ * @param {function} onPress - On press function
+ * @param {object} style - Style object
+ * @param {object} iconStyle - Icon style object
+ * @param {object} eva - Eva props
+ * @param {object} children - Children to render
+ * @returns {React.Component} - Header icon component
+ * @example
+ * <HeaderIcon iconName='home' iconPack='ion' path='/home' onPress={() => console.log('Home clicked')} eva={{ dispatch: () => console.log('Dispatched') }}>
+ *   <Text>Home</Text>
+ * </HeaderIcon>
+ */
 const HeaderIcon = React.forwardRef(({
   iconName,
   iconPack,

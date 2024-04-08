@@ -25,7 +25,7 @@ const HEIGHT_OF_CONTROLS = 60
 const UTENSILS = [
   {
     icon: {
-      name: "md-pencil",
+      name: "pencil",
       pack: "ion",
     },
     size: 1,

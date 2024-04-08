@@ -258,7 +258,7 @@ const HighlighterLabel = React.memo(({
           {...toggleHighlightByColorOnPressProps[color]}
         >
           <Ionicons
-            name="md-trash"
+            name="trash"
             style={styles.trash}
           />
         </TouchableComponent>

@@ -178,7 +178,7 @@ const BookHeader = React.memo(({
     <SaveStateHeaderIcon />,
     ...(!(wideMode) ? [] : [
       <HeaderIcon
-        iconName="md-search-sharp"
+        iconName="search-sharp"
         onPress={toggleShowSearch}
         disabled={searchUnavailable}
         uiStatus={searchUnavailable ? "disabled" : (wideMode ? "faded" : null)}
@@ -216,14 +216,14 @@ const BookHeader = React.memo(({
     ]),
     // ...(!(wideMode && Platform.OS !== 'web') ? [] : [
     //   <HeaderIcon
-    //     iconName="md-apps"
+    //     iconName="apps"
     //     onPress={togglePageBrowser}
     //     uiStatus="faded"
     //   />
     // ]),
     ...(!(wideMode) ? [] : [
       <HeaderIcon
-        iconName="md-reader-sharp"
+        iconName="reader-sharp"
         onPress={toggleSidePanelOpen}
         uiStatus={sidePanelSettings.open ? null : "faded"}
       />

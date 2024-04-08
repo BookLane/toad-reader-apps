@@ -307,7 +307,7 @@ const EnhancedHeader = React.memo(({
           <EnhancedHeaderLine
             label={i18n("Options", "", "enhanced")}
             uiStatus={viewingOptions ? "selected" : "unselected"}
-            iconName="md-options"
+            iconName="options"
             onPress={selectOptions}
           />
         }
@@ -316,7 +316,7 @@ const EnhancedHeader = React.memo(({
             {...(!canViewOptions ? {} : {
               label: i18n("Settings", "", "enhanced"),
               uiStatus: viewingOptions ? "selected" : "unselected",
-              iconName: "md-settings",
+              iconName: "settings",
               onPress: selectOptions,
             })}
             buttons={editButton}

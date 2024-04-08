@@ -42,7 +42,7 @@ const ErrorMessageHeader = React.memo(() => {
       title={title || i18n("Error")}
       leftControl={critical ? null : (
         <HeaderIcon
-          iconName="md-arrow-back"
+          iconName="arrow-back"
           onPress={onBackPress}
         />
       )}

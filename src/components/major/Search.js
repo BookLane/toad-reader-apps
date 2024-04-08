@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     paddingVertical: {
       android: 12,
       ios: 10,
-      web: 9,
+      web: 10,
     }[Platform.OS],
     opacity: .7,
   },
@@ -371,7 +371,7 @@ const Search = ({
           style={styles.clear}
         >
           <Icon
-            name="md-close"
+            name="close"
             style={styles.clearIcon}
           />
         </TouchableOpacity>

@@ -196,7 +196,7 @@ const ImagesTool = React.memo(({
           ))}
         </ViewPager>
         <HeaderIcon
-          iconName="md-close"
+          iconName="close"
           onPress={exitFullscreen}
           style={styles.close}
           iconStyle={styles.closeIcon}

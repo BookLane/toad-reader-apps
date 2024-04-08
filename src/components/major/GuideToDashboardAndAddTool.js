@@ -123,7 +123,7 @@ const GuideToDashboardAndAddTool = React.memo(({
       </View>
 
       <FAB
-        iconName="md-add"
+        iconName="add"
         status="primary"
         style={styles.addToolFAB}
       />

@@ -343,7 +343,7 @@ const BookContents = React.memo(({
       />
       {showAddToolButton && inEditMode && !viewingFrontMatter && !viewingOptions && !hideFABs &&
         <FAB
-          iconName="md-add"
+          iconName="add"
           status="primary"
           onPress={createNewTool}
         />

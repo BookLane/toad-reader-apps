@@ -95,7 +95,7 @@ const HighlightsWrapper = React.memo(({
         <View style={wideMode ? styles.headingLineWideMode : styles.headingLine}>
           {!wideMode &&
             <HeaderIcon
-              iconName="md-arrow-back"
+              iconName="arrow-back"
               onPress={closeToolAndExitReading}
               style={styles.back}
             />
@@ -106,7 +106,7 @@ const HighlightsWrapper = React.memo(({
           {wideMode &&
             <View style={styles.closeContainer}>
               <HeaderIcon
-                iconName="md-close"
+                iconName="close"
                 onPress={xOutOfHighlights}
                 uiStatus="faded"
                 style={styles.close}

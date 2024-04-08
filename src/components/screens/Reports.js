@@ -127,7 +127,7 @@ const Reports = ({
         titleCentered={true}
         leftControl={
           <HeaderIcon
-            iconName="md-arrow-back"
+            iconName="arrow-back"
             onPress={historyGoBackToLibrary}
           />
         }

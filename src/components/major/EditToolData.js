@@ -220,7 +220,7 @@ const EditToolData = React.memo(({
   const TrashButtonIcon = useCallback(
     ({ style }) => (
       <Icon
-        name="md-trash"
+        name="trash"
         style={styles.trashIcon}
       />
     ),

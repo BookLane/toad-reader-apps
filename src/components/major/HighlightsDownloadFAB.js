@@ -286,7 +286,7 @@ const HighlightsDownloadFAB = React.memo(({
         anchor={() => (
           <View style={styles.fabContainer}>
             <FAB
-              iconName="md-cloud-download"
+              iconName="cloud-download"
               status="primary"
               onPress={toggleShowOptions}
             />

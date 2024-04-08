@@ -72,7 +72,7 @@ const HighlighterEmbedIcon = React.memo(({
         onPress={goCopyEmbedCode}
       >
         <Ionicons
-          name="md-code"
+          name="code"
           style={styles.embed}
         />
       </TouchableOpacity>

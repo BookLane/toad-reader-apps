@@ -265,7 +265,7 @@ const EnhancedMyScores = React.memo(({
           target="_blank"
         >
           <FAB
-            iconName="md-cloud-download"
+            iconName="cloud-download"
             status="primary"
           />
         </CSVLink>

@@ -148,7 +148,7 @@ const EnhancedScreen = React.memo(({
         <View style={wideMode ? styles.headingLineWideMode : styles.headingLine}>
           {!wideMode &&
             <HeaderIcon
-              iconName="md-arrow-back"
+              iconName="arrow-back"
               onPress={tabIndex === undefined ? closeToolAndExitReading : resetTabIndex}
               style={styles.back}
             />

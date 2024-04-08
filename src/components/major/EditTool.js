@@ -164,7 +164,7 @@ const EditTool = React.memo(({
           {!wideMode &&
             <View style={styles.closeContainer}>
               <HeaderIcon
-                iconName="md-close"
+                iconName="close"
                 onPress={xOutOfTool}
                 uiStatus="faded"
                 style={styles.close}
