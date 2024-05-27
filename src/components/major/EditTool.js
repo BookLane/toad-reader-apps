@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Select, SelectItem, IndexPath } from "@ui-kitten/components"
-import uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { i18n } from "inline-i18n"
 
 import { getToolInfo } from '../../utils/toolInfo'

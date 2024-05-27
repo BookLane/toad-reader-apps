@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 const CoverCheck = () => (
   <View style={styles.container}>
     <Text style={styles.text}>
-      <Ionicons name='md-checkmark' style={styles.checkmark} />
+      <Ionicons name='checkmark' style={styles.checkmark} />
     </Text>
   </View>
 )

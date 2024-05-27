@@ -2,3 +2,4 @@
 /node_modules/*
 /tenants/*
 /web-build/*
+/dist/*

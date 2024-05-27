@@ -37,7 +37,7 @@ const BookInfoDetails = ({
   if(downloadStatus == 2) {
     return (
       <View style={styles.container}>
-        <Icon name='md-checkmark' style={styles.icon} />
+        <Icon name='checkmark' style={styles.icon} />
         <Text style={styles.details}>{i18n("On device")}</Text>
       </View>
     )
@@ -57,7 +57,7 @@ const BookInfoDetails = ({
         name={
           isAudiobook
             ? 'book-music'
-            : 'md-cloud-download'
+            : 'cloud-download'
         }
         pack={
           isAudiobook

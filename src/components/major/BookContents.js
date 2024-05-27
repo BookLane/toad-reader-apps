@@ -3,7 +3,7 @@ import { StyleSheet, View, Platform } from "react-native"
 import { List } from "@ui-kitten/components"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { useLayout } from '@react-native-community/hooks'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 

@@ -109,8 +109,8 @@ const ManageClassrooms = React.memo(({
     [ showConnectToAClassroom ],
   )
 
-  const ExitIcon = useCallback(({ style }) => <Icon name='md-exit' style={style} />, [])
-  const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={style} />, [])
+  const ExitIcon = useCallback(({ style }) => <Icon name='exit' style={style} />, [])
+  const TrashIcon = useCallback(({ style }) => <Icon name='trash' style={style} />, [])
 
   if(!online) {
     return (

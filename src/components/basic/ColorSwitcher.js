@@ -83,7 +83,7 @@ const ColorSwitcher = React.memo(({
             >
               {idx+1 === color &&
                 <Icon
-                  name='md-checkmark'
+                  name='checkmark'
                   style={[
                     styles.icon,
                     (isDark(colorOptions[idx]) && styles.whiteCheck),

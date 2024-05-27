@@ -180,7 +180,7 @@ const SubscriptionsDialog = ({
   )
 
   const EditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.editIcon, style ]} />, [])
-  const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
+  const TrashIcon = useCallback(({ style }) => <Icon name='trash' style={[ styles.trashIcon, style ]} />, [])
 
   const hasChange = JSON.stringify(subscriptions) !== JSON.stringify(editedSubscriptions)
   const hasDuplicateLabels = editedSubscriptions.length !== [ ...new Set(editedSubscriptions.map(({ label }) => label)) ].length

@@ -327,11 +327,11 @@ const AudiobookDialog = ({
     [ getPlayingFilename, setPlayingFilename, downloadOrigin, bookId, bookCookies ],
   )
 
-  const PlayIcon = useCallback(({ style }) => <Icon name='md-play' style={[ styles.playIcon, style ]} />, [])
+  const PlayIcon = useCallback(({ style }) => <Icon name='play' style={[ styles.playIcon, style ]} />, [])
   const PauseIcon = useCallback(({ style }) => <Icon name='pause-sharp' style={[ styles.pauseIcon, style ]} />, [])
-  const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
-  const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
-  const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
+  const TrashIcon = useCallback(({ style }) => <Icon name='trash' style={[ styles.trashIcon, style ]} />, [])
+  const ArrowUpIcon = useCallback(({ style }) => <Icon name='arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
+  const ArrowDownIcon = useCallback(({ style }) => <Icon name='arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
 
   const updateCoverHref = useCallback(
     value => {
