@@ -40,7 +40,7 @@ const CapturingThumbnailsInfoIcon = React.memo(({
         onPress={showInfo}
       >
         <Ionicons
-          name="md-information-circle-outline"
+          name="information-circle-outline"
           style={styles.info}
         />
       </TouchableOpacity>

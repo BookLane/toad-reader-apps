@@ -295,7 +295,7 @@ const ReadingScheduleDate = React.memo(({
   const TrashButtonIcon = useCallback(
     ({ style }) => (
       <Icon
-        name="md-trash"
+        name="trash"
         style={styles.icon}
       />
     ),
@@ -305,7 +305,7 @@ const ReadingScheduleDate = React.memo(({
   const CalendarIcon = useCallback(
     ({ style }) => (
       <Icon
-        name="md-calendar"
+        name="calendar"
         style={[
           style,
           styles.calendarIcon,

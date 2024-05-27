@@ -41,6 +41,18 @@ export const loadIconFonts = () => (
   })
 )
 
+/**
+ * Icon component
+ * @param {string} name - Icon name
+ * @param {string} pack - Icon pack to use (ion, material, materialCommunity, fontAwesome)
+ * @param {object} style - Style object
+ * @param {string} height - Height of the icon
+ * @param {string} ...otherProps - Other props to pass to the icon component (depends on pack)
+ * @returns {React.Component} - Icon component
+ * @example
+ * <Icon pack='ion' name='home' size={32} color='red' />
+ * <Icon pack='image' name={require('./path/to/image.png')} style={{ width: 32, height: 32 }} />
+ */
 const Icon = ({
   pack='ion',
   style,

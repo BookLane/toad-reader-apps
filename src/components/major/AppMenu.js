@@ -360,12 +360,12 @@ const AppMenu = ({
     [ idps ],
   )
 
-  // const libraryIcon = useCallback(style => <Ionicons {...style} name="md-book" />, [])
-  // const onDeviceIcon = useCallback(style => <Ionicons {...style} name="md-checkmark" />, [])
-  // // const accountsIcon = useCallback(style => <Ionicons {...style} name="md-person" />, [])
-  // const refreshIcon = useCallback(style => <Ionicons {...style} name="md-refresh" />, [])
-  // const removeIcon = useCallback(style => <Ionicons {...style} name="md-remove-circle" />, [])
-  // const logOutIcon = useCallback(style => <Ionicons {...style} name="md-log-out" />, [])
+  // const libraryIcon = useCallback(style => <Ionicons {...style} name="book" />, [])
+  // const onDeviceIcon = useCallback(style => <Ionicons {...style} name="checkmark" />, [])
+  // // const accountsIcon = useCallback(style => <Ionicons {...style} name="person" />, [])
+  // const refreshIcon = useCallback(style => <Ionicons {...style} name="refresh" />, [])
+  // const removeIcon = useCallback(style => <Ionicons {...style} name="remove-circle" />, [])
+  // const logOutIcon = useCallback(style => <Ionicons {...style} name="log-out" />, [])
 
   let isAdmin = false
   let bookImporterAccountId

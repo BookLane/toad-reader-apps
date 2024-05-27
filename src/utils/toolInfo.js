@@ -35,7 +35,7 @@ export const getToolInfo = () => {
     {
       toolType: 'QUIZ',
       icon: {
-        name: 'md-checkbox',
+        name: 'checkbox',
       },
       text: i18n("Quiz", "", "enhanced"),
       warnOfUpdate: true,
@@ -262,7 +262,7 @@ export const getToolInfo = () => {
     {
       toolType: 'DOCUMENT',
       icon: {
-        name: 'md-document',
+        name: 'document',
       },
       text: i18n("Document", "", "enhanced"),
       dataStructure: [
@@ -282,7 +282,7 @@ export const getToolInfo = () => {
     {
       toolType: 'IMAGES',
       icon: {
-        name: 'md-image',
+        name: 'image',
       },
       text: i18n("Images", "", "enhanced"),
       dataStructure: [
@@ -305,7 +305,7 @@ export const getToolInfo = () => {
     {
       toolType: 'AUDIO',
       icon: {
-        name: 'md-musical-note',
+        name: 'musical-note',
       },
       text: i18n("Audio", "", "enhanced"),
       dataStructure: [

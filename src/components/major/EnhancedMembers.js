@@ -67,7 +67,7 @@ const EnhancedMembers = React.memo(({
     [ members, bookId, classroomUid ],
   )
 
-  const RemoveIcon = useCallback(({ style }) => <Icon name='md-remove-circle' style={styles.removeIcon} />, [])
+  const RemoveIcon = useCallback(({ style }) => <Icon name='remove-circle' style={styles.removeIcon} />, [])
   
   const renderItem = useCallback(
     ({ item, index }) => (

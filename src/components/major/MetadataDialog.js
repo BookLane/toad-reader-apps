@@ -178,9 +178,9 @@ const MetadataDialog = ({
   )
 
   const EditIcon = useCallback(({ style }) => <Icon name='pencil' pack='materialCommunity' style={[ styles.editIcon, style ]} />, [])
-  const TrashIcon = useCallback(({ style }) => <Icon name='md-trash' style={[ styles.trashIcon, style ]} />, [])
-  const ArrowUpIcon = useCallback(({ style }) => <Icon name='md-arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
-  const ArrowDownIcon = useCallback(({ style }) => <Icon name='md-arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
+  const TrashIcon = useCallback(({ style }) => <Icon name='trash' style={[ styles.trashIcon, style ]} />, [])
+  const ArrowUpIcon = useCallback(({ style }) => <Icon name='arrow-up' style={[ styles.arrowUpIcon, style ]} />, [])
+  const ArrowDownIcon = useCallback(({ style }) => <Icon name='arrow-down' style={[ styles.arrowDownIcon, style ]} />, [])
 
   const hasChange = JSON.stringify(metadataKeys) !== JSON.stringify(editedMetadataKeys)
   const hasDuplicateNames = editedMetadataKeys.length !== [ ...new Set(editedMetadataKeys.map(({ name }) => name)) ].length

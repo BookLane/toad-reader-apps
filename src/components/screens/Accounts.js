@@ -11,7 +11,7 @@ const Accounts = () => (
           transparent
           onPress={historyGoBack}
         >
-          <Ionicons name="md-arrow-back" />
+          <Ionicons name="arrow-back" />
         </Button>
       </Left>
       <Body>

@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View } from "react-native"
 import { IndexPath, Select, SelectItem } from "@ui-kitten/components"
-import uuidv4 from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 import { i18n } from "inline-i18n"
 
 import Dialog from "./Dialog"

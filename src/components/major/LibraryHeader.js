@@ -217,7 +217,7 @@ const LibraryHeader = ({
         }
         rightControls={[
           <HeaderIcon
-            iconName="md-search-sharp"
+            iconName="search-sharp"
             onPress={toggleShowSearch}
             disabled={!online}
             uiStatus={!online ? "disabled" : null}

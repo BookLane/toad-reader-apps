@@ -105,7 +105,7 @@ const Document = React.memo(({
       </View>
       {online && Platform.OS === 'web' &&
         <FAB
-          iconName="md-cloud-download"
+          iconName="cloud-download"
           status="primary"
           onPress={setDownloadingToTrue}
         />

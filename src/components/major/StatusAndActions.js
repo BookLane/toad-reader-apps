@@ -333,7 +333,7 @@ const StatusAndActions = React.memo(({
         </Button>
         {xOutOfTool && (isInlineTool || !wideMode) &&
           <HeaderIcon
-            iconName="md-close"
+            iconName="close"
             onPress={xOutOfTool}
             uiStatus="faded"
             style={styles.close}

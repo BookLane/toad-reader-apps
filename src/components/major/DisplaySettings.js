@@ -103,8 +103,8 @@ const DisplaySettings = React.memo(({
 
   // const TouchableComponent = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight
 
-  const LessIcon = useCallback(({ style }) => <Icon name='md-remove' style={[ styles.icon, style ]} />, [])
-  const MoreIcon = useCallback(({ style }) => <Icon name='md-add' style={[ styles.icon, style ]} />, [])
+  const LessIcon = useCallback(({ style }) => <Icon name='remove' style={[ styles.icon, style ]} />, [])
+  const MoreIcon = useCallback(({ style }) => <Icon name='add' style={[ styles.icon, style ]} />, [])
   
   return (
     <>

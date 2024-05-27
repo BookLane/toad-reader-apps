@@ -327,7 +327,7 @@ const Highlights = React.memo(({
 
   const ReadIcon = useCallback(({ style }) => <Icon name="book-open-variant" pack="materialCommunity" style={style} />, [])
   // const DrawIcon = useCallback(({ style }) => <Icon name="draw" pack="materialCommunity" style={style} />, [])
-  // const ShareIcon = useCallback(style => <Icon name="md-share" style={style} />, [])
+  // const ShareIcon = useCallback(style => <Icon name="share" style={style} />, [])
 
   const showSketch = useCallback(({ info: { sketch } }) => setSketchToShow(sketch), [])
 

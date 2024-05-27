@@ -200,7 +200,7 @@ const Tool = React.memo(({
         {!inEditMode && (isInlineTool || !wideMode) &&
           <View style={styles.closeContainer}>
             <HeaderIcon
-              iconName="md-close"
+              iconName="close"
               onPress={xOutOfTool}
               uiStatus="faded"
               style={wideMode ? styles.closeWideMode : styles.close}

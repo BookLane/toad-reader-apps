@@ -93,7 +93,7 @@ const HighlighterShareIcon = React.memo(({
         {...goShareOnPressProps}
       >
         <Ionicons
-          name="md-share"
+          name="share"
           style={styles.share}
         />
       </TouchableOpacity>
