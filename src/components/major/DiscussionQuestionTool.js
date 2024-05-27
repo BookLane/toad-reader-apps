@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react"
+import React, { useState, useCallback, useRef, useEffect } from "react"
 import { StyleSheet, View, ScrollView, Text, Platform, Alert } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
@@ -7,18 +7,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import useClassroomInfo from '../../hooks/useClassroomInfo'
 import useInstanceValue from '../../hooks/useInstanceValue'
-import useWebSocket from '../../hooks/useWebSocket'
+import useSetTimeout from "../../hooks/useSetTimeout"
 import useScroll from '../../hooks/useScroll'
 import useKeyboardSize from '../../hooks/useKeyboardSize'
-import { getDateLine, getTimeLine } from "../../utils/toolbox"
+import { getDataOrigin, getDateLine, getReqOptionsWithAdditions, getTimeLine, safeFetch } from "../../utils/toolbox"
 import getDummyDiscussionQuestions from "../../utils/getDummyDiscussionQuestions"
 
 import TextInput from "../basic/TextInput"
 import Icon from "../basic/Icon"
 import Button from "../basic/Button"
 import Spin from "../basic/Spin"
-import CoverAndSpin from "../basic/CoverAndSpin"
 
+const POLLING_GAP_MS = 5000
 const PAGE_SIZE = 20
 
 const response = {
@@ -155,35 +155,21 @@ const DiscussionQuestionTool = React.memo(({
   const isDummy = /^dummy/.test(toolUid)
 
   const { classroomUid, idpId, userId } = useClassroomInfo({ books, bookId })
+  const idp = idps[idpId]
 
   const [ inputHeight, setInputHeight ] = useState(0)
   const [ responses, setResponses ] = useState((isDummy && getDummyDiscussionQuestions().responses[toolUid]) || [])
   const [ newResponseValue, setNewResponseValue ] = useState("")
-  const [ gettingResponses, setGettingResponses ] = useState(false)
+  const [ gettingResponses, setGettingResponses ] = useState(true)
+  const [ error, setError ] = useState()
 
+  const [ setPollTimeout ] = useSetTimeout()
   const prevContentSizeHeight = useRef()
 
   const getResponses = useInstanceValue(responses)
   const getNewResponseValue = useInstanceValue(newResponseValue)
 
   const safeAreaInsets = useSafeAreaInsets()
-
-  const handleScrolledToTop = useCallback(
-    () => {
-      const existingResponses = getResponses()
-
-      if(existingResponses.length >= PAGE_SIZE) {
-        setGettingResponses(true)
-        wsSend.current({
-          action: 'getResponses',
-          data: {
-            until: existingResponses[0].submitted_at,
-          },
-        })
-      }
-    },
-    [],
-  )
 
   const { scrolledToEnd, contentSizeHeight, y, onScroll, onContentSizeChange } = useScroll({ scrolledToEndGraceY: 50, handleScrolledToTop })
   const scrollViewRef = useRef()
@@ -198,28 +184,10 @@ const DiscussionQuestionTool = React.memo(({
     },
   })
 
-  const { wsSend, connecting, error } = useWebSocket({
-    idp: idps[idpId],
-    accounts,
-    socketName: 'discussion',
-    appendToPathItems: [
-      classroomUid,
-      toolUid,
-    ],
-    off: isDummy,
-    onOpen: () => {
-      setGettingResponses(true)
-      wsSend.current({
-        action: 'getResponses',
-        data: {
-          until: 'now',
-          fromAtLeast: Date.now() - (1000*60*60*24),
-        },
-      })
-    },
-    onMessage: ({ message: { responses } }) => {
+  const handleNewResponses = useCallback(
+    ({ responses=[] }={}) => {
+
       const wasScrolledToEnd = scrolledToEnd.current
-      const prevY = y.current
 
       const existingResponses = getResponses()
 
@@ -260,8 +228,61 @@ const DiscussionQuestionTool = React.memo(({
           setTimeout(doScroll)
         }
       }
+
     },
-  })
+    [ getResponses ],
+  )
+
+  const getDiscussion = useCallback(
+    async ({ until, fromAtLeast }) => {
+
+      const accountId = Object.keys(accounts)[0] || ""
+      const { cookie } = accounts[accountId] || {}
+      const path = `${getDataOrigin(idp)}/discussion/getResponses`
+
+      try {
+
+        const result = await safeFetch(path, getReqOptionsWithAdditions({
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+            "x-cookie-override": cookie,
+          },
+          body: JSON.stringify({
+            classroomUid,
+            toolUid,
+            until,
+            fromAtLeast,
+          }),
+        }))
+
+        if(result.status < 400) {
+          handleNewResponses(await result.json())
+        } else {
+          setError(result.statusText)
+        }
+
+      } catch(err) {
+        setError(err.message)
+      }
+
+    },
+    [ accounts, idp, classroomUid, toolUid, handleNewResponses ],
+  )
+
+  const handleScrolledToTop = useCallback(
+    async () => {
+      const existingResponses = getResponses()
+
+      if(existingResponses.length >= PAGE_SIZE) {
+        setGettingResponses(true)
+        await getDiscussion({
+          until: existingResponses[0].submitted_at,
+        })
+      }
+    },
+    [ getResponses, getDiscussion ],
+  )
 
   const handleScrollViewHeightChange = useCallback(
     (contentWidth, contentHeight) => {
@@ -301,7 +322,7 @@ const DiscussionQuestionTool = React.memo(({
   const handleInputHeightChange = useCallback(({ nativeEvent }) => setInputHeight(nativeEvent.contentSize.height + safeAreaInsets.bottom), [])
 
   const sendNewResponse = useCallback(
-    () => {
+    async () => {
 
       const text = getNewResponseValue().trim()
 
@@ -325,17 +346,44 @@ const DiscussionQuestionTool = React.memo(({
           return
         }
 
-        wsSend.current({
-          action: 'addResponse',
-          data: {
-            text,
-          },
-        })
+        setGettingResponses(true)
+        setNewResponseValue("")
+        setInputHeight(0)
 
-        logUsageEvent({
-          toolUid,
-          usageType: `Discussion contribution`,
-        })
+        const accountId = Object.keys(accounts)[0] || ""
+        const { cookie } = accounts[accountId] || {}
+        const path = `${getDataOrigin(idp)}/discussion/addResponse`
+
+        try {
+          const result = await safeFetch(path, getReqOptionsWithAdditions({
+            method: 'POST',
+            headers: {
+              "Content-Type": 'application/json',
+              "x-cookie-override": cookie,
+            },
+            body: JSON.stringify({
+              toolUid,
+              text,
+            }),
+          }))
+
+          if(result.status < 400) {
+
+            handleNewResponses(await result.json())
+
+            logUsageEvent({
+              toolUid,
+              usageType: `Discussion contribution`,
+            })
+
+          } else {
+            setError(result.statusText)
+            setNewResponseValue(text)
+          }
+
+        } catch(err) {
+          setError(err.message)
+        }
 
       }
 
@@ -343,10 +391,24 @@ const DiscussionQuestionTool = React.memo(({
       setInputHeight(0)
 
     },
-    [ viewingPreview, isDummy, toolUid ],
+    [ viewingPreview, isDummy, toolUid, accounts, idp, classroomUid, handleNewResponses ],
   )
 
   const SendIcon = useCallback(({ style }) => <Icon name='send' style={styles.sendIcon} />, [])
+
+  useEffect(
+    () => {
+      const poll = async () => {
+        await getDiscussion({
+          until: 'now',
+          fromAtLeast: Date.now() - (1000*60*60*24),
+        })
+        setPollTimeout(poll, POLLING_GAP_MS)
+      }
+      poll()
+    },
+    [ getDiscussion ],
+  )
 
   if(error) {
     return (
@@ -371,7 +433,7 @@ const DiscussionQuestionTool = React.memo(({
         scrollEventThrottle={100}
       >
         <View style={styles.discussion}>
-          {!connecting && gettingResponses &&
+          {gettingResponses &&
             <View style={styles.spinContainer1}>
               <View style={styles.spinContainer2}>
                 <View style={styles.spinContainer3}>
@@ -380,8 +442,7 @@ const DiscussionQuestionTool = React.memo(({
               </View>
             </View>
           }
-          {connecting && <CoverAndSpin />}
-          {!connecting && responses.map(({ uid, text, user_id, fullname, submitted_at }) => {
+          {responses.map(({ uid, text, user_id, fullname, submitted_at }) => {
 
             const newDate = new Date(submitted_at).toDateString()
             const displayDate = newDate !== lastDate
