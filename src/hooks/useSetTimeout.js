@@ -6,11 +6,13 @@ import useInstanceValue from './useInstanceValue'
 const useSetTimeout = ({ fireOnUnmount }={}) => {
 
   const timeout = useRef()
+  const mounted = useRef(true)
   const timeoutFunc = useRef(() => {})
   const getFireOnUnmount = useInstanceValue(fireOnUnmount)
 
   useUnmount(() => {
     clear()
+    mounted.current = false
 
     if(getFireOnUnmount()) {
       timeoutFunc.current()
@@ -18,6 +20,7 @@ const useSetTimeout = ({ fireOnUnmount }={}) => {
   })
 
   const set = (func, ...otherProps) => {
+    if(!mounted.current) return
     clear()
     timeoutFunc.current = func
     timeout.current = setTimeout(func, ...otherProps)
