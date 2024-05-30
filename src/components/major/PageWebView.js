@@ -303,7 +303,8 @@ const PageWebView = ({
         ]}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        source={renderedOnce ? source : undefined}
+        // source={renderedOnce ? source : { uri: null }}
+        source={source}
         onError={onError}
         onMessage={onMessageEvent}
         onLoad={setRenderedOnceTrue}
