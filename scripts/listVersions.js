@@ -4,7 +4,7 @@ const { exec } = require('child_process')
 const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
 
 try {
-  exec(`aws s3 ls s3://bucket-versions/${domain}/`, (err, stdout, stderr) => {
+  exec(`aws s3 ls s3://bucket-versions-booklane/${domain}/`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })
