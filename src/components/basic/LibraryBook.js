@@ -56,7 +56,7 @@ const LibraryBook = ({
   
   const onLongPress = useCallback(
     () => {
-      const { audiobookInfo } = getBookInfo(bookId)
+      const { downloadStatus, audiobookInfo } = getBookInfo(bookId)
       const isAudiobook = !!audiobookInfo
 
       if(downloadStatus == 0) {
