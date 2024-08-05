@@ -8,7 +8,7 @@ import useSetTimeout from '../../hooks/useSetTimeout'
 import useRouterState from '../../hooks/useRouterState'
 import { getBookCookie } from '../../hooks/useBookCookies'
 import { getBooksDir, getDataOrigin, getIdsFromAccountId, getIDPOrigin } from "../../utils/toolbox"
-import { fetchZipAndAssets } from "../../utils/zipDownloader"
+import { fetchEpubAndAssets } from "../../utils/epubDownloader"
 import parseEpub from "../../utils/parseEpub"
 import downloadAsync from "../../utils/downloadAsync"
 
@@ -147,22 +147,18 @@ const BookDownloader = ({
 
         }
 
-        const zipFetchInfo = await fetchZipAndAssets({
-          zipUrl: `${downloadOrigin}/epub_content/book_${bookId}/book.epub`,
-          localBaseUri: `${getBooksDir()}${bookId}/`,
+        const epubFetchInfo = await fetchEpubAndAssets({
+          downloadOrigin,
+          bookId,
           cookie,
           progressCallback: progress => {
-            const throttleWaitTime = Math.max(500 - (Date.now() - throttleLastRan), 0)
-            setThrottleTimeout(() => {
-              setDownloadProgress({
-                bookId,
-                downloadProgress: parseInt(progress * 100, 10),
-              })
-            }, throttleWaitTime)
+            setDownloadProgress({
+              bookId,
+              downloadProgress: parseInt(progress * 100, 10),
+            })
           },
           getDownloadPaused,
           title,
-          requiresAuth: true,
         })
         if(getDownloadPaused()) {
           console.log(`Download of book with bookId ${bookId} was deferred due to a book open.`)
@@ -174,14 +170,14 @@ const BookDownloader = ({
           return
         }
         if(downloadWasCanceled(bookId)) return  // check this after each await
-        if(zipFetchInfo.errorMessage) {
-          console.log('ERROR: fetchZipAndAssets of EPUB returned with error', bookId)
+        if(epubFetchInfo.errorMessage) {
+          console.log('ERROR: fetchEpubAndAssets of EPUB returned with error', bookId)
           historyPush("/error", {
-            title: zipFetchInfo.errorTitle,
-            message: zipFetchInfo.errorMessage,
+            title: epubFetchInfo.errorTitle,
+            message: epubFetchInfo.errorMessage,
           })
         }
-        if(zipFetchInfo.noAuth) {
+        if(epubFetchInfo.noAuth) {
           // have them login again
           updateAccount({
             accountId,
@@ -190,7 +186,7 @@ const BookDownloader = ({
             },
           })
         }
-        if(!zipFetchInfo.success) {
+        if(!epubFetchInfo.success) {
           markDownloadComplete(0)
           return
         }

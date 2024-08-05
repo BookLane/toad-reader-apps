@@ -4,7 +4,7 @@ import { Platform } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { getBooksDir, getSnapshotsDir } from "./toolbox"
-import { cancelFetch } from "./zipDownloader"
+import { cancelFetch } from "./epubDownloader"
 
 // This constant is better here than in app.json since it needs to accord with the 
 // current version of the reader apps, not specific tenants.
@@ -18,7 +18,7 @@ export const removeEpub = async ({ books, bookId, removeFromBookDownloadQueue, s
   const searchIndexLocalUri = `${FileSystem.documentDirectory}search_indexes/${bookId}.json`
 
   removeFromBookDownloadQueue({ bookId })
-  cancelFetch({ localBaseUri })
+  cancelFetch({ bookId })
   setDownloadStatus({ bookId, downloadStatus: 0 })
   clearTocAndSpines && clearTocAndSpines({ bookId })
   clearUserDataExceptProgress({ bookId })
