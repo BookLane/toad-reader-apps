@@ -2,6 +2,7 @@ import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import globals from "globals";
 import pluginReact from "eslint-plugin-react";
+import pluginReactNative from "eslint-plugin-react-native";
 import prettierPlugin from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 
@@ -18,13 +19,15 @@ export default defineConfig([
     },
     plugins: {
       react: pluginReact,
+      "react-native": pluginReactNative,
       prettier: prettierPlugin,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...pluginReact.configs.recommended.rules,
+      ...pluginReactNative.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
-      "prettier/prettier": "warn",
+      "prettier/prettier": "error",
     },
   },
   prettierConfig,
