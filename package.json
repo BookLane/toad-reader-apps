@@ -40,7 +40,21 @@
     "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json' && npm run translate-convert-json-to-csv",
     "translate-convert-csv-to-json": "node node_modules/inline-i18n/scripts/convertTranslationCSVtoJSON.js --translations-dir='./src/utils/translations'",
     "translate-convert-json-to-csv": "node node_modules/inline-i18n/scripts/convertTranslationJSONtoCSV.js --translations-dir='./src/utils/translations'",
-    "start": "GENERATE_SOURCEMAP=false npx expo start"
+    "start": "GENERATE_SOURCEMAP=false npx expo start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.+(json|css|md|scss)": [
+      "prettier --write"
+    ],
+    "*.+(js|jsx|ts|tsx)": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@amplitude/analytics-react-native": "^1.1.1",
@@ -120,6 +134,16 @@
     "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "@expo/webpack-config": "~19.0.1"
+    "@eslint/js": "^9.23.0",
+    "@expo/webpack-config": "~19.0.1",
+    "eslint": "^9.23.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-native": "^5.0.0",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.3"
   }
 }
