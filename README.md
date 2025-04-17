@@ -4,7 +4,6 @@
 2. Add tenants > toadreader from the zip file
 3. In `toadreader/app.js`, update the `DEV_DATA_ORIGIN_OVERRIDE` value with server's IP address
 4. `npm run change-tenant toadreader`
-5. Check app.sample.json and fill in the missing values in app.json based on it.
 
 # Development
 
