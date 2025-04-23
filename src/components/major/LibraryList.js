@@ -12,7 +12,7 @@ import LibraryBook from "../basic/LibraryBook"
 import BookInfo from "../basic/BookInfo"
 
 const {
-  LIBRARY_LIST_MARGIN,
+  LIBRARY_LIST_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

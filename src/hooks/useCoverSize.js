@@ -3,8 +3,8 @@ import Constants from 'expo-constants'
 import useDimensions from './useDimensions'
 
 const {
-  LIBRARY_COVERS_HORIZONTAL_MARGIN,
-  LIBRARY_COVERS_MAXIMUM_COVER_SIZE,
+  LIBRARY_COVERS_HORIZONTAL_MARGIN = 20,
+  LIBRARY_COVERS_MAXIMUM_COVER_SIZE = 100,
 } = Constants.expoConfig.extra
 
 const useCoverSize = ({

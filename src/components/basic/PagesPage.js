@@ -10,8 +10,8 @@ import useSetTimeout from '../../hooks/useSetTimeout'
 
 const {
   CURRENT_PAGE_BORDER_COLOR,
-  CURRENT_PAGE_BORDER_WIDTH,
-  PAGES_HORIZONTAL_MARGIN,
+  CURRENT_PAGE_BORDER_WIDTH = 20,
+  PAGES_HORIZONTAL_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

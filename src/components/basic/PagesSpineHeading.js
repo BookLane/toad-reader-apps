@@ -3,8 +3,8 @@ import Constants from 'expo-constants'
 import { StyleSheet, View, Text } from "react-native"
 
 const {
-  PAGE_LIST_HEADER_ROW_HEIGHT,
-  PAGES_HORIZONTAL_MARGIN,
+  PAGE_LIST_HEADER_ROW_HEIGHT = 20,
+  PAGES_HORIZONTAL_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

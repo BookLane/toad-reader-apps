@@ -14,7 +14,7 @@ import useDimensions from "../../hooks/useDimensions"
 
 const {
   ANDROID_TOOLBAR_COLOR,
-  PROGRESS_BAR_SIDE_SPACING,
+  PROGRESS_BAR_SIDE_SPACING = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

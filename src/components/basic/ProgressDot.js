@@ -10,7 +10,7 @@ import { getFooterHeight } from "../../utils/toolbox"
 import useDimensions from "../../hooks/useDimensions"
 
 const {
-  PROGRESS_BAR_SIDE_SPACING,
+  PROGRESS_BAR_SIDE_SPACING = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

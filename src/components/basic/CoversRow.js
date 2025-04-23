@@ -3,9 +3,9 @@ import Constants from 'expo-constants'
 import { StyleSheet, View } from "react-native"
 
 const {
-  LIBRARY_COVERS_HORIZONTAL_MARGIN,
-  LIBRARY_COVERS_VERTICAL_MARGIN,
-  LIBRARY_COVERS_BOTTOM_PADDING,
+  LIBRARY_COVERS_HORIZONTAL_MARGIN = 20,
+  LIBRARY_COVERS_VERTICAL_MARGIN = 20,
+  LIBRARY_COVERS_BOTTOM_PADDING = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

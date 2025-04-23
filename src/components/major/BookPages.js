@@ -24,9 +24,9 @@ import { getSpineInlineToolsHash } from "../../hooks/useSpineInlineToolsHash"
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
 const {
-  PAGE_LIST_HEADER_ROW_HEIGHT,
-  PAGES_VERTICAL_MARGIN,
-  PAGES_HORIZONTAL_MARGIN,
+  PAGE_LIST_HEADER_ROW_HEIGHT = 20,
+  PAGES_VERTICAL_MARGIN = 20,
+  PAGES_HORIZONTAL_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
