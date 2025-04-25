@@ -3,8 +3,8 @@ import Constants from 'expo-constants'
 import { StyleSheet, View } from "react-native"
 
 const {
-  PAGES_VERTICAL_MARGIN,
-  PAGES_HORIZONTAL_MARGIN,
+  PAGES_VERTICAL_MARGIN = 20,
+  PAGES_HORIZONTAL_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

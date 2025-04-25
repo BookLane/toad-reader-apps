@@ -30,8 +30,8 @@ import useToggle from "react-use/lib/useToggle"
 import { deleteBook, setSubscriptions } from "../../redux/actions"
 
 const {
-  LIBRARY_LIST_MARGIN,
-  HIDE_ISBN_FOR_NON_ADMINS,
+  LIBRARY_LIST_MARGIN = 20,
+  HIDE_ISBN_FOR_NON_ADMINS = false,
 } = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({

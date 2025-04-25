@@ -12,7 +12,7 @@ const {
   REQUEST_OPTIONS,
   ANDROID_STATUS_BAR_COLOR,
   DEV_DATA_ORIGIN_OVERRIDE,
-  ENABLE_WIDE_TABLE_BEHAVIOR,
+  ENABLE_WIDE_TABLE_BEHAVIOR = false,
 } = Constants.expoConfig.extra
 
 export const cloneObj = obj => JSON.parse(JSON.stringify(obj))

@@ -2,6 +2,7 @@
 /node_modules/*
 /assets/*
 /tenants/*
+!/tenants/dummy/
 /app.json
 /translationModifier.js
 /src/utils/translations/current.json

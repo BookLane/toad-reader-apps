@@ -6,7 +6,7 @@ import { useLayout } from '@react-native-community/hooks'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const {
-  SKETCH_COLOR_OPTIONS,
+  SKETCH_COLOR_OPTIONS = 20,
 } = Constants.expoConfig.extra
 
 import getSketchCode from "../../../getSketchCode"

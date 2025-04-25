@@ -4,8 +4,8 @@ import Constants from 'expo-constants'
 import useAdjustedDimensions from './useAdjustedDimensions'
 
 const {
-  PAGE_LIST_MAXIMUM_PAGE_SIZE,
-  PAGES_HORIZONTAL_MARGIN,
+  PAGE_LIST_MAXIMUM_PAGE_SIZE = 20,
+  PAGES_HORIZONTAL_MARGIN = 20,
 } = Constants.expoConfig.extra
 
 const usePageSize = ({ sidePanelSettings }) => {
