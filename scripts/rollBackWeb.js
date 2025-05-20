@@ -14,9 +14,10 @@ if(!/^2.*Z$/.test(date)) {
 }
 
 const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
+const versionBucket = appInfo.expo.extra.VERSION_BUCKET
 
 try {
-  exec(`aws s3 cp s3://bucket-versions-booklane/${domain}/${date} s3://${domain}-booklane --acl public-read --recursive --quiet`, (err, stdout, stderr) => {
+  exec(`aws s3 cp s3://${versionBucket}/${domain}/${date} s3://${domain}-booklane --acl public-read --recursive --quiet`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })
