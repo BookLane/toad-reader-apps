@@ -18,7 +18,7 @@ const versionBucket = appInfo.expo.extra.VERSION_BUCKET
 
 try {
   const bucketProduction = `${bucketPrefix}-prod`.slice(0,63)
-  exec(`aws s3 cp s3://${versionBucket}/${domain}/${date} s3://${bucketProduction} --acl public-read --recursive --quiet`, (err, stdout, stderr) => {
+  exec(`aws s3 cp s3://${versionBucket}/${domain}/${date} s3://${bucketProduction} --recursive --quiet`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })

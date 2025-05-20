@@ -5,7 +5,7 @@ const { bucketPrefix } = Object.values(appInfo.expo.extra.IDPS)[0]
 
 try {
   const bucketBeta = `${bucketPrefix}-beta`.slice(0,63)
-  exec(`aws s3 sync web-build s3://${bucketBeta} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
+  exec(`aws s3 sync web-build s3://${bucketBeta} --quiet --delete`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })

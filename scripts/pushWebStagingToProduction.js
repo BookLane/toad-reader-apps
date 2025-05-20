@@ -8,7 +8,7 @@ const versionBucket = appInfo.expo.extra.VERSION_BUCKET
 try {
   const bucketStaging = `${bucketPrefix}-stag`.slice(0,63)
   const bucketProduction = `${bucketPrefix}-prod`.slice(0,63)
-  exec(`aws s3 sync s3://${bucketStaging} s3://${bucketProduction} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
+  exec(`aws s3 sync s3://${bucketStaging} s3://${bucketProduction} --quiet --delete`, (err, stdout, stderr) => {
     console.log(stdout)
     exec(`aws s3 cp s3://${bucketProduction} s3://${versionBucket}/${domain}/${date} --recursive --quiet`, (err, stdout, stderr) => {
       console.log(stdout)
