@@ -46,5 +46,4 @@ RUN \
   # "source ~/.nvm/nvm.sh" fails if node isn't installed
   source ~/.nvm/nvm.sh || nvm install --default --latest-npm && \
   # Install toad-reader-apps dependencies (part 2)
-  npm install -g eas-cli && \
   npm config set script-shell bash
