@@ -1,15 +1,11 @@
 const appInfo = require('../app.json')
 const { exec } = require('child_process')
 
-const dashifyDomain = domain => domain
-  .replace(/-/g, '--')
-  .replace(/\./g, '-')
-
-const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
+const { bucketPrefix } = Object.values(appInfo.expo.extra.IDPS)[0]
 
 try {
-  const bucket = `${dashifyDomain(domain)}.staging.toadreader.com`.slice(0,54) + `-booklane`
-  exec(`aws s3 sync web-build s3://${bucket} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
+  const bucketStaging = `${bucketPrefix}-stag`.slice(0,63)
+  exec(`aws s3 sync web-build s3://${bucketStaging} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })

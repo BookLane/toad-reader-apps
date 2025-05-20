@@ -6,6 +6,7 @@
                     "name": "Toad Reader",
                     "domain": "166ultlplx.data.staging.toadreader.com",
                     "authMethod": "SHIBBOLETH",
+                    "bucketPrefix": "read.test-booklane",
                     "env": "staging"
                 }
             },
