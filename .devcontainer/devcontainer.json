@@ -14,7 +14,10 @@
 						"path": "/bin/bash"
 					}
 				}
-			}
+			},
+			"extensions": [
+				"expo.vscode-expo-tools"
+			]
 		}
 	},
 	"features": {
