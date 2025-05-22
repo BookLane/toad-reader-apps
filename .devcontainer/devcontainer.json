@@ -15,6 +15,7 @@
 	],
 	"name": "toad-reader-apps",
 	"postStartCommand": {
+		"aws": "export AWS_PROFILE=BibleMesh",
 		"git-ssh": "git config --global --unset gpg.ssh.program",
 		"git-safe.directory": "git config --global --add safe.directory ${containerWorkspaceFolder}"
 	},
