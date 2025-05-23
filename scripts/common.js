@@ -1,6 +1,6 @@
 const { exec } = require('child_process')
 
-function executeCommand(command, anotherCommand) {
+function executeCommand(command, callback) {
   console.log(command)
   exec(command, (err, stdout, stderr) => {
     if (err) {
@@ -14,8 +14,8 @@ function executeCommand(command, anotherCommand) {
     }
     console.log()
 
-    if (anotherCommand) {
-      anotherCommand()
+    if (callback) {
+      callback()
     }
   })
 }
