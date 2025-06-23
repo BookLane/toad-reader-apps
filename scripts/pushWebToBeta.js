@@ -1,16 +1,11 @@
 const appInfo = require('../app.json')
-const { exec } = require('child_process')
+const executeCommand = require('./common.js')
 
-const dashifyDomain = domain => domain
-  .replace(/-/g, '--')
-  .replace(/\./g, '-')
-
-const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
+const { bucketPrefix } = Object.values(appInfo.expo.extra.IDPS)[0]
 
 try {
-  const bucket = `${dashifyDomain(domain)}.beta.toadreader.com`.slice(0,54) + `-booklane`
-  exec(`aws s3 sync web-build s3://${bucket} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
-    console.log(stdout)
+  const bucketBeta = `${bucketPrefix}-beta`.slice(0,63)
+  executeCommand(`aws s3 sync web-build s3://${bucketBeta} --quiet --delete`, () => {
     process.exit()
   })
 } catch(err) {

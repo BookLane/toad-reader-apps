@@ -1,5 +1,5 @@
 const appInfo = require('../app.json')
-const { exec } = require('child_process')
+const executeCommand = require('./common.js')
 
 const date = (process.argv[2] || "").replace(/\//g, '')
 
@@ -13,11 +13,12 @@ if(!/^2.*Z$/.test(date)) {
   process.exit()
 }
 
-const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
+const { bucketPrefix, domain } = Object.values(appInfo.expo.extra.IDPS)[0]
+const versionBucket = appInfo.expo.extra.VERSION_BUCKET
 
 try {
-  exec(`aws s3 cp s3://bucket-versions-booklane/${domain}/${date} s3://${domain}-booklane --acl public-read --recursive --quiet`, (err, stdout, stderr) => {
-    console.log(stdout)
+  const bucketProduction = `${bucketPrefix}-prod`.slice(0,63)
+  executeCommand(`aws s3 cp s3://${versionBucket}/${domain}/${date} s3://${bucketProduction} --recursive --quiet`, () => {
     process.exit()
   })
 } catch(err) {

@@ -6,6 +6,7 @@
                     "name": "Toad Reader",
                     "domain": "166ultlplx.data.staging.toadreader.com",
                     "authMethod": "SHIBBOLETH",
+                    "bucketPrefix": "read.test-booklane",
                     "env": "staging"
                 }
             },
@@ -14,7 +15,8 @@
             "DEV_DATA_ORIGIN_OVERRIDE": "166ultlplx.data.staging.toadreader.com",
             "REQUEST_OPTIONS": {},
             "AMPLITUDE_API_KEY": "",
-            "ALLOW_INSECURE_LOCALHOST": true
+            "ALLOW_INSECURE_LOCALHOST": true,
+            "VERSION_BUCKET": "bucket-versions-booklane"
         },
         "revisionId": "1",
         "splash": {
