@@ -1,11 +1,12 @@
 /.expo/*
-/node_modules/*
 /assets/*
+/dist/*
+/node_modules/*
+/src/utils/translations/current.json
 /tenants/*
 !/tenants/dummy/
-/app.json
-/translationModifier.js
-/src/utils/translations/current.json
 /web-build/*
-/dist/*
+
+/app.json
 .env*.local
+/translationModifier.js
