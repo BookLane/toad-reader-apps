@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import { Ionicons } from "@expo/vector-icons"
 import { i18n } from "inline-i18n"
 
-import { getIdsFromAccountId, isStaging, dashifyDomain } from '../../utils/toolbox'
+import { getIdsFromAccountId, isStaging } from '../../utils/toolbox'
 import Toast from "../../utils/Toast"
 
 const styles = StyleSheet.create({
@@ -36,7 +36,7 @@ const HighlighterEmbedIcon = React.memo(({
       let { domain } = idps[idpId]
 
       if(isStaging()) {
-        domain = `${dashifyDomain(domain)}.staging.toadreader.com`
+        domain = `stg.${domain}`
       }
 
       const latestLocation = {
