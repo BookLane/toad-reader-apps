@@ -304,7 +304,7 @@ export const getDataOrigin = ({ domain, protocol=`https`, env }={}) => {
   }
 
   // production or beta environment
-  return `${protocol}://data.beta.${domain}`
+  return `${protocol}://data.${domain}`
 
 }
 
