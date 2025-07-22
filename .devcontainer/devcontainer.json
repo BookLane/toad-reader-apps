@@ -25,8 +25,8 @@
 		"ghcr.io/devcontainers/features/git:1": {}
 	},
 	"mounts": [
-		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/developer/.aws,type=bind",
-		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.expo,target=/home/developer/.expo,type=bind"
+		"source=${localEnv:USERPROFILE}/.aws,target=/home/developer/.aws,type=bind", // add ${localEnv:HOME} to source for Linux
+		"source=${localEnv:USERPROFILE}/.expo,target=/home/developer/.expo,type=bind" // add ${localEnv:HOME} to source for Linux
 	],
 	"name": "toad-reader-apps",
 	"postStartCommand": {
