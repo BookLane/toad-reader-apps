@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { updateReader } from "../../utils/updateReader"
 import useRouterState from "../../hooks/useRouterState"
 import { getReqOptionsWithAdditions, getDataOrigin, getIdsFromAccountId, safeFetch,
-         isStaging, isBeta, dashifyDomain, getQueryString, getIDPOrigin, openURL } from "../../utils/toolbox"
+         isStaging, isBeta, getQueryString, getIDPOrigin, openURL } from "../../utils/toolbox"
 import { removeSnapshotsIfANewUpdateRequiresIt } from "../../utils/removeEpub"
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useNetwork from "../../hooks/useNetwork"
@@ -266,9 +266,9 @@ const Library = ({
           .then(({ redirectToDomain }) => {
             if(redirectToDomain && redirectToDomain !== window.location.host) {
               if(isStaging()) {
-                redirectToDomain = `${dashifyDomain(redirectToDomain)}.staging.toadreader.com`
+                redirectToDomain = `stg.${redirectToDomain}`
               } else if(isBeta()) {
-                redirectToDomain = `${dashifyDomain(redirectToDomain)}.beta.toadreader.com`
+                redirectToDomain = `beta.${redirectToDomain}`
               }
               window.location.href = `${window.location.protocol}//${redirectToDomain}/${window.location.hash}`
             } else {

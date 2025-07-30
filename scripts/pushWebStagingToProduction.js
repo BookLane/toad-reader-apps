@@ -6,10 +6,10 @@ const date = new Date().toISOString()
 const versionBucket = appInfo.expo.extra.VERSION_BUCKET
 
 try {
-  const bucketStaging = `${bucketPrefix}-stag`.slice(0,63)
-  const bucketProduction = `${bucketPrefix}-prod`.slice(0,63)
-  executeCommand(`aws s3 sync s3://${bucketStaging} s3://${bucketProduction} --quiet --sse AES256 --delete`,
-    executeCommand(`aws s3 cp s3://${bucketProduction} s3://${versionBucket}/${domain}/${date} --recursive --quiet --sse AES256`, () => {
+  const bucketStaging = `${bucketPrefix}-stg`.slice(0,63)
+  const bucketProduction = `${bucketPrefix}-prd`.slice(0,63)
+  executeCommand(`aws s3 sync s3://${bucketStaging} s3://${bucketProduction} --only-show-errors --sse AES256 --delete`,
+    executeCommand(`aws s3 cp s3://${bucketProduction} s3://${versionBucket}/${domain}/${date} --only-show-errors --recursive --sse AES256`, () => {
       process.exit()
     })
   )

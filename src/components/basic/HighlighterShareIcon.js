@@ -1,3 +1,4 @@
+import Constants from "expo-constants"
 import React, { useState, useCallback, useEffect } from "react"
 import { StyleSheet, TouchableOpacity, Platform, Share, View } from "react-native"
 import { bindActionCreators } from "redux"
@@ -12,6 +13,10 @@ import { getAccountIdIsNoAuth } from "../../hooks/useHasNoAuth"
 
 import WebView from '../major/WebView'
 import Dialog from "../major/Dialog"
+
+const {
+  QUOTES_DOMAIN,
+} = Constants.expoConfig.extra
 
 const styles = StyleSheet.create({
   share: {
@@ -48,7 +53,7 @@ const HighlighterShareIcon = React.memo(({
   const { idpId, accountId } = useClassroomInfo({ books, bookId })
   const isNoAuth = getAccountIdIsNoAuth(accountId)
 
-  const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://q.toadreader.com`}/q/${highlight.share_code || ''}`
+  const shareUrl = `${(__DEV__ || isStaging()) ? getDataOrigin(idps[idpId]) : `https://${QUOTES_DOMAIN}`}/q/${highlight.share_code || ''}`
 
   const goShareOnPressProps = useNonBlurringOnPress(() => setShowShare(true), [])
 

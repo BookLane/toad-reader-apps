@@ -123,7 +123,7 @@ const StatusAndActions = React.memo(({
 
   const wideMode = useWideMode()
   const { online } = useNetwork()
-  const getClassroomDraftData = useInstanceValue(classroom.draftData || {})
+  const getClassroomDraftData = useInstanceValue(classroom?.draftData || {})
   const { historyPush, historyReplace, historyGoBack, getRouterState } = useRouterState()
 
   const { toolInfoByType } = useMemo(getToolInfo, [])
@@ -276,12 +276,12 @@ const StatusAndActions = React.memo(({
   const isReadyToPublish = (
     viewingOptions
       ? (
-        ((classroom.draftData || {}).lti_configurations || []).every(({ domain, key, secret }) => (
+        ((classroom?.draftData || {}).lti_configurations || []).every(({ domain, key, secret }) => (
           validDomain(domain)
           && key
           && secret
         ))
-        && !hasDuplicateLTIConfigs((classroom.draftData || {}).lti_configurations || [])
+        && !hasDuplicateLTIConfigs((classroom?.draftData || {}).lti_configurations || [])
       )
       : (
         viewingFrontMatter
