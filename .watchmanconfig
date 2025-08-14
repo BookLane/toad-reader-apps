@@ -1,1 +1,26 @@
-{}
+{
+  "ignore_dirs": [
+    "node_modules",
+    ".expo",
+    "assets",
+    "tenants",
+    "web-build",
+    "dist",
+    "tests",
+    "scripts",
+    "standard-assets",
+    "web-build-overrides"
+  ],
+  "ignore_patterns": [
+    "*.log",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.ico",
+    "*.mp4",
+    "*.ttf",
+    "src/utils/translations/*.json",
+    ".env*.local"
+  ]
+}

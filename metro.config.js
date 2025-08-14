@@ -1,9 +1,21 @@
-// This replaces `const { getDefaultConfig } = require('expo/metro-config');`
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
-// This replaces `const config = getDefaultConfig(__dirname);`
-const defaultConfig = getSentryExpoConfig(__dirname);
+const sentryConfig = getSentryExpoConfig(__dirname);
 
-defaultConfig.resolver.assetExts.push("ttf", "mp4")
+// Create new config object with our modifications
+const config = {
+  ...sentryConfig,
+  // Add UI Kitten transpilation support for web builds
+  transformer: {
+    ...sentryConfig.transformer,
+    unstable_allowRequireContext: true,
+  },
+  // Disable package exports resolution for Expo 51 compatibility
+  resolver: {
+    ...sentryConfig.resolver,
+    unstable_enablePackageExports: false,
+    sourceExts: [...(sentryConfig.resolver?.sourceExts || ['js', 'jsx', 'json', 'ts', 'tsx']), 'cjs'],
+  },
+};
 
-module.exports = defaultConfig
+module.exports = config

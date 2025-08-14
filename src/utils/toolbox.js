@@ -1,10 +1,10 @@
+import Constants from 'expo-constants'
+import * as FileSystem from 'expo-file-system'
+import * as Linking from 'expo-linking'
+import * as Updates from 'expo-updates'
+import { getLocale, i18n } from "inline-i18n"
 import React from "react"
 import { Platform, StatusBar, Text } from "react-native"
-import * as Linking from 'expo-linking'
-import * as FileSystem from 'expo-file-system'
-import Constants from 'expo-constants'
-import { i18n, getLocale } from "inline-i18n"
-import * as Updates from 'expo-updates'
 
 import * as Sentry from "./sentry"
 
@@ -223,7 +223,7 @@ export const encodeBase64 = str => {
     // To prevent memory from blowing up, I need to index the string every once and a while.
     // https://stackoverflow.com/questions/35354801/why-does-v8-run-out-of-memory-in-this-situation
     if (i % 3000000 === 0) output[0]
-    
+
   }
 
   return output
@@ -407,7 +407,7 @@ export const getMBSizeStr = numBytes => {
   if(sizeInMB) {
     return i18n("{{num}} mb", { num: sizeInMB })
   }
-  
+
   const sizeInKB = Math.round(numBytes/10, 10) / 100
   return i18n("{{num}} kb", { num: sizeInKB })
 }
@@ -626,7 +626,7 @@ export const getTimeLine = ({ date, timestamp, short }) => {
 
   let timeLine = date.toLocaleTimeString(getLocale(), options)
   const timeLinePieces = timeLine.split(':')
-  
+
   if(timeLinePieces.length === 3) {  // i.e. toLocaleTimeString did not accept options (an Android issue)
     timeLine = `${timeLinePieces[0]}:${timeLinePieces[1]}`
   }
@@ -721,10 +721,10 @@ export const concatText = ({ text, maxLen }) => {
 
 export const customizeTheme = ({ theme, fontFamily }) => {
   // See https://formidable.com/open-source/victory/guides/themes
-  
+
   const NewVictoryTheme = { ...theme }
   NewVictoryTheme.customMaterial = cloneObj(NewVictoryTheme.material)
-  
+
   NewVictoryTheme.customMaterial.area.style.labels.fontFamily =
   NewVictoryTheme.customMaterial.axis.style.axisLabel.fontFamily =
   NewVictoryTheme.customMaterial.axis.style.tickLabels.fontFamily =
@@ -743,7 +743,7 @@ export const customizeTheme = ({ theme, fontFamily }) => {
   NewVictoryTheme.customMaterial.tooltip.style.fontFamily =
   NewVictoryTheme.customMaterial.voronoi.style.labels.fontFamily =
     fontFamily
-  
+
   return NewVictoryTheme
 }
 
@@ -808,3 +808,18 @@ export const getVersionString = version => ({
   INSTRUCTOR: i18n("Interactive book (instructor edition)", "", "enhanced"),
   PUBLISHER: i18n("Interactive book (publisher edition)", "", "enhanced"),
 })[version]
+
+export const deepMerge = (target, source) => {
+  const result = { ...target };
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
+
+export const deepMergeAll = (objects) =>
+  objects.reduce((acc, obj) => deepMerge(acc, obj), {})

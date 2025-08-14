@@ -1,42 +1,32 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import * as Updates from 'expo-updates'
-
-import useRefState from './useRefState'
 
 const useUpdates = () => {
 
-  // TODO: Once I upgrade to expo 50, get rid of this hook and use expo's Updates.useUpdates hook
+  // Use the official expo-updates hook
+  const updatesInfo = Updates.useUpdates()
 
-  const [ info, setInfo, getInfo ] = useRefState({
-    isUpdateAvailable: false,
-    isUpdatePending: false,
-    isChecking: true,
+  // Local state for tracking download progress (to maintain compatibility with App.js)
+  const [localState, setLocalState] = useState({
     isDownloading: false,
   })
 
   const setUpdates = useCallback(
     newInfo => {
-      setInfo({
-        ...getInfo(),
+      setLocalState(prevState => ({
+        ...prevState,
         ...newInfo,
-      })
+      }))
     },
     [],
   )
 
-  const eventListener = event => {
-    setInfo({
-      isUpdateAvailable: event.type === Updates.UpdateEventType.UPDATE_AVAILABLE,
-      isUpdatePending: event.type === Updates.UpdateEventType.UPDATE_AVAILABLE,
-      isChecking: false,
-      isDownloading: false,
-    })
-  }
-
-  Updates.useUpdateEvents(eventListener)
-
+  // Combine official hook data with local state
   return {
-    ...info,
+    isUpdateAvailable: updatesInfo.isUpdateAvailable || false,
+    isUpdatePending: updatesInfo.isUpdatePending || false,
+    isChecking: updatesInfo.isChecking || false,
+    isDownloading: localState.isDownloading || false,
     setUpdates,
   }
 

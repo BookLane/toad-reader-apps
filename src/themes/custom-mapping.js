@@ -1,7 +1,5 @@
 import Constants from 'expo-constants'
-import deepmerge from 'deepmerge'
-
-import { objectMap } from '../utils/toolbox'
+import { deepMergeAll, objectMap } from '../utils/toolbox'
 
 const {
   MAPPING_CUSTOMIZATION=[],
@@ -66,7 +64,7 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
           [appearance]: {
             default: appearance === 'default',
           },
-        },  
+        },
       }),
     },
     appearances: {
@@ -79,7 +77,7 @@ const getComponentSetup = ({ parameters={}, appearance="default", variantGroups=
 }
 
 const getComponentMapping = componentInfos => (
-  deepmerge.all(
+  deepMergeAll(
     componentInfos.map(({ component, ...info }) => ({
       [component]: getComponentSetup(info),
     }))
@@ -88,7 +86,7 @@ const getComponentMapping = componentInfos => (
 
 const mapping = {
 
-  // See https://github.com/eva-design/eva/blob/master/packages/eva/mapping.json  
+  // See https://github.com/eva-design/eva/blob/master/packages/eva/mapping.json
 
   // Eg.
   // components: {
@@ -102,7 +100,7 @@ const mapping = {
   //     },
   //   },
   // },
-  
+
   components: getComponentMapping([
     {
       component: 'Input',
@@ -440,7 +438,7 @@ const mapping = {
     },
     ...MAPPING_CUSTOMIZATION,
   ]),
-  
+
 }
 
 export default mapping
