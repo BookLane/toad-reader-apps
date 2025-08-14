@@ -6,7 +6,7 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "android": "npx expo start --android",
+    "android": "npx expo start --android --offline",
     "build-android-staging": "(node ./scripts/echoActionToPerform.js --action build-android-staging && npm run remind -s && ((npm run pre-push-swap && eas build --platform android --profile staging) || npm run post-push-restore)) || true",
     "build-android-beta": "(node ./scripts/echoActionToPerform.js --action build-android-beta && npm run remind -s && ((npm run pre-push-swap && eas build --platform android --profile beta) || npm run post-push-restore)) || true",
     "build-android-production": "(node ./scripts/echoActionToPerform.js --action build-android-production && npm run remind -s && ((npm run pre-push-swap && eas build --platform android --profile production) || npm run post-push-restore)) || true",
@@ -18,7 +18,7 @@
     "submit-ios-production": "(node ./scripts/echoActionToPerform.js --action submit-ios-production && npm run confirm -s && (eas submit --platform ios --profile production --latest)) || true",
     "change-tenant": "./scripts/changeTenant.sh",
     "confirm": "read -p 'Are you sure? (y/N) ' -n 1 -r && echo '\n' && [[ $REPLY =~ ^[Yy]$ ]]",
-    "ios": "npx expo start --ios",
+    "ios": "npx expo start --ios --offline",
     "list-versions": "node ./scripts/listVersions.js",
     "pre-push-swap": "sed -i .orig \"s/PUSH_DATE_STRING/$(date '+%b %d, %Y at %H:%M')/g\" src/components/major/AppMenu.js",
     "post-push-restore": "rm src/components/major/AppMenu.js && mv src/components/major/AppMenu.js.orig src/components/major/AppMenu.js",
@@ -40,7 +40,7 @@
     "translate": "node node_modules/inline-i18n/scripts/makeTranslationFiles.js --translations-dir='./src/utils/translations' --translation-file-exclude-regex='current.json' && npm run translate-convert-json-to-csv",
     "translate-convert-csv-to-json": "node node_modules/inline-i18n/scripts/convertTranslationCSVtoJSON.js --translations-dir='./src/utils/translations'",
     "translate-convert-json-to-csv": "node node_modules/inline-i18n/scripts/convertTranslationJSONtoCSV.js --translations-dir='./src/utils/translations'",
-    "start": "GENERATE_SOURCEMAP=false npx expo start"
+    "start": "GENERATE_SOURCEMAP=false npx expo start --offline"
   },
   "dependencies": {
     "@amplitude/analytics-react-native": "^1.1.1",
