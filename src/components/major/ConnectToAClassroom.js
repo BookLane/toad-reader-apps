@@ -3,7 +3,7 @@ import { Platform, StyleSheet } from "react-native"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { i18n } from "inline-i18n"
-import { BarCodeScanner } from "expo-barcode-scanner"
+import { CameraView, useCameraPermissions } from "expo-camera"
 import { Modal } from "@ui-kitten/components"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -52,6 +52,7 @@ const ConnectToAClassroom = React.memo(({
   const [ code, setCode ] = useState("")
   const [ connecting, setConnecting ] = useState(false)
   const [ hasPermission, setHasPermission ] = useState()
+  const [permission, requestPermission] = useCameraPermissions()
   const [ mode, setMode ] = useState("text")
 
   const windowDimensions = useDimensions().window
@@ -67,7 +68,7 @@ const ConnectToAClassroom = React.memo(({
       setTimeout(async () => {
         if(mode === "qr" && !hasPermission) {
 
-          const { status } = await BarCodeScanner.requestPermissionsAsync()
+          const { status } = await requestPermission()
 
           if(status === 'granted') {
             setHasPermission(true)
@@ -205,8 +206,11 @@ const ConnectToAClassroom = React.memo(({
           },
         ]}
       >
-        <BarCodeScanner
-          onBarCodeScanned={handleBarCodeScanned}
+        <CameraView
+          onBarcodeScanned={handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr"]
+          }}
           style={styles.codeScanner}
         />
         <Button

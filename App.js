@@ -76,7 +76,7 @@ const themes = { lightTheme, darkTheme }
 // const store = compose(autoRehydrate())(createStore)(reducers, applyMiddleware(patchMiddleware))
 
 const persistConfig = {
-  key: "root",    
+  key: "root",
   storage: AsyncStorage,
 }
 
