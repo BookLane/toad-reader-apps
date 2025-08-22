@@ -1,0 +1,55 @@
+name: Lint / Test / Build
+
+on:
+  pull_request:
+
+
+env:
+  DEFAULT_NODE_VERSION: 16.x
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+    name: ${{ matrix.action }} (${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [16.x, 18.x]
+        action: [build, lint] # , test]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm ci
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: ci:${{ matrix.action }}
+        shell: bash
+        run: npm run ci:${{ matrix.action }}
+        env:
+          GITHASH: ${{ github.sha }}
+          GITHUB_REPO: ${{ github.repository }}
+          BASE_BRANCH: ${{ github.base_ref || 'bm-develop' }}
+          NODE_VERSION: ${{ matrix.node-version }}
