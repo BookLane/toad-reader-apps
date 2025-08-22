@@ -1,28 +1,34 @@
 {
-    "expo": {
-        "extra": {
-            "IDPS": {
-                "21": {
-                    "name": "Toad Reader",
-                    "domain": "166ultlplx.data.staging.toadreader.com",
-                    "authMethod": "SHIBBOLETH",
-                    "bucketPrefix": "read.test-booklane",
-                    "env": "staging"
-                }
-            },
-            "LANGUAGE_CODE": "en",
-            "SENTRY_DSN": "https://7d0aa06bd81c0188c75a4629494e954c@o552165.ingest.us.sentry.io/4508880446423040",
-            "DEV_DATA_ORIGIN_OVERRIDE": "166ultlplx.data.staging.toadreader.com",
-            "REQUEST_OPTIONS": {},
-            "AMPLITUDE_API_KEY": "",
-            "ALLOW_INSECURE_LOCALHOST": true,
-            "QUOTES_DOMAIN": "q.toadreader.com",
-            "VERSION_BUCKET": "bucket-versions-booklane"
-        },
-        "revisionId": "1",
-        "splash": {
-            "backgroundColor": "#ffffff",
-            "resizeMode": "contain"
+  "expo": {
+    "extra": {
+      "IDPS": {
+        "21": {
+          "name": "Toad Reader",
+          "domain": "166ultlplx.data.staging.toadreader.com",
+          "authMethod": "SHIBBOLETH",
+          "bucketPrefix": "read.test-booklane",
+          "env": "staging"
         }
+      },
+      "LANGUAGE_CODE": "en",
+      "SENTRY_DSN": "https://7d0aa06bd81c0188c75a4629494e954c@o552165.ingest.us.sentry.io/4508880446423040",
+      "DEV_DATA_ORIGIN_OVERRIDE": "166ultlplx.data.staging.toadreader.com",
+      "REQUEST_OPTIONS": {},
+      "AMPLITUDE_API_KEY": "",
+      "ALLOW_INSECURE_LOCALHOST": true,
+      "QUOTES_DOMAIN": "q.toadreader.com",
+      "VERSION_BUCKET": "bucket-versions-booklane"
+    },
+    "revisionId": "1",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
+    "android": {
+      "package": "com.biblemesh.dummy"
+    },
+    "ios": {
+      "bundleIdentifier": "com.biblemesh.dummy"
     }
+  }
 }

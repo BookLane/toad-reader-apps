@@ -16,6 +16,8 @@
     "build-apps-production": "(node ./scripts/echoActionToPerform.js --action build-apps-production && npm run remind -s && ((npm run pre-push-swap && npx eas-cli build --platform all --profile production) || npm run post-push-restore)) || true",
     "submit-android-production": "echo '\n\nINSTRUCTIONS: Download the latest Android build from Expo and upload it to the Play Store.\n'",
     "submit-ios-production": "(node ./scripts/echoActionToPerform.js --action submit-ios-production && npm run confirm -s && (npx eas-cli submit --platform ios --profile production --latest)) || true",
+    "ci:build": "npm run change-tenant dummy && npx expo prebuild --clean",
+    "ci:lint": "npm run lint",
     "change-tenant": "./scripts/changeTenant.sh",
     "confirm": "read -p 'Are you sure? (y/N) ' -n 1 -r && echo '\n' && [[ $REPLY =~ ^[Yy]$ ]]",
     "ios": "npx expo start --ios",
@@ -45,7 +47,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky install",
+    "prepare": "husky",
     "update-indirect-dependencies": "npx update-browserslist-db@latest"
   },
   "lint-staged": {
