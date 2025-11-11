@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import Constants from 'expo-constants'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Updates from 'expo-updates'
-import { Platform, StatusBar, AppState } from "react-native"
+import { Platform, StatusBar, AppState, LogBox } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Router } from "./src/components/routers/react-router"
 import { createStore, applyMiddleware } from "redux"
@@ -37,6 +37,12 @@ import { logEvent } from "./src/utils/analytics"
 import Splash from "./src/components/major/Splash"
 import Library from "./src/components/screens/Library"
 import CoverAndSpin from "./src/components/basic/CoverAndSpin"
+
+// Suppress known warnings from react-router-native v5 with React 18
+// These will be resolved when upgrading to react-router v6
+LogBox.ignoreLogs([
+  'Support for defaultProps will be removed from function components',
+])
 
 const {
   LANGUAGE_CODE='en',

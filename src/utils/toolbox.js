@@ -15,7 +15,29 @@ const {
   ENABLE_WIDE_TABLE_BEHAVIOR,
 } = Constants.expoConfig.extra
 
-export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
+
+// Fonction helper au début du fichier
+const safeParse = (str) => {
+  try {
+    // Remplacer les undefined dans la chaîne JSON
+    const cleaned = str?.replace(/undefined/g, 'null') || '{}';
+    return JSON.parse(cleaned);
+  } catch (error) {
+    console.error('Parse error:', error, 'Input:', str);
+    return null;
+  }
+};
+
+// export const cloneObj = obj => JSON.parse(JSON.stringify(obj))
+
+export const cloneObj = obj => {
+  try {
+    return structuredClone(obj);
+  } catch (error) {
+    console.warn('Failed to clone object:', error);
+    return obj;
+  }
+};
 
 // copied from readium-js/readium-shared-js/plugins/highlights
 const parseContentCfi = cont => (
@@ -184,7 +206,7 @@ export const fetchWithProgress = (url, { progressCallback, abortFunctionCallback
 )
 
 export const getReqOptionsWithAdditions = additions => {
-  const reqOptions = JSON.parse(JSON.stringify(REQUEST_OPTIONS || {}))
+  const reqOptions = safeParse(JSON.stringify(REQUEST_OPTIONS || {}))
 
   const mergeInObj = (obj1, obj2) => {
     for(let key in obj2) {
@@ -723,6 +745,13 @@ export const customizeTheme = ({ theme, fontFamily }) => {
   // See https://formidable.com/open-source/victory/guides/themes
 
   const NewVictoryTheme = { ...theme }
+
+  // Check if material theme exists (may not exist in newer Victory versions)
+  if (!NewVictoryTheme.material) {
+    console.warn('Victory theme.material not found - skipping customMaterial creation')
+    return NewVictoryTheme
+  }
+
   NewVictoryTheme.customMaterial = cloneObj(NewVictoryTheme.material)
 
   NewVictoryTheme.customMaterial.area.style.labels.fontFamily =

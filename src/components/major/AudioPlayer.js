@@ -146,7 +146,13 @@ const AudioPlayer = ({
           setPositionMS(0)
           setDurationMS(0)
 
-          await Audio.setAudioModeAsync({ playsInSilentModeIOS: true })
+          await Audio.setAudioModeAsync({
+            playsInSilentModeIOS: true,
+            staysActiveInBackground: true,
+            shouldDuckAndroid: true,
+            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          })
           const { sound, status } = await Audio.Sound.createAsync(
             source,
             {

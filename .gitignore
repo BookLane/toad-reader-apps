@@ -7,4 +7,5 @@
 /src/utils/translations/current.json
 /web-build/*
 /dist/*
+.env
 .env*.local

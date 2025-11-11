@@ -204,10 +204,9 @@ const AudiobookPlayer = ({
           await Audio.setAudioModeAsync({
             playsInSilentModeIOS: true,
             staysActiveInBackground: true,
-            // playThroughEarpieceAndroid: true,
-            // interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-            // interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-            // shouldDuckAndroid: true,
+            shouldDuckAndroid: true,
+            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
           })
 
           const positionMillis = (

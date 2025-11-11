@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 3.7.2"
+    "version": ">= 3.7.2",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,7 +9,7 @@
       "distribution": "internal",
       "channel": "development",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "env": {
         "releaseChannel": "development"
@@ -18,7 +19,7 @@
       "distribution": "internal",
       "channel": "staging",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "env": {
         "channel": "staging"
@@ -28,18 +29,21 @@
       "distribution": "internal",
       "channel": "beta",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "env": {
-        "channel": "beta"
+        "channel": "beta",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
     "production": {
       "channel": "production",
       "ios": {
-        "resourceClass": "m1-medium"
+        "resourceClass": "m-medium"
       },
       "env": {
+        "EXPO_SDK_VERSION":"52.0.0",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "channel": "production"
       }
     }
