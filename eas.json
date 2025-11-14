@@ -42,7 +42,7 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "EXPO_SDK_VERSION":"52.0.0",
+        "EXPO_SDK_VERSION":"54.0.0",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "channel": "production"
       }

@@ -8,4 +8,4 @@
 /web-build/*
 /dist/*
 .env
-.env*.local
+.env*.local.expo/
