@@ -298,6 +298,7 @@ const PageWebView = ({
             height,
             minHeight: height,
             maxHeight: height,
+            opacity: 0.99,
           },
           style,
         ]}
@@ -323,6 +324,7 @@ const PageWebView = ({
         originWhitelist={['*']}
         mixedContentMode="always"
         bounces={false}
+        androidHardwareAccelerationDisabled={true}
       />
     </View>
   )
