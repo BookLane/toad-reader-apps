@@ -8,10 +8,10 @@ export const updateReader = async ({ setReaderStatus }) => {
 
   const readerDestinationPath = `${FileSystem.documentDirectory}reader/index.html`
 
-  const { size } = await FileSystem.getInfoAsync(readerDestinationPath)
+  const fileInfo = await FileSystem.getInfoAsync(readerDestinationPath)
   const readerCodeSizeInBytes = encodeURI(getReaderCode()).split(/%..|./).length - 1
 
-  if(size !== readerCodeSizeInBytes) {
+  if(!fileInfo.exists || fileInfo.size !== readerCodeSizeInBytes) {
     setReaderStatus({ readerStatus: "updating" })
     console.log('Updating reader...')
 
