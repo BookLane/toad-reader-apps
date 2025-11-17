@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { StyleSheet, View, Platform } from "react-native"
 import WebView from "./WebView"
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import usePrevious from "react-use/lib/usePrevious"
 
 import { postMessage } from "../../utils/postMessage"

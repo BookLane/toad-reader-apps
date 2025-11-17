@@ -1,7 +1,7 @@
 import React from "react"
 import { Text, Platform } from "react-native"
 import MiniSearch from "minisearch"
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 
 import { getDataOrigin, getIDPOrigin, getReqOptionsWithAdditions, safeFetch } from "./toolbox"
 import downloadAsync from "./downloadAsync"

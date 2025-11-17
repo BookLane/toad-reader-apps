@@ -1,5 +1,5 @@
 import { captureRef } from 'react-native-view-shot'
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import { Platform } from "react-native"
 
 // NOTE: I have tried to speed this up in the following ways but they were not faster.

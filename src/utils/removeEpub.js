@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 // import { i18n } from "inline-i18n"
 import { Platform } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'

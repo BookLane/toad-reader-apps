@@ -2,7 +2,7 @@
 // See https://idpf.github.io/a11y-guidelines/content/nav/toc.html
 
 import { Platform } from "react-native"
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import { parseString } from "xml2js"
 
 import { getBooksDir, getDataOrigin, getReqOptionsWithAdditions, safeFetch, normalizePath } from "./toolbox"

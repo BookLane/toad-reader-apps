@@ -1,5 +1,5 @@
 import Constants from 'expo-constants'
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import * as Linking from 'expo-linking'
 import * as Updates from 'expo-updates'
 import { getLocale, i18n } from "inline-i18n"

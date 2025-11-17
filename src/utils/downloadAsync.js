@@ -1,5 +1,5 @@
 import { Platform } from "react-native"
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system/legacy'
 import { safeFetch } from "./toolbox"
 
 export default async (remoteUri, localUri, { skipIfExists, headers }={}, doSafeFetch) => {
