@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { i18n } from "inline-i18n"
-import { Audio } from 'expo-av'
+import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av'
 
 import useRefState from "../../hooks/useRefState"
 
@@ -150,8 +150,8 @@ const AudioPlayer = ({
             playsInSilentModeIOS: true,
             staysActiveInBackground: true,
             shouldDuckAndroid: true,
-            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+            interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+            interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
           })
           const { sound, status } = await Audio.Sound.createAsync(
             source,
