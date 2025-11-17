@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useEffect } from "react"
 import { View, Animated } from "react-native"
 import { StyleSheet } from "react-native"
 import { i18n } from "inline-i18n"
-import { BlurView } from 'expo-blur'
+// import { BlurView } from 'expo-blur'
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import useSetTimeout from "../../hooks/useSetTimeout"
@@ -11,13 +11,14 @@ import { getStatusBarCurrentHeight } from "../../utils/toolbox"
 import Button from "../basic/Button"
 import Icon from '../basic/Icon'
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
+// const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
+const AnimatedView = Animated.View
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 15,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   content: {
     flex: 1,
@@ -73,8 +74,7 @@ const Guide = ({
   if(!ready && !blockUntilReady) return null
 
   return (
-    <AnimatedBlurView
-      intensity={10}
+    <AnimatedView
       style={[
         styles.container,
         {
@@ -110,7 +110,7 @@ const Guide = ({
         </View>
         {componentsAfterOkay}
       </View>
-    </AnimatedBlurView>
+    </AnimatedView>
   )
 }
 
