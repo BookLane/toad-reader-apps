@@ -572,7 +572,7 @@ const AppMenu = ({
           </TouchableOpacity>
         }
 
-        <Text style={styles.subversion}>Updated Oct 31, 2025 at 07:53</Text>
+        <Text style={styles.subversion}>Updated {new Date(process.env.BUILD_TIME || Date.now()).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
 
       </>
     ),

@@ -31,7 +31,8 @@ import usePushNotificationsSetup from "./src/hooks/usePushNotificationsSetup"
 import useInstanceValue from "./src/hooks/useInstanceValue"
 import useSetInterval from "./src/hooks/useSetInterval"
 import useUpdates from "./src/hooks/useUpdates"
-import * as Sentry from "./src/utils/sentry"
+// Sentry disabled for development
+// import * as Sentry from "./src/utils/sentry"
 import { logEvent } from "./src/utils/analytics"
 
 import Splash from "./src/components/major/Splash"
@@ -47,15 +48,14 @@ LogBox.ignoreLogs([
 const {
   LANGUAGE_CODE='en',
   IDPS,
-  SENTRY_DSN,
 } = Constants.expoConfig.extra
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  enableInExpoDevelopment: true,
-  release: Constants.expoConfig.revisionId,
-  debug: true,
-})
+// Sentry.init({
+//   dsn: SENTRY_DSN,
+//   enableInExpoDevelopment: true,
+//   release: Constants.expoConfig.revisionId,
+//   debug: true,
+// })
 
 if(Platform.OS === 'web') {
   window.productionLog = (...params) => {

@@ -6,7 +6,8 @@ import { getLocale, i18n } from "inline-i18n"
 import React from "react"
 import { Platform, StatusBar, Text } from "react-native"
 
-import * as Sentry from "./sentry"
+// Sentry disabled
+// import * as Sentry from "./sentry"
 
 const {
   REQUEST_OPTIONS,
@@ -406,7 +407,7 @@ export const getIDPOrigin = ({ domain, protocol=`https`, noBeta, env }) => {
 
   if(env ? env === 'dev' : __DEV__) {
     // dev environment
-    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:19006`
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8081`
   }
 
   if(env ? env === 'staging' : isStaging()) {
@@ -777,12 +778,13 @@ export const customizeTheme = ({ theme, fontFamily }) => {
 }
 
 export const sentry = (...params) => {
+  // Sentry disabled
   if(params.length === 1 && params[0].error) {
-    Sentry.captureException(params[0].error)
+    console.log('Error:', params[0].error)
   } else if(params.length === 1 && params[0].message) {
-    Sentry.captureMessage(String(params[0].message))
+    console.log('Message:', String(params[0].message))
   } else {
-    Sentry.captureException(new Error(params.map(param => JSON.stringify(param)).join("\n")))
+    console.log('Error:', params.map(param => JSON.stringify(param)).join("\n"))
   }
 }
 

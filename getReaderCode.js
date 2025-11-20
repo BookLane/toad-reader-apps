@@ -7,9 +7,16 @@ const getReaderCode = () => `
 
     <!-- <link rel="stylesheet" type="text/css" href="css/readium-all.css?BUST*_QUERY_STRING"> -->
 
-    <script src="https://browser.sentry-cdn.com/4.3.0/bundle.min.js" crossorigin="anonymous"></script>  <!-- biblemesh_ -->
+    <!-- Sentry disabled -->
+    <!-- <script src="https://browser.sentry-cdn.com/4.3.0/bundle.min.js" crossorigin="anonymous"></script> -->
     <!-- <script type="text/javascript" src="scripts/readium-js-viewer_all_LITE.js?BUST*_QUERY_STRING"> </script> -->
     <script type="text/javascript">
+// Sentry stub - disabled
+window.Sentry = {
+  init: function() {},
+  captureException: function(e) { console.log("Error:", e); },
+  captureMessage: function(msg) { console.log("Message:", msg); }
+};
 var requirejs,require,define;!function(e){function t(e,t){return y.call(e,t)}function n(e,t){var n,i,r,o,a,s,l,c,u,d,f,h,p=t&&t.split("/"),g=m.map,v=g&&g["*"]||{};if(e){for(e=e.split("/"),a=e.length-1\
 ,m.nodeIdCompat&&_.test(e[a])&&(e[a]=e[a].replace(_,"")),"."===e[0].charAt(0)&&p&&(h=p.slice(0,p.length-1),e=h.concat(e)),u=0;u<e.length;u++)if("."===(f=e[u]))e.splice(u,1),u-=1;else if(".."===f){if(0\
 ===u||1===u&&".."===e[2]||".."===e[u-1])continue;u>0&&(e.splice(u-1,2),u-=2)}e=e.join("/")}if((p||v)&&g){for(n=e.split("/"),u=n.length;u>0;u-=1){if(i=n.slice(0,u).join("/"),p)for(d=p.length;d>0;d-=1)i\

@@ -238,9 +238,11 @@ const BookContents = React.memo(({
         ? (item.uid === selectedToolUid)
         : (!selectedToolUid && item.spineIdRef === currentSpineIdRef)
 
+      const { key, ...itemProps } = item
+
       return (
         <BookContentsLine
-          {...item}
+          {...itemProps}
           bookId={bookId}
           goTo={goTo}
           reportLineHeight={reportLineHeight}

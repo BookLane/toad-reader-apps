@@ -55,7 +55,6 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/hooks": "^2.4.3",
     "@react-native-community/netinfo": "11.4.1",
-    "@sentry/react-native": "~7.2.0",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.2.12",
     "@ui-kitten/components": "5.1.2",
@@ -64,9 +63,9 @@
     "babel-preset-expo": "~54.0.0",
     "copy-to-clipboard": "^3.3.3",
     "crypto-browserify": "^3.12.0",
-    "expo": "~54.0.0",
+    "expo": "^54.0.24",
     "expo-application": "~7.0.7",
-    "expo-asset": "~12.0.9",
+    "expo-asset": "~12.0.10",
     "expo-av": "~16.0.7",
     "expo-blur": "~15.0.7",
     "expo-build-properties": "~1.0.9",
@@ -78,12 +77,12 @@
     "expo-document-picker": "~14.0.7",
     "expo-font": "~14.0.9",
     "expo-image": "~3.0.10",
-    "expo-linking": "~8.0.8",
+    "expo-linking": "~8.0.9",
     "expo-navigation-bar": "~5.0.9",
-    "expo-notifications": "~0.32.12",
+    "expo-notifications": "~0.32.13",
     "expo-screen-orientation": "~9.0.7",
-    "expo-splash-screen": "~31.0.10",
-    "expo-updates": "~29.0.12",
+    "expo-splash-screen": "~31.0.11",
+    "expo-updates": "^29.0.12",
     "find-in-files": "^0.5.0",
     "inline-i18n": "github:educational-resources-and-services/inline-i18n#d44421bfd684ceddf38e13c7f437ada9fa98432b",
     "jspdf": "^3.0.3",
@@ -124,5 +123,8 @@
     "victory-native": "^41.20.1",
     "vm-browserify": "^1.1.2",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "latest"
   }
 }

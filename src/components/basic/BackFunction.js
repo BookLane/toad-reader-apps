@@ -12,9 +12,9 @@ const BackFunction = ({
         return true
       }
 
-      BackHandler.addEventListener('hardwareBackPress', backPressEvent)
-  
-      return () => BackHandler.removeEventListener('hardwareBackPress', backPressEvent)
+      const subscription = BackHandler.addEventListener('hardwareBackPress', backPressEvent)
+
+      return () => subscription.remove()
     },
     [ func ],
   )
