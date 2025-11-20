@@ -406,8 +406,8 @@ export const getDataOrigin = ({ domain, protocol=`https`, env }={}) => {
 export const getIDPOrigin = ({ domain, protocol=`https`, noBeta, env }) => {
 
   if(env ? env === 'dev' : __DEV__) {
-    // dev environment
-    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8081`
+    // dev environment - use same port as data server (8080)
+    return `http://${DEV_DATA_ORIGIN_OVERRIDE || `localhost`}:8080`
   }
 
   if(env ? env === 'staging' : isStaging()) {
