@@ -154,20 +154,23 @@ const styles = StyleSheet.create({
     padding: 4,
     overflow: 'hidden',
     borderRadius: 100,
-    backgroundColor: 'white',
-    shadowOffset: { width: 1, height: 1 },
+    backgroundColor: '#fff',
+    shadowOffset: { width: 5, height: 5 },
     shadowColor: "black",
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    width: 128,
+    shadowOpacity: 0.7,
+    shadowRadius: 50,
+    width: 130,
+    borderColor: '#66869cff',
+    borderWidth: 1,
   },
   bottomNavigation: {
+    backgroundColor: '#fff',
     paddingVertical: 0,
     minHeight: 40,
   },
   bottomNavigationTab: {
     marginHorizontal: 10,
-    width: 40,
+    width: 50,
   },
   typeSelectorIndicator: {
     backgroundColor: 'rgb(238, 241, 245)',
@@ -177,7 +180,11 @@ const styles = StyleSheet.create({
   readIcon: {
     position: 'relative',
     top: -1,
+    height: 50
   },
+  listenIcon: {
+    height: 50,  
+  }
 })
 
 const Library = ({

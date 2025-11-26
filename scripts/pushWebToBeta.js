@@ -9,7 +9,7 @@ const { domain } = Object.values(appInfo.expo.extra.IDPS)[0]
 
 try {
   const bucket = `${dashifyDomain(domain)}.beta.toadreader.com`.slice(0,54) + `-booklane`
-  exec(`aws s3 sync web-build s3://${bucket} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
+  exec(`aws s3 sync dist s3://${bucket} --acl public-read --quiet --delete`, (err, stdout, stderr) => {
     console.log(stdout)
     process.exit()
   })

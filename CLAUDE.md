@@ -81,6 +81,12 @@ src/components/
 - Run `npm run change-tenant <tenant>` after version updates
 - Confirm updates when prompted by build/deploy scripts
 
+### Build Scripts Notes
+- **pre-push-swap/post-push-restore**: Legacy scripts that used to replace `PUSH_DATE_STRING` in AppMenu.js with build date
+- **Current behavior**: Build date is now calculated automatically at build time via `BUILD_TIME` environment variable (see metro.config.js)
+- These scripts still exist in package.json but are no longer used for date injection
+- If you see `.orig` files (like `AppMenu.js.orig`), they are remnants from these scripts and can be cleaned up with `npm run post-push-restore`
+
 ### Platform-Specific Code
 - Use `.web.js` extensions for web-specific implementations
 - Platform checks via `Platform.OS` for conditional logic
