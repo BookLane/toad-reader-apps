@@ -8,3 +8,8 @@
 /web-build/*
 /dist/*
 .env*.local
+
+# Backup files
+*.backup
+*.orig
+*.bak

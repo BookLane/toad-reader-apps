@@ -1,9 +1,7 @@
-// This replaces `const { getDefaultConfig } = require('expo/metro-config');`
-const { getSentryExpoConfig } = require('@sentry/react-native/metro');
+const { getDefaultConfig } = require('expo/metro-config');
 
-// This replaces `const config = getDefaultConfig(__dirname);`
-const defaultConfig = getSentryExpoConfig(__dirname);
+const config = getDefaultConfig(__dirname);
 
-defaultConfig.resolver.assetExts.push("ttf", "mp4")
+config.resolver.assetExts.push("ttf", "mp4")
 
-module.exports = defaultConfig
+module.exports = config
