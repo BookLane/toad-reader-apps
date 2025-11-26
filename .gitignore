@@ -9,3 +9,6 @@
 /dist/*
 .env
 .env*.local.expo/
+.DS_Store
+*.backup
+*.orig
