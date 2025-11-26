@@ -572,7 +572,7 @@ const AppMenu = ({
           </TouchableOpacity>
         }
 
-        <Text style={styles.subversion}>Updated PUSH_DATE_STRING</Text>
+        <Text style={styles.subversion}>Updated Nov 26, 2025 at 11:30</Text>
 
       </>
     ),
