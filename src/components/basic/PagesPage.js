@@ -75,17 +75,27 @@ const PagesPage = React.memo(({
 
       preventDoubleTap.current = true
 
-      view.current.measureInWindow((x, y) => zoomToPage({
-        zoomToInfo: {
-          spineIdRef,
-          cfi,
-          pageIndexInSpine,
-        },
-        snapshotCoords: {
-          x,
-          y: y + ((Platform.OS === 'android' && !getIsAndroidWithCameraWithinScreen()) ? getStatusBarCurrentHeight() : 0),
-        },
-      }))
+      if(Platform.OS === 'web') {
+        zoomToPage({
+          zoomToInfo: {
+            spineIdRef,
+            cfi,
+            pageIndexInSpine,
+          },
+        })
+      } else {
+        view.current.measureInWindow((x, y) => zoomToPage({
+          zoomToInfo: {
+            spineIdRef,
+            cfi,
+            pageIndexInSpine,
+          },
+          snapshotCoords: {
+            x,
+            y: y + ((Platform.OS === 'android' && !getIsAndroidWithCameraWithinScreen()) ? getStatusBarCurrentHeight() : 0),
+          },
+        }))
+      }
 
       setDoubleTapTimeout(() => preventDoubleTap.current = false, 1000)
     },

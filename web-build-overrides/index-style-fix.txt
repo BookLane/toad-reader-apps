@@ -1,0 +1,4 @@
+/* Fix for UI Kitten components having fixed 500px height */
+div[style*="height: 500px"] {
+  height: auto !important;
+}

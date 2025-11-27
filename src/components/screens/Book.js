@@ -671,6 +671,21 @@ const Book = React.memo(({
     [ spineIdRef, cfi, bookId, wideMode ],
   )
 
+  const reportSpots = useCallback(
+    ({ type, ...info }) => {
+      toolSpots.current[type] = info
+
+      if(type === 'BookPage') {
+
+        if(info.spots) {
+          setState({ hrefToGoTo: undefined, cfiToGoTo: undefined })
+        }
+
+      }
+    },
+    [],
+  )
+
   const goTo = useCallback(
     info => {
       let newRouterState = getRouterState()
@@ -953,21 +968,6 @@ const Book = React.memo(({
   )
 
   const setSnapshotCoords = useCallback(snapshotCoords => setState({ snapshotCoords }), [])
-
-  const reportSpots = useCallback(
-    ({ type, ...info }) => {
-      toolSpots.current[type] = info
-
-      if(type === 'BookPage') {
-
-        if(info.spots) {
-          setState({ hrefToGoTo: undefined, cfiToGoTo: undefined })
-        }
-
-      }
-    },
-    [],
-  )
 
   const { onScroll: onBookContentsScroll, y: bookContentsScrollY } = useScroll()
 

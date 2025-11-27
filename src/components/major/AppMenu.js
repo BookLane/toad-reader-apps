@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: undefined,
     aspectRatio: 2,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     backgroundColor: '#e8e8e8',
   },
   title: {

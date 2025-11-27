@@ -1,0 +1,5 @@
+/* Fix for UI Kitten Drawer header having fixed 500px height */
+div[style*="height: 500px"] {
+  height: auto !important;
+  min-height: auto !important;
+}
