@@ -73,7 +73,7 @@ const KeyboardAvoidingView = ({
         styles.view,
         style,
       ]}
-      behavior={Platform.select({ android: 'height', ios: 'padding' })}
+      behavior={Platform.select({ android: undefined, ios: 'padding' })}
       keyboardVerticalOffset={
         // (Platform.OS === 'android' && keyboardOpen)
         //   ? 0  // this is an android hack due to a buck in KeyboardAvoidingView (https://stackoverflow.com/questions/41616457/keyboardavoidingview-reset-height-when-keyboard-is-hidden)

@@ -18,6 +18,9 @@
     "staging": {
       "distribution": "internal",
       "channel": "staging",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
         "resourceClass": "m-medium"
       },
@@ -28,6 +31,9 @@
     "beta": {
       "distribution": "internal",
       "channel": "beta",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
         "resourceClass": "m-medium"
       },
@@ -38,6 +44,20 @@
     },
     "production": {
       "channel": "production",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_SDK_VERSION":"54.0.0",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "channel": "production"
+      }
+    },
+    "production-apk": {
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
         "resourceClass": "m-medium"
       },
