@@ -3,7 +3,8 @@ import { StyleSheet, View, Text, ScrollView, Alert } from "react-native"
 import Constants from 'expo-constants'
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
-import { Autocomplete, AutocompleteItem, Button, Input } from '@ui-kitten/components'
+import { AutocompleteItem, Button, Input } from '@ui-kitten/components'
+import PlatformAutocomplete from '../basic/PlatformAutocomplete'
 import { i18n } from "inline-i18n"
 import copy from 'copy-to-clipboard'
 
@@ -457,7 +458,7 @@ const Users = ({
         <View style={styles.container}>
 
           <View style={styles.inputContainer}>
-            <Autocomplete
+            <PlatformAutocomplete
               placeholder={i18n("Search by email, name, or id", "", "admin")}
               value={searchStr}
               onSelect={onSelect}
@@ -491,7 +492,7 @@ const Users = ({
                   disabled
                 />
               }
-            </Autocomplete>
+            </PlatformAutocomplete>
           </View>
 
           <View style={styles.results}>
