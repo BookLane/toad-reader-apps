@@ -82,10 +82,11 @@ src/components/
 - Confirm updates when prompted by build/deploy scripts
 
 ### Build Scripts Notes
-- **pre-push-swap/post-push-restore**: Legacy scripts that used to replace `PUSH_DATE_STRING` in AppMenu.js with build date
-- **Current behavior**: Build date is now calculated automatically at build time via `BUILD_TIME` environment variable (see metro.config.js)
-- These scripts still exist in package.json but are no longer used for date injection
-- If you see `.orig` files (like `AppMenu.js.orig`), they are remnants from these scripts and can be cleaned up with `npm run post-push-restore`
+- **pre-push-swap/post-push-restore**: Scripts that replace `PUSH_DATE_STRING` placeholder in AppMenu.js with the actual build date
+- **How it works**: Before each build/deploy, `pre-push-swap` replaces the placeholder with current date, then `post-push-restore` restores the original file
+- These scripts are automatically called by all build and deploy commands
+- If you see `.orig` files (like `AppMenu.js.orig`), they are temporary backups that should be cleaned up with `npm run post-push-restore`
+- **Important**: Do not remove the `PUSH_DATE_STRING` placeholder from AppMenu.js - it's required for the build scripts to inject the correct date
 
 ### Platform-Specific Code
 - Use `.web.js` extensions for web-specific implementations

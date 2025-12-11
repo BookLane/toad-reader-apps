@@ -10,7 +10,4 @@ config.transformer.unstable_allowRequireContext = true;
 config.resolver.unstable_enablePackageExports = false;
 config.resolver.sourceExts.push('cjs');
 
-// Inject build time as environment variable
-process.env.BUILD_TIME = new Date().toISOString();
-
 module.exports = config;

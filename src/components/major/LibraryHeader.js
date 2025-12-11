@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
 const LibraryHeader = ({
   isUpdatePending,
   isUpdateAvailable,
+  onRefresh,
 
   idps,
   accounts,
@@ -216,6 +217,12 @@ const LibraryHeader = ({
           </HeaderIcon>
         }
         rightControls={[
+          <HeaderIcon
+            iconName="reload"
+            onPress={onRefresh}
+            disabled={!online}
+            uiStatus={!online ? "disabled" : null}
+          />,
           <HeaderIcon
             iconName="search-sharp"
             onPress={toggleShowSearch}

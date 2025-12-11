@@ -462,6 +462,28 @@ const Library = ({
     [ idps, accounts, handleNewLibrary ],
   )
 
+  const refreshLibrary = useCallback(
+    async () => {
+      console.log('Manual library refresh triggered...')
+      setFetchingBooks({ value: true })
+
+      try {
+        for(let accountId in accounts) {
+          try {
+            await updateBooks({ accountId })
+          } catch(error) {
+            console.log("Refresh library ERROR for account", accountId, error)
+          }
+        }
+      } finally {
+        setFetchingBooks({ value: false })
+      }
+
+      console.log('...manual library refresh complete.')
+    },
+    [ accounts, updateBooks ],
+  )
+
   const onLoginSuccess = useCallback(
     () => {
       setShowLogin(false)
@@ -947,6 +969,7 @@ const Library = ({
                   scope={scope}
                   isUpdatePending={isUpdatePending}
                   isUpdateAvailable={isUpdateAvailable}
+                  onRefresh={refreshLibrary}
                 />
                 {doingInitialFetch
                   ? (
