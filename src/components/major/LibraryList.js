@@ -10,6 +10,7 @@ import useCoverSize from "../../hooks/useCoverSize"
 
 import LibraryBook from "../basic/LibraryBook"
 import BookInfo from "../basic/BookInfo"
+import BookInfoSkeleton from "../basic/BookInfoSkeleton"
 
 const {
   LIBRARY_LIST_MARGIN,
@@ -33,6 +34,7 @@ const LibraryList = React.memo(({
   library={},
   handleNewLibrary,
   viewingAudiobooks,
+  fetchingBooks,
 }) => {
 
   const flatListRef = useRef()
@@ -65,20 +67,31 @@ const LibraryList = React.memo(({
   // this.navigationWillFocusListener.remove()
 
   const renderItem = useCallback(
-    ({ item: { key: bookId }, index }) => (
-      <LibraryBook
-        key={bookId}
-        bookId={bookId}
-      >
-        <BookInfo
+    ({ item: { key: bookId }, index }) => {
+      if (fetchingBooks) {
+        return (
+          <BookInfoSkeleton
+            key={bookId}
+            isFirstRow={index === 0}
+          />
+        )
+      }
+
+      return (
+        <LibraryBook
+          key={bookId}
           bookId={bookId}
-          bookInfo={books[bookId]}
-          isFirstRow={index === 0}
-          handleNewLibrary={handleNewLibrary}
-        />
-      </LibraryBook>
-    ),
-    [ books, handleNewLibrary ],
+        >
+          <BookInfo
+            bookId={bookId}
+            bookInfo={books[bookId]}
+            isFirstRow={index === 0}
+            handleNewLibrary={handleNewLibrary}
+          />
+        </LibraryBook>
+      )
+    },
+    [ books, handleNewLibrary, fetchingBooks ],
   )
 
   const { coverHeight } = useCoverSize({ viewingAudiobooks })
@@ -97,9 +110,10 @@ const LibraryList = React.memo(({
   )
 })
 
-const mapStateToProps = ({ books, library }) => ({
+const mapStateToProps = ({ books, library, fetchingBooks }) => ({
   books,
   library,
+  fetchingBooks,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

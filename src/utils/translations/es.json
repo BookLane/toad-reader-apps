@@ -16,6 +16,8 @@
     "All books have been removed.": "Se eliminaron todos los libros",
     "Log out": "Cerrar sesión",
     "Are you sure you want to log out and remove all books from this device?": "¿Seguro que quieres cerrar sesión y eliminar todos los libros de este dispositivo?",
+    "Please wait": "Por favor espere",
+    "Please wait 5 seconds between each library refresh.": "Por favor espere 5 segundos entre cada actualización de la biblioteca.",
     "Finding books...": "Buscando libros...",
     "Logging out...": "Cerrando sesión...",
     "No books found.": "No se encontraron libros",

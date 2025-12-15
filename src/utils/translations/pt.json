@@ -21,6 +21,8 @@
 		"Logging you in...": "Fazendo login",
 		"Loading login portal...": "Carregando o portal de entrada...",
 		"Logging out...": "Saindo",
+		"Please wait": "Por favor aguarde",
+		"Please wait 5 seconds between each library refresh.": "Por favor aguarde 5 segundos entre cada atualização da biblioteca.",
 		"No books found.": "Livros não encontrados.",
 		"Sort by...": "Ordenar por.",
 		"Title": "Título",

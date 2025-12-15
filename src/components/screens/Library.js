@@ -267,7 +267,7 @@ const Library = ({
       if(widget && parent_domain) {
         const idps = getIdps()
 
-        // check to see if we should redirect to a different domain
+        // check to see if we should redirect to a different domaindn
         safeFetch(`${getDataOrigin(Object.values(idps)[0])}/check_for_embed_website_redirect?parent_domain=${encodeURIComponent(parent_domain)}`)
           .then(result => result.json())
           .then(({ redirectToDomain }) => {

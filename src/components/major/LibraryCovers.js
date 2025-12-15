@@ -10,6 +10,7 @@ import useCoverSize from '../../hooks/useCoverSize'
 import LibraryBook from "../basic/LibraryBook"
 import CoversRow from "../basic/CoversRow"
 import Cover from "../basic/Cover"
+import CoverSkeleton from "../basic/CoverSkeleton"
 
 const {
   LIBRARY_COVERS_HORIZONTAL_MARGIN,
@@ -40,6 +41,7 @@ const LibraryCovers = ({
   bookList=[],
   library={},
   viewingAudiobooks,
+  fetchingBooks,
 }) => {
 
   const { coverWidth, coverHeight, coversPerRow } = useCoverSize({ viewingAudiobooks })
@@ -132,19 +134,31 @@ const LibraryCovers = ({
     ({ item, index }) => {
       const { bookIds, highlightedBookId, row1BookIds, row2BookIds } = item
 
-      const getCover = ({ bookId, width, height }) => (
-        <LibraryBook
-          key={bookId}
-          bookId={bookId}
-        >
-          <Cover
+      const getCover = ({ bookId, width, height }) => {
+        if (fetchingBooks) {
+          return (
+            <CoverSkeleton
+              key={bookId}
+              bookWidth={width || coverWidth}
+              bookHeight={height || coverHeight}
+            />
+          )
+        }
+
+        return (
+          <LibraryBook
+            key={bookId}
             bookId={bookId}
-            bookInfo={books[bookId]}
-            bookWidth={width || coverWidth}
-            bookHeight={height || coverHeight}
-          />
-        </LibraryBook>
-      )
+          >
+            <Cover
+              bookId={bookId}
+              bookInfo={books[bookId]}
+              bookWidth={width || coverWidth}
+              bookHeight={height || coverHeight}
+            />
+          </LibraryBook>
+        )
+      }
 
       if(highlightedBookId) {  // this is a highlight row
         
@@ -185,7 +199,7 @@ const LibraryCovers = ({
         )
       }
     },
-    [ books, coverWidth, coverHeight ],
+    [ books, coverWidth, coverHeight, fetchingBooks ],
   )
 
   return (
@@ -205,9 +219,10 @@ const LibraryCovers = ({
   )
 }
 
-const mapStateToProps = ({ library, books }) => ({
+const mapStateToProps = ({ library, books, fetchingBooks }) => ({
   library,
   books,
+  fetchingBooks,
 })
 
 const matchDispatchToProps = (dispatch, x) => bindActionCreators({

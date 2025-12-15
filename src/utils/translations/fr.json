@@ -17,6 +17,8 @@
     "Books": "Livres",
     "Flags:": "Indicateurs :",
     "Note": "Note",
+    "Please wait": "Veuillez patienter",
+    "Please wait 5 seconds between each library refresh.": "Veuillez attendre 5 secondes entre chaque actualisation de la bibliothèque.",
     "Finding books...": "Recherche de livres...",
     "Logging out...": "Déconnexion...",
     "No books found.": "Aucun livre trouvé.",

@@ -11,6 +11,7 @@ import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from '../../hooks/useRouterState'
 import useDownloadProgress from '../../hooks/useDownloadProgress'
+import useSetTimeout from "../../hooks/useSetTimeout"
 
 import LinkLikeText from "../basic/LinkLikeText"
 import AppHeader from "../basic/AppHeader"
@@ -62,6 +63,8 @@ const LibraryHeader = ({
   const [ showSearch, toggleShowSearch ] = useToggle(false)
   const [ bookIdToDownload, setBookIdToDownload ] = useState()
   const [ goToInfo, setGoToInfo ] = useState()
+  const [ isRefreshCooldown, setIsRefreshCooldown ] = useState(false)
+  const [ showCooldownDialog, setShowCooldownDialog ] = useState(false)
   const downloadProgress = useDownloadProgress({ downloadProgressByBookId, bookInfo: books[bookIdToDownload], bookId: bookIdToDownload })
 
   const onPressToggleView = useCallback(toggleView, [])
@@ -69,6 +72,8 @@ const LibraryHeader = ({
   const { online } = useNetwork()
 
   const { historyPush } = useRouterState()
+
+  const [ setRefreshCooldownTimeout ] = useSetTimeout()
 
   const removeFilter = useCallback(() => changeLibraryFilter(), [])
 
@@ -195,6 +200,26 @@ const LibraryHeader = ({
     [ bookIdToDownload ],
   )
 
+  const handleRefresh = useCallback(
+    () => {
+      if (isRefreshCooldown) {
+        setShowCooldownDialog(true)
+        return
+      }
+
+      onRefresh()
+      setIsRefreshCooldown(true)
+      setRefreshCooldownTimeout(() => {
+        setIsRefreshCooldown(false)
+      }, 5000)
+    },
+    [ isRefreshCooldown, onRefresh ],
+  )
+
+  const closeCooldownDialog = useCallback(() => {
+    setShowCooldownDialog(false)
+  }, [])
+
   return (
     <>
       <AppHeader
@@ -219,9 +244,9 @@ const LibraryHeader = ({
         rightControls={[
           <HeaderIcon
             iconName="reload"
-            onPress={onRefresh}
-            disabled={!online}
-            uiStatus={!online ? "disabled" : null}
+            onPress={handleRefresh}
+            disabled={!online || isRefreshCooldown}
+            uiStatus={!online || isRefreshCooldown ? "disabled" : null}
           />,
           <HeaderIcon
             iconName="search-sharp"
@@ -270,12 +295,12 @@ const LibraryHeader = ({
         message={[
           hasGoToInfo
             ? (
-              i18n("Would you like to download “{{title}}” to view this search result?", {
+              i18n("Would you like to download \"{{title}}\" to view this search result?", {
                 title: bookTitle,
               })
             )
             : (
-              i18n("Would you like to download “{{title}}”?", {
+              i18n("Would you like to download \"{{title}}\"?", {
                 title: bookTitle,
               })
             )
@@ -285,6 +310,14 @@ const LibraryHeader = ({
         onConfirm={onConfirmDownload}
         submitting={downloadStatus === 1}
         submittingPercentage={downloadProgress}
+      />
+
+      <Dialog
+        open={showCooldownDialog}
+        type="info"
+        title={i18n("Please wait")}
+        message={i18n("Please wait 5 seconds between each library refresh.")}
+        onClose={closeCooldownDialog}
       />
 
     </>
