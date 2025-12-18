@@ -44,7 +44,7 @@ export default function(state = initialState, action) {
           idpWasUpdated = true
         }
       }
-      
+
       return idpWasUpdated ? newState : state
 
     case "SET_CONSENT_SHOWN":

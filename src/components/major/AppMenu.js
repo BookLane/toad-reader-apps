@@ -9,7 +9,7 @@ import { Layout, Drawer, DrawerItem } from "@ui-kitten/components"
 import { i18n } from "inline-i18n"
 import * as Updates from 'expo-updates'
 
-import { getIdsFromAccountId, openURL } from "../../utils/toolbox"
+import { getIdsFromAccountId, openURL, getDataOrigin } from "../../utils/toolbox"
 import { logEvent } from "../../utils/analytics"
 import useNetwork from "../../hooks/useNetwork"
 import useRouterState from "../../hooks/useRouterState"
@@ -21,7 +21,7 @@ import CoverAndSpin from "../basic/CoverAndSpin"
 import { removeAllEPubs, removeAccountEPubs } from "../../utils/removeEpub"
 
 import { removeFromBookDownloadQueue, setDownloadStatus, clearTocAndSpines,
-         clearUserDataExceptProgress, changeLibraryScope } from "../../redux/actions"
+         clearUserDataExceptProgress, changeLibraryScope, removeAccount } from "../../redux/actions"
 import Spin from "../basic/Spin"
 import Button from "../basic/Button"
 
@@ -142,6 +142,7 @@ const AppMenu = ({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   changeLibraryScope,
+  removeAccount,
 }) => {
 
   const { online } = useNetwork()
@@ -188,7 +189,17 @@ const AppMenu = ({
       }
 
       if(Platform.OS === 'web') {
-        doLogOut()
+        // Clear the account from Redux state immediately
+        removeAccount({ accountId })
+
+        // Then redirect to logout
+        const { idpId } = getIdsFromAccountId(accountId)
+        const idp = idps[idpId]
+        const dataOrigin = getDataOrigin(idp)
+        const logOutUrl = `${dataOrigin}/logout`
+
+        // Navigate to logout URL which will clear server-side session
+        window.location.href = logOutUrl
         return
       }
 
@@ -369,13 +380,16 @@ const AppMenu = ({
 
   let isAdmin = false
   let bookImporterAccountId
-  Object.keys(accounts).some(accountId => {
-    if(accounts[accountId].isAdmin) {
-      isAdmin = true
-      bookImporterAccountId = accountId
-      return true
-    }
-  })
+  // Only check for admin if user is actually logged in
+  if(loggedInUser) {
+    Object.keys(accounts).some(accountId => {
+      if(accounts[accountId].isAdmin) {
+        isAdmin = true
+        bookImporterAccountId = accountId
+        return true
+      }
+    })
+  }
 
   const drawerData = [
     {
@@ -572,7 +586,7 @@ const AppMenu = ({
           </TouchableOpacity>
         }
 
-        <Text style={styles.subversion}>Updated Dec 11, 2025 at 10:06</Text>
+        <Text style={styles.subversion}>Updated PUSH_DATE_STRING</Text>
 
       </>
     ),
@@ -618,6 +632,7 @@ const matchDispatchToProps = (dispatch, x) => bindActionCreators({
   clearTocAndSpines,
   clearUserDataExceptProgress,
   changeLibraryScope,
+  removeAccount,
 }, dispatch)
 
 export default connect(mapStateToProps, matchDispatchToProps)(AppMenu)

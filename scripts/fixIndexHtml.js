@@ -30,6 +30,25 @@ const cssFixToAdd = `<!-- START FIXES -->
         left: auto !important;
         right: 0px !important;
       }
+
+      /* Fix for Select dropdown - very aggressive targeting */
+      div[tabindex="0"][class*="r-1i6wzk"][class*="r-1rvib"][class*="r-1loqt21"] {
+        position: fixed !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -20%) !important;
+        max-width: 400px !important;
+        width: auto !important;
+        z-index: 10000 !important;
+      }
+
+      /* Fallback for any dropdown with these exact inline styles */
+      div[style*="left: 0px"][style*="top: 90px"][style*="flex-direction: column"][style*="align-items: center"] {
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -20%) !important;
+        margin-top: 50px !important;
+      }
     </style>
   <!-- END FIXES -->`;
 

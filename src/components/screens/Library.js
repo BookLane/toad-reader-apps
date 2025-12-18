@@ -846,6 +846,17 @@ const Library = ({
     bookList = bookList.filter(bookId => !!books[bookId].audiobookInfo === (selectedBookTypeIndex === 1))
   }
 
+  // If user is not logged in, show only books accessible to all users
+  if(hasNoAuth) {
+    const idpId = parseInt(Object.keys(idps)[0], 10)
+    const noAuthAccountId = `${idpId}:-${idpId}`
+    bookList = bookList.filter(bookId => {
+      const book = books[bookId]
+      const accountInfo = book.accounts?.[noAuthAccountId]
+      return accountInfo?.subscriptions?.some(({ id }) => id === idpId * -1)
+    })
+  }
+
   const bookImporterAccountId = Object.keys(accounts).filter(accountId => accounts[accountId].isAdmin)[0]
 
   if(showLoading || (logOutAccountId && Platform.OS === 'web')) {

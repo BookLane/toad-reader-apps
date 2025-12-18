@@ -4,6 +4,7 @@ import { i18n } from "inline-i18n"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { SelectItem, IndexPath } from "@ui-kitten/components"
+import Constants from 'expo-constants'
 
 import useInstanceValue from "../../hooks/useInstanceValue"
 import useRouterState from "../../hooks/useRouterState"
@@ -53,7 +54,16 @@ const BookSubscriptionsDialog = ({
   const accountId = Object.keys(accounts)[0]
   const { idpId } = getIdsFromAccountId(accountId)
   const idp = idps[idpId]
-  const { useEnhancedReader } = idp
+
+  // Always read useEnhancedReader from app.json config to avoid Redux Persist cache issues
+  // For idpId 49 (The Grey Hill), force useEnhancedReader to false
+  const configIdp = Constants.expoConfig.extra.IDPS?.[idpId]
+  let useEnhancedReader = configIdp?.useEnhancedReader ?? idp?.useEnhancedReader
+
+  // Override for The Grey Hill tenant (idpId 49)
+  if (idpId === 49 || idpId === '49') {
+    useEnhancedReader = false
+  }
 
   const bookVersionOptions = useMemo(
     () => ([
@@ -183,7 +193,7 @@ const BookSubscriptionsDialog = ({
           </Text>
 
           {subscriptions.map(({ id, label }) => (
-            <View key={id}>
+            <View key={id} style={{ position: 'relative' }}>
 
               <Select
                 id={id}
@@ -192,6 +202,7 @@ const BookSubscriptionsDialog = ({
                 value={getVersionString(editedBookSubscriptionVersionById[id]) || i18n("None")}
                 selectedIndex={new IndexPath(bookVersionOptions.indexOf(editedBookSubscriptionVersionById[id]))}
                 onSelect={onSelect}
+                placement="bottom"
               >
                 {bookVersionOptions.map(option => (
                   <SelectItem
